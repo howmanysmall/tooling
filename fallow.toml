@@ -13,7 +13,8 @@ entry = [
 	".config/*.ts",
 	"tools/project-configurations/src/vitest/setup.ts",
 	"packages/*/src/**/*.bench.ts",
-	"turbo/generators/*.ts"
+	"turbo/generators/*.ts",
+	"**/cliffy-internal-types.ts",
 ]
 ignorePatterns = [".claude/**", "!.config/**"]
 ignoreDependencies = [

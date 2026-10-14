@@ -10,9 +10,6 @@ export async function getImageModelIdsAsync(): Promise<Array<string>> {
 	const ids: Array<string> = [];
 	let size = 0;
 
-	for (const imageModel of imageModels) {
-		ids[size++] = imageModel.id;
-	}
-
+	for (const imageModel of imageModels) ids[size++] = imageModel.id;
 	return ids;
 }

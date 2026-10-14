@@ -5,6 +5,8 @@ import { type } from "arktype";
 import { defineConfig } from "tsdown";
 import Macros from "unplugin-macros/rolldown";
 
+import { stripArktypeTypeCasts } from "./strip-arktype-type-casts.ts";
+
 const isPackageManifest = type({
 	"dependencies?": type("Record<string, string>").readonly().or("undefined"),
 	"name?": "string | undefined",
@@ -52,7 +54,7 @@ export const sharedConfiguration = defineConfig({
 	fixedExtension: false,
 	format: ["esm"],
 	platform: "node",
-	plugins: [Macros()],
+	plugins: [Macros(), stripArktypeTypeCasts()],
 	publint: {
 		enabled: true,
 		level: "error",
