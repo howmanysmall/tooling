@@ -530,9 +530,6 @@ importers:
       fallow:
         specifier: catalog:lint
         version: 3.33.1
-      jest-extended:
-        specifier: catalog:test
-        version: 7.0.0(@typescript/typescript6@6.0.2)
       jiti:
         specifier: catalog:tooling
         version: 2.7.0
@@ -566,9 +563,6 @@ importers:
       turbo:
         specifier: catalog:tooling
         version: 2.11.8
-      type-fest:
-        specifier: catalog:types
-        version: 5.10.0
       typescript:
         specifier: catalog:tooling
         version: '@typescript/typescript6@6.0.2'
