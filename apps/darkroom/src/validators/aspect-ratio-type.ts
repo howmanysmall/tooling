@@ -3,7 +3,7 @@ import { StringType } from "@cliffy/command";
 export const aspectRatioType = new StringType();
 
 export async function getAspectRatiosAsync(): Promise<Array<string>> {
-	const imageModels = await import("$functions/get-image-models-async").then(async ({ getImageModelsAsync }) =>
+	const imageModels = await import("$utilities/image-model-utilities").then(async ({ getImageModelsAsync }) =>
 		getImageModelsAsync(),
 	);
 
