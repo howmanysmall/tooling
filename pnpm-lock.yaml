@@ -668,6 +668,9 @@ importers:
       '@howmanysmall/cli-utilities':
         specifier: workspace:*
         version: link:../packages/cli-utilities
+      '@howmanysmall/lint-configurations':
+        specifier: workspace:*
+        version: link:../tools/lint-configurations
       arktype:
         specifier: catalog:runtime
         version: 2.2.8

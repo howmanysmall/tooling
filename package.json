@@ -11,6 +11,7 @@
 	"type": "module",
 	"scripts": {
 		"biome": "biome",
+		"branchlint": "bun run scripts/branchlint.ts",
 		"build": "turbo run build",
 		"commitlint": "commitlint",
 		"fallow": "fallow",
