@@ -23,8 +23,8 @@
 	],
 	"scripts": {
 		"build": "tsdown",
-		"lint": "pnpm --workspace-root run lint apps/{{kebabCase name}}",
-		"lint:agent": "pnpm --workspace-root run lint:agent apps/{{kebabCase name}}",
+		"lint:oxlint": "pnpm --workspace-root run lint:package apps/{{kebabCase name}}",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent apps/{{kebabCase name}}",
 		"prepublishOnly": "turbo run build --filter={{scope}}/{{kebabCase name}}",
 		"test": "vitest run",
 		"test:agent": "node --run test -- --reporter agent",

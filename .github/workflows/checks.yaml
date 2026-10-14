@@ -31,6 +31,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-eslint-v1-${{ hashFiles('pnpm-lock.yaml', 'eslint.config.ts') }}-
 
+      # oxlint and Biome have no cache of their own, so turbo caches them per
+      # package instead.
+      - name: Restore turbo cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          key: ${{ runner.os }}-turbo-v1-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          path: .turbo/cache
+          restore-keys: |
+            ${{ runner.os }}-turbo-v1-${{ hashFiles('pnpm-lock.yaml') }}-
+
       # Workspace packages resolve each other's types from `dist`.
       - name: Build
         run: node --run build
@@ -39,17 +49,14 @@ jobs:
       # Run the passes it splits locally side by side instead, each with its
       # own cache file.
       - parallel:
-          - name: Lint (oxlint)
-            run: pnpm exec isentinel-lint --oxlint .
+          - name: Lint (oxlint, Biome)
+            run: node --run turbo -- run lint:oxlint
 
           - name: Lint (ESLint, syntactic)
             run: pnpm exec isentinel-lint --eslint --type-aware=off .
 
           - name: Lint (ESLint, type-aware)
             run: pnpm exec isentinel-lint --eslint --type-aware=only .
-
-          - name: Lint (Biome)
-            run: node --run biome -- check --no-errors-on-unmatched .
 
       - name: Type Check
         run: node --run type-check

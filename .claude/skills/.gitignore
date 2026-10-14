@@ -3,7 +3,6 @@ pr
 .mise-skills.json
 aube
 communique
-hk
-hk-configure
-hk-debug
 pnpm-*
+hk*
+fallow*

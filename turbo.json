@@ -5,6 +5,18 @@
 	"globalDependencies": ["tsconfig.base.json"],
 	"globalPassThroughEnv": ["CI", "FORCE_COLOR", "GITHUB_ACTIONS", "NODE_OPTIONS"],
 	"tasks": {
+		"//#lint:eslint": {
+			"cache": false
+		},
+		"//#lint:eslint:agent": {
+			"cache": false
+		},
+		"//#lint:oxlint": {
+			"inputs": ["*", ".*/**", "scripts/root-lint-files.sh", "tools/lint-configurations/src/**"]
+		},
+		"//#lint:oxlint:agent": {
+			"inputs": ["*", ".*/**", "scripts/root-lint-files.sh", "tools/lint-configurations/src/**"]
+		},
 		"//#type-check:node": {
 			"inputs": [
 				"*.config.ts",
@@ -21,23 +33,27 @@
 			"outputs": ["dist/**"]
 		},
 		"lint": {
+			"dependsOn": ["lint:oxlint", "//#lint:oxlint", "//#lint:eslint"]
+		},
+		"lint:agent": {
+			"dependsOn": ["lint:oxlint:agent", "//#lint:oxlint:agent", "//#lint:eslint:agent"]
+		},
+		"lint:oxlint": {
 			"dependsOn": ["transit"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/.oxfmtrc.json",
 				"$TURBO_ROOT$/biome.jsonc",
-				"$TURBO_ROOT$/eslint.config.ts",
 				"$TURBO_ROOT$/oxlint.config.ts",
 				"$TURBO_ROOT$/tools/lint-configurations/src/**"
 			]
 		},
-		"lint:agent": {
+		"lint:oxlint:agent": {
 			"dependsOn": ["transit"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/.oxfmtrc.json",
 				"$TURBO_ROOT$/biome.jsonc",
-				"$TURBO_ROOT$/eslint.config.ts",
 				"$TURBO_ROOT$/oxlint.config.ts",
 				"$TURBO_ROOT$/tools/lint-configurations/src/**"
 			]
