@@ -543,6 +543,7 @@ repository_ids = { repository = "922514152", owner = "216188" }
 
 [[tools.ni]]
 version = "30.6.0"
+aube = { path = ".mise/locks/ni/30.6.0", digest = "sha256:20b74bf748f72a8a087775b6d97b0777259798f7a8ea040bf332ff172bfb6d3e" }
 backend = "npm:@antfu/ni"
 specifiers = ["latest"]
 
@@ -597,6 +598,7 @@ url = "https://nodejs.org/dist/v24.21.0/node-v24.21.0-win-x64.zip"
 
 [[tools."npm:sherif"]]
 version = "1.13.0"
+aube = { path = ".mise/locks/npm-sherif/1.13.0", digest = "sha256:06e97b4e097e7a7c8d01beee7092e2c7be9f4566dac53b52bfb01e2f380dc692" }
 backend = "npm:sherif"
 specifiers = ["latest"]
 
