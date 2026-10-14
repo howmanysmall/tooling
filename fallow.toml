@@ -42,6 +42,7 @@ ignoreDependencies = [
 	"eslint-plugin-unicorn",
 	"eslint-plugin-unused-imports",
 	"fast-check",
+	"oxlint-plugin-react-doctor",
 	"publint",
 	"typescript7",
 ]
