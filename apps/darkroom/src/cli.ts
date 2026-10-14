@@ -8,8 +8,17 @@ import { description, version } from "$constants";
 
 const scriptName = getScriptName(true);
 
-const command = createBaseCommand(scriptName, version, description).action(() => {
-	stdout.write(`Hello from ${scriptName}!\n`);
-});
+const command = createBaseCommand(scriptName, version, description)
+	.action(() => {
+		stdout.write(`Hello from ${scriptName}!\n`);
+	})
+	.command("completions", async () => {
+		const { CompletionsCommand } = await import("@cliffy/command/completions");
+		return new CompletionsCommand();
+	})
+	.command("help", async () => {
+		const { HelpCommand } = await import("@cliffy/command/help");
+		return new HelpCommand().global();
+	});
 
 await command.parse(argv.slice(2));
