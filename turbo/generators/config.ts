@@ -128,9 +128,38 @@ function renderRepositoryUrl(): string {
 	return isRootManifest.assert(manifest).repository.url;
 }
 
+/** The two CLI shapes differ only in their manifest, build, and README. */
+type CliKind = "cli" | "configurable-cli";
+
+const CLI_PROMPTS: Array<PlopTypes.PromptQuestion> = [
+	...createPrompts("apps", "@pobammer-ts"),
+	{
+		name: "runtime",
+		choices: ["bun", "node"],
+		default: "bun",
+		message: "Which runtime runs the built CLI? Either way, the code only uses Node APIs.",
+		type: "list",
+	},
+];
+
+function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
+	return [
+		createEnsureDirectoryAvailable("apps"),
+		createAddAction("apps", `${kind}/package`, PACKAGE_JSON),
+		createAddAction("apps", `${kind}/readme`, "README.md"),
+		createAddAction("apps", `${kind}/tsdown-config`, "tsdown.config.ts"),
+		createAddAction("apps", "cli/tsconfig", "tsconfig.json"),
+		createAddAction("apps", "cli/tsconfig-lib", "tsconfig.lib.json"),
+		createAddAction("apps", "cli/vitest-config", "vitest.config.ts"),
+		createAddAction("apps", "cli/src-cli", "src/cli.ts"),
+		createAddAction("apps", "cli/src-constants", "src/constants.ts"),
+		createAddAction("apps", "cli/src-constants-test", "src/constants.test.ts"),
+	];
+}
+
 /**
  * Scaffolds new workspace packages: private libraries in `packages/`, shaped
- * like cli-utilities, and built CLIs in `apps/`.
+ * like cli-utilities, and CLIs in `apps/`, either plain or configurable.
  *
  * @param plop - The generator API Turborepo provides.
  */
@@ -155,30 +184,19 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
 	});
 
 	plop.setGenerator("cli", {
+		actions: [...createCliActions("cli"), createSyncTsconfigReferencesAsync("apps")],
+		description: "A CLI in apps/ that ships only an executable.",
+		prompts: CLI_PROMPTS,
+	});
+
+	plop.setGenerator("configurable-cli", {
 		actions: [
-			createEnsureDirectoryAvailable("apps"),
-			createAddAction("apps", "cli/package", PACKAGE_JSON),
-			createAddAction("apps", "cli/readme", "README.md"),
-			createAddAction("apps", "cli/tsconfig", "tsconfig.json"),
-			createAddAction("apps", "cli/tsconfig-lib", "tsconfig.lib.json"),
-			createAddAction("apps", "cli/tsdown-config", "tsdown.config.ts"),
-			createAddAction("apps", "cli/vitest-config", "vitest.config.ts"),
-			createAddAction("apps", "cli/src-cli", "src/cli.ts"),
-			createAddAction("apps", "cli/src-constants", "src/constants.ts"),
-			createAddAction("apps", "cli/src-index", "src/index.ts"),
-			createAddAction("apps", "cli/src-index-test", "src/index.test.ts"),
+			...createCliActions("configurable-cli"),
+			createAddAction("apps", "configurable-cli/src-index", "src/index.ts"),
+			createAddAction("apps", "configurable-cli/src-index-test", "src/index.test.ts"),
 			createSyncTsconfigReferencesAsync("apps"),
 		],
-		description: "A built CLI in apps/.",
-		prompts: [
-			...createPrompts("apps", "@pobammer-ts"),
-			{
-				name: "runtime",
-				choices: ["bun", "node"],
-				default: "bun",
-				message: "Which runtime runs the built CLI? Either way, the code only uses Node APIs.",
-				type: "list",
-			},
-		],
+		description: "A CLI in apps/ that also exports defineConfiguration for configuration files.",
+		prompts: CLI_PROMPTS,
 	});
 }
