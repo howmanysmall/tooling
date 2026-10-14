@@ -6,6 +6,7 @@
 	"license": "UNLICENSED",
 	"type": "module",
 	"exports": {
+		"./constants": "./src/constants.ts",
 		"./get-eslint-async": "./src/get-eslint-async.ts",
 		"./get-oxlint-async": "./src/get-oxlint-async.ts",
 		"./package.json": "./package.json"
