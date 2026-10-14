@@ -1,0 +1,31 @@
+# @pobammer-ts/darkroom
+
+A command-line tool.
+
+## Usage
+
+```sh
+darkroom --help
+```
+
+The built binary runs on Bun. The code only uses Node APIs, so `node dist/cli.js` works too.
+
+## Scripts
+
+Run these from this directory, or from the repository root with
+`node --run turbo -- run <script> --filter=@pobammer-ts/darkroom`.
+
+| Script | What it does |
+| --- | --- |
+| `build` | Bundles `src/` into `dist/` with tsdown. |
+| `lint` | Lints this package with the repository's oxlint, ESLint, and Biome configuration. |
+| `test` | Runs the Vitest suite. |
+| `type-check` | Type-checks this package and its references with `tsc --build`. |
+
+## Release
+
+From the repository root:
+
+```sh
+node --run release -- darkroom [patch|minor|major|<version>]
+```

@@ -1,0 +1,64 @@
+{
+	"$schema": "https://turborepo.dev/schema.json",
+	"agentGuidance": false,
+	"concurrency": "50%",
+	"globalDependencies": ["tsconfig.base.json"],
+	"globalPassThroughEnv": ["CI", "FORCE_COLOR", "GITHUB_ACTIONS", "NODE_OPTIONS"],
+	"tasks": {
+		"//#type-check:node": {
+			"inputs": [
+				"*.config.ts",
+				".config/*.ts",
+				"scripts/*.ts",
+				"tsconfig.json",
+				"tsconfig.node.json",
+				"turbo/generators/*.ts"
+			]
+		},
+		"build": {
+			"dependsOn": ["^build", "transit"],
+			"inputs": ["$TURBO_DEFAULT$"],
+			"outputs": ["dist/**"]
+		},
+		"lint": {
+			"dependsOn": ["transit"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/.oxfmtrc.json",
+				"$TURBO_ROOT$/biome.jsonc",
+				"$TURBO_ROOT$/eslint.config.ts",
+				"$TURBO_ROOT$/oxlint.config.ts",
+				"$TURBO_ROOT$/tools/lint-configurations/src/**"
+			]
+		},
+		"lint:agent": {
+			"dependsOn": ["transit"],
+			"inputs": [
+				"$TURBO_DEFAULT$",
+				"$TURBO_ROOT$/.oxfmtrc.json",
+				"$TURBO_ROOT$/biome.jsonc",
+				"$TURBO_ROOT$/eslint.config.ts",
+				"$TURBO_ROOT$/oxlint.config.ts",
+				"$TURBO_ROOT$/tools/lint-configurations/src/**"
+			]
+		},
+		"test": {
+			"dependsOn": ["transit"],
+			"env": ["PROPERTY_RUNS"]
+		},
+		"test:agent": {
+			"dependsOn": ["transit"],
+			"env": ["PROPERTY_RUNS"]
+		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		},
+		"type-check": {
+			"dependsOn": ["^type-check"]
+		},
+		"type-check:agent": {
+			"dependsOn": ["^type-check"]
+		}
+	},
+	"ui": "stream"
+}

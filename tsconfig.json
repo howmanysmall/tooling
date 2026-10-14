@@ -1,0 +1,28 @@
+{
+	"extends": "./tsconfig.base.json",
+	"references": [
+		{
+			"path": "./apps/darkroom"
+		},
+		{
+			"path": "./packages/arktype-utilities"
+		},
+		{
+			"path": "./packages/cli-utilities"
+		},
+		{
+			"path": "./tools/lint-configurations"
+		},
+		{
+			"path": "./tools/linter-utilities"
+		},
+		{
+			"path": "./tools/project-configurations"
+		},
+		{
+			"path": "./tsconfig.node.json"
+		}
+	],
+	"files": [],
+	"include": []
+}
