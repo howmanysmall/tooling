@@ -1,4 +1,4 @@
-# darkroom
+# `tooling`
 
 Command-line tools by howmanysmall, in one pnpm monorepo.
 
@@ -29,7 +29,7 @@ pnpm install
 
 Both generators prompt for a name, a description, an npm scope, and a runtime (`bun` or `node`).
 The new `apps/<name>/` gets its scripts, a first test, and a README, and its tsconfig references
-are synced. Use `pnpm turbo gen package` for a shared library in `packages/`.
+stay synced. Use `pnpm turbo gen package` for a shared library in `packages/`.
 
 ## Release a tool
 
@@ -55,7 +55,9 @@ The tag starts `.github/workflows/release.yaml`, which:
 
 Every workspace package has `lint` and `type-check`, plus `test` when it has tests and `build` when
 it produces a binary. `lint`, `test`, and `type-check` each have an `:agent` variant. Turbo runs them
-per package and caches the results, so only changed packages run again.
+per package and caches the results, so only changed packages run again. Package `lint` runs Oxlint
+and Biome. ESLint runs once over the whole repository as a root task and relies on its own cache.
+One type-aware ESLint process per package would each load the full TypeScript program.
 
 ```sh
 node --run turbo -- run test --filter=@pobammer-ts/darkroom   # one package

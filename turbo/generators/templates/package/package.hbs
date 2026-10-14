@@ -16,8 +16,8 @@
 		"./package.json": "./package.json"
 	},
 	"scripts": {
-		"lint": "pnpm --workspace-root run lint packages/{{kebabCase name}}",
-		"lint:agent": "pnpm --workspace-root run lint:agent packages/{{kebabCase name}}",
+		"lint": "pnpm --workspace-root run lint:package packages/{{kebabCase name}}",
+		"lint:agent": "pnpm --workspace-root run lint:package:agent packages/{{kebabCase name}}",
 		"test": "vitest run",
 		"test:agent": "node --run test -- --reporter agent",
 		"type-check": "tsc --build",
