@@ -12,8 +12,8 @@
 		"./package.json": "./package.json"
 	},
 	"scripts": {
-		"lint": "pnpm --workspace-root run lint tools/lint-configurations",
-		"lint:agent": "pnpm --workspace-root run lint:agent tools/lint-configurations",
+		"lint": "pnpm --workspace-root run lint:package tools/lint-configurations",
+		"lint:agent": "pnpm --workspace-root run lint:package:agent tools/lint-configurations",
 		"test": "vitest run",
 		"test:agent": "node --run test -- --reporter agent",
 		"type-check": "tsc --build",
