@@ -4,4 +4,5 @@ import packageJson from "../package.json" with { type: "json" };
 
 export const description = packageJson.description;
 export const name = packageJson.name;
+export const repository = packageJson.repository;
 export const version = packageJson.version;
