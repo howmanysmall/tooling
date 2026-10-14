@@ -14,8 +14,8 @@
 		"./vitest/vitiate": "./src/vitest/vitiate.ts"
 	},
 	"scripts": {
-		"lint": "pnpm --workspace-root run lint:package tools/project-configurations",
-		"lint:agent": "pnpm --workspace-root run lint:package:agent tools/project-configurations",
+		"lint:oxlint": "pnpm --workspace-root run lint:package tools/project-configurations",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent tools/project-configurations",
 		"type-check": "tsc --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},

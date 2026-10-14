@@ -30,8 +30,8 @@
 	],
 	"scripts": {
 		"build": "tsdown",
-		"lint": "pnpm --workspace-root run lint:package apps/darkroom",
-		"lint:agent": "pnpm --workspace-root run lint:package:agent apps/darkroom",
+		"lint:oxlint": "pnpm --workspace-root run lint:package apps/darkroom",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent apps/darkroom",
 		"prepublishOnly": "turbo run build --filter=@pobammer-ts/darkroom",
 		"test": "vitest run",
 		"test:agent": "node --run test -- --reporter agent",
