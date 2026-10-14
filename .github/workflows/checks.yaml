@@ -37,8 +37,7 @@ jobs:
 
       # isentinel-lint collapses ESLint into one full pass when `CI` is set.
       # Run the passes it splits locally side by side instead, each with its
-      # own cache file. The root `lint` script's `--concurrency=off` guards
-      # local memory and is left out here.
+      # own cache file.
       - parallel:
           - name: Lint (oxlint)
             run: pnpm exec isentinel-lint --oxlint .
