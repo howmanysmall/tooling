@@ -3,10 +3,17 @@ import { StringType } from "@cliffy/command";
 export const openrouterModelType = new StringType();
 
 export async function getOpenRouterImageModelsAsync(): Promise<Array<string>> {
-	const openrouter = await import("$functions/get-openrouter-async").then(async ({ getOpenRouterAsync }) =>
-		getOpenRouterAsync(),
+	const responseArray = await import("$functions/get-image-models-async").then(async ({ getImageModelsAsync }) =>
+		getImageModelsAsync(),
 	);
 
-	const { data } = await openrouter.images.listModels({}, {});
-	return data.map((model) => model.id);
+	const imageModels: Array<string> = [];
+	let size = 0;
+
+	for (const imageModel of responseArray) {
+		if (!imageModel.architecture.inputModalities.includes("text")) continue;
+		imageModels[size++] = imageModel.id;
+	}
+
+	return imageModels;
 }
