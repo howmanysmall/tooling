@@ -10,6 +10,20 @@ export async function getImageModelsAsync(): Promise<ReadonlyArray<ImageModelLis
 		return openrouter.images.listModels({}, {});
 	});
 
-	imageModelsCache = data;
-	return data;
+	const imageModels: Array<ImageModelListItem> = [];
+	let size = 0;
+
+	for (const imageModel of data) {
+		if (!imageModel.architecture.inputModalities.includes("text")) continue;
+		imageModels[size++] = imageModel;
+	}
+
+	imageModelsCache = imageModels;
+	return imageModels;
+}
+
+if (import.meta.main) {
+	// oxlint-disable-next-line antfu/no-top-level-await -- this is wrapped.
+	const imageModels = await getImageModelsAsync();
+	console.log(JSON.stringify(imageModels, undefined, "\t"));
 }

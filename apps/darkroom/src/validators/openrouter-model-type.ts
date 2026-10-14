@@ -1,19 +1,18 @@
 import { StringType } from "@cliffy/command";
 
-export const openrouterModelType = new StringType();
+export const imageModelIdType = new StringType();
 
-export async function getOpenRouterImageModelsAsync(): Promise<Array<string>> {
-	const responseArray = await import("$functions/get-image-models-async").then(async ({ getImageModelsAsync }) =>
+export async function getImageModelIdsAsync(): Promise<Array<string>> {
+	const imageModels = await import("$functions/get-image-models-async").then(async ({ getImageModelsAsync }) =>
 		getImageModelsAsync(),
 	);
 
-	const imageModels: Array<string> = [];
+	const ids: Array<string> = [];
 	let size = 0;
 
-	for (const imageModel of responseArray) {
-		if (!imageModel.architecture.inputModalities.includes("text")) continue;
-		imageModels[size++] = imageModel.id;
+	for (const imageModel of imageModels) {
+		ids[size++] = imageModel.id;
 	}
 
-	return imageModels;
+	return ids;
 }
