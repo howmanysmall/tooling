@@ -100,7 +100,7 @@
 				}
 			],
 			"hard_tabs": true,
-			"language_servers": ["!knip", "astro-language-server", "biome", "..."]
+			"language_servers": ["discord_presence", "!knip", "astro-language-server", "biome", "..."]
 		},
 		"CSS": {
 			"code_actions_on_format": {
@@ -117,7 +117,7 @@
 				}
 			],
 			"hard_tabs": true,
-			"language_servers": ["!knip", "eslint", "biome", "oxfmt", "..."],
+			"language_servers": ["discord_presence", "!knip", "eslint", "biome", "oxfmt", "..."],
 			"prettier": { "allowed": false },
 			"tab_size": 4
 		},
@@ -151,6 +151,7 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
+				"discord_presence",
 				"!knip",
 				"biome",
 				"dependi",
@@ -167,6 +168,7 @@
 		},
 		"JavaScript": {
 			"language_servers": [
+				"discord_presence",
 				"!deno",
 				"!knip",
 				"!vtsls",
@@ -179,6 +181,7 @@
 		"MDX": {
 			"format_on_save": "on",
 			"language_servers": [
+				"discord_presence",
 				"oxfmt",
 				"rumdl",
 				"wakatime",
@@ -196,7 +199,7 @@
 				"language_server": { "name": "rumdl" }
 			},
 			"hard_tabs": true,
-			"language_servers": ["!knip", "codebook", "harper-ls", "rumdl", "wakatime", "vale"],
+			"language_servers": ["discord_presence", "!knip", "codebook", "harper-ls", "rumdl", "wakatime", "vale"],
 			"prettier": { "allowed": false },
 			"show_whitespaces": "none",
 			"soft_wrap": "editor_width",
@@ -214,7 +217,15 @@
 				}
 			},
 			"hard_tabs": true,
-			"language_servers": ["!knip", "pkl", "wakatime", "codebook", "harper-ls", "discord_presence"],
+			"language_servers": [
+				"discord_presence",
+				"!knip",
+				"pkl",
+				"wakatime",
+				"codebook",
+				"harper-ls",
+				"discord_presence"
+			],
 			"tab_size": 4
 		},
 		"Shell Script": {
@@ -227,6 +238,7 @@
 			},
 			"hard_tabs": true,
 			"language_servers": [
+				"discord_presence",
 				"!knip",
 				"bash-language-server",
 				"wakatime",
@@ -241,6 +253,7 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
+				"discord_presence",
 				"!knip",
 				"dependi",
 				"deputy",
@@ -264,6 +277,7 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
+				"discord_presence",
 				"!deno",
 				"!knip",
 				"!vtsls",
@@ -285,6 +299,7 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
+				"discord_presence",
 				"!deno",
 				"!knip",
 				"!vtsls",
@@ -300,6 +315,7 @@
 			"format_on_save": "on",
 			"hard_tabs": false,
 			"language_servers": [
+				"discord_presence",
 				"!knip",
 				"dependi",
 				"eslint",

@@ -137,28 +137,24 @@ local fileChecks = new Mapping<String, Step> {
       }
     }
   }
-  ["actionlint"] = (Builtins.actionlint) {
-    glob = WORKFLOW_FILES
+  // jactionlint reads the `gh` login for its online checks on its own.
+  ["jactionlint"] = (Builtins.jactionlint) {
+    glob = ACTION_FILES + List(".github/dependabot.yml")
     check = new CommandSpec {
       command = new Command {
-        argv = List("actionlint", "{{files}}")
+        argv = List("jactionlint", "{{files}}")
       }
       effect = "read"
     }
-  }
-  // zizmor and pinact read a GitHub token for their online checks, which only
-  // a shell can fetch.
-  ["zizmor"] = (Builtins.zizmor) {
-    glob = ACTION_FILES + List(".github/dependabot.yml")
-    check = new CommandSpec {
-      command = "GH_TOKEN=\"$(gh auth token)\" zizmor --no-progress {{files}}"
-      effect = "read"
-    }
     fix = new CommandSpec {
-      command = "GH_TOKEN=\"$(gh auth token)\" zizmor --no-progress --fix {{files}}"
+      command = new Command {
+        argv = List("jactionlint", "--fix", "{{files}}")
+      }
       effect = "write"
     }
   }
+  // pinact reads a GitHub token for its online checks, which only a shell can
+  // fetch.
   ["pinact"] {
     glob = ACTION_FILES
     check = new CommandSpec {

@@ -59,6 +59,7 @@ jobs:
 
       - name: Duplication
         run: node --run fallow:dupes
+    timeout-minutes: 10
 
   test:
     name: Test
@@ -83,3 +84,4 @@ jobs:
 
           - name: Run fuzz regressions
             run: node --run test:fuzz
+    timeout-minutes: 10

@@ -1,0 +1,7 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/jdx/jactionlint/main/schema/jactionlint-config.json
+# "default" covers what actionlint checked, plus the security rules zizmor ran.
+profile: default
+
+# Query the GitHub API for impostor commits, known-vulnerable actions, and
+# archived repositories. Locally it uses the `gh` login; CI passes its token.
+online: true
