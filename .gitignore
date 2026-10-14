@@ -93,6 +93,9 @@ hk.local.pkl
 .agents/skills/thermo-nuclear-code-quality-review/
 .agents/skills/thermo-nuclear-review/
 .agents/skills/typescript-best-practices/
+.agents/skills/fallow/
+.agents/skills/fallow-review/
+.agents/skills/fallow-setup/
 
 .claude/skills/ask-matt
 .claude/skills/code-review

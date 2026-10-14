@@ -119,7 +119,7 @@ description = "Install dependencies from the pnpm lockfile."
 run = "ni"
 
 [tasks.lint]
-description = "Run the project lint pipeline: ESLint plus Biome checks via the package script."
+description = "Run ESLint once at the root and oxlint plus Biome per package through turbo."
 run = "node --run lint"
 
 [tasks.lint-configuration]

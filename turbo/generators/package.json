@@ -3,6 +3,10 @@
 	"private": true,
 	"description": "Turborepo generators for new tools in apps/ and libraries in packages/.",
 	"type": "module",
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package turbo/generators",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent turbo/generators"
+	},
 	"dependencies": {
 		"arktype": "catalog:runtime",
 		"effect": "catalog:runtime",
