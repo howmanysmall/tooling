@@ -1,0 +1,62 @@
+**/node_modules/**
+.pnpm-store/
+
+# output
+out
+dist
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+/reports/
+.stryker-tmp/
+.vitiate/corpus/
+.swc/
+
+# logs
+logs
+*.log
+
+# dotenv environment variable files
+.env
+.env.*.local
+.env.local
+.envrc
+
+# caches
+.eslintcache*
+.cache
+.vitest
+*.tsbuildinfo
+
+# Finder (MacOS) folder config
+.DS_Store
+
+# hk local developer overrides
+hk.local.pkl
+
+# rumdl cache
+.rumdl_cache
+
+# idea
+.idea
+
+# vale: styles are synced from `Packages` in .vale.ini; only the project vocabulary is committed
+.vale/styles/*
+!.vale/styles/config/
+.vale/styles/config/*
+!.vale/styles/config/vocabularies/
+.vale/styles/config/vocabularies/*
+!.vale/styles/config/vocabularies/Project/
+!.vale/styles/config/vocabularies/Project/accept.txt
+
+# Claude Code machine-local settings
+.claude/settings.local.json
+
+# fallow coverage input
+.cache/
+
+# turborepo
+.turbo
+.agents/skills/pr/

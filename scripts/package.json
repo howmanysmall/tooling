@@ -1,0 +1,17 @@
+{
+	"name": "@howmanysmall/scripts",
+	"private": true,
+	"type": "module",
+	"dependencies": {
+		"@cliffy/command": "catalog:runtime",
+		"@howmanysmall/arktype-utilities": "workspace:*",
+		"@howmanysmall/cli-utilities": "workspace:*",
+		"arktype": "catalog:runtime",
+		"bumpp": "catalog:tooling",
+		"consola": "catalog:runtime",
+		"tinyexec": "catalog:dev"
+	},
+	"devDependencies": {
+		"@types/node": "catalog:types"
+	}
+}

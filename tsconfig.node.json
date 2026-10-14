@@ -1,0 +1,21 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"composite": true,
+		"tsBuildInfoFile": "./node_modules/.tsbuildinfo-node",
+		"types": ["node"]
+	},
+	"references": [
+		{
+			"path": "./packages/arktype-utilities"
+		},
+		{
+			"path": "./packages/cli-utilities"
+		},
+		{
+			"path": "./tools/lint-configurations"
+		}
+	],
+	"include": ["*.config.ts", ".config/*.ts", "scripts/*.ts", "turbo/generators/*.ts"],
+	"exclude": ["dist", "node_modules"]
+}
