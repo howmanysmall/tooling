@@ -63,6 +63,7 @@ jobs:
 
       - name: Lint prose
         run: vale --no-color .
+    timeout-minutes: 5
 
   workflow-security:
     if: github.event_name == 'push' || github.event_name == 'pull_request'
@@ -97,16 +98,17 @@ jobs:
         name: Setup toolchain
         uses: $/.github/actions/setup
         with:
-          tools: actionlint pinact zizmor
+          tools: github:jdx/jactionlint pinact
 
-      - if: steps.changes.outputs.changed == 'true'
-        name: actionlint
-        run: actionlint
+      # `.github/jactionlint.yaml` turns on the online checks, which use this
+      # token for the GitHub API.
+      - env:
+          GITHUB_TOKEN: ${{ github.token }}
+        if: steps.changes.outputs.changed == 'true'
+        name: jactionlint
+        run: jactionlint --format github
 
       - if: steps.changes.outputs.changed == 'true'
         name: pinact
         run: pinact run
-
-      - if: steps.changes.outputs.changed == 'true'
-        name: zizmor
-        run: zizmor .github
+    timeout-minutes: 5

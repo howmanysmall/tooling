@@ -1,9 +1,9 @@
 // hk configuration - https://hk.jdx.dev/
-amends "package://github.com/jdx/hk/releases/download/v2.4.0/hk@2.4.0#/Config.pkl"
+amends "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Config.pkl"
 
-import "package://github.com/jdx/hk/releases/download/v2.4.0/hk@2.4.0#/Builtins.pkl"
+import "package://github.com/jdx/hk/releases/download/v2.6.0/hk@2.6.0#/Builtins.pkl"
 
-min_hk_version = "2.4.0"
+min_hk_version = "2.6.0"
 jobs = 2
 fail_fast = true
 
@@ -137,28 +137,24 @@ local fileChecks = new Mapping<String, Step> {
       }
     }
   }
-  ["actionlint"] = (Builtins.actionlint) {
-    glob = WORKFLOW_FILES
+  // jactionlint reads the `gh` login for its online checks on its own.
+  ["jactionlint"] = (Builtins.jactionlint) {
+    glob = ACTION_FILES + List(".github/dependabot.yml")
     check = new CommandSpec {
       command = new Command {
-        argv = List("actionlint", "{{files}}")
+        argv = List("jactionlint", "{{files}}")
       }
       effect = "read"
     }
-  }
-  // zizmor and pinact read a GitHub token for their online checks, which only
-  // a shell can fetch.
-  ["zizmor"] = (Builtins.zizmor) {
-    glob = ACTION_FILES + List(".github/dependabot.yml")
-    check = new CommandSpec {
-      command = "GH_TOKEN=\"$(gh auth token)\" zizmor --no-progress {{files}}"
-      effect = "read"
-    }
     fix = new CommandSpec {
-      command = "GH_TOKEN=\"$(gh auth token)\" zizmor --no-progress --fix {{files}}"
+      command = new Command {
+        argv = List("jactionlint", "--fix", "{{files}}")
+      }
       effect = "write"
     }
   }
+  // pinact reads a GitHub token for its online checks, which only a shell can
+  // fetch.
   ["pinact"] {
     glob = ACTION_FILES
     check = new CommandSpec {
@@ -304,6 +300,17 @@ hooks {
     fix = false
     stage = false
     steps = (fileChecks) {
+      // Mirrors commitlint for branch names: git sends every ref being pushed
+      // on stdin, and the step lints the remote branch names in it.
+      ["branchlint"] {
+        stdin = "{{hook_stdin}}"
+        check = new CommandSpec {
+          command = new Command {
+            argv = List("node", "--run", "branchlint")
+          }
+          effect = "read"
+        }
+      }
       ["type-check"] { glob = null }
       ["betterleaks"] {
         stdin = "{{hook_stdin}}"
