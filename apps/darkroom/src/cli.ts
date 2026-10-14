@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 
 import { argv, stdout } from "node:process";
+import { HelpCommand } from "@cliffy/command/help";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
@@ -23,9 +24,6 @@ const command = createBaseCommand(scriptName, version, description)
 		const { CompletionsCommand } = await import("@cliffy/command/completions");
 		return new CompletionsCommand();
 	})
-	.command("help", async () => {
-		const { HelpCommand } = await import("@cliffy/command/help");
-		return new HelpCommand().global();
-	});
+	.command("help", new HelpCommand().global());
 
 await command.parse(argv.slice(2));

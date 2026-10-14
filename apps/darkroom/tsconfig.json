@@ -5,7 +5,8 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
 		"paths": {
 			"$commands/*": ["./src/commands/*"],
-			"$constants": ["./src/constants.ts"],
+			"$constants/*": ["./src/constants/*"],
+			"$constants": ["./src/constants/constants.ts"],
 			"$environment": ["./src/environment.ts"],
 			"$functions/*": ["./src/functions/*"],
 			"$utilities/*": ["./src/utilities/*"],
