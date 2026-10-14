@@ -46,7 +46,6 @@
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@types/node": "catalog:types",
 		"tsdown": "catalog:build",
-		"unplugin-macros": "catalog:build",
 		"vitest": "catalog:test"
 	},
 	"engines": {
