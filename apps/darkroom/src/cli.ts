@@ -9,8 +9,15 @@ import { description, version } from "$constants";
 const scriptName = getScriptName(true);
 
 const command = createBaseCommand(scriptName, version, description)
-	.action(() => {
-		stdout.write(`Hello from ${scriptName}!\n`);
+	.action(async function onActionAsync() {
+		const { getOpenRouterImageModelsAsync } = await import("$validators/openrouter-model-type");
+		const imageModels = await getOpenRouterImageModelsAsync();
+		const stringBuilder = imageModels.map((value) => `  - ${value}`).join("\n");
+		stdout.write(`${stringBuilder}\n`);
+	})
+	.command("generate", async () => {
+		const { generateCommand } = await import("$commands/generate-command");
+		return generateCommand;
 	})
 	.command("completions", async () => {
 		const { CompletionsCommand } = await import("@cliffy/command/completions");

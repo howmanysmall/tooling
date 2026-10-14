@@ -35,7 +35,11 @@
 		"@arkenv/core": "catalog:runtime",
 		"@cliffy/command": "catalog:runtime",
 		"@dotenvx/dotenvx": "catalog:runtime",
-		"@openrouter/sdk": "catalog:ai"
+		"@openrouter/sdk": "catalog:ai",
+		"arktype": "catalog:runtime",
+		"effect": "catalog:runtime",
+		"type-fest": "catalog:types",
+		"unplugin-macros": "catalog:build"
 	},
 	"devDependencies": {
 		"@howmanysmall/cli-utilities": "workspace:*",
