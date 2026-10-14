@@ -5,12 +5,14 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
 		"paths": {
 			"$commands/*": ["./src/commands/*"],
-			"$constants/*": ["./src/constants/*"],
 			"$constants": ["./src/constants/constants.ts"],
+			"$constants/*": ["./src/constants/*"],
 			"$environment": ["./src/environment.ts"],
 			"$functions/*": ["./src/functions/*"],
+			"$types/*": ["./src/types/*"],
 			"$utilities/*": ["./src/utilities/*"],
-			"$validators/*": ["./src/validators/*"]
+			"$validators/*": ["./src/validators/*"],
+			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
 		"types": ["node"]
 	},

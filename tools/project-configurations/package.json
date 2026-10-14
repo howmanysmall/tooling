@@ -23,6 +23,7 @@
 		"@vitiate/core": "catalog:test",
 		"arktype": "catalog:runtime",
 		"jest-extended": "catalog:test",
+		"rolldown": "catalog:build",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",
 		"vitest": "catalog:test"

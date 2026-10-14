@@ -38,12 +38,14 @@
 		"@openrouter/sdk": "catalog:ai",
 		"arktype": "catalog:runtime",
 		"effect": "catalog:runtime",
+		"env-paths": "catalog:runtime",
 		"type-fest": "catalog:types",
 		"unplugin-macros": "catalog:build"
 	},
 	"devDependencies": {
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
+		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:types",
 		"tsdown": "catalog:build",
 		"vitest": "catalog:test"

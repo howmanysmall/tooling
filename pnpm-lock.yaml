@@ -174,6 +174,9 @@ catalogs:
     publint:
       specifier: 0.3.25
       version: 0.3.25
+    rolldown:
+      specifier: 1.2.13
+      version: 1.2.13
     tsdown:
       specifier: 0.23.1
       version: 0.23.1
@@ -316,6 +319,9 @@ catalogs:
     effect:
       specifier: 4.0.4
       version: 4.0.4
+    env-paths:
+      specifier: 4.0.0
+      version: 4.0.0
   test:
     '@stryker-mutator/api':
       specifier: 10.0.0
@@ -379,6 +385,9 @@ catalogs:
       specifier: npm:typescript@^7.0.2
       version: 7.0.2
   types:
+    '@total-typescript/ts-reset':
+      specifier: 0.6.1
+      version: 0.6.1
     '@types/node':
       specifier: ^26.6.5
       version: 26.6.5
@@ -612,6 +621,9 @@ importers:
       effect:
         specifier: catalog:runtime
         version: 4.0.4
+      env-paths:
+        specifier: catalog:runtime
+        version: 4.0.0
       type-fest:
         specifier: catalog:types
         version: 5.10.0
@@ -625,6 +637,9 @@ importers:
       '@howmanysmall/project-configurations':
         specifier: workspace:*
         version: link:../../tools/project-configurations
+      '@total-typescript/ts-reset':
+        specifier: catalog:types
+        version: 0.6.1
       '@types/node':
         specifier: catalog:types
         version: 26.6.5
@@ -780,6 +795,9 @@ importers:
       jest-extended:
         specifier: catalog:test
         version: 7.0.0(@typescript/typescript6@6.0.2)
+      rolldown:
+        specifier: catalog:build
+        version: 1.2.13
       tsdown:
         specifier: catalog:build
         version: 0.23.1(@arethetypeswrong/core@0.18.5)(@typescript/typescript6@6.0.2)(oxc-resolver@11.24.2)(publint@0.3.25)
@@ -3246,6 +3264,9 @@ packages:
 
   '@swc/types@0.1.28':
     resolution: {integrity: sha512-V6Mnml8v09QALx6K0elJ7o9K/MkVDtW3t6L+7Ou/JcWtb3xwId2AH4FeOceySd2JaO87IMw4+6vSZxLm34LPbw==}
+
+  '@total-typescript/ts-reset@0.6.1':
+    resolution: {integrity: sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg==}
 
   '@ts-graphviz/adapter@2.0.6':
     resolution: {integrity: sha512-kJ10lIMSWMJkLkkCG5gt927SnGZcBuG0s0HHswGzcHTgvtUe7yk5/3zTEr0bafzsodsOq5Gi6FhQeV775nC35Q==}
@@ -8880,6 +8901,8 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
+  '@total-typescript/ts-reset@0.6.1': {}
+
   '@ts-graphviz/adapter@2.0.6':
     dependencies:
       '@ts-graphviz/common': 2.1.5
@@ -12781,6 +12804,7 @@ time:
   '@stryker-mutator/core@10.0.0': '2026-08-14T16:51:22.686Z'
   '@stryker-mutator/vitest-runner@10.0.0': '2026-08-14T16:50:27.414Z'
   '@stylistic/eslint-plugin@5.10.0': '2026-03-06T04:00:09.407Z'
+  '@total-typescript/ts-reset@0.6.1': '2024-09-02T18:55:44.698Z'
   '@turbo/gen@2.11.8': '2026-10-13T18:09:47.573Z'
   '@types/node@26.6.5': '2026-10-09T18:46:47.657Z'
   '@typescript/typescript6@6.0.2': '2026-07-06T18:06:47.459Z'
@@ -12794,6 +12818,7 @@ time:
   consola@3.4.2: '2025-03-18T10:17:43.596Z'
   effect@4.0.4: '2026-10-13T05:25:42.321Z'
   empathic@2.1.0: '2026-09-18T22:41:09.970Z'
+  env-paths@4.0.0: '2026-01-24T14:29:07.374Z'
   eslint-plugin-antfu@3.2.3: '2026-05-11T02:24:38.348Z'
   eslint-plugin-better-max-params@1.0.0: '2025-08-20T09:01:00.860Z'
   eslint-plugin-comment-length@2.3.1: '2026-04-22T10:40:38.031Z'
@@ -12824,6 +12849,7 @@ time:
   oxlint@1.88.0: '2026-10-13T09:47:46.926Z'
   pncat@0.13.4: '2026-09-18T23:40:25.144Z'
   publint@0.3.25: '2026-10-01T18:03:33.533Z'
+  rolldown@1.2.13: '2026-10-07T14:20:03.410Z'
   sfw@2.0.6: '2026-05-22T16:42:22.828Z'
   skills@1.7.2: '2026-10-09T16:49:31.475Z'
   tinyexec@1.3.1: '2026-09-03T08:50:07.324Z'
