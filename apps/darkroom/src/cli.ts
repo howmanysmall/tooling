@@ -11,7 +11,7 @@ const scriptName = getScriptName(true);
 
 const command = createBaseCommand(scriptName, version, description)
 	.action(async function onActionAsync() {
-		const { getImageModelIdsAsync } = await import("$validators/openrouter-model-type");
+		const { getImageModelIdsAsync } = await import("$validators/image-model-id-type");
 		const ids = await getImageModelIdsAsync();
 		const stringBuilder = ids.map((value) => `  - ${value}`).join("\n");
 		stdout.write(`${stringBuilder}\n`);
