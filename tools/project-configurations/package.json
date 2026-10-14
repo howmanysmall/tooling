@@ -8,6 +8,7 @@
 	"exports": {
 		"./package.json": "./package.json",
 		"./tsdown": "./src/tsdown/shared.ts",
+		"./tsdown/cli": "./src/tsdown/cli.ts",
 		"./vitest": "./src/vitest/shared.ts",
 		"./vitest/stryker": "./src/vitest/stryker.ts",
 		"./vitest/vitiate": "./src/vitest/vitiate.ts"

@@ -1,16 +1,14 @@
-import { sharedConfiguration } from "@howmanysmall/project-configurations/tsdown";
+import { cliConfiguration } from "@howmanysmall/project-configurations/tsdown/cli";
 import { defineConfig, mergeConfig } from "tsdown";
-import Macros from "unplugin-macros/rolldown";
 
-const configuration = defineConfig([
-	mergeConfig(sharedConfiguration, {
+const configuration = defineConfig(
+	mergeConfig(cliConfiguration, {
 		// The private workspace packages aren't published, so they are inlined.
 		deps: { alwaysBundle: [/^@howmanysmall\//u] },
-		entry: { cli: "./src/cli.ts", index: "./src/index.ts" },
+		entry: { cli: "./src/cli.ts" },
 		outDir: "dist",
-		plugins: [Macros()],
 		tsconfig: "tsconfig.lib.json",
 	}),
-]);
+);
 
 export default configuration;
