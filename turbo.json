@@ -11,6 +11,12 @@
 		"//#lint:eslint:agent": {
 			"cache": false
 		},
+		"//#lint:oxlint": {
+			"inputs": ["*", ".*/**", "scripts/root-lint-files.sh", "tools/lint-configurations/src/**"]
+		},
+		"//#lint:oxlint:agent": {
+			"inputs": ["*", ".*/**", "scripts/root-lint-files.sh", "tools/lint-configurations/src/**"]
+		},
 		"//#type-check:node": {
 			"inputs": [
 				"*.config.ts",
@@ -27,7 +33,13 @@
 			"outputs": ["dist/**"]
 		},
 		"lint": {
-			"dependsOn": ["transit", "//#lint:eslint"],
+			"dependsOn": ["lint:oxlint", "//#lint:oxlint", "//#lint:eslint"]
+		},
+		"lint:agent": {
+			"dependsOn": ["lint:oxlint:agent", "//#lint:oxlint:agent", "//#lint:eslint:agent"]
+		},
+		"lint:oxlint": {
+			"dependsOn": ["transit"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/.oxfmtrc.json",
@@ -36,8 +48,8 @@
 				"$TURBO_ROOT$/tools/lint-configurations/src/**"
 			]
 		},
-		"lint:agent": {
-			"dependsOn": ["transit", "//#lint:eslint:agent"],
+		"lint:oxlint:agent": {
+			"dependsOn": ["transit"],
 			"inputs": [
 				"$TURBO_DEFAULT$",
 				"$TURBO_ROOT$/.oxfmtrc.json",
