@@ -1,0 +1,13 @@
+import { describe, expect, it } from "vitest";
+
+import { defineConfiguration } from "./index.ts";
+
+describe("defineConfiguration", () => {
+	it("returns the configuration a file exports", () => {
+		expect.assertions(1);
+
+		const configuration = { verbose: true };
+
+		expect(defineConfiguration(configuration)).toBe(configuration);
+	});
+});
