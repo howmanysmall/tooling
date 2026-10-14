@@ -128,7 +128,7 @@
 			"semicolons": "always",
 			"trailingCommas": "all"
 		},
-		"globals": ["Bun"],
+		"globals": [],
 		"linter": { "enabled": true }
 	},
 
@@ -617,6 +617,9 @@
 
 		{
 			"includes": ["scripts/**/*.{ts,tsx}"],
+			"javascript": {
+				"globals": ["Bun"]
+			},
 			"linter": {
 				"rules": {
 					"nursery": {
