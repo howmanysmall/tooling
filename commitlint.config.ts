@@ -1,4 +1,5 @@
 import { RuleConfigSeverity } from "@commitlint/types";
+import { commitTypes } from "@howmanysmall/lint-configurations/constants";
 
 import type { UserConfig } from "@commitlint/types";
 
@@ -10,11 +11,7 @@ const configuration: UserConfig = {
 		"subject-empty": [RuleConfigSeverity.Error, "never"],
 		"subject-full-stop": [RuleConfigSeverity.Error, "never", "."],
 		"type-case": [RuleConfigSeverity.Error, "always", "lower-case"],
-		"type-enum": [
-			RuleConfigSeverity.Error,
-			"always",
-			["feat", "fix", "refactor", "docs", "style", "test", "chore", "perf", "ci", "build"],
-		],
+		"type-enum": [RuleConfigSeverity.Error, "always", commitTypes],
 	},
 };
 
