@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
 import { description, name } from "./index.ts";
 
 describe("package metadata", () => {
-	it("exposes the package name and description", () => {
+	it("exposes the package name and description", ({ expect }) => {
 		expect.assertions(2);
 
 		expect(name).toBe("@pobammer-ts/darkroom");

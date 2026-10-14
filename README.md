@@ -1,4 +1,4 @@
-# darkroom
+# `tooling`
 
 Command-line tools by howmanysmall, in one pnpm monorepo.
 
@@ -29,7 +29,7 @@ pnpm install
 
 Both generators prompt for a name, a description, an npm scope, and a runtime (`bun` or `node`).
 The new `apps/<name>/` gets its scripts, a first test, and a README, and its tsconfig references
-are synced. Use `pnpm turbo gen package` for a shared library in `packages/`.
+stay synced. Use `pnpm turbo gen package` for a shared library in `packages/`.
 
 ## Release a tool
 
@@ -53,17 +53,24 @@ The tag starts `.github/workflows/release.yaml`, which:
 
 ## Tasks
 
-Every workspace package has `lint` and `type-check`, plus `test` when it has tests and `build` when
-it produces a binary. `lint`, `test`, and `type-check` each have an `:agent` variant. Turbo runs them
-per package and caches the results, so only changed packages run again.
+Every workspace package has `lint:oxlint` and `type-check`, plus `test` when it has tests and
+`build` when it produces a binary. Each has an `:agent` variant. Turbo runs them per package and
+caches the results, so only changed packages run again.
+
+The turbo `lint` task runs `lint:oxlint` in every package, `//#lint:oxlint` for root configuration
+files, and `//#lint:eslint` once over the whole repository. Oxlint and Biome can't cache, so turbo
+caches them per package. ESLint writes `.eslintcache` files, and one type-aware ESLint process per
+package would each load the full TypeScript program.
 
 ```sh
 node --run turbo -- run test --filter=@pobammer-ts/darkroom   # one package
-node --run turbo -- run lint                                  # every package
+node --run lint                                               # oxlint per package, ESLint at root
 node --run lint:affected                                      # packages changed since main
+node --run lint:eslint                                        # ESLint only
+node --run lint:package -- apps/darkroom                      # oxlint and Biome on any path
 ```
 
-The root scripts cover the whole repository in one pass, including root configuration and scripts:
+The root scripts cover the whole repository, including root configuration and scripts:
 
 ```sh
 node --run lint

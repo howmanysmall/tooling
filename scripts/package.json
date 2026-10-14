@@ -2,6 +2,10 @@
 	"name": "@howmanysmall/scripts",
 	"private": true,
 	"type": "module",
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package scripts",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent scripts"
+	},
 	"dependencies": {
 		"@cliffy/command": "catalog:runtime",
 		"@howmanysmall/arktype-utilities": "workspace:*",
