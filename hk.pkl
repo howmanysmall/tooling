@@ -41,7 +41,9 @@ local GENERATED_DATA =
   )
 
 // isentinel-lint and biome need the whole file list in one process: each
-// invocation repays ESLint's or Biome's startup cost.
+// invocation repays ESLint's or Biome's startup cost. Hooks lint only the
+// changed files, so they skip turbo's per-package split: isentinel-lint runs
+// oxlint and ESLint together and orders their `--fix` writes.
 local fileChecks = new Mapping<String, Step> {
   ["type-check"] {
     glob =

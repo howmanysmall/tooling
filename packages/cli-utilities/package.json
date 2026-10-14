@@ -18,8 +18,8 @@
 		"./package.json": "./package.json"
 	},
 	"scripts": {
-		"lint": "pnpm --workspace-root run lint packages/cli-utilities",
-		"lint:agent": "pnpm --workspace-root run lint:agent packages/cli-utilities",
+		"lint:oxlint": "pnpm --workspace-root run lint:package packages/cli-utilities",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent packages/cli-utilities",
 		"test": "vitest run",
 		"test:agent": "node --run test -- --reporter agent",
 		"type-check": "tsc --build",
