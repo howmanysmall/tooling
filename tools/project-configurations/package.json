@@ -21,6 +21,7 @@
 	},
 	"dependencies": {
 		"@vitiate/core": "catalog:test",
+		"arktype": "catalog:runtime",
 		"jest-extended": "catalog:test",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",

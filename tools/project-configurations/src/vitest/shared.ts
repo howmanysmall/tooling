@@ -1,4 +1,5 @@
 import { availableParallelism } from "node:os";
+import { env } from "node:process";
 import { fileURLToPath } from "node:url";
 import { defineConfig, mergeConfig } from "vitest/config";
 
@@ -35,6 +36,9 @@ export function createPackageConfiguration(name: string): ViteUserConfig {
 		test: {
 			name,
 			include: ["src/**/*.test.ts"],
+			// turbo streams every package into one terminal, where the live
+			// summary rewrites lines that belong to other packages.
+			reporters: env.TURBO_HASH === undefined ? ["default"] : [["default", { summary: false }]],
 			testTimeout: 5_000,
 		},
 	});
