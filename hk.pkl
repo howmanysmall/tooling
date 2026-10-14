@@ -304,6 +304,17 @@ hooks {
     fix = false
     stage = false
     steps = (fileChecks) {
+      // Mirrors commitlint for branch names: git sends every ref being pushed
+      // on stdin, and the step lints the remote branch names in it.
+      ["branchlint"] {
+        stdin = "{{hook_stdin}}"
+        check = new CommandSpec {
+          command = new Command {
+            argv = List("node", "--run", "branchlint")
+          }
+          effect = "read"
+        }
+      }
       ["type-check"] { glob = null }
       ["betterleaks"] {
         stdin = "{{hook_stdin}}"
