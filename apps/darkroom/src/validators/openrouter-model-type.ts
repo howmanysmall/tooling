@@ -8,4 +8,5 @@ export async function getOpenRouterImageModelsAsync(): Promise<Array<string>> {
 	);
 
 	const { data } = await openrouter.images.listModels({}, {});
+	return data.map((model) => model.id);
 }
