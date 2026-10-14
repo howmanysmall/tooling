@@ -8,11 +8,13 @@ HK_MISE = 1
 experimental = true
 auto_install = false
 lockfile = true
+minimum_release_age_excludes = ["pnpm", "github:jdx/jactionlint"]
 provenance_api_failures_fatal = false
 cargo.binstall_native = true
 
 [tools]
 "github:howmanysmall/pullhook" = "latest"
+"github:jdx/jactionlint" = "latest"
 "github:vale-cli/vale-ls" = "latest"
 "npm:sherif" = "latest"
 actionlint = "latest"
