@@ -26,6 +26,7 @@
 		"rolldown": "catalog:build",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",
+		"unrun": "catalog:build",
 		"vitest": "catalog:test"
 	},
 	"devDependencies": {

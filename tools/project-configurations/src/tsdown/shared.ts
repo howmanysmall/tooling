@@ -1,11 +1,16 @@
 import { readFileSync } from "node:fs";
+import { isBuiltin } from "node:module";
 import nodePath from "node:path";
 import process from "node:process";
 import { type } from "arktype";
+import { ResolverFactory } from "rolldown/experimental";
 import { defineConfig } from "tsdown";
+import { unrunRunner } from "unplugin-macros";
 import Macros from "unplugin-macros/rolldown";
 
 import { stripArktypeTypeCasts } from "./strip-arktype-type-casts.ts";
+
+import type { MacroRunner } from "unplugin-macros";
 
 const isPackageManifest = type({
 	"dependencies?": type("Record<string, string>").readonly().or("undefined"),
@@ -36,6 +41,28 @@ function getJsrDependencyPatterns(directory: string): Array<RegExp> {
 	return [JSR_REGEXP, ...jsrDependencies.map((name) => new RegExp(`^${escapeRegExp(name)}(?:/|$)`, "u"))];
 }
 
+const macroResolver = new ResolverFactory({
+	conditionNames: ["import", "node", "default"],
+	extensionAlias: { ".js": [".ts", ".js"], ".mjs": [".mts", ".mjs"] },
+	extensions: [".ts", ".mts", ".js", ".mjs", ".json"],
+	tsconfig: "auto",
+});
+
+function createMacroRunner(): MacroRunner {
+	return {
+		...unrunRunner(),
+		resolve(source, importer): string {
+			if (isBuiltin(source)) return source;
+
+			const { error, path } = macroResolver.resolveFileSync(importer, source);
+			if (path === undefined) {
+				throw new Error(`Cannot resolve macro "${source}" from ${importer}: ${error}`);
+			}
+			return path;
+		},
+	};
+}
+
 export const sharedConfiguration = defineConfig({
 	attw: {
 		enabled: true,
@@ -54,7 +81,7 @@ export const sharedConfiguration = defineConfig({
 	fixedExtension: false,
 	format: ["esm"],
 	platform: "node",
-	plugins: [Macros(), stripArktypeTypeCasts()],
+	plugins: [Macros({ runner: createMacroRunner() }), stripArktypeTypeCasts()],
 	publint: {
 		enabled: true,
 		level: "error",
