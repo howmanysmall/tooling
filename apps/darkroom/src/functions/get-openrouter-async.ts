@@ -1,11 +1,10 @@
-
 import type { OpenRouter } from "@openrouter/sdk";
 
 let openrouterCache: OpenRouter | undefined;
 
 export async function getOpenRouterAsync(): Promise<OpenRouter> {
 	if (openrouterCache !== undefined) return openrouterCache;
-	const [{ OpenRouter }, { name }] = await Promise.all([import("@openrouter/sdk"), import("$constants")]);
+	const [{ OpenRouter }, { name, url }] = await Promise.all([import("@openrouter/sdk"), import("$constants")]);
 
 	openrouterCache = new OpenRouter({
 		async apiKey(): Promise<string> {
