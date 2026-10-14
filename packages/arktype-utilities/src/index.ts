@@ -14,6 +14,7 @@ export const isMaybeNonEmptyString = isNonEmptyString.or(isUndefined);
 
 export const isNumber = type("number");
 export const isInteger = type("number % 1");
+export const isUnixTimestamp = type("number.epoch");
 
 export const isJsonObject = type("object.json");
 export const isMaybeJsonObject = isJsonObject.or(isUndefined);

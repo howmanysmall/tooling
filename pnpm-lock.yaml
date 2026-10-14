@@ -621,6 +621,9 @@ importers:
       arktype:
         specifier: catalog:runtime
         version: 2.2.8
+      consola:
+        specifier: catalog:runtime
+        version: 3.4.2
       effect:
         specifier: catalog:runtime
         version: 4.0.4
@@ -634,6 +637,9 @@ importers:
         specifier: catalog:build
         version: 0.23.3(esbuild@0.28.2)(rolldown@1.2.13)(unrun@0.3.1(synckit@0.11.13))(vite@8.3.3(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
     devDependencies:
+      '@howmanysmall/arktype-utilities':
+        specifier: workspace:*
+        version: link:../../packages/arktype-utilities
       '@howmanysmall/cli-utilities':
         specifier: workspace:*
         version: link:../../packages/cli-utilities
