@@ -8,31 +8,31 @@ HK_MISE = 1
 experimental = true
 auto_install = false
 lockfile = true
+minimum_release_age_excludes = ["pnpm", "github:jdx/jactionlint"]
 provenance_api_failures_fatal = false
 cargo.binstall_native = true
 
 [tools]
 "github:howmanysmall/pullhook" = "latest"
+"github:jdx/jactionlint" = "latest"
 "github:vale-cli/vale-ls" = "latest"
 "npm:sherif" = "latest"
-actionlint = "latest"
 betterleaks = "latest"
 bun = "1.4.3"
 communique = "latest"
 direnv = "latest"
 git-cliff = "latest"
-hk = "2.5.0"
+hk = "2.6.0"
 ni = "latest"
 node = "24"
 pinact = "latest"
 pkl = "latest"
-pnpm = "12.12.1"
+pnpm = "12.13.0"
 rumdl = "latest"
 shellcheck = "latest"
 shfmt = "latest"
 tombi = "latest"
 vale = "latest"
-zizmor = "latest"
 
 [tasks]
 [tasks."amend:no-verify"]

@@ -11,6 +11,7 @@
 	"type": "module",
 	"scripts": {
 		"biome": "biome",
+		"branchlint": "bun run scripts/branchlint.ts",
 		"build": "turbo run build",
 		"commitlint": "commitlint",
 		"fallow": "fallow",
@@ -27,7 +28,7 @@
 		"format:safe": "bash -c 'a=$(bash scripts/get-defaults.sh \"$@\"); node --run biome -- check --no-errors-on-unmatched --fix $a && node --run oxfmt -- --no-error-on-unmatched-pattern $a' _",
 		"hooks:install": "hk install --mise",
 		"hooks:validate": "hk validate",
-		"isentinel-lint": "NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=6144\" isentinel-lint --concurrency=off",
+		"isentinel-lint": "NODE_OPTIONS=\"${NODE_OPTIONS:-} --max-old-space-size=6144\" isentinel-lint",
 		"jiti": "jiti",
 		"lint": "bash -c 'a=$(bash scripts/get-defaults.sh \"$@\"); node --run isentinel-lint -- $a && node --run biome -- check --no-errors-on-unmatched $a' _",
 		"lint:affected": "turbo run lint --affected",
@@ -114,7 +115,7 @@
 		"vitest": "catalog:test",
 		"vitiate": "catalog:test"
 	},
-	"packageManager": "pnpm@12.12.1",
+	"packageManager": "pnpm@12.13.0",
 	"engines": {
 		"node": ">=22.12.0"
 	}
