@@ -4,7 +4,10 @@
 		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
 		"paths": {
-			"$constants": ["./src/constants.ts"]
+			"$constants": ["./src/constants.ts"],
+			"$environment": ["./src/environment.ts"],
+			"$functions/*": ["./src/functions/*"],
+			"$validators/*": ["./src/validators/*"]
 		},
 		"types": ["node"]
 	},

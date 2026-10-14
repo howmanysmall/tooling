@@ -8,7 +8,7 @@ A command-line tool.
 darkroom --help
 ```
 
-The built binary runs on Bun. The code only uses Node APIs, so `node dist/cli.js` works too.
+The built binary runs on Bun primarily. The code only uses Node APIs, so `node dist/cli.js` works too.
 
 ## Scripts
 

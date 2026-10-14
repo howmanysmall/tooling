@@ -1,7 +1,7 @@
 {
 	"name": "@pobammer-ts/darkroom",
 	"version": "0.0.0",
-	"description": "A command-line tool.",
+	"description": "A CLI for slopping together images with AI.",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/howmanysmall/tooling.git",
@@ -15,13 +15,6 @@
 	},
 	"sideEffects": false,
 	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./package.json": "./package.json"
-	},
 	"bin": {
 		"darkroom": "./dist/cli.js"
 	},
@@ -39,7 +32,10 @@
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"dependencies": {
-		"@cliffy/command": "catalog:runtime"
+		"@arkenv/core": "catalog:runtime",
+		"@cliffy/command": "catalog:runtime",
+		"@dotenvx/dotenvx": "catalog:runtime",
+		"@openrouter/sdk": "catalog:ai"
 	},
 	"devDependencies": {
 		"@howmanysmall/cli-utilities": "workspace:*",
