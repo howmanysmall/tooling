@@ -17,7 +17,6 @@ cargo.binstall_native = true
 "github:jdx/jactionlint" = "latest"
 "github:vale-cli/vale-ls" = "latest"
 "npm:sherif" = "latest"
-actionlint = "latest"
 betterleaks = "latest"
 bun = "1.4.3"
 communique = "latest"
@@ -34,7 +33,6 @@ shellcheck = "latest"
 shfmt = "latest"
 tombi = "latest"
 vale = "latest"
-zizmor = "latest"
 
 [tasks]
 [tasks."amend:no-verify"]
