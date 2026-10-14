@@ -20,6 +20,7 @@ ignoreDependencies = [
 	"@arethetypeswrong/core",
 	"@e18e/eslint-plugin",
 	"@isentinel/hooks",
+	"@pobammer-ts/lsp-mux",
 	"@pobammer-ts/small-rules",
 	"@stylistic/eslint-plugin",
 	"eslint-plugin-antfu",

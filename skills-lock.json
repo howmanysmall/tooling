@@ -31,6 +31,24 @@
       "skillPath": "skills/engineering/domain-modeling/SKILL.md",
       "computedHash": "b3eb40152b81f0c98fd2095a023c019452dbdce56f7540cc67fece2972db8369"
     },
+    "fallow": {
+      "source": "fallow-rs/fallow-skills",
+      "sourceType": "github",
+      "skillPath": "fallow/skills/fallow/SKILL.md",
+      "computedHash": "c7baa2dbba998101c9df373359035e21cbc7af8d978859ff3dd6edeed0e0bfff"
+    },
+    "fallow-review": {
+      "source": "fallow-rs/fallow-skills",
+      "sourceType": "github",
+      "skillPath": "fallow/skills/fallow-review/SKILL.md",
+      "computedHash": "738d0db6764123300ac05cc73572dcad0f6836f039b26f3a1913d4b8b80d7bbb"
+    },
+    "fallow-setup": {
+      "source": "fallow-rs/fallow-skills",
+      "sourceType": "github",
+      "skillPath": "fallow/skills/fallow-setup/SKILL.md",
+      "computedHash": "48259e9df538bd30dbb1ef83fb68ad2386de0e6fcbf548b9975c9b9c91cddfdc"
+    },
     "grill-me": {
       "source": "mattpocock/skills",
       "sourceType": "github",

@@ -338,6 +338,9 @@ catalogs:
     '@isentinel/hooks':
       specifier: 1.7.0
       version: 1.7.0
+    '@pobammer-ts/lsp-mux':
+      specifier: 3.2.0
+      version: 3.2.0
     '@turbo/gen':
       specifier: 2.11.8
       version: 2.11.8
@@ -437,6 +440,9 @@ importers:
       '@isentinel/hooks':
         specifier: catalog:tooling
         version: 1.7.0(@typescript/typescript6@6.0.2)(jiti@2.7.0)(supports-color@10.2.2)
+      '@pobammer-ts/lsp-mux':
+        specifier: catalog:tooling
+        version: 3.2.0(@types/node@26.6.5)(jiti@2.7.0)
       '@pobammer-ts/small-rules':
         specifier: catalog:lint
         version: 3.3.3(@typescript/typescript6@6.0.2)
@@ -2918,6 +2924,11 @@ packages:
     resolution: {integrity: sha512-SEeaJLb3qBNF/OaXnaR1NmmBbFYk1zC0ZH/52fATcRPLFg/p791YrcyFFy44Bo9sLaGuSuLp5Q6axbb/O+v/RA==}
     engines: {node: ^14.18.0 || >=16.0.0}
 
+  '@pobammer-ts/lsp-mux@3.2.0':
+    resolution: {integrity: sha512-3eS2Cr5SYSve9m0/M8+UyuEFVSVNR7YCeCaK+WcijQjJUtbRhIIi21IgLIrIa+y93s8WN0KKMvk75mM6Zjhw/A==}
+    engines: {node: '>=22.18.0'}
+    hasBin: true
+
   '@pobammer-ts/small-rules@3.3.3':
     resolution: {integrity: sha512-blVsILt9ANwAj2dccSaxGcVRNqdOQfVfA/8ZrOGow3afVDu0eYZPKiCqCIKwzEZrJUoPEyQReBtNibGZjgXtvg==}
     engines: {node: '>=22.12.0'}
@@ -4024,6 +4035,23 @@ packages:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
 
+  c12@4.0.0-rc.2:
+    resolution: {integrity: sha512-Qfc/XXsG5yyQZRm2asHeemRRbK5zmo3D+enxiNrJZs6i6zbl9CMj7Wr0lvYGq84txPNAsUKJfe3ea2Rva8h/eA==}
+    peerDependencies:
+      dotenv: '*'
+      giget: '>=3.1.0'
+      jiti: '*'
+      magicast: '*'
+    peerDependenciesMeta:
+      dotenv:
+        optional: true
+      giget:
+        optional: true
+      jiti:
+        optional: true
+      magicast:
+        optional: true
+
   cac@7.0.0:
     resolution: {integrity: sha512-tixWYgm5ZoOD+3g6UTea91eow5z6AAHaho3g0V9CNSNb45gM8SmflpAc+GRd1InC4AqN/07Unrgp56Y94N9hJQ==}
     engines: {node: '>=20.19.0'}
@@ -4266,6 +4294,9 @@ packages:
   des.js@1.1.0:
     resolution: {integrity: sha512-r17GxjhUCjSRy8aiJpr8/UadFIzMzJGexI3Nmz4ADi9LYSFx4gTBp80+NaX/YsXWWLhpZ7v/v/ubEc/bCNfKwg==}
 
+  destr@2.0.5:
+    resolution: {integrity: sha512-ugFTXCtDZunbzasqBxrK93Ik/DRYsO6S/fedkWEMKqt04xZ4csmnmwGDBAb07QWNaGMAmnTIemsYZCksjATwsA==}
+
   detect-indent@7.0.2:
     resolution: {integrity: sha512-y+8xyqdGLL+6sh0tVeHcfP/QDd8gUgbasolJJpY7NgeQGSZ739bDtSiaiDgtoicy+mtYB81dKLxO9xRhCyIB3A==}
     engines: {node: '>=12.20'}
@@ -4351,6 +4382,9 @@ packages:
 
   effect@4.0.0:
     resolution: {integrity: sha512-ooc1TG5t+FfzgYnFz2ff6BBKyZ7EwBRVXC7c4RhQUAD6/TZ2gTXXMeb4WX7a19ozQo4J73/QW+S00YAIresoMQ==}
+
+  effect@4.0.2:
+    resolution: {integrity: sha512-YeYnLqSFrL4+tCOXRrfNP03w8FILoF/wDl+ukraJAGzXrjcS383W7LAAvGBbLatEyktmLxRq+9xJinx7QzXW5A==}
 
   effect@4.0.4:
     resolution: {integrity: sha512-Sr50OeVSC3M5UkoUYUhFf3EULryhGaZZUf6OzDHTvaznOw7HRlxOKdF3/4nvQXHL22StOyMG3Cvo8Bt7xUp+Ng==}
@@ -5214,6 +5248,9 @@ packages:
     resolution: {integrity: sha512-eQQBjBnsVtGacsG9uJNB8qOr3yA8rga4wAaGG1qRcBzSIvfhERLrWxMAM1hp5fcS6Abo8M4+bUBTekYR0qTPQw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
+  just-diff@6.0.2:
+    resolution: {integrity: sha512-S59eriX5u3/QhMNq3v/gm8Kd0w8OS6Tz2FS1NG4blv+z0MuQcBRJyFWjdovM0Rad4/P4aUPFtnkNjMjyMlMSYA==}
+
   katex@0.16.47:
     resolution: {integrity: sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg==}
     hasBin: true
@@ -5868,6 +5905,9 @@ packages:
 
   quote-unquote@1.0.0:
     resolution: {integrity: sha512-twwRO/ilhlG/FIgYeKGFqyHhoEhqgnKVkcmqMKi2r524gz3ZbDTcyFt38E9xjJI2vT+KbRNHVbnJ/e0I25Azwg==}
+
+  rc9@3.1.0:
+    resolution: {integrity: sha512-ufjkNVzbRHKcCOmTahZkmVsyc3W+MSk3jY03m+a7tGHkIsdVMG9l10/3HvFbWkkKzY5VFp3pkRsIo/UYgmFL7Q==}
 
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
@@ -8507,6 +8547,24 @@ snapshots:
 
   '@pkgr/core@0.3.6': {}
 
+  '@pobammer-ts/lsp-mux@3.2.0(@types/node@26.6.5)(jiti@2.7.0)':
+    dependencies:
+      '@inquirer/core': 12.0.4(@types/node@26.6.5)
+      '@inquirer/prompts': 8.7.3(@types/node@26.6.5)
+      arktype: 2.2.8
+      c12: 4.0.0-rc.2(jiti@2.7.0)(magicast@0.5.5)
+      consola: 3.4.2
+      effect: 4.0.2
+      jsonc-parser: 3.3.1
+      just-diff: 6.0.2
+      magicast: 0.5.5
+      type-fest: 5.10.0
+    transitivePeerDependencies:
+      - '@types/node'
+      - dotenv
+      - giget
+      - jiti
+
   '@pobammer-ts/small-rules@3.3.3(@typescript/typescript6@6.0.2)':
     dependencies:
       arktype: 2.2.7
@@ -9577,6 +9635,18 @@ snapshots:
 
   bytes@3.1.2: {}
 
+  c12@4.0.0-rc.2(jiti@2.7.0)(magicast@0.5.5):
+    dependencies:
+      confbox: 0.3.1
+      defu: 6.1.7
+      exsolve: 1.1.3
+      pathe: 2.0.3
+      pkg-types: 2.3.3
+      rc9: 3.1.0
+    optionalDependencies:
+      jiti: 2.7.0
+      magicast: 0.5.5
+
   cac@7.0.0: {}
 
   cac@7.1.0: {}
@@ -9820,6 +9890,8 @@ snapshots:
       inherits: 2.0.4
       minimalistic-assert: 1.0.1
 
+  destr@2.0.5: {}
+
   detect-indent@7.0.2: {}
 
   detect-libc@2.1.2: {}
@@ -9908,6 +9980,8 @@ snapshots:
       semver: 7.8.5
 
   effect@4.0.0: {}
+
+  effect@4.0.2: {}
 
   effect@4.0.4: {}
 
@@ -10851,6 +10925,8 @@ snapshots:
   jsonc-parser@3.3.1: {}
 
   jsx-ast-utils-x@0.1.0: {}
+
+  just-diff@6.0.2: {}
 
   katex@0.16.47:
     dependencies:
@@ -11798,6 +11874,11 @@ snapshots:
 
   quote-unquote@1.0.0: {}
 
+  rc9@3.1.0:
+    dependencies:
+      defu: 6.1.7
+      destr: 2.0.5
+
   rc@1.2.8:
     dependencies:
       deep-extend: 0.6.0
@@ -12590,6 +12671,7 @@ time:
   '@isentinel/eslint-config@6.0.1': '2026-10-12T13:27:11.795Z'
   '@isentinel/hooks@1.7.0': '2026-10-06T16:13:06.841Z'
   '@jsr/cliffy__command@1.3.1': '2026-09-18T20:43:56.527Z'
+  '@pobammer-ts/lsp-mux@3.2.0': '2026-10-12T23:59:44.197Z'
   '@pobammer-ts/small-rules@3.3.3': '2026-10-12T19:34:46.724Z'
   '@stryker-mutator/api@10.0.0': '2026-08-14T16:51:10.145Z'
   '@stryker-mutator/core@10.0.0': '2026-08-14T16:51:22.686Z'
