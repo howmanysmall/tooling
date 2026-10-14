@@ -38,6 +38,7 @@ packages:
   - packages/*
   - scripts
   - tools/*
+  - turbo/generators
 
 overrides:
   "@isentinel/eslint-config>@e18e/eslint-plugin": catalog:lint
