@@ -45,6 +45,10 @@ export async function getEslintAsync(tsconfigPath: string): Promise<LintConfigur
 			oxlint: true,
 			oxlintWarnDeadRules: true,
 			pnpm: true,
+			react: {
+				compilationMode: "all",
+				version: "19.3.0",
+			},
 			roblox: false,
 			rules: {
 				"sonar/no-redundant-optional": "off",
