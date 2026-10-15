@@ -9,7 +9,7 @@ import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-comma
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
 import { description, version } from "$constants";
-import { AppTab } from "$interactive/app-tab";
+import { AppTab } from "$interactive/app/app-tab";
 
 const scriptName = getScriptName(true);
 
@@ -18,7 +18,7 @@ const command = createBaseCommand(scriptName, version, description)
 		if (!stdin.isTTY || !stdout.isTTY) {
 			throw new ValidationError("Interactive mode needs a terminal. Use a command such as `darkroom generate`.");
 		}
-		const { openDarkroomAsync } = await import("$interactive/open-darkroom");
+		const { openDarkroomAsync } = await import("$interactive/app/open-darkroom");
 		await openDarkroomAsync({ tab: AppTab.Generate });
 	})
 	.command("generate", async () => {
