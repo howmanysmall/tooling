@@ -97,26 +97,6 @@ export function selectForPrune(
 	return selected;
 }
 
-const SIZE_STEPS: ReadonlyArray<readonly [number, string]> = [
-	[1e12, "TB"],
-	[1e9, "GB"],
-	[1e6, "MB"],
-	[1e3, "KB"],
-];
-
-/**
- * Formats a byte count with decimal units, like `1.5 MB`.
- *
- * @param bytes - The size.
- * @returns The formatted size.
- */
-export function formatBytes(bytes: number): string {
-	for (const [step, unit] of SIZE_STEPS) {
-		if (bytes >= step) return `${Number((bytes / step).toFixed(1))} ${unit}`;
-	}
-	return `${bytes} B`;
-}
-
 export interface PruneFlags {
 	readonly keep?: number | undefined;
 	readonly maxSize?: string | undefined;

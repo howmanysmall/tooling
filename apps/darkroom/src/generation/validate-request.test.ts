@@ -28,7 +28,7 @@ describe("validateRequest", () => {
 		expect.assertions(3);
 
 		expect(() => validate({ count: 11 })).toThrow("--count must be a whole number from 1 to 10");
-		expect(() => validate({ count: 2 }, { model: SINGLE_MODEL })).toThrow("returns at most 1 image(s)");
+		expect(() => validate({ count: 2 }, { model: SINGLE_MODEL })).toThrow("returns at most 1 image per request");
 		expect(validate({ count: 10 }).parameters.count).toBe(10);
 	});
 
@@ -42,7 +42,7 @@ describe("validateRequest", () => {
 	it("checks reference counts, treating undeclared input_references as none", ({ expect }) => {
 		expect.assertions(2);
 
-		expect(() => validate({}, { referenceCount: 17 })).toThrow("accepts at most 16 reference image(s)");
+		expect(() => validate({}, { referenceCount: 17 })).toThrow("accepts at most 16 reference images");
 		expect(() => validate({}, { model: SINGLE_MODEL, referenceCount: 1 })).toThrow(
 			"does not accept reference images",
 		);

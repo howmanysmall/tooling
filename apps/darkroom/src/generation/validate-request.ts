@@ -1,5 +1,7 @@
 import nodePath from "node:path";
 import { ValidationError } from "@cliffy/command";
+import { formatArrayAsEnglishList } from "@howmanysmall/english-utilities/format-array-as-english-list";
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 
 import { getImageTypeFromPath, ImageType } from "./media-types";
 import { getCountRange, getEnumValues, getRange, getReferenceRange, isDeclared } from "./model-capabilities";
@@ -51,7 +53,10 @@ const MAX_COUNT = 10;
 const TRANSPARENT_TYPES: ReadonlySet<ImageType> = new Set([ImageType.Png, ImageType.Webp]);
 
 function formatValues(values: ReadonlyArray<string>): string {
-	return values.map((value) => `"${value}"`).join(", ");
+	return formatArrayAsEnglishList(
+		values.map((value) => `"${value}"`),
+		"or",
+	);
 }
 
 function checkEnum(model: ImageModelListItem, parameter: string, flag: string, value: string | undefined): void {
@@ -70,7 +75,9 @@ function checkCount(model: ImageModelListItem, count: number): void {
 
 	const { max } = getCountRange(model);
 	if (count > max) {
-		throw new ValidationError(`${model.id} returns at most ${max} image(s) per request; --count was ${count}.`);
+		throw new ValidationError(
+			`${model.id} returns at most ${max} ${toPlural(max, "image")} per request; --count was ${count}.`,
+		);
 	}
 }
 
@@ -80,10 +87,14 @@ function checkReferences(model: ImageModelListItem, referenceCount: number): voi
 		throw new ValidationError(`${model.id} does not accept reference images.`);
 	}
 	if (referenceCount > max) {
-		throw new ValidationError(`${model.id} accepts at most ${max} reference image(s); got ${referenceCount}.`);
+		throw new ValidationError(
+			`${model.id} accepts at most ${max} reference ${toPlural(max, "image")}; got ${referenceCount}.`,
+		);
 	}
 	if (referenceCount < min) {
-		throw new ValidationError(`${model.id} needs at least ${min} reference image(s); got ${referenceCount}.`);
+		throw new ValidationError(
+			`${model.id} needs at least ${min} reference ${toPlural(min, "image")}; got ${referenceCount}.`,
+		);
 	}
 }
 
