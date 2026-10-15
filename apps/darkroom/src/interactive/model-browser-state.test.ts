@@ -3,11 +3,18 @@ import { describe, it } from "vitest";
 import { createModel } from "$generation/model-fixture";
 import { ModelSort } from "$utilities/model-filters";
 
-import { createModelBrowserState, getVisibleModels, reduceModelBrowserState } from "./model-browser-state.ts";
+import {
+	createModelBrowserState,
+	getExample,
+	getVisibleModels,
+	reduceModelBrowserState,
+} from "./model-browser-state.ts";
+import { ExampleSource } from "./model-examples.ts";
 
 import type { EndpointPricing } from "$generation/cost-estimate";
 
 import type { ModelBrowserAction, ModelBrowserState } from "./model-browser-state.ts";
+import type { ModelExample } from "./model-examples.ts";
 
 const CHEAP = { ...createModel("alpha/cheap", {}), name: "Alpha: Cheap" };
 const DEAR = { ...createModel("beta/dear", {}), name: "Beta: Dear" };
@@ -17,12 +24,20 @@ function createPrice(costUsd: number): Array<EndpointPricing> {
 	return [{ pricing: [{ billable: "output_image", costUsd, unit: "image" }], provider: "test" }];
 }
 
+const YOURS: ModelExample = { path: "/data/1.png", prompt: "a fox", source: ExampleSource.Yours };
+const SHIPPED: ModelExample = { path: "/examples/1.avif", prompt: "a stall", source: ExampleSource.Shipped };
+
+// Cheap has both kinds of example; Dear has only the shipped one.
 const STATE = createModelBrowserState(
 	{
-		examples: new Map(),
 		models: [MIDDLE, DEAR, CHEAP],
 		observed: new Map(),
 		pricing: { [CHEAP.id]: createPrice(0.01), [DEAR.id]: createPrice(0.2), [MIDDLE.id]: createPrice(0.05) },
+		shippedExamples: new Map([
+			[CHEAP.id, SHIPPED],
+			[DEAR.id, SHIPPED],
+		]),
+		yourExamples: new Map([[CHEAP.id, YOURS]]),
 	},
 	ModelSort.Name,
 );
@@ -66,5 +81,16 @@ describe("model browser state", () => {
 		expect.assertions(1);
 
 		expect(apply(STATE, { filter: "dear", type: "filter" })).toBe(STATE);
+	});
+
+	it("shows your image first, the shipped one on e, and whichever exists otherwise", ({ expect }) => {
+		expect.assertions(4);
+
+		const switched = apply(STATE, { type: "switch-example" });
+
+		expect(getExample(STATE, CHEAP.id)).toBe(YOURS);
+		expect(getExample(switched, CHEAP.id)).toBe(SHIPPED);
+		expect(getExample(STATE, DEAR.id)).toBe(SHIPPED);
+		expect(getExample(STATE, MIDDLE.id)).toBeUndefined();
 	});
 });

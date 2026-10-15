@@ -5,7 +5,7 @@ import { getModelPrices } from "$generation/observed-prices";
 
 import { createModelBrowserActions } from "./model-browser-actions";
 import { ModelBrowserContext } from "./model-browser-context";
-import { createModelBrowserState, getVisibleModels, reduceModelBrowserState } from "./model-browser-state";
+import { createModelBrowserState, getExample, getVisibleModels, reduceModelBrowserState } from "./model-browser-state";
 
 import type { ReactNode } from "react";
 
@@ -58,13 +58,14 @@ interface ContextParts {
 }
 
 function createContextValue({ actions, browser, layout, now, services }: ContextParts): ModelBrowserContextValue {
-	const { examples, models, observed, pricing } = browser.catalog;
+	const { models, observed, pricing, shippedExamples, yourExamples } = browser.catalog;
 	const visible = getVisibleModels(browser);
 	return {
 		actions,
 		meta: {
-			getExample: (model) => examples.get(model.id),
-			getPreview: (example) => services.getPreview(example.stored, layout.previewBox),
+			canSwitchExample: (model) => shippedExamples.has(model.id) && yourExamples.has(model.id),
+			getExample: (model) => getExample(browser, model.id),
+			getPreview: (example) => services.getPreview(example.path, layout.previewBox),
 			getPrices: (model) => getModelPrices(pricing, observed, model.id),
 			layout,
 			now,
@@ -87,7 +88,7 @@ function createContextValue({ actions, browser, layout, now, services }: Context
  * `{ state, actions, meta }` from it, so no part needs props.
  *
  * @param properties - The models, their prices, and the parts.
- * @param properties.catalog - The models, what they cost, and your examples.
+ * @param properties.catalog - The models, what they cost, and their examples.
  * @param properties.now - When the browser opened, for naming days.
  * @param properties.services - Chooses a model and loads previews.
  * @param properties.sort - The order the list opens in.

@@ -3,6 +3,10 @@ import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import { formatUnitPrice } from "$generation/cost-estimate";
 import { getCountRange, getReferenceRange } from "$generation/model-capabilities";
 import { describeListPrice, formatObservedPrice } from "$generation/observed-prices";
+import { previewPrompt } from "$history/format-history";
+
+import { ExampleSource } from "./model-examples";
+import { describeMadeAt } from "./run-facts";
 
 import type { CapabilityDescriptor, ImageModelListItem } from "@openrouter/sdk/models";
 
@@ -10,6 +14,7 @@ import type { ObservedPrice, PricingEntry } from "$generation/cost-estimate";
 import type { ModelPrices } from "$generation/observed-prices";
 
 import type { Fact } from "./fact";
+import type { ModelExample } from "./model-examples";
 
 export interface ModelNameParts {
 	/** The model's own name, like `Nano Banana 2.1`. */
@@ -36,6 +41,30 @@ export function splitModelName(displayName: string): ModelNameParts {
 		name: displayName.slice(separator + PROVIDER_SEPARATOR.length),
 		provider: displayName.slice(0, separator),
 	};
+}
+
+// Keeps a caption to about one line.
+const CAPTION_PROMPT_LENGTH = 48;
+
+/**
+ * Captions an example image with whose it is, its prompt, and, when both
+ * kinds exist, the key that switches to the other.
+ *
+ * @param example - The example shown.
+ * @param now - The current time, for when you made yours.
+ * @param canSwitch - Whether the model has both yours and a shipped one.
+ * @returns Like `your latest · “a fox” · Today 09:41` or `example · “a fox”`.
+ */
+export function describeExampleCaption(example: ModelExample, now: Date, canSwitch: boolean): string {
+	const prompt = `“${previewPrompt(example.prompt, CAPTION_PROMPT_LENGTH)}”`;
+	const isYours = example.source === ExampleSource.Yours;
+	const parts =
+		isYours && example.created !== undefined
+			? ["your latest", prompt, describeMadeAt(example.created, now)]
+			: ["example", prompt];
+	if (canSwitch) parts.push(isYours ? "e for the example" : "e for yours");
+
+	return parts.join(" · ");
 }
 
 function describeLimit(max: number): string {

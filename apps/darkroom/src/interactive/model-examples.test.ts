@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
 
-import { getModelExamples } from "./model-examples.ts";
+import { ExampleSource, getModelExamples } from "./model-examples.ts";
 
 describe("getModelExamples", () => {
 	it("keeps each model's newest run that has an image", ({ expect }) => {
@@ -11,6 +11,7 @@ describe("getModelExamples", () => {
 		const runs = [
 			createEntry("01M4YVAAAAAAAAAAAAAAAAAAA3", {
 				created: "2026-10-14T10:00:00.000Z",
+				images: [{ output: "-", stored: "images/newest/1.png" }],
 				model: "google/banana",
 				prompt: "newest",
 			}),
@@ -27,6 +28,11 @@ describe("getModelExamples", () => {
 			}),
 		];
 
-		expect(getModelExamples(runs).get("google/banana")?.prompt).toBe("newest");
+		expect(getModelExamples(runs, (stored) => `/data/${stored}`).get("google/banana")).toStrictEqual({
+			created: "2026-10-14T10:00:00.000Z",
+			path: "/data/images/newest/1.png",
+			prompt: "newest",
+			source: ExampleSource.Yours,
+		});
 	});
 });

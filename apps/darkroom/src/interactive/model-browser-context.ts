@@ -44,6 +44,8 @@ export interface ModelBrowserActions {
 	readonly openFilter: () => void;
 	readonly quit: () => void;
 	readonly setFilter: (text: string) => void;
+	/** Flips between your image and the shipped example. */
+	readonly switchExample: () => void;
 }
 
 export interface ModelBrowserLayout {
@@ -57,7 +59,9 @@ export interface ModelBrowserLayout {
 }
 
 export interface ModelBrowserMeta {
-	/** The newest image you made with a model, if any. */
+	/** Whether a model has both your image and a shipped example. */
+	readonly canSwitchExample: (model: ImageModelListItem) => boolean;
+	/** The image to show for a model: yours, or the shipped example. */
 	readonly getExample: (model: ImageModelListItem) => ModelExample | undefined;
 	/** An example's image, sized for the detail pane. */
 	readonly getPreview: (example: ModelExample) => LoadingPreview | undefined;

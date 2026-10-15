@@ -2,7 +2,14 @@ import { describe, it } from "vitest";
 
 import { createModel, MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 
-import { getModelOptions, getModelStats, getPriceLines, splitModelName } from "./model-facts.ts";
+import { ExampleSource } from "./model-examples.ts";
+import {
+	describeExampleCaption,
+	getModelOptions,
+	getModelStats,
+	getPriceLines,
+	splitModelName,
+} from "./model-facts.ts";
 
 import type { EndpointPricing } from "$generation/cost-estimate";
 
@@ -26,6 +33,33 @@ describe("splitModelName", () => {
 			provider: "Google",
 		});
 		expect(splitModelName("Muse Image")).toStrictEqual({ name: "Muse Image" });
+	});
+});
+
+describe("describeExampleCaption", () => {
+	const NOW = new Date(2026, 9, 15, 12);
+	const YOURS = {
+		created: new Date(2026, 9, 15, 9, 41).toISOString(),
+		path: "/data/1.png",
+		prompt: "a fox",
+		source: ExampleSource.Yours,
+	};
+	const SHIPPED = { path: "/examples/x.avif", prompt: "a ramen stall", source: ExampleSource.Shipped };
+
+	it("says whose image it is, and when you made yours", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(describeExampleCaption(YOURS, NOW, false)).toBe("your latest · “a fox” · Today 09:41");
+		expect(describeExampleCaption(SHIPPED, NOW, false)).toBe("example · “a ramen stall”");
+	});
+
+	it("names the key that switches when both exist", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(describeExampleCaption(YOURS, NOW, true)).toBe(
+			"your latest · “a fox” · Today 09:41 · e for the example",
+		);
+		expect(describeExampleCaption(SHIPPED, NOW, true)).toBe("example · “a ramen stall” · e for yours");
 	});
 });
 

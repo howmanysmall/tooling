@@ -24,6 +24,7 @@ const OPEN_FILTER: ModelBrowserAction = { isFiltering: true, type: "filtering" }
 const CLOSE_FILTER: ModelBrowserAction = { isFiltering: false, type: "filtering" };
 const CANCEL_FILTER: ModelBrowserAction = { type: "cancel-filter" };
 const NEXT_SORT: ModelBrowserAction = { type: "next-sort" };
+const SWITCH_EXAMPLE: ModelBrowserAction = { type: "switch-example" };
 
 /**
  * Builds what the model browser's keys and inputs can do.
@@ -76,6 +77,9 @@ export function createModelBrowserActions({
 		},
 		setFilter(text): void {
 			dispatch({ filter: text, type: "filter" });
+		},
+		switchExample(): void {
+			dispatch(SWITCH_EXAMPLE);
 		},
 	};
 }
