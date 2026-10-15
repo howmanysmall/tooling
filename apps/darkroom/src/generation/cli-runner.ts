@@ -111,12 +111,12 @@ async function isDirectoryAsync(path: string): Promise<boolean> {
 }
 
 async function writeStdoutAsync(bytes: Uint8Array): Promise<void> {
-	await new Promise<void>((resolve, reject) => {
-		stdout.write(bytes, (error) => {
-			if (error instanceof Error) reject(error);
-			else resolve();
-		});
+	const { promise, reject, resolve } = Promise.withResolvers<void>();
+	stdout.write(bytes, (error) => {
+		if (error instanceof Error) reject(error);
+		else resolve();
 	});
+	await promise;
 }
 
 /**
@@ -126,11 +126,13 @@ async function writeStdoutAsync(bytes: Uint8Array): Promise<void> {
  * @returns The ID of the model to request images from.
  * @rejects A `ConfigurationError` (exit 3) when neither is set.
  */
-export async function resolveModelIdAsync(model: string | undefined): Promise<string> {
+export async function resolveModelIdAsync(model?: string): Promise<string> {
 	if (model !== undefined) return model;
+
 	const { getEnvironmentAsync } = await import("$functions/get-environment-async");
 	const { DARKROOM_MODEL } = await getEnvironmentAsync();
 	if (DARKROOM_MODEL !== undefined) return DARKROOM_MODEL;
+
 	throw new ConfigurationError("No model chosen. Pass --model or set DARKROOM_MODEL.");
 }
 
@@ -340,6 +342,7 @@ export function throwIfIncomplete(result: GenerationResult): void {
 		throw new ApiError(`The provider stopped early: ${result.providerError} ${CHARGE_NOTE}`);
 	}
 	if (result.failures.length === 0) return;
+
 	const details = result.failures.map((failure) => `${failure.message} (saved to ${failure.recoveredPath})`);
 	throw new ApiError(`Some images could not be written where you asked:\n${details.join("\n")}`);
 }

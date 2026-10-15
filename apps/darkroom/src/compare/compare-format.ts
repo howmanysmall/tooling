@@ -1,7 +1,7 @@
 import { Table } from "@cliffy/table";
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
-import { green, red } from "ansis";
 
+import { GREEN_CHECK, RED_X } from "$constants/text-icons";
 import { formatCost, toDisplayPath } from "$generation/format-result";
 import { formatJson } from "$utilities/output-format-utilities";
 import { OutputFormat } from "$validators/output-format-type";
@@ -50,10 +50,10 @@ function getTotalCost(outcomes: ReadonlyArray<CompareOutcome>): number | undefin
  */
 export function formatOutcomeLine(outcome: CompareOutcome): string {
 	const seconds = `${(outcome.elapsedMs / 1000).toFixed(1)}s`;
-	if (outcome.status === "failed") return `${red("✖")} ${outcome.model} · ${outcome.error}`;
+	if (outcome.status === "failed") return `${RED_X} ${outcome.model} · ${outcome.error}`;
 
 	const { result } = outcome;
-	return `${green("✔")} ${outcome.model} · ${describeImages(result)} · ${formatCost(result.cost)} · ${seconds}`;
+	return `${GREEN_CHECK} ${outcome.model} · ${describeImages(result)} · ${formatCost(result.cost)} · ${seconds}`;
 }
 
 /**
@@ -67,7 +67,7 @@ export function formatCompareSummary(outcomes: ReadonlyArray<CompareOutcome>): s
 	let images = 0;
 	for (const { result } of outcomes) images += result?.returned ?? 0;
 
-	const mark = succeeded === outcomes.length ? green("✔") : red("✖");
+	const mark = succeeded === outcomes.length ? GREEN_CHECK : RED_X;
 	const models = `${succeeded} of ${outcomes.length} ${toPlural(outcomes.length, "model")}`;
 	return `${mark} ${models} · ${images} ${toPlural(images, "image")} · ${formatCost(getTotalCost(outcomes))}`;
 }
@@ -167,7 +167,7 @@ export interface PlanRow {
  * @returns The note body.
  */
 export function formatComparePlan(prompt: string, rows: ReadonlyArray<PlanRow>, total: string): string {
-	let width = "total".length;
+	let width = 5;
 	for (const { model } of rows) width = Math.max(width, model.length);
 
 	let images = 0;

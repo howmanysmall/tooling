@@ -8,10 +8,10 @@ describe("getOpenCommands", () => {
 
 		const paths = ["/a.png", "/b.png"];
 
-		expect(getOpenCommands(paths, "darwin")).toStrictEqual([{ arguments_: paths, command: "open" }]);
+		expect(getOpenCommands(paths, "darwin")).toStrictEqual([{ command: "open", parameters: paths }]);
 		expect(getOpenCommands(paths, "linux")).toHaveLength(2);
 		expect(getOpenCommands(["/a.png"], "win32")).toStrictEqual([
-			{ arguments_: ["/c", "start", '""', "/a.png"], command: "cmd" },
+			{ command: "cmd", parameters: ["/c", "start", '""', "/a.png"] },
 		]);
 	});
 });

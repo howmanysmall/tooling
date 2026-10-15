@@ -172,6 +172,7 @@ function toEntry(
 
 async function recoverAsync(run: RunToSave, image: DecodedImage, index: number, storedPath?: string): Promise<string> {
 	if (storedPath !== undefined) return storedPath;
+
 	const recoveryPath = nodePath.join(tmpdir(), `darkroom-recovered-${run.id}`, `${index}.${image.extension}`);
 	return writeFileNoClobberAsync(recoveryPath, image.bytes);
 }
@@ -181,7 +182,7 @@ async function saveOneAsync(
 	run: RunToSave,
 	image: DecodedImage,
 	index: number,
-	storedPath: string | undefined,
+	storedPath?: string,
 ): Promise<{ readonly failure?: SaveFailure; readonly saved: SavedImage }> {
 	try {
 		const path = await writeToOutputAsync(context, image, index, run.images.length);

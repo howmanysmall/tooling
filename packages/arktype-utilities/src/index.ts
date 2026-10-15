@@ -12,8 +12,20 @@ export const isString = type("string");
 export const isNonEmptyString = type("string > 0");
 export const isMaybeNonEmptyString = isNonEmptyString.or(isUndefined);
 
+export const isIsoDateString = type("string.date.iso");
+
 export const isNumber = type("number");
+export const isMaybeNumber = isNumber.or(isUndefined);
+
 export const isInteger = type("number % 1");
+export const isMaybeInteger = isInteger.or(isUndefined);
+
+export const isPositiveInteger = type("number % 1 > 0");
+export const isMaybePositiveInteger = isPositiveInteger.or(isUndefined);
+
+export const isNonNegativeInteger = type("number % 1 >= 0");
+export const isMaybeNonNegativeInteger = isNonNegativeInteger.or(isUndefined);
+
 export const isUnixTimestamp = type("number.epoch");
 
 export const isJsonObject = type("object.json");
@@ -23,8 +35,6 @@ export const isMaybeString = isString.or(isUndefined);
 export const isNullableString = isString.or(isNull);
 
 export const isMaybeBoolean = isBoolean.or(isUndefined);
-
-export const isMaybeNumber = isNumber.or(isUndefined);
 
 export const isMaybeNull = isNull.or(isUndefined);
 

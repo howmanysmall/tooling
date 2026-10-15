@@ -21,7 +21,7 @@ export function slugify(prompt: string): string {
 		.replaceAll(REPEATED_DASHES, "-")
 		.replaceAll(EDGE_DASHES, "");
 
-	if (slug.length <= MAX_SLUG_LENGTH) return slug === "" ? FALLBACK_SLUG : slug;
+	if (slug.length <= MAX_SLUG_LENGTH) return slug.length === 0 ? FALLBACK_SLUG : slug;
 
 	const cut = slug.slice(0, MAX_SLUG_LENGTH + 1);
 	const boundary = cut.lastIndexOf("-");
@@ -65,8 +65,13 @@ export type OutputSpec =
  * @returns Where the images go.
  */
 export function parseOutputSpec(output: string | undefined, cwd: string, isExistingDirectory: boolean): OutputSpec {
-	if (output === undefined) return { directory: cwd, kind: OutputKind.Directory };
-	if (output === "-") return { kind: OutputKind.Stdout };
+	if (output === undefined) {
+		return { directory: cwd, kind: OutputKind.Directory };
+	}
+
+	if (output === "-") {
+		return { kind: OutputKind.Stdout };
+	}
 
 	const resolved = nodePath.resolve(cwd, output);
 	if (isExistingDirectory || output.endsWith("/") || output.endsWith(nodePath.sep)) {

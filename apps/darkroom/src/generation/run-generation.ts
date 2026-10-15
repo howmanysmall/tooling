@@ -185,7 +185,9 @@ export async function prepareGenerationAsync(
 	// Typed prompts can carry control characters (Ctrl-A, Ctrl-E); they would
 	// reach the model, the file name, and the history.
 	const input = { ...rawInput, prompt: removeControlCharacters(rawInput.prompt).trim() };
-	if (input.prompt.length === 0) throw new ValidationError("The prompt is empty.");
+	if (input.prompt.length === 0) {
+		throw new ValidationError("The prompt is empty.");
+	}
 
 	const model = environment.models.find((item) => item.id === input.modelId);
 	if (model === undefined) {
