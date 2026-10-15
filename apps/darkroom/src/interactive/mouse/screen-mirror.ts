@@ -1,6 +1,8 @@
 import { Writable } from "node:stream";
 import xterm from "@xterm/headless";
 
+import { CellKind, findTextRuns, getCellKind } from "./text-runs";
+
 import type { IBufferCell } from "@xterm/headless";
 
 import type { SelectionSpan, TextSelectionScreen } from "./text-selection";
@@ -116,6 +118,17 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			listeners.clear();
 			terminal.dispose();
 		},
+		findText(spans): Array<SelectionSpan> {
+			return spans.flatMap((span) => {
+				const line = terminal.buffer.active.getLine(span.row);
+				if (line === undefined) return [];
+
+				return findTextRuns(span, (column) => {
+					const cell = line.getCell(column);
+					return cell === undefined ? CellKind.Blank : getCellKind(cell.getChars(), cell.getWidth());
+				});
+			});
+		},
 		getColumns: (): number => terminal.cols,
 		onWrite(listener): void {
 			listeners.add(listener);
@@ -127,12 +140,17 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			for (const span of spans) drawn += drawSpan(span, isHighlighted);
 			output.write(`${drawn}${RESET}${RESTORE_CURSOR}`);
 		},
-		readText(spans): string {
-			const lines: Array<string> = [];
-			for (const { end, row, start } of spans) {
-				lines.push(terminal.buffer.active.getLine(row)?.translateToString(true, start, end) ?? "");
+		readText(runs): string {
+			let text = "";
+			let previous: SelectionSpan | undefined;
+			for (const { end, row, start } of runs) {
+				// Runs on a row keep their gap, and rows keep blank lines.
+				if (previous?.row === row) text += " ".repeat(start - previous.end);
+				else if (previous !== undefined) text += "\n".repeat(row - previous.row);
+				text += terminal.buffer.active.getLine(row)?.translateToString(false, start, end) ?? "";
+				previous = { end, row, start };
 			}
-			return lines.join("\n");
+			return text;
 		},
 		// SAFETY: it has every member Ink uses on stdout, defined above.
 		// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- see the SAFETY comment

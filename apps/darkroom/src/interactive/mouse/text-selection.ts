@@ -43,12 +43,14 @@ export function getSelectionSpans(anchor: CellPoint, head: CellPoint, columns: n
 }
 
 export interface TextSelectionScreen {
+	/** Narrows spans to the runs of text in them, leaving out the rest. */
+	readonly findText: (spans: ReadonlyArray<SelectionSpan>) => Array<SelectionSpan>;
 	/** How wide the screen is now. */
 	readonly getColumns: () => number;
 	/** Draws cells highlighted, or as they are when `isHighlighted` is off. */
 	readonly paint: (spans: ReadonlyArray<SelectionSpan>, isHighlighted: boolean) => void;
-	/** The text in the cells, one line per span. */
-	readonly readText: (spans: ReadonlyArray<SelectionSpan>) => string;
+	/** The text in runs from `findText`, one line per row. */
+	readonly readText: (runs: ReadonlyArray<SelectionSpan>) => string;
 }
 
 export interface TextSelection {
@@ -78,15 +80,22 @@ function isSamePoint(left: CellPoint, right: CellPoint): boolean {
  */
 export function createTextSelection(screen: TextSelectionScreen, copy: (text: string) => void): TextSelection {
 	let anchor: CellPoint | undefined;
+	// The cells the drag covers, and the text in them, which lights up.
 	let spans: ReadonlyArray<SelectionSpan> = [];
+	let runs: ReadonlyArray<SelectionSpan> = [];
+
+	function highlightText(): void {
+		runs = screen.findText(spans);
+		screen.paint(runs, true);
+	}
 
 	function drag(point: CellPoint): boolean {
 		if (anchor === undefined) return false;
 		if (spans.length === 0 && isSamePoint(anchor, point)) return false;
 
-		screen.paint(spans, false);
+		screen.paint(runs, false);
 		spans = getSelectionSpans(anchor, point, screen.getColumns());
-		screen.paint(spans, true);
+		highlightText();
 		return true;
 	}
 
@@ -94,10 +103,11 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 		anchor = undefined;
 		if (spans.length === 0) return false;
 
-		const text = screen.readText(spans);
-		screen.paint(spans, false);
+		const text = screen.readText(runs);
+		screen.paint(runs, false);
 		spans = [];
-		if (text.trim() !== "") copy(text);
+		runs = [];
+		if (text !== "") copy(text);
 		return true;
 	}
 
@@ -112,7 +122,8 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 			return false;
 		},
 		repaint(): void {
-			if (spans.length > 0) screen.paint(spans, true);
+			// The text under the drag may have moved.
+			if (spans.length > 0) highlightText();
 		},
 	};
 }

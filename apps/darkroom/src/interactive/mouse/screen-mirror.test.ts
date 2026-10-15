@@ -58,11 +58,32 @@ describe("createScreenMirror", () => {
 
 		expect(written).toStrictEqual(["\u001B[1mhello\u001B[0m world\nsecond line"]);
 		expect(
-			mirror.readText([
-				{ end: 20, row: 0, start: 6 },
-				{ end: 6, row: 1, start: 0 },
-			]),
+			mirror.readText(
+				mirror.findText([
+					{ end: 20, row: 0, start: 6 },
+					{ end: 6, row: 1, start: 0 },
+				]),
+			),
 		).toBe("world\nsecond");
+	});
+
+	it("finds only the text, leaving out borders, images, and padding", async ({ expect, onTestFinished }) => {
+		expect.assertions(2);
+
+		const { mirror } = openTerminal(onTestFinished);
+		await drawAsync(mirror, "┃ a cat  $1 ▀▄\n\nend");
+		const runs = mirror.findText([
+			{ end: 20, row: 0, start: 0 },
+			{ end: 20, row: 1, start: 0 },
+			{ end: 2, row: 2, start: 0 },
+		]);
+
+		expect(runs).toStrictEqual([
+			{ end: 7, row: 0, start: 2 },
+			{ end: 11, row: 0, start: 9 },
+			{ end: 2, row: 2, start: 0 },
+		]);
+		expect(mirror.readText(runs)).toBe("a cat  $1\n\nen");
 	});
 
 	it("paints cells on the highlight, keeping their own style, and back again", async ({ expect, onTestFinished }) => {
