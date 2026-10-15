@@ -33,8 +33,9 @@
 	},
 	"dependencies": {
 		"@arkenv/core": "catalog:runtime",
-		"@cliffy/table": "catalog:runtime",
 		"@dotenvx/dotenvx": "catalog:runtime",
+		"@inquirer/core": "catalog:runtime",
+		"@inquirer/prompts": "catalog:runtime",
 		"@openrouter/sdk": "catalog:ai",
 		"ansis": "catalog:runtime",
 		"arktype": "catalog:runtime",
@@ -46,6 +47,7 @@
 	},
 	"devDependencies": {
 		"@cliffy/command": "catalog:runtime",
+		"@cliffy/table": "catalog:runtime",
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/english-utilities": "workspace:*",
