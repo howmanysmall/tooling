@@ -24,6 +24,10 @@ const command = createBaseCommand(scriptName, version, description)
 		const { cacheCommand } = await import("$commands/cache-command");
 		return cacheCommand;
 	})
+	.command("history", async () => {
+		const { historyCommand } = await import("$commands/history-command");
+		return historyCommand;
+	})
 	.command("models", async () => {
 		const { modelsCommand } = await import("$commands/models-command");
 		return modelsCommand;
