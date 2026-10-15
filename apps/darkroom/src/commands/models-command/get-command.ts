@@ -1,4 +1,4 @@
-import { exit, stdout } from "node:process";
+import { exit, stderr, stdout } from "node:process";
 import { Table } from "@cliffy/table";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
@@ -14,7 +14,8 @@ import { TimestampFormat } from "$validators/timestamp-format-type";
 import type { CapabilityDescriptor, ImageModelListItem } from "@openrouter/sdk/models";
 
 const scriptName = getScriptName(true);
-const log = consola.withTag(scriptName);
+// Route every level to stderr so stdout only carries the requested output.
+const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
 const naturalCollator = new Intl.Collator(undefined, { numeric: true });
 function compareNatural(self: string, other: string): number {
