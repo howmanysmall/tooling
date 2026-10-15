@@ -3,6 +3,7 @@ import { Box, Text } from "ink";
 
 import { formatCost } from "$generation/format-result";
 import { HighlightedText } from "$interactive/components/highlighted-text";
+import { getDialogRowBackground } from "$interactive/components/row-background";
 import { theme } from "$interactive/components/theme";
 import { describeMadeAt } from "$interactive/history/run-facts";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
@@ -22,8 +23,6 @@ export interface SessionListRowProperties {
 	now: Date;
 	/** Resumes the session, as a click does. */
 	onChoose: () => void;
-	/** Puts the cursor on the row, as the pointer moving onto it does. */
-	onPoint: () => void;
 }
 
 function getMarks(isOpen: boolean, { forkedFrom }: SessionSummary): string {
@@ -42,7 +41,6 @@ function getMarks(isOpen: boolean, { forkedFrom }: SessionSummary): string {
  * @param properties.match - The session and the characters the query hit.
  * @param properties.now - When the list opened.
  * @param properties.onChoose - Resumes the session.
- * @param properties.onPoint - Puts the cursor on the row.
  * @returns One line.
  */
 export function SessionListRow({
@@ -51,15 +49,19 @@ export function SessionListRow({
 	match,
 	now,
 	onChoose,
-	onPoint,
 }: Readonly<SessionListRowProperties>): ReactNode {
 	const { session } = match;
-	const { attachNode } = useMouseTarget(`sessions:${session.id}`, { onClick: onChoose, onHover: onPoint });
+	const { attachNode, isHovered } = useMouseTarget(`sessions:${session.id}`, { onClick: onChoose });
 	const count = session.runs.length;
 	const facts = `${count} ${toPlural(count, "run")} · ${formatCost(session.cost)} · ${describeMadeAt(session.updated, now)}`;
 
 	return (
-		<Box ref={attachNode} backgroundColor={isSelected ? theme.accent : theme.element} columnGap={2} paddingX={1}>
+		<Box
+			ref={attachNode}
+			backgroundColor={getDialogRowBackground(isSelected, isHovered)}
+			columnGap={2}
+			paddingX={1}
+		>
 			<Box flexShrink={0} width={3}>
 				<Text color={isSelected ? theme.background : theme.accent}>{getMarks(isOpen, session)}</Text>
 			</Box>
