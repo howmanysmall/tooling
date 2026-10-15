@@ -139,6 +139,7 @@ catalogs:
     effect: 4.0.4
     env-paths: 4.0.0
     ink: 7.1.1
+    pretty-bytes: 7.2.0
     react: 19.3.0
     sharp: 0.34.5
   test:
