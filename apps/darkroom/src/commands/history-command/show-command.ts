@@ -17,7 +17,7 @@ export const showCommand = createBaseCommand(
 	.arguments("<run:history-id>")
 	.option("-f, --format <format:output-format>", "The output format.", { default: OutputFormat.Pretty })
 	.action(async ({ format }, reference) => {
-		const [{ getHistoryStore, log }, { formatHistoryEntry }, { getParentChain, resolveRunReference }] =
+		const [{ getHistoryStore, log }, { formatHistoryEntry }, { getRunRelations, resolveRunReference }] =
 			await Promise.all([
 				import("$generation/cli-runner"),
 				import("$history/format-history"),
@@ -29,6 +29,6 @@ export const showCommand = createBaseCommand(
 		});
 		const entry = resolveRunReference(entries, reference);
 		console.log(
-			formatHistoryEntry(entry, getParentChain(entries, entry), format, (stored) => store.resolve(stored)),
+			formatHistoryEntry(entry, getRunRelations(entries, entry), format, (stored) => store.resolve(stored)),
 		);
 	});

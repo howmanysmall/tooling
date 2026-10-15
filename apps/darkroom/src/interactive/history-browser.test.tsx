@@ -29,6 +29,13 @@ const RETURNED_ROW = /returned +1 of 1/u;
 const PREVIEW: LoadingPreview = { result: Promise.resolve({ kind: "image", lines: ["IMAGE ROW 1", "IMAGE ROW 2"] }) };
 const PREVIEW_THEN_ID = /IMAGE ROW 2[\s\S]*id +01M4YV/u;
 
+const BATCH = "01M4YVBATCHAAAAAAAAAAAAAAA";
+const COMPARISON: ReadonlyArray<HistoryEntry> = [
+	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB2", { batch: BATCH, model: "zeta/z" }),
+	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB1", { batch: BATCH, model: "alpha/a" }),
+];
+const STRIP_LABELS = /alpha\/a +zeta\/z/u;
+
 // More detail rows than the pane can show.
 const CROWDED_RUNS: ReadonlyArray<HistoryEntry> = [
 	createEntry(NEWEST.id, {
@@ -141,6 +148,18 @@ describe("history browser", () => {
 
 		// React retries a suspended preview after about 300ms.
 		await expect.poll(() => String(instance.lastFrame())).toMatch(PREVIEW_THEN_ID);
+	});
+
+	it("shows a comparison's images side by side, labelled by model", async ({ expect }) => {
+		// oxlint-disable-next-line small-rules/prefer-expect-assertions -- vitest counts expect.poll, this rule does not
+		expect.assertions(2);
+
+		const store = new HistoryStore(tmpdir());
+		const services = addPreview(createServices(store, [], []));
+		const instance = render(<HistoryBrowserScreen entries={COMPARISON} services={services} />);
+
+		await expect.poll(() => String(instance.lastFrame())).toMatch(STRIP_LABELS);
+		expect(String(instance.lastFrame())).toContain("batch");
 	});
 
 	it("filters the list as the filter is typed, and Esc clears it", async ({ expect }) => {

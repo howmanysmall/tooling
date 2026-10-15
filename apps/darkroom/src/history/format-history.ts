@@ -1,4 +1,5 @@
 import { Table } from "@cliffy/table";
+import { formatArrayAsEnglishList } from "@howmanysmall/english-utilities/format-array-as-english-list";
 import { dim } from "ansis";
 
 import { formatCost } from "$generation/format-result";
@@ -11,6 +12,7 @@ import { SHORT_ID_LENGTH } from "./resolve-run-reference";
 import type { Row } from "$utilities/output-format-utilities";
 
 import type { HistoryEntry } from "./history-entry";
+import type { RunRelations } from "./resolve-run-reference";
 
 const PROMPT_PREVIEW_LENGTH = 48;
 
@@ -92,7 +94,7 @@ function describeCopy(original: string, copy: string): string {
 
 export function toShowRows(
 	entry: HistoryEntry,
-	chain: ReadonlyArray<HistoryEntry>,
+	{ batch, parents }: RunRelations,
 	resolve: (stored: string) => string,
 ): Array<Row> {
 	const rows: Array<Row> = [
@@ -104,8 +106,12 @@ export function toShowRows(
 		["returned", `${entry.returned} of ${entry.requested}`],
 		["cost", entry.cost === undefined ? "unknown" : formatCost(entry.cost)],
 	];
-	if (chain.length > 0) {
-		rows.push(["parents", chain.map((parent) => parent.id.slice(0, SHORT_ID_LENGTH)).join(" ← ")]);
+	if (parents.length > 0) {
+		rows.push(["parents", parents.map((parent) => parent.id.slice(0, SHORT_ID_LENGTH)).join(" ← ")]);
+	}
+	if (entry.batch !== undefined && batch.length > 0) {
+		const others = batch.map((run) => `${run.id.slice(0, SHORT_ID_LENGTH)} ${run.model}`);
+		rows.push(["batch", `${entry.batch.slice(0, SHORT_ID_LENGTH)} · with ${formatArrayAsEnglishList(others)}`]);
 	}
 	for (const reference of entry.references) {
 		rows.push(["reference", describeCopy(reference.source, resolve(reference.stored))]);
@@ -120,30 +126,38 @@ export function toShowRows(
  * Formats one run for `history show`.
  *
  * @param entry - The run.
- * @param chain - Its ancestors, nearest first.
+ * @param relations - Its parents and the other runs of its comparison.
  * @param outputFormat - The `--format` value.
  * @param resolve - Turns a stored path into an absolute one.
  * @returns The text to print.
  */
 export function formatHistoryEntry(
 	entry: HistoryEntry,
-	chain: ReadonlyArray<HistoryEntry>,
+	relations: RunRelations,
 	outputFormat: OutputFormat,
 	resolve: (stored: string) => string,
 ): string {
 	switch (outputFormat) {
 		case OutputFormat.Json:
-		case OutputFormat.JsonMinified:
-			return formatJson({ ...entry, parents: chain.map((parent) => parent.id) }, outputFormat);
+		case OutputFormat.JsonMinified: {
+			return formatJson(
+				{
+					...entry,
+					batchRuns: relations.batch.map((run) => run.id),
+					parents: relations.parents.map((parent) => parent.id),
+				},
+				outputFormat,
+			);
+		}
 
 		case OutputFormat.Pretty: {
-			const rows = toShowRows(entry, chain, resolve);
+			const rows = toShowRows(entry, relations, resolve);
 			return renderRows(rows, getLabelWidth(rows), 100);
 		}
 
 		case OutputFormat.Table: {
 			return new Table()
-				.body(toShowRows(entry, chain, resolve).map(([label, value]) => [dim(label), value]))
+				.body(toShowRows(entry, relations, resolve).map(([label, value]) => [dim(label), value]))
 				.border()
 				.toString();
 		}

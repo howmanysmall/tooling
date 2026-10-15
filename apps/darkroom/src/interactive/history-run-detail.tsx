@@ -1,17 +1,16 @@
-import { Suspense } from "react";
 import { Box, Text } from "ink";
 
 import { toShowRows } from "$history/format-history";
-import { getParentChain } from "$history/resolve-run-reference";
 
 import { useHistoryBrowser } from "./history-browser-context";
-import { HistoryImagePreview } from "./history-image-preview";
+import { HistoryPreviewArea } from "./history-preview-area";
 
 import type { ReactNode } from "react";
 
+import type { RunRelations } from "$history/resolve-run-reference";
 import type { Row } from "$utilities/output-format-utilities";
 
-const LOADING = <Text dimColor={true}>{"Loading preview…"}</Text>;
+const NO_RELATIONS: RunRelations = { batch: [], parents: [] };
 
 function getLabelColumnWidth(rows: ReadonlyArray<Row>): number {
 	let widest = 0;
@@ -20,8 +19,8 @@ function getLabelColumnWidth(rows: ReadonlyArray<Row>): number {
 }
 
 /**
- * The right pane: the selected run's first image, then everything
- * `history show` prints for it.
+ * The right pane: the selected run's image (or its whole comparison, side by
+ * side), then everything `history show` prints for it.
  *
  * @returns The detail pane, empty when nothing is selected.
  */
@@ -30,19 +29,13 @@ export function HistoryRunDetail(): ReactNode {
 	const { selected } = state;
 	if (selected === undefined) return <Box borderStyle="round" flexGrow={1} />;
 
-	const preview = meta.getPreview(selected);
-	const rows = toShowRows(selected, getParentChain(state.entries, selected), meta.resolve);
+	const relations = state.relations ?? NO_RELATIONS;
+	const rows = toShowRows(selected, relations, meta.resolve);
 	const labelWidth = getLabelColumnWidth(rows);
 
 	return (
 		<Box borderStyle="round" flexDirection="column" flexGrow={1} overflow="hidden" paddingX={1}>
-			{preview === undefined ? null : (
-				<Box flexShrink={0} marginBottom={1}>
-					<Suspense fallback={LOADING}>
-						<HistoryImagePreview preview={preview} />
-					</Suspense>
-				</Box>
-			)}
+			<HistoryPreviewArea />
 			{rows.map(([label, value]) => (
 				// Rows keep their height; a long run is clipped at the bottom
 				// instead of its rows being squeezed on top of each other.
