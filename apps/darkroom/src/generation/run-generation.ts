@@ -70,7 +70,10 @@ export async function requestImagesAsync(
 	const imageGenerationRequest = onProgress === undefined ? request : { ...request, stream: true };
 	try {
 		const response = await client.generate({ imageGenerationRequest }, { retries: NO_RETRIES, signal });
-		if (isStreamResponse(response)) return await consumeImageStreamAsync(response, onProgress ?? ignoreProgress);
+		if (isStreamResponse(response)) {
+			return await consumeImageStreamAsync(response, onProgress ?? ignoreProgress);
+		}
+
 		return { cost: response.usage?.cost ?? undefined, images: response.data };
 	} catch (error) {
 		throw error instanceof Error ? toApiError(error, true) : error;
@@ -111,7 +114,7 @@ export interface PreparedGeneration {
  * @param value - A validated value.
  * @returns The value, typed for the SDK.
  */
-function toOpenEnum(value: string | undefined): undefined | Unrecognized<string> {
+function toOpenEnum(value?: string): undefined | Unrecognized<string> {
 	return value === undefined ? undefined : unrecognized(value);
 }
 
@@ -150,7 +153,7 @@ async function existsAsync(path: string): Promise<boolean> {
 }
 
 async function checkExplicitOutputAsync(spec: OutputSpec, count: number, force: boolean): Promise<void> {
-	if (force || spec.kind !== OutputKind.File || nodePath.extname(spec.path) === "") return;
+	if (force || spec.kind !== OutputKind.File || nodePath.extname(spec.path).length === 0) return;
 
 	const paths = Array.from({ length: count }, (_, index) =>
 		getOutputPath(spec, { count, date: "", extension: "", index: index + 1, slug: "" }),
@@ -248,7 +251,9 @@ export async function executeGenerationAsync(
 
 	const requested = prepared.parameters.count;
 	const returned = response.images.length;
-	if (returned < requested) dependencies.warn(`Asked for ${requested} images, got ${returned}.`);
+	if (returned < requested) {
+		dependencies.warn(`Asked for ${requested} images, got ${returned}.`);
+	}
 
 	const { failures, images } = await saveRunAsync(
 		{ id, cost: response.cost, createdAt, images: response.images, prepared },

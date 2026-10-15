@@ -86,7 +86,9 @@ async function writeToOutputAsync(
 
 	const naming = { count, date: context.date, extension: image.extension, index, slug: context.slug };
 	const planned = getOutputPath(spec, naming);
-	if (prepared.input.force && spec.kind === OutputKind.File) return writeFileAtomicAsync(planned, image.bytes);
+	if (prepared.input.force && spec.kind === OutputKind.File) {
+		return writeFileAtomicAsync(planned, image.bytes);
+	}
 
 	const written = await writeFileNoClobberAsync(planned, image.bytes);
 	if (written !== planned && spec.kind === OutputKind.File) {

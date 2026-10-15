@@ -1,3 +1,4 @@
+import { isString } from "@howmanysmall/arktype-utilities";
 import { CliError } from "@howmanysmall/cli-utilities/cli-error";
 import {
 	ConnectionError,
@@ -14,7 +15,9 @@ import { InterruptedError } from "./interrupted-error";
 export const CHARGE_NOTE =
 	"The request may still have been charged; check https://openrouter.ai/activity before retrying.";
 
-const isErrorBody = type({ error: { message: "string" } });
+const isErrorBody = type({
+	error: { message: isString },
+}).readonly();
 
 /** Status codes where the provider may already have billed an image. */
 const AMBIGUOUS_STATUS_CODES = new Set([500, 502, 524, 529]);
@@ -27,7 +30,7 @@ function getResponseMessage(error: OpenRouterError): string {
 		// The body was not JSON; fall back to its text.
 	}
 	const text = error.body.trim();
-	return text === "" ? `HTTP ${error.statusCode}` : text;
+	return text.length === 0 ? `HTTP ${error.statusCode}` : text;
 }
 
 function appendChargeNote(message: string, mayHaveCharged: boolean): string {
@@ -60,7 +63,9 @@ export function toApiError(error: Error, isPaidRequest: boolean): CliError {
 		return new ApiError(appendChargeNote(`Network error: ${error.message}`, isPaidRequest), { cause: error });
 	}
 
-	if (error instanceof HTTPClientError) return new ApiError(`Request failed: ${error.message}`, { cause: error });
+	if (error instanceof HTTPClientError) {
+		return new ApiError(`Request failed: ${error.message}`, { cause: error });
+	}
 
 	return new ApiError(error.message, { cause: error });
 }

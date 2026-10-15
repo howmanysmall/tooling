@@ -56,8 +56,10 @@ function formatValues(values: ReadonlyArray<string>): string {
 
 function checkEnum(model: ImageModelListItem, parameter: string, flag: string, value: string | undefined): void {
 	if (value === undefined) return;
+
 	const values = getEnumValues(model, parameter);
 	if (values === undefined || values.includes(value)) return;
+
 	throw new ValidationError(`${model.id} does not support ${flag} "${value}". Supported: ${formatValues(values)}.`);
 }
 
@@ -74,7 +76,9 @@ function checkCount(model: ImageModelListItem, count: number): void {
 
 function checkReferences(model: ImageModelListItem, referenceCount: number): void {
 	const { max, min } = getReferenceRange(model);
-	if (max === 0 && referenceCount > 0) throw new ValidationError(`${model.id} does not accept reference images.`);
+	if (max === 0 && referenceCount > 0) {
+		throw new ValidationError(`${model.id} does not accept reference images.`);
+	}
 	if (referenceCount > max) {
 		throw new ValidationError(`${model.id} accepts at most ${max} reference image(s); got ${referenceCount}.`);
 	}
@@ -93,10 +97,12 @@ function checkReferences(model: ImageModelListItem, referenceCount: number): voi
  */
 function resolveOutputFormat(output: string | undefined, type: ImageType | undefined): ImageType | undefined {
 	if (output === undefined || output === "-" || output.endsWith("/")) return type;
-	if (nodePath.extname(output) === "") return type;
+	if (nodePath.extname(output).length === 0) return type;
 
 	const pathType = getImageTypeFromPath(output);
-	if (pathType === undefined) throw new ValidationError(`-o ${output} has an extension darkroom can't write.`);
+	if (pathType === undefined) {
+		throw new ValidationError(`-o ${output} has an extension darkroom can't write.`);
+	}
 	if (type !== undefined && type !== pathType) {
 		throw new ValidationError(`--type ${type} disagrees with the extension of -o ${output}.`);
 	}
@@ -105,8 +111,12 @@ function resolveOutputFormat(output: string | undefined, type: ImageType | undef
 
 function checkStdout(options: GenerationOptions, count: number, stdoutIsTty: boolean): void {
 	if (options.output !== "-") return;
-	if (count > 1) throw new ValidationError("-o - writes a single image; use --count 1.");
-	if (stdoutIsTty) throw new ValidationError("-o - would write binary image data to the terminal. Pipe it instead.");
+	if (count > 1) {
+		throw new ValidationError("-o - writes a single image; use --count 1.");
+	}
+	if (stdoutIsTty) {
+		throw new ValidationError("-o - would write binary image data to the terminal. Pipe it instead.");
+	}
 }
 
 function checkCompression(model: ImageModelListItem, compression: number | undefined): void {
@@ -120,7 +130,7 @@ function checkCompression(model: ImageModelListItem, compression: number | undef
 function collectWarnings(
 	model: ImageModelListItem,
 	options: GenerationOptions,
-	outputFormat: ImageType | undefined,
+	outputFormat?: ImageType,
 ): Array<string> {
 	const warnings: Array<string> = [];
 	if (options.seed !== undefined && !isDeclared(model, "seed")) {

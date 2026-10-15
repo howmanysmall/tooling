@@ -59,9 +59,11 @@ export function getMegapixels(resolution: string | undefined, aspectRatio: strin
 	const longEdge = TIER_PIXELS.get(resolution?.toLowerCase() ?? "");
 	const match = RATIO_PATTERN.exec(aspectRatio ?? "");
 	if (longEdge === undefined || match === null) return undefined;
+
 	const width = Number(match.groups?.width);
 	const height = Number(match.groups?.height);
 	if (width <= 0 || height <= 0) return undefined;
+
 	const shortEdge = Math.round((longEdge * Math.min(width, height)) / Math.max(width, height));
 	return (longEdge * shortEdge) / 1e6;
 }
@@ -93,6 +95,7 @@ function pickOutputPrice(pricing: ReadonlyArray<PricingEntry>, request: Estimate
 function getOutputCost(price: PricingEntry, request: EstimateRequest): number | undefined {
 	if (price.unit === "image") return price.costUsd * request.count;
 	if (price.unit === "request") return price.costUsd;
+
 	const megapixels = getMegapixels(request.resolution, request.aspectRatio);
 	if (megapixels !== undefined && price.unit === "megapixel") return price.costUsd * megapixels * request.count;
 	return undefined;
@@ -193,6 +196,7 @@ const UNIT_ORDER: ReadonlyArray<string> = ["image", "request", "megapixel", "tok
 
 function getUnitRank(entry: PricingEntry | undefined): number {
 	if (entry === undefined) return UNIT_ORDER.length + 1;
+
 	const rank = UNIT_ORDER.indexOf(entry.unit);
 	return rank === -1 ? UNIT_ORDER.length : rank;
 }
@@ -208,6 +212,7 @@ function getUnitRank(entry: PricingEntry | undefined): number {
 export function comparePrices(first: PricingEntry | undefined, second: PricingEntry | undefined): number {
 	const byUnit = getUnitRank(first) - getUnitRank(second);
 	if (byUnit !== 0) return byUnit;
+
 	return (first?.costUsd ?? 0) - (second?.costUsd ?? 0);
 }
 

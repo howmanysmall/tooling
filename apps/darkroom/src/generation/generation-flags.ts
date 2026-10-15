@@ -44,7 +44,7 @@ export function toGenerationOptions(flags: GenerationFlags): GenerationOptions {
 
 const IMAGE_TYPE_NAMES: ReadonlySet<string> = new Set(["jpeg", "png", "svg", "webp"]);
 
-function isImageType(value: string | undefined): value is ImageType {
+function isImageType(value?: string): value is ImageType {
 	return value !== undefined && IMAGE_TYPE_NAMES.has(value);
 }
 

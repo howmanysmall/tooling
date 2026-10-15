@@ -40,33 +40,6 @@ async function readPromptAsync(flags: GenerateFlags, positional: string | undefi
 	});
 }
 
-async function runGenerateAsync(flags: GenerateFlags, positional: string | undefined): Promise<void> {
-	const [
-		{ prepareForTerminalAsync, resolveModelIdAsync, runPreparedAsync },
-		{ loadReferenceAsync },
-		{ toGenerationOptions },
-	] = await Promise.all([
-		import("$generation/cli-runner"),
-		import("$generation/references"),
-		import("$generation/generation-flags"),
-	]);
-
-	// oxlint-disable react-doctor/server-sequential-independent-await -- a missing model or prompt should fail before anything is fetched
-	const modelId = await resolveModelIdAsync(flags.model);
-	const prompt = await readPromptAsync(flags, positional);
-	const references = await Promise.all((flags.image ?? []).map(async (source) => loadReferenceAsync(source)));
-	// oxlint-enable react-doctor/server-sequential-independent-await
-
-	const prepared = await prepareForTerminalAsync({
-		force: flags.force === true,
-		modelId,
-		options: toGenerationOptions(flags),
-		prompt,
-		references,
-	});
-	await runPreparedAsync(prepared, flags.format, flags.dryRun === true);
-}
-
 export const generateCommand = createBaseCommand(
 	scriptName,
 	"1.0.0",
@@ -105,4 +78,29 @@ export const generateCommand = createBaseCommand(
 	})
 	.option("--force", "Allow overwriting an explicit -o file.")
 	.option("--dry-run", "Validate and print the request without sending it.")
-	.action(async (flags, positional) => runGenerateAsync(flags, positional));
+	.action(async (flags, positional) => {
+		const [
+			{ prepareForTerminalAsync, resolveModelIdAsync, runPreparedAsync },
+			{ loadReferenceAsync },
+			{ toGenerationOptions },
+		] = await Promise.all([
+			import("$generation/cli-runner"),
+			import("$generation/references"),
+			import("$generation/generation-flags"),
+		]);
+
+		// oxlint-disable react-doctor/server-sequential-independent-await -- a missing model or prompt should fail before anything is fetched
+		const modelId = await resolveModelIdAsync(flags.model);
+		const prompt = await readPromptAsync(flags, positional);
+		const references = await Promise.all((flags.image ?? []).map(async (source) => loadReferenceAsync(source)));
+		// oxlint-enable react-doctor/server-sequential-independent-await
+
+		const prepared = await prepareForTerminalAsync({
+			force: flags.force === true,
+			modelId,
+			options: toGenerationOptions(flags),
+			prompt,
+			references,
+		});
+		await runPreparedAsync(prepared, flags.format, flags.dryRun === true);
+	});
