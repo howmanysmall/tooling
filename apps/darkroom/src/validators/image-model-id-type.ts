@@ -1,15 +1,11 @@
 import { StringType } from "@cliffy/command";
 
+import { CompletionKind } from "$utilities/completion-cache-utilities";
+
 export const imageModelIdType = new StringType();
 
 export async function getImageModelIdsAsync(): Promise<Array<string>> {
-	const imageModels = await import("$utilities/image-model-utilities").then(async ({ getImageModelsAsync }) =>
-		getImageModelsAsync(),
+	return import("$utilities/completion-cache-utilities").then(async ({ getCompletionsAsync }) =>
+		getCompletionsAsync(CompletionKind.ImageModelIds),
 	);
-
-	const ids: Array<string> = [];
-	let size = 0;
-
-	for (const imageModel of imageModels) ids[size++] = imageModel.id;
-	return ids;
 }
