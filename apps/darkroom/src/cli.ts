@@ -27,8 +27,8 @@ const command = createBaseCommand(scriptName, version, description, { showHelpWi
 		return modelsCommand;
 	})
 	.command("completions", async () => {
-		const { CompletionsCommand } = await import("@cliffy/command/completions");
-		return new CompletionsCommand();
+		const { completionsCommand } = await import("$commands/completions-command");
+		return completionsCommand;
 	})
 	.command("help", new HelpCommand().global());
 

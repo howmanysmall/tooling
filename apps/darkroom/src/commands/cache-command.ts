@@ -1,10 +1,12 @@
+import { stderr } from "node:process";
 import { renderHighlight } from "@howmanysmall/cli-utilities/cliffy-highlight";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 import { consola } from "consola";
 
 const scriptName = getScriptName(true);
-const log = consola.withTag(scriptName);
+// Logs go to stderr; this command prints no data.
+const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
 export const cacheCommand = createBaseCommand(
 	scriptName,
