@@ -133,3 +133,6 @@ hk.local.pkl
 .claude/skills/wizard
 .claude/skills/writing-for-agents
 .agents/skills/unix-cli/
+.agents/skills/vercel-composition-patterns/
+.agents/skills/vercel-react-best-practices/
+.agents/skills/vercel-react-view-transitions/
