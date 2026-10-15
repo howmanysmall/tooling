@@ -4,37 +4,17 @@
 		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
 		"paths": {
-			"$commands/*": [
-				"./src/commands/*"
-			],
-			"$constants": [
-				"./src/constants/constants.ts"
-			],
-			"$constants/*": [
-				"./src/constants/*"
-			],
-			"$environment": [
-				"./src/environment.ts"
-			],
-			"$functions/*": [
-				"./src/functions/*"
-			],
-			"$types/*": [
-				"./src/types/*"
-			],
-			"$utilities/*": [
-				"./src/utilities/*"
-			],
-			"$validators/*": [
-				"./src/validators/*"
-			],
-			"@cliffy/command/_dist/*": [
-				"./node_modules/@cliffy/command/_dist/*"
-			]
+			"$commands/*": ["./src/commands/*"],
+			"$constants": ["./src/constants/constants.ts"],
+			"$constants/*": ["./src/constants/*"],
+			"$environment": ["./src/environment.ts"],
+			"$functions/*": ["./src/functions/*"],
+			"$types/*": ["./src/types/*"],
+			"$utilities/*": ["./src/utilities/*"],
+			"$validators/*": ["./src/validators/*"],
+			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
-		"types": [
-			"node"
-		]
+		"types": ["node"]
 	},
 	"references": [
 		{
@@ -53,12 +33,6 @@
 			"path": "../../tools/project-configurations"
 		}
 	],
-	"include": [
-		"src/**/*.ts",
-		"./package.json",
-		"*.config.ts"
-	],
-	"exclude": [
-		"node_modules"
-	]
+	"include": ["src/**/*.ts", "./package.json", "*.config.ts"],
+	"exclude": ["node_modules"]
 }
