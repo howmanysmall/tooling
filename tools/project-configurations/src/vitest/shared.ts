@@ -38,6 +38,7 @@ export function createPackageConfiguration(name: string): ViteUserConfig {
 			include: ["src/**/*.test.ts"],
 			// turbo streams every package into one terminal, where the live
 			// summary rewrites lines that belong to other packages.
+			// biome-ignore lint/style/noProcessEnv: shut up?
 			reporters: env.TURBO_HASH === undefined ? ["default"] : [["default", { summary: false }]],
 			testTimeout: 5_000,
 		},
