@@ -1,4 +1,4 @@
-import { stdout } from "node:process";
+import { stdin, stdout } from "node:process";
 import { EnumType } from "@cliffy/command";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
@@ -30,9 +30,20 @@ interface ListFlags {
 	readonly transparent?: true | undefined;
 }
 
+/**
+ * Whether to open the full-screen browser: without `--format`, when a person
+ * is at a terminal.
+ *
+ * @param format - The `--format` value, if given.
+ * @returns `true` to browse, `false` to print.
+ */
+function wantsBrowser(format?: OutputFormat): boolean {
+	return format === undefined && stdin.isTTY && stdout.isTTY;
+}
+
 async function listModelsAsync(flags: ListFlags, search: string | undefined): Promise<void> {
 	const [
-		{ log },
+		{ log, readObservedPricesAsync },
 		{ getImageModelsAsync },
 		{ getModelPricingAsync },
 		{ filterModels, sortModels },
@@ -44,18 +55,26 @@ async function listModelsAsync(flags: ListFlags, search: string | undefined): Pr
 		import("$utilities/model-filters"),
 		import("$utilities/format-model-list"),
 	]);
-	const [models, pricing] = await Promise.all([
+	const [models, pricing, observed] = await Promise.all([
 		getImageModelsAsync(),
 		getModelPricingAsync(true, (message) => {
 			log.warn(message);
 		}),
+		readObservedPricesAsync(),
 	]);
 
 	const filter: ModelFilter = { ...flags, search };
 	const sort = isModelSort(flags.sort) ? flags.sort : ModelSort.Name;
-	const shown = sortModels(filterModels(models, filter), sort, pricing);
+	const shown = sortModels(filterModels(models, filter), sort, pricing, observed);
 
-	const output = formatModelList(shown, pricing, flags.format, stdout.isTTY);
+	if (wantsBrowser(flags.format)) {
+		// React and Ink only load for the browser.
+		const { browseModelsAsync } = await import("$interactive/browse-models");
+		await browseModelsAsync({ models: shown, observed, pricing }, sort);
+		return;
+	}
+
+	const output = formatModelList(shown, pricing, flags.format, stdout.isTTY, observed);
 	if (output !== "") console.log(output);
 }
 
@@ -72,5 +91,8 @@ export const listCommand = createBaseCommand(scriptName, "1.0.0", "List and filt
 	.option("--ratio <ratio:aspect-ratio>", "Only models that accept this aspect ratio.")
 	.option("--transparent", "Only models that can make a transparent background.")
 	.option("--sort <key:model-sort>", "Sort by name, price, or created.", { default: "name" })
-	.option("-f, --format <format:output-format>", "The output format. Defaults to a table, or IDs when piped.")
+	.option(
+		"-f, --format <format:output-format>",
+		"The output format. Defaults to a full-screen browser on a terminal, or IDs when piped.",
+	)
 	.action(async (flags, search) => listModelsAsync(flags, search));

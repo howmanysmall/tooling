@@ -95,10 +95,11 @@ async function prepareAllAsync(
 }
 
 async function getEstimatesAsync(prepared: ReadonlyArray<PreparedGeneration>): Promise<Array<ModelEstimate>> {
-	const [{ log, toEstimateRequest }, { getModelPricingAsync }] = await Promise.all([
+	const [{ log, readObservedPricesAsync, toEstimateRequest }, { getModelPricingAsync }] = await Promise.all([
 		import("$generation/cli-runner"),
 		import("$utilities/model-pricing-utilities"),
 	]);
+	const observedPromise = readObservedPricesAsync();
 	let pricing: ModelPricing = {};
 	try {
 		pricing = await getModelPricingAsync(true, (message) => {
@@ -108,10 +109,11 @@ async function getEstimatesAsync(prepared: ReadonlyArray<PreparedGeneration>): P
 		// Without prices every estimate is unknown, which the plan says.
 		log.warn(`Could not read prices: ${error instanceof Error ? error.message : String(error)}`);
 	}
+	const observed = await observedPromise;
 
 	return prepared.map((item) => {
 		const endpoints = pricing[item.model.id] ?? [];
-		const estimate = getCostEstimate(endpoints, toEstimateRequest(item));
+		const estimate = getCostEstimate(endpoints, toEstimateRequest(item), observed.get(item.model.id));
 		return { estimate, text: describeEstimate(estimate, endpoints) };
 	});
 }

@@ -1,7 +1,9 @@
 import { cwd, env, stdout } from "node:process";
 import { autocomplete, intro, log, multiline, select, text } from "@clack/prompts";
+import { dim } from "ansis";
 
 import { getCountRange, getEnumValues, getReferenceRange } from "$generation/model-capabilities";
+import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 
 import { confirmAndGenerateAsync } from "./confirm-and-generate";
 import { editInEditorAsync, getEditor } from "./edit-in-editor";
@@ -10,21 +12,66 @@ import { pickReferencesAsync } from "./reference-picker";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
+import type { ObservedPrices } from "$generation/observed-prices";
 import type { ReferenceImage } from "$generation/references";
 import type { GenerationOptions } from "$generation/validate-request";
+import type { ModelPricing } from "$utilities/model-pricing-utilities";
+
+// Rows of models the picker shows at once.
+const PICKER_ROWS = 12;
 
 function describeModel(model: ImageModelListItem): string {
 	const references = getReferenceRange(model).max;
 	return `${model.id} · ≤${references} refs · n≤${getCountRange(model).max}`;
 }
 
-async function askModelAsync(models: ReadonlyArray<ImageModelListItem>): Promise<ImageModelListItem> {
-	const { getEnvironmentAsync } = await import("$functions/get-environment-async");
-	const { DARKROOM_MODEL: preferred } = await getEnvironmentAsync();
+interface PickerCatalog {
+	readonly models: ReadonlyArray<ImageModelListItem>;
+	readonly observed: ObservedPrices;
+	/** `DARKROOM_MODEL`, highlighted first. */
+	readonly preferred?: string | undefined;
+	readonly pricing: ModelPricing;
+}
+
+function getNameWidth(models: ReadonlyArray<ImageModelListItem>): number {
+	let width = 0;
+	for (const { name } of models) width = Math.max(width, name.length);
+	return width;
+}
+
+async function loadCatalogAsync(): Promise<PickerCatalog> {
+	const [{ getImageModelsAsync }, { getModelPricingAsync }, { getEnvironmentAsync }, { readObservedPricesAsync }] =
+		await Promise.all([
+			import("$utilities/image-model-utilities"),
+			import("$utilities/model-pricing-utilities"),
+			import("$functions/get-environment-async"),
+			import("$generation/cli-runner"),
+		]);
+	const [models, pricing, observed, { DARKROOM_MODEL }] = await Promise.all([
+		getImageModelsAsync(),
+		getModelPricingAsync(true, (message) => {
+			log.warn(message);
+		}),
+		readObservedPricesAsync(),
+		getEnvironmentAsync(),
+	]);
+	return { models, observed, preferred: DARKROOM_MODEL, pricing };
+}
+
+async function askModelAsync(): Promise<ImageModelListItem> {
+	const { models, observed, preferred, pricing } = await loadCatalogAsync();
+	// Only the highlighted option shows its hint, so the price goes in every
+	// label, lined up in a column after the names.
+	const nameWidth = getNameWidth(models);
 	const id = await autocomplete({
 		initialValue: models.some((model) => model.id === preferred) ? preferred : undefined,
+		maxItems: PICKER_ROWS,
 		message: "Model",
-		options: models.map((model) => ({ hint: describeModel(model), label: model.name, value: model.id })),
+		options: models.map((model) => ({
+			hint: describeModel(model),
+			label: `${model.name.padEnd(nameWidth)}  ${dim(describeListPrice(getModelPrices(pricing, observed, model.id)))}`,
+			value: model.id,
+		})),
 	});
 	exitIfCancelled(id);
 	const model = models.find((item) => item.id === id);
@@ -118,18 +165,18 @@ async function askOptionsAsync(model: ImageModelListItem): Promise<GenerationOpt
  * chosen model can use, shows the estimated cost, and generates through the
  * same code as `generate`, so the run lands in the history too.
  *
+ * @param chosen - A model already picked, as in the model browser; the
+ *   model question is skipped.
  * @rejects Whatever generation rejects with.
  */
-export async function runInteractiveSessionAsync(): Promise<void> {
-	const [{ getImageModelsAsync }, runner] = await Promise.all([
-		import("$utilities/image-model-utilities"),
-		import("$generation/cli-runner"),
-	]);
+export async function runInteractiveSessionAsync(chosen?: ImageModelListItem): Promise<void> {
+	const runner = await import("$generation/cli-runner");
 	intro("darkroom");
 
 	// oxlint-disable react-doctor/server-sequential-independent-await -- each question waits for the previous answer on screen
-	const models = await getImageModelsAsync();
-	const model = await askModelAsync(models);
+	const model = chosen ?? (await askModelAsync());
+	if (chosen !== undefined) log.step(`Model  ${dim(chosen.name)}`);
+
 	const prompt = await askPromptAsync();
 	const references = await askReferencesAsync(model);
 	const options = await askOptionsAsync(model);
