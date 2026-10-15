@@ -5,6 +5,7 @@ import { dim } from "ansis";
 import { formatCost } from "$generation/format-result";
 import { formatLocalDate } from "$generation/output-paths";
 import { formatJson, getLabelWidth, renderRows, trimTrailingSpaces } from "$utilities/output-format-utilities";
+import { removeControlCharacters } from "$utilities/text-utilities";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { SHORT_ID_LENGTH } from "./resolve-run-reference";
@@ -29,7 +30,7 @@ export function formatLocalDateTime(iso: string): string {
 }
 
 export function previewPrompt(prompt: string, length = PROMPT_PREVIEW_LENGTH): string {
-	const singleLine = prompt.replaceAll(/\s+/gu, " ");
+	const singleLine = removeControlCharacters(prompt).replaceAll(/\s+/gu, " ");
 	return singleLine.length > length ? `${singleLine.slice(0, length - 1)}…` : singleLine;
 }
 
