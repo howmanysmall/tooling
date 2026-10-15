@@ -90,7 +90,8 @@ describe("createScreenMirror", () => {
 		expect.assertions(1);
 
 		const { mirror } = openTerminal(onTestFinished);
-		await drawAsync(mirror, "\u001B[38;2;0;0;7m\u{10EEEE}̅̅\u{10EEEE}̅̍\u001B[39m cat");
+		// U+0816 is one of the marks xterm counts as a character of its own.
+		await drawAsync(mirror, "\u001B[38;2;0;0;7m\u{10EEEE}\u0816\u0816\u{10EEEE}\u0816\u030D\u001B[39m cat");
 
 		expect(mirror.findText([{ end: 20, row: 0, start: 0 }])).toStrictEqual([{ end: 6, row: 0, start: 3 }]);
 	});

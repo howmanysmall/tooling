@@ -77,3 +77,21 @@ export function formatKittyPlaceholders(id: number, cells: CellBox): Array<strin
 export function formatKittyDelete(id: number): string {
 	return formatCommand(`a=d,d=I,q=2,i=${id}`);
 }
+
+const PLACEHOLDER_MARKS = new RegExp(
+	`(${PLACEHOLDER})[${ROW_COLUMN_DIACRITICS.map((code) => String.fromCodePoint(code)).join("")}]+`,
+	"gu",
+);
+
+/**
+ * Drops the row and column marks from kitty placeholders. A terminal that
+ * draws them needs the marks, but a copy of the screen doesn't, and some
+ * terminal emulators count a few of them as characters of their own, which
+ * pushes the rest of the row out of place.
+ *
+ * @param text - Output that may hold placeholders.
+ * @returns The same output with one bare placeholder per cell.
+ */
+export function stripPlaceholderMarks(text: string): string {
+	return text.replaceAll(PLACEHOLDER_MARKS, "$1");
+}
