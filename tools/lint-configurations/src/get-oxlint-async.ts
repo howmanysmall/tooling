@@ -141,6 +141,7 @@ export async function getOxlintAsync({
 							"@total-typescript/ts-reset",
 							"$configure-arktype",
 							"$polyfill",
+							"$polyfills/*",
 							"@dotenvx/dotenvx",
 							"@dotenvx/dotenvx/config",
 						],
