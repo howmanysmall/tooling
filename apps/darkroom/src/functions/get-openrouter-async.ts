@@ -1,3 +1,5 @@
+import { ConfigurationError } from "$errors/configuration-error";
+
 import type { OpenRouter } from "@openrouter/sdk";
 
 let openrouterCache: OpenRouter | undefined;
@@ -11,6 +13,11 @@ export async function getOpenRouterAsync(): Promise<OpenRouter> {
 			const environment = await import("$functions/get-environment-async").then(async ({ getEnvironmentAsync }) =>
 				getEnvironmentAsync(),
 			);
+			if (environment.OPENROUTER_API_KEY === undefined) {
+				throw new ConfigurationError(
+					"OPENROUTER_API_KEY is not set. Add it to your environment or a .env file.",
+				);
+			}
 			return environment.OPENROUTER_API_KEY;
 		},
 		appTitle: name,

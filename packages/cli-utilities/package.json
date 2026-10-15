@@ -12,6 +12,7 @@
 	"sideEffects": false,
 	"type": "module",
 	"exports": {
+		"./cli-error": "./src/cli-error.ts",
 		"./cliffy-highlight": "./src/cliffy-highlight.ts",
 		"./create-base-command": "./src/create-base-command.ts",
 		"./get-script-name": "./src/get-script-name.ts",
