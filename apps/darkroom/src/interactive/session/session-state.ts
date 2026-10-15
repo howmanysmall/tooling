@@ -39,9 +39,27 @@ export interface SessionTurn {
 	readonly warnings: ReadonlyArray<string>;
 }
 
+/** Whether a new prompt changes an image above or starts from nothing. */
+export const enum PromptMode {
+	Edit = "edit",
+	New = "new",
+}
+
+/** A saved image a prompt in edit mode builds on. */
+export interface BaseImage {
+	readonly mediaType: string;
+	readonly path: string;
+}
+
 export interface SessionState {
 	/** The ULID its runs are saved under, so it can be resumed. */
 	readonly id: string;
+	/**
+	 * The image a prompt edits: the newest result, or the image you
+	 * clicked. `undefined` until something is made.
+	 */
+	readonly base?: BaseImage | undefined;
+	readonly mode: PromptMode;
 	/** The request the confirmation asks about, by turn ID. */
 	readonly pending?: (PendingRequest & { readonly id: number }) | undefined;
 	/** Oldest first. */
@@ -56,17 +74,44 @@ export type SessionAction =
 	| { readonly id: number; readonly pending: PendingRequest; readonly type: "prepared" }
 	| { readonly id: number; readonly progress: StreamProgress; readonly type: "turn-progress" }
 	| { readonly id: number; readonly type: "turn-warned"; readonly warning: string }
+	| { readonly image: BaseImage; readonly type: "choose-base" }
+	| { readonly mode: PromptMode; readonly type: "set-mode" }
 	| { readonly type: "dismiss" };
 
+function getFirstImage(result: GenerationResult | undefined): BaseImage | undefined {
+	const image = result?.images.find((saved) => saved.path !== undefined);
+	return image?.path === undefined ? undefined : { mediaType: image.mediaType, path: image.path };
+}
+
 /**
- * Starts a session.
+ * Starts a session in edit mode, building on the newest image of the
+ * turns it resumes, if any.
  *
  * @param id - The ULID its runs will be saved under.
  * @param turns - Turns resumed from the history, oldest first.
  * @returns A session with no request awaiting confirmation.
  */
 export function createSession(id: string, turns: ReadonlyArray<SessionTurn> = []): SessionState {
-	return { id, turns };
+	return { id, base: findNewestImage(turns), mode: PromptMode.Edit, turns };
+}
+
+function findNewestImage(turns: ReadonlyArray<SessionTurn>): BaseImage | undefined {
+	for (const turn of turns.toReversed()) {
+		const image = getFirstImage(turn.result);
+		if (image !== undefined) return image;
+	}
+	return undefined;
+}
+
+/**
+ * Says what the next prompt builds on: the base image in edit mode, or
+ * nothing in new mode or before any image is made.
+ *
+ * @param state - The session on screen.
+ * @returns The image to edit, if any.
+ */
+export function getEditBase(state: SessionState): BaseImage | undefined {
+	return state.mode === PromptMode.Edit ? state.base : undefined;
 }
 
 /**
@@ -103,7 +148,7 @@ function confirmTurn(state: SessionState, id: number, pending: PendingRequest): 
 
 function dismissPending(state: SessionState): SessionState {
 	const id = state.pending?.id;
-	return { id: state.id, turns: state.turns.filter((turn) => turn.id !== id) };
+	return { ...state, pending: undefined, turns: state.turns.filter((turn) => turn.id !== id) };
 }
 
 function settleTurn(state: SessionState, id: number, settled: Partial<SessionTurn>): SessionState {
@@ -121,21 +166,28 @@ function settleTurn(state: SessionState, id: number, settled: Partial<SessionTur
  */
 export function reduceSession(state: SessionState, action: SessionAction): SessionState {
 	switch (action.type) {
+		case "choose-base":
+			return { ...state, base: action.image, mode: PromptMode.Edit };
+
 		case "dismiss":
 			return dismissPending(state);
 
 		case "prepared":
 			return confirmTurn(state, action.id, action.pending);
 
+		case "set-mode":
+			return { ...state, mode: action.mode };
+
 		case "turn-added":
 			return addTurn(state, action.id, action.model, action.prompt);
 
 		case "turn-done": {
-			return settleTurn(state, action.id, {
+			const done = settleTurn(state, action.id, {
 				finishedAt: action.at,
 				phase: TurnPhase.Done,
 				result: action.result,
 			});
+			return { ...done, base: getFirstImage(action.result) ?? state.base };
 		}
 
 		case "turn-failed": {
@@ -151,7 +203,7 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 
 		case "turn-started": {
 			const started = settleTurn(state, action.id, { phase: TurnPhase.Running, startedAt: action.at });
-			return { id: started.id, turns: started.turns };
+			return { ...started, pending: undefined };
 		}
 
 		default:

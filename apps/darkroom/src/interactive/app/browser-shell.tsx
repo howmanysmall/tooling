@@ -38,6 +38,8 @@ export interface BrowserShellProperties {
 	hasDialog?: boolean | undefined;
 	/** What `ctrl+c` does, such as clearing the prompt; quits by default. */
 	onInterrupt?: (() => void) | undefined;
+	/** What `shift+tab` does instead of showing the previous tab. */
+	onShiftTab?: (() => void) | undefined;
 	rows: number;
 	/** The last action's outcome, shown as a toast. */
 	status?: StatusMessage | undefined;
@@ -58,6 +60,7 @@ export interface BrowserShellProperties {
  * @param properties.commands - What the screen can do.
  * @param properties.hasDialog - Whether a dialog of the screen's own is open.
  * @param properties.onInterrupt - What `ctrl+c` does; quits by default.
+ * @param properties.onShiftTab - What `shift+tab` does, if not the previous tab.
  * @param properties.rows - The terminal's height.
  * @param properties.status - The last action's outcome, if any.
  * @param properties.children - The header, panes, status bar, and any
@@ -70,6 +73,7 @@ export function BrowserShell({
 	commands,
 	hasDialog,
 	onInterrupt,
+	onShiftTab,
 	rows,
 	status,
 	children,
@@ -95,6 +99,7 @@ export function BrowserShell({
 	useInput(function onShellInput(input, key) {
 		const route = getShellRoute(input, key, {
 			hasDialog: overlay === Overlay.Palette || hasDialog === true,
+			hasShiftTab: onShiftTab !== undefined,
 			hasTabs: tabs !== undefined,
 			isCapturing: capture !== undefined,
 			isHelpOpen: overlay === Overlay.Help,
@@ -121,6 +126,9 @@ export function BrowserShell({
 			[ShellRoute.OpenPalette]: showOverlay(Overlay.Palette),
 			[ShellRoute.PreviousTab](): void {
 				tabs?.cycle(-1);
+			},
+			[ShellRoute.ShiftTab](): void {
+				onShiftTab?.();
 			},
 		};
 		handlers[route]();

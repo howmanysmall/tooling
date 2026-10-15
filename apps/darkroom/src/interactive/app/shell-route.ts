@@ -15,12 +15,16 @@ export const enum ShellRoute {
 	OpenHelp = "open-help",
 	OpenPalette = "open-palette",
 	PreviousTab = "previous-tab",
+	/** `shift+tab` on a screen that uses it, as generate does for its mode. */
+	ShiftTab = "shift-tab",
 }
 
 /** What the shell knows when a key arrives. */
 export interface ShellSituation {
 	/** The palette, or a dialog of the screen's own, is open. */
 	readonly hasDialog: boolean;
+	/** The screen uses `shift+tab` itself, instead of the previous tab. */
+	readonly hasShiftTab: boolean;
 	readonly hasTabs: boolean;
 	readonly isCapturing: boolean;
 	readonly isHelpOpen: boolean;
@@ -41,10 +45,11 @@ export function getShellRoute(input: string, key: Key, situation: ShellSituation
 	if (input === "c" && key.ctrl) return ShellRoute.Interrupt;
 	if (situation.hasDialog) return ShellRoute.Ignore;
 	if (situation.isHelpOpen) return ShellRoute.CloseHelp;
-	return getGlobalRoute(input, key, situation.hasTabs) ?? getScreenRoute(input, situation.isCapturing);
+	return getGlobalRoute(input, key, situation) ?? getScreenRoute(input, situation.isCapturing);
 }
 
-function getGlobalRoute(input: string, key: Key, hasTabs: boolean): ShellRoute | undefined {
+function getGlobalRoute(input: string, key: Key, { hasShiftTab, hasTabs }: ShellSituation): ShellRoute | undefined {
+	if (hasShiftTab && key.shift && key.tab) return ShellRoute.ShiftTab;
 	if (hasTabs && key.tab) return key.shift ? ShellRoute.PreviousTab : ShellRoute.NextTab;
 	return input === "p" && key.ctrl ? ShellRoute.OpenPalette : undefined;
 }

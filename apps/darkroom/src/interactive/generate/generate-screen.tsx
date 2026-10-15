@@ -1,6 +1,8 @@
+import nodePath from "node:path";
 import { useReducer } from "react";
 import { Box, useApp, useWindowSize } from "ink";
 
+import { getReferenceRange } from "$generation/model-capabilities";
 import { getModelPrices } from "$generation/observed-prices";
 import { BrowserShell } from "$interactive/app/browser-shell";
 import { DarkroomLogo } from "$interactive/components/darkroom-logo";
@@ -10,14 +12,13 @@ import { StatusBar } from "$interactive/components/status-bar";
 import { createStatusReporter } from "$interactive/components/status-message";
 import { findCommand } from "$interactive/keys/browser-command";
 import { useSession } from "$interactive/session/session-context";
-import { SessionListDialog } from "$interactive/session/session-list-dialog";
+import { getEditBase, PromptMode } from "$interactive/session/session-state";
 import { SessionTabStrip } from "$interactive/session/session-tab-strip";
 import { SessionTranscript } from "$interactive/session/session-transcript";
 
-import { getGenerateCommands, getGenerateKey } from "./generate-commands";
-import { GenerateConfirmDialog } from "./generate-confirm-dialog";
+import { getBoxHints, getGenerateCommands, getGenerateKey, PromptBasis } from "./generate-commands";
+import { GenerateDialogs } from "./generate-dialogs";
 import { GenerateDialog, INITIAL_GENERATE_STATE, reduceGenerateScreen } from "./generate-screen-state";
-import { ModelPickerDialog } from "./model-picker-dialog";
 import { PromptBox } from "./prompt-box";
 import { getEditorAction } from "./prompt-editor-state";
 
@@ -28,6 +29,7 @@ import type { ReactNode } from "react";
 import type { SessionSummary } from "$history/session-list";
 import type { KeyHint } from "$interactive/components/key-hints";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
+import type { SessionState } from "$interactive/session/session-state";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
 
@@ -58,11 +60,6 @@ export interface GenerateScreenProperties {
 	sessions: ReadonlyArray<SessionSummary>;
 }
 
-const BOX_HINTS: ReadonlyArray<KeyHint> = [
-	["⏎", "generate"],
-	["ctrl+j", "new line"],
-	["ctrl+o", "model"],
-];
 const STATUS_HINTS: ReadonlyArray<KeyHint> = [
 	["tab", "next tab"],
 	["ctrl+n", "new session"],
@@ -79,6 +76,12 @@ const OPEN_SESSIONS: GenerateScreenAction = { dialog: GenerateDialog.Sessions, t
 const CLOSE_DIALOG: GenerateScreenAction = { dialog: undefined, type: "dialog" };
 const CLEAR_PROMPT: GenerateScreenAction = { action: { type: "clear" }, type: "edit" };
 const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: "insert" }, type: "edit" };
+
+function getPromptBasis({ base, mode }: SessionState, canEdit: boolean): PromptBasis {
+	if (base === undefined) return PromptBasis.Nothing;
+	if (mode === PromptMode.New) return PromptBasis.Fresh;
+	return canEdit ? PromptBasis.Editing : PromptBasis.CantEdit;
+}
 
 /**
  * The generate tab, like a chat: the logo and a centered prompt box until
@@ -116,6 +119,9 @@ export function GenerateScreen({
 	const isHome = session.state.turns.length === 0;
 	const boxWidth = isHome ? Math.min(MAX_HOME_WIDTH, columns - 8) : columns - 4;
 	const prompt = screen.editor.text.trim();
+	const base = getEditBase(session.state);
+	const canEdit = model !== undefined && getReferenceRange(model).max > 0;
+	const basis = getPromptBasis(session.state, canEdit);
 
 	function generate(): void {
 		if (model === undefined) {
@@ -123,7 +129,7 @@ export function GenerateScreen({
 		} else if (prompt.length === 0) {
 			reportError("Write a prompt first.");
 		} else {
-			session.actions.send({ model, prompt, type: "new" });
+			session.actions.send({ base, model, prompt, type: "new" });
 			dispatch(CLEAR_PROMPT);
 		}
 	}
@@ -137,12 +143,8 @@ export function GenerateScreen({
 		dispatch(CLOSE_DIALOG);
 	}
 
-	function handleCancel(): void {
-		session.actions.dismiss();
-	}
-
-	function handleConfirm(): void {
-		session.actions.confirm();
+	function handleShiftTab(): void {
+		session.actions.toggleMode();
 	}
 
 	const actions: GenerateActions = {
@@ -171,6 +173,7 @@ export function GenerateScreen({
 		showSessions(): void {
 			dispatch(OPEN_SESSIONS);
 		},
+		toggleMode: session.actions.toggleMode,
 	};
 	const commands = getGenerateCommands(actions);
 
@@ -187,6 +190,8 @@ export function GenerateScreen({
 
 	const promptBox = (
 		<PromptBox
+			canEdit={canEdit}
+			editFileName={base === undefined ? undefined : nodePath.basename(base.path)}
 			editor={screen.editor}
 			model={model}
 			prices={model === undefined ? undefined : getModelPrices(catalog.pricing, catalog.observed, model.id)}
@@ -195,20 +200,20 @@ export function GenerateScreen({
 	);
 	const boxHints = (
 		<Box flexShrink={0} justifyContent="flex-end" width={boxWidth}>
-			<KeyHints hints={BOX_HINTS} />
+			<KeyHints hints={getBoxHints(basis)} />
 		</Box>
 	);
-	const { pending } = session.state;
 
 	return (
 		<BrowserShell
 			capture={captureTyping}
 			columns={columns}
 			commands={commands}
-			hasDialog={screen.dialog !== undefined || pending !== undefined}
+			hasDialog={screen.dialog !== undefined || session.state.pending !== undefined}
 			rows={rows}
 			status={screen.status}
 			onInterrupt={interrupt}
+			onShiftTab={handleShiftTab}
 		>
 			<ScreenHeader title="generate" />
 			<SessionTabStrip columns={columns} />
@@ -235,29 +240,19 @@ export function GenerateScreen({
 			<StatusBar commands={commands} summary={`${catalog.models.length} models`}>
 				<KeyHints hints={STATUS_HINTS} />
 			</StatusBar>
-			{screen.dialog === GenerateDialog.Model ? (
-				<ModelPickerDialog
-					catalog={catalog}
-					columns={columns}
-					currentId={model?.id}
-					recentIds={recentIds}
-					rows={rows}
-					onClose={closeDialog}
-					onPick={onChooseModel}
-				/>
-			) : null}
-			{screen.dialog === GenerateDialog.Sessions ? (
-				<SessionListDialog columns={columns} now={now} rows={rows} sessions={sessions} onClose={closeDialog} />
-			) : null}
-			{pending === undefined ? null : (
-				<GenerateConfirmDialog
-					columns={columns}
-					pending={pending}
-					rows={rows}
-					onCancel={handleCancel}
-					onConfirm={handleConfirm}
-				/>
-			)}
+			<GenerateDialogs
+				catalog={catalog}
+				columns={columns}
+				currentModelId={model?.id}
+				dialog={screen.dialog}
+				isEditing={base !== undefined}
+				now={now}
+				recentIds={recentIds}
+				rows={rows}
+				sessions={sessions}
+				onChooseModel={onChooseModel}
+				onClose={closeDialog}
+			/>
 		</BrowserShell>
 	);
 }

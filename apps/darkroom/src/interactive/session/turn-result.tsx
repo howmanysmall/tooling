@@ -1,11 +1,11 @@
-import { cwd } from "node:process";
 import { Box, Text } from "ink";
 
 import { theme } from "$interactive/components/theme";
 
 import { useModelName } from "./model-name-context";
 import { TurnImages } from "./turn-images";
-import { getTurnPaths, summarizeTurn } from "./turn-summary";
+import { TurnPathLine } from "./turn-path-line";
+import { summarizeTurn } from "./turn-summary";
 
 import type { ReactNode } from "react";
 
@@ -45,11 +45,9 @@ export function TurnResult({ box, getPreview, turn }: Readonly<TurnResultPropert
 					<Text color={theme.accent}>{"◆ "}</Text>
 					<Text color={theme.muted}>{summarizeTurn(turn, modelName)}</Text>
 				</Text>
-				{getTurnPaths(turn, cwd()).map((path) => (
-					<Text key={path} color={theme.muted} wrap="truncate-middle">
-						{`  ${path}`}
-					</Text>
-				))}
+				{(turn.result?.images ?? NO_IMAGES).flatMap(({ mediaType, path }) =>
+					path === undefined ? [] : [<TurnPathLine key={path} mediaType={mediaType} path={path} />],
+				)}
 			</Box>
 		</Box>
 	);

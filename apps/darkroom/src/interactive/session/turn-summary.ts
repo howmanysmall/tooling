@@ -1,6 +1,6 @@
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 
-import { formatCost, toDisplayPath } from "$generation/format-result";
+import { formatCost } from "$generation/format-result";
 
 import type { SessionTurn } from "./session-state";
 
@@ -27,15 +27,4 @@ export function summarizeTurn(turn: SessionTurn, modelName: string): string {
 		}
 	}
 	return parts.filter((part) => part !== undefined).join(" · ");
-}
-
-/**
- * Where a finished turn's images were saved, relative to `cwd` when inside it.
- *
- * @param turn - A finished turn.
- * @param cwd - The working directory.
- * @returns One path per saved image.
- */
-export function getTurnPaths(turn: SessionTurn, cwd: string): Array<string> {
-	return (turn.result?.images ?? []).flatMap(({ path }) => (path === undefined ? [] : [toDisplayPath(path, cwd)]));
 }

@@ -27,6 +27,10 @@ lights up the cells and copies the text through OSC 52 when you let go.
   and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`
   continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,
   `ctrl+w`, `ctrl+u`, and `ctrl+k` work.
+- **editing**: once a session has an image, the next prompt edits it: the newest image goes to the model as a
+  reference, and the prompt box reads `Edit ◧ <file>`. Click any earlier image, or its path, to edit that one instead,
+  which branches from there. `shift+tab` switches to `New`, which starts fresh. A model that can't take images says
+  so, `ctrl+o` then lists only models that can, and a request sent anyway starts fresh with a warning first.
 - **sessions**: each conversation of prompts is a session, and the open ones are tabs over the prompt box, named by
   their first prompt. A tab shows a spinner while it generates and a dot when it finishes out of sight. `ctrl+n` or `+`
   opens a new session, `alt+↑` and `alt+↓` switch, and `ctrl+s` lists past sessions to resume. Closing a tab, with its
