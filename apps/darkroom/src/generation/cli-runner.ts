@@ -17,6 +17,7 @@ import { InterruptAction, InterruptGuard } from "./interrupt-guard";
 
 import type { EstimateRequest } from "./cost-estimate";
 import type { StreamProgress } from "./image-stream";
+import type { ObservedPrices } from "./observed-prices";
 import type { GenerationInput, GenerationResult, PreparedGeneration } from "./run-generation";
 
 // Shared by `generate`, `history rerun`, and interactive mode: everything
@@ -28,6 +29,25 @@ export const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
 export function getHistoryStore(): HistoryStore {
 	return new HistoryStore(environmentPaths.data);
+}
+
+/**
+ * Reads what each model has cost per image in past runs. Estimates are only
+ * a convenience, so an unreadable history gives none instead of failing.
+ *
+ * @returns The observed prices, keyed by model ID.
+ */
+export async function readObservedPricesAsync(): Promise<ObservedPrices> {
+	const { getObservedPrices } = await import("./observed-prices");
+	try {
+		const entries = await getHistoryStore().readAllAsync((message) => {
+			log.debug(message);
+		});
+		return getObservedPrices(entries);
+	} catch (error) {
+		log.debug(`Could not read past prices: ${error instanceof Error ? error.message : String(error)}`);
+		return new Map();
+	}
 }
 
 export async function readStdinAsync(): Promise<string> {
@@ -208,11 +228,14 @@ export async function describeCostAsync(prepared: PreparedGeneration): Promise<s
 		import("$utilities/model-pricing-utilities"),
 	]);
 	try {
-		const pricing = await getModelPricingAsync(true, (message) => {
-			log.debug(message);
-		});
+		const [pricing, observed] = await Promise.all([
+			getModelPricingAsync(true, (message) => {
+				log.debug(message);
+			}),
+			readObservedPricesAsync(),
+		]);
 		const endpoints = pricing[prepared.model.id] ?? [];
-		const estimate = getCostEstimate(endpoints, toEstimateRequest(prepared));
+		const estimate = getCostEstimate(endpoints, toEstimateRequest(prepared), observed.get(prepared.model.id));
 		return describeEstimate(estimate, endpoints);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);

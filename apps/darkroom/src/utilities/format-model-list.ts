@@ -1,23 +1,24 @@
 import { Table } from "@cliffy/table";
 
-import { formatUnitPrice, getListPrice } from "$generation/cost-estimate";
 import { getCountRange, getReferenceRange } from "$generation/model-capabilities";
+import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { formatJson, trimTrailingSpaces } from "./output-format-utilities";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
+import type { ObservedPrices } from "$generation/observed-prices";
+
 import type { ModelPricing } from "./model-pricing-utilities";
 
-function toRow(model: ImageModelListItem, pricing: ModelPricing): Array<string> {
-	const price = getListPrice(pricing[model.id] ?? []);
+function toRow(model: ImageModelListItem, pricing: ModelPricing, observed?: ObservedPrices): Array<string> {
 	const references = getReferenceRange(model).max;
 	const count = getCountRange(model).max;
 	return [
 		model.id,
 		model.name,
-		price === undefined ? "?" : formatUnitPrice(price),
+		describeListPrice(getModelPrices(pricing, observed, model.id)),
 		references === 0 ? "-" : `≤${references}`,
 		`≤${count}`,
 	];
@@ -33,6 +34,8 @@ const HEADER = ["ID", "Name", "Price", "Refs", "Count"];
  * @param format - The `--format` value, if given.
  * @param isTerminal - Whether stdout is a terminal. Without `--format`, a
  *   terminal gets a table and a pipe gets one ID per line.
+ * @param observed - What models have cost per image in past runs, shown as
+ *   `≈ $0.04/img` for models priced by the token or megapixel.
  * @returns The text to print.
  */
 export function formatModelList(
@@ -40,9 +43,10 @@ export function formatModelList(
 	pricing: ModelPricing,
 	format: OutputFormat | undefined,
 	isTerminal: boolean,
+	observed?: ObservedPrices,
 ): string {
 	if (format === undefined && !isTerminal) return models.map((model) => model.id).join("\n");
-	const rows = models.map((model) => toRow(model, pricing));
+	const rows = models.map((model) => toRow(model, pricing, observed));
 	const outputFormat = format ?? OutputFormat.Table;
 
 	switch (outputFormat) {

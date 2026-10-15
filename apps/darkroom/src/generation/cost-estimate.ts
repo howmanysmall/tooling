@@ -22,6 +22,13 @@ export interface EstimateRequest {
 	readonly resolution?: string | undefined;
 }
 
+/** What a model has actually cost per image in past runs. */
+export interface ObservedPrice {
+	/** How many images the average covers. */
+	readonly images: number;
+	readonly usdPerImage: number;
+}
+
 export interface CostEstimate {
 	/**
 	 * Some charges (megapixel rounding, tokens) could not be computed exactly.
@@ -55,7 +62,7 @@ const RATIO_PATTERN = /^(?<width>\d+(?:\.\d+)?):(?<height>\d+(?:\.\d+)?)$/u;
  * @returns The size in megapixels, or `undefined` when either is unknown or
  *   the ratio is `auto`.
  */
-export function getMegapixels(resolution: string | undefined, aspectRatio: string | undefined): number | undefined {
+export function getMegapixels(resolution?: string, aspectRatio?: string): number | undefined {
 	const longEdge = TIER_PIXELS.get(resolution?.toLowerCase() ?? "");
 	const match = RATIO_PATTERN.exec(aspectRatio ?? "");
 	if (longEdge === undefined || match === null) return undefined;
@@ -133,25 +140,32 @@ function getEndpointEstimate(endpoint: EndpointPricing, request: EstimateRequest
 	};
 }
 
+/** The `provider` of an estimate made from past runs. */
+export const PAST_RUNS = "past runs";
+
 /**
  * Estimates what a request will cost on the cheapest endpoint that can price
- * it.
+ * it. When no published price can (token pricing, or a megapixel price
+ * without a known size), the model's average from past runs stands in.
  *
  * @param endpoints - The model's endpoints and their prices.
  * @param request - The count, size, and references being asked for.
- * @returns The estimate, or `undefined` when no endpoint's price can be
- *   computed (token pricing, or a megapixel price without a known size).
+ * @param observed - What the model has cost per image before, if known.
+ * @returns The estimate, or `undefined` when nothing can price it.
  */
 export function getCostEstimate(
 	endpoints: ReadonlyArray<EndpointPricing>,
 	request: EstimateRequest,
+	observed?: ObservedPrice,
 ): CostEstimate | undefined {
 	let cheapest: CostEstimate | undefined;
 	for (const endpoint of endpoints) {
 		const estimate = getEndpointEstimate(endpoint, request);
 		if (estimate !== undefined && (cheapest === undefined || estimate.usd < cheapest.usd)) cheapest = estimate;
 	}
-	return cheapest;
+	if (cheapest !== undefined || observed === undefined) return cheapest;
+
+	return { isApproximate: true, provider: PAST_RUNS, usd: observed.usdPerImage * request.count };
 }
 
 const UNIT_LABELS: ReadonlyMap<string, string> = new Map([
@@ -194,7 +208,7 @@ export function getListPrice(endpoints: ReadonlyArray<EndpointPricing>): Pricing
 
 const UNIT_ORDER: ReadonlyArray<string> = ["image", "request", "megapixel", "token"];
 
-function getUnitRank(entry: PricingEntry | undefined): number {
+function getUnitRank(entry?: PricingEntry): number {
 	if (entry === undefined) return UNIT_ORDER.length + 1;
 
 	const rank = UNIT_ORDER.indexOf(entry.unit);
@@ -209,16 +223,23 @@ function getUnitRank(entry: PricingEntry | undefined): number {
  * @param second - Another model's list price.
  * @returns A negative number when `first` sorts first.
  */
-export function comparePrices(first: PricingEntry | undefined, second: PricingEntry | undefined): number {
+export function comparePrices(first?: PricingEntry, second?: PricingEntry): number {
 	const byUnit = getUnitRank(first) - getUnitRank(second);
 	if (byUnit !== 0) return byUnit;
 
 	return (first?.costUsd ?? 0) - (second?.costUsd ?? 0);
 }
 
+function describeAmount({ isApproximate, provider, usd }: CostEstimate): string {
+	const amount = priceFormatter.format(usd);
+	if (provider === PAST_RUNS) return `≈ ${amount} (from past runs)`;
+
+	return isApproximate ? `≈ ${amount}` : amount;
+}
+
 /**
- * Describes an estimate for people, like `$0.08`, `≈ $0.08`, or
- * `unknown (from $30/M tok)`.
+ * Describes an estimate for people, like `$0.08`, `≈ $0.08`,
+ * `≈ $0.08 (from past runs)`, or `unknown (from $30/M tok)`.
  *
  * @param estimate - The estimate, if one could be made.
  * @param endpoints - The model's prices, to show a unit price instead.
@@ -228,10 +249,8 @@ export function describeEstimate(
 	estimate: CostEstimate | undefined,
 	endpoints: ReadonlyArray<EndpointPricing>,
 ): string {
-	if (estimate !== undefined) {
-		const amount = priceFormatter.format(estimate.usd);
-		return estimate.isApproximate ? `≈ ${amount}` : amount;
-	}
+	if (estimate !== undefined) return describeAmount(estimate);
+
 	const price = getListPrice(endpoints);
 	return price === undefined ? "unknown" : `unknown (from ${formatUnitPrice(price)})`;
 }

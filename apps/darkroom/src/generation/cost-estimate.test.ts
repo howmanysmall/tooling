@@ -80,6 +80,16 @@ describe("getCostEstimate", () => {
 		expect(getCostEstimate(QUALITY_TIERS, { count: 1, referenceCount: 0 })).toBeUndefined();
 	});
 
+	it("falls back to what the model cost in past runs when no published price can say", ({ expect }) => {
+		expect.assertions(2);
+
+		const observed = { images: 4, usdPerImage: 0.04 };
+		const estimate = getCostEstimate(PER_TOKEN, { count: 2, referenceCount: 0 }, observed);
+
+		expect(estimate?.usd).toBeCloseTo(0.08);
+		expect(describeEstimate(estimate, PER_TOKEN)).toBe("≈ $0.08 (from past runs)");
+	});
+
 	it("picks the cheapest endpoint", ({ expect }) => {
 		expect.assertions(1);
 

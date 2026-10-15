@@ -1,7 +1,9 @@
-import { comparePrices, getListPrice } from "$generation/cost-estimate";
 import { getCountRange, getEnumValues, getReferenceRange } from "$generation/model-capabilities";
+import { compareModelPrices, getModelPrices } from "$generation/observed-prices";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
+
+import type { ObservedPrices } from "$generation/observed-prices";
 
 import type { ModelPricing } from "./model-pricing-utilities";
 
@@ -68,15 +70,17 @@ const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "bas
  * Sorts models for `models list`.
  *
  * @param models - The filtered image models.
- * @param modelSort - `name`, `price` (per-image first, then other units), or
- *   `created` (newest first).
+ * @param modelSort - `name`, `price` (per image, published or from past runs,
+ *   then other units), or `created` (newest first).
  * @param modelPricing - Every model's prices.
+ * @param observed - What models have cost per image in past runs.
  * @returns A sorted copy.
  */
 export function sortModels(
 	models: ReadonlyArray<ImageModelListItem>,
 	modelSort: ModelSort,
 	modelPricing: ModelPricing,
+	observed?: ObservedPrices,
 ): Array<ImageModelListItem> {
 	switch (modelSort) {
 		case ModelSort.Created:
@@ -87,7 +91,10 @@ export function sortModels(
 
 		case ModelSort.Price: {
 			return models.toSorted((first, second) =>
-				comparePrices(getListPrice(modelPricing[first.id] ?? []), getListPrice(modelPricing[second.id] ?? [])),
+				compareModelPrices(
+					getModelPrices(modelPricing, observed, first.id),
+					getModelPrices(modelPricing, observed, second.id),
+				),
 			);
 		}
 
