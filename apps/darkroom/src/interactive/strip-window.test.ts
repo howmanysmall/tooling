@@ -11,7 +11,7 @@ describe("getStripWindow", () => {
 		expect(getStripWindow(LETTERS, 3, 10)).toStrictEqual({ after: 0, before: 0, shown: LETTERS });
 	});
 
-	it("centres the selected item and counts the hidden ones on each side", ({ expect }) => {
+	it("centers the selected item and counts the hidden ones on each side", ({ expect }) => {
 		expect.assertions(1);
 
 		expect(getStripWindow(LETTERS, 3, 3)).toStrictEqual({ after: 2, before: 2, shown: ["c", "d", "e"] });

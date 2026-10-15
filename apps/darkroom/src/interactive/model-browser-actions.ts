@@ -1,5 +1,6 @@
 import { formatClipboardSequence } from "./browser-keys";
 import { createCursorActions } from "./cursor-actions";
+import { createStatusReporter } from "./status-message";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { Dispatch } from "react";
@@ -64,7 +65,7 @@ export function createModelBrowserActions({
 			if (selected === undefined) return;
 
 			write(formatClipboardSequence(selected.id));
-			dispatch({ status: { text: `Copied ${selected.id}`, tone: "success" }, type: "status" });
+			createStatusReporter(dispatch).reportSuccess(`Copied ${selected.id}`);
 		},
 		cycleSort(): void {
 			dispatch(NEXT_SORT);

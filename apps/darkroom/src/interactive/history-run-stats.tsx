@@ -11,11 +11,11 @@ export interface HistoryRunStatsProperties {
 }
 
 /**
- * A run's headline facts as labelled columns.
+ * A run's headline facts as labeled columns.
  *
  * @param properties - What to summarize.
  * @param properties.entry - The run whose model, time, size, images, and cost to show.
- * @returns A row of labelled columns.
+ * @returns A row of labeled columns.
  */
 export function HistoryRunStats({ entry }: Readonly<HistoryRunStatsProperties>): ReactNode {
 	const {

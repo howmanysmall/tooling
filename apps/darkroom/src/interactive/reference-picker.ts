@@ -102,7 +102,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 	}
 
 	private describeChoice(): string {
-		if (this.state === "cancel") return "cancelled";
+		if (this.state === "cancel") return "canceled";
 		const names = this.picker.selected.map((path) => nodePath.basename(path));
 		return names.length === 0 ? "none" : formatArrayAsEnglishList(names);
 	}

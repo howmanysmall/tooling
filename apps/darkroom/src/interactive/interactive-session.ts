@@ -7,7 +7,7 @@ import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 
 import { confirmAndGenerateAsync } from "./confirm-and-generate";
 import { editInEditorAsync, getEditor } from "./edit-in-editor";
-import { exitIfCancelled } from "./exit-if-cancelled";
+import { exitIfCanceled } from "./exit-if-canceled";
 import { pickReferencesAsync } from "./reference-picker";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
@@ -73,7 +73,7 @@ async function askModelAsync(): Promise<ImageModelListItem> {
 			value: model.id,
 		})),
 	});
-	exitIfCancelled(id);
+	exitIfCanceled(id);
 	const model = models.find((item) => item.id === id);
 	if (model === undefined) throw new Error(`Unknown model ${id}.`);
 	return model;
@@ -88,7 +88,7 @@ async function askOncePromptAsync(editor?: string): Promise<string | undefined> 
 				{ label: `Open in ${editor}`, value: true },
 			],
 		});
-		exitIfCancelled(useEditor);
+		exitIfCanceled(useEditor);
 		if (useEditor) return editInEditorAsync(editor);
 	}
 
@@ -96,7 +96,7 @@ async function askOncePromptAsync(editor?: string): Promise<string | undefined> 
 		message: "Prompt",
 		validate: (value) => ((value ?? "").trim() === "" ? "Write a prompt." : undefined),
 	});
-	exitIfCancelled(typed);
+	exitIfCanceled(typed);
 	return typed;
 }
 
@@ -116,7 +116,7 @@ async function askReferencesAsync(model: ImageModelListItem): Promise<Array<Refe
 	if (max === 0) return [];
 
 	const picked = await pickReferencesAsync({ directory: cwd(), max, message: "Reference images", output: stdout });
-	exitIfCancelled(picked);
+	exitIfCanceled(picked);
 	const paths = picked ?? [];
 	const { loadReferenceAsync } = await import("$generation/references");
 	return Promise.all(paths.map(async (path) => loadReferenceAsync(path)));
@@ -132,7 +132,7 @@ async function askChoiceAsync(
 	if (values.length === 1) return values[0];
 
 	const choice = await select({ message, options: values.map((value) => ({ label: value, value })) });
-	exitIfCancelled(choice);
+	exitIfCanceled(choice);
 	return choice;
 }
 
@@ -147,7 +147,7 @@ async function askCountAsync(model: ImageModelListItem): Promise<number> {
 			return Number.isInteger(count) && count >= min && count <= max ? undefined : `Enter ${min} to ${max}.`;
 		},
 	});
-	exitIfCancelled(answer);
+	exitIfCanceled(answer);
 	return Number(answer);
 }
 

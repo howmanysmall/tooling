@@ -36,6 +36,10 @@ const COMPARISON: ReadonlyArray<HistoryEntry> = [
 	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB2", { batch: BATCH, model: "zeta/zeta-model" }),
 	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB1", { batch: BATCH, model: "alpha/alpha-model" }),
 ];
+const CTRL_P = "\u0010";
+const HELP_DIALOG = /Keys[\s\S]*y +Copy run ID[\s\S]*ctrl\+p +Command palette/u;
+const PALETTE_MATCH = /Commands[\s\S]*Re-run +r/u;
+const DELETE_DIALOG = /Delete run[\s\S]*“a cat in a hat”[\s\S]*y delete/u;
 const COMPARED_ROW = /compared +01M4YVAA · alpha-model/u;
 // Ordered by model, with the selected (newest) run marked.
 const STRIP_LABELS = /alpha-model +▲ zeta-model/u;
@@ -154,7 +158,7 @@ describe("history browser", () => {
 		await expect.poll(() => String(instance.lastFrame())).toMatch(PREVIEW_THEN_ID);
 	});
 
-	it("shows a comparison's images side by side, labelled by model", async ({ expect }) => {
+	it("shows a comparison's images side by side, labeled by model", async ({ expect }) => {
 		// oxlint-disable-next-line small-rules/prefer-expect-assertions -- vitest counts expect.poll, this rule does not
 		expect.assertions(2);
 
@@ -186,7 +190,7 @@ describe("history browser", () => {
 		const browser = await renderBrowserAsync();
 		await browser.pressAsync("d");
 
-		expect(browser.frame()).toContain("Delete “a cat in a hat” and its stored images?");
+		expect(browser.frame()).toMatch(DELETE_DIALOG);
 
 		await browser.pressAsync("n");
 
@@ -204,6 +208,32 @@ describe("history browser", () => {
 		// updates.
 		await expect.poll(browser.frame).toMatch(showsDetailFor(OLDEST));
 		await expect(readIdsAsync(browser.store)).resolves.toStrictEqual([OLDEST.id, NEWEST.id]);
+	});
+
+	it("lists every key in the ? help, and any key closes it", async ({ expect }) => {
+		expect.assertions(2);
+
+		const browser = await renderBrowserAsync();
+		await browser.pressAsync("?");
+
+		expect(browser.frame()).toMatch(HELP_DIALOG);
+
+		await browser.pressAsync("x");
+
+		expect(browser.frame()).not.toContain("Command palette");
+	});
+
+	it("finds and runs a command from the ctrl+p palette", async ({ expect }) => {
+		expect.assertions(2);
+
+		const browser = await renderBrowserAsync();
+		await browser.pressAsync(CTRL_P, "re-r");
+
+		expect(browser.frame()).toMatch(PALETTE_MATCH);
+
+		await browser.pressAsync(ENTER);
+
+		expect(browser.reruns).toStrictEqual([NEWEST.id]);
 	});
 
 	it("opens the selected run with Enter and hands it over for a re-run with r", async ({ expect }) => {

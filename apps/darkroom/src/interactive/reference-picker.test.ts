@@ -83,7 +83,7 @@ describe("pickReferencesAsync", () => {
 		expect(session.readScreen()).toContain("This model takes at most 1 reference image.");
 	});
 
-	it("can be cancelled", async ({ expect }) => {
+	it("can be canceled", async ({ expect }) => {
 		expect.assertions(1);
 
 		const session = startPicker(await createFolderAsync(), 2);

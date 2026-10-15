@@ -4,6 +4,7 @@ import { formatClipboardSequence } from "./browser-keys";
 import { createCursorActions } from "./cursor-actions";
 import { BrowserMode } from "./history-browser-state";
 import { runBrowserTask } from "./run-browser-task";
+import { createStatusReporter } from "./status-message";
 
 import type { Dispatch } from "react";
 
@@ -32,7 +33,7 @@ const BACK_TO_LIST: BrowserAction = { mode: BrowserMode.Normal, type: "mode" };
 
 /**
  * Builds what the browser's keys and inputs can do. Each action that touches
- * the disk reports its outcome in the footer instead of throwing.
+ * the disk reports its outcome in a toast instead of throwing.
  *
  * @param environment - The reducer, the selected run, and the services.
  * @param environment.dispatch - Sends actions to the browser reducer.
@@ -51,13 +52,7 @@ export function createBrowserActions({
 	services,
 	write,
 }: ActionEnvironment): HistoryBrowserActions {
-	function reportSuccess(text: string): void {
-		dispatch({ status: { text, tone: "success" }, type: "status" });
-	}
-
-	function reportError(text: string): void {
-		dispatch({ status: { text, tone: "error" }, type: "status" });
-	}
+	const { reportError, reportSuccess } = createStatusReporter(dispatch);
 
 	return {
 		...createCursorActions(dispatch, pageSize),

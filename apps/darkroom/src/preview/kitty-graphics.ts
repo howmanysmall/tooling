@@ -49,7 +49,7 @@ function getDiacritic(index: number): string {
 
 /**
  * Builds the text that shows a transmitted image: one placeholder per cell,
- * coloured with the image ID and marked with its row and column.
+ * colored with the image ID and marked with its row and column.
  *
  * @param id - The image ID.
  * @param cells - The cells the image was transmitted for.

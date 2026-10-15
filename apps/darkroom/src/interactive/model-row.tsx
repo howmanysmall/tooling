@@ -34,7 +34,7 @@ export function ModelRow({ model }: Readonly<ModelRowProperties>): ReactNode {
 	const price = describeListPrice(getPrices(model));
 
 	return (
-		<Box columnGap={1} flexShrink={0}>
+		<Box backgroundColor={isSelected ? theme.element : theme.panel} columnGap={1} flexShrink={0} paddingRight={1}>
 			<Box flexBasis={0} flexGrow={1} overflow="hidden">
 				<Text wrap="truncate-end">
 					<Text color={theme.accent}>{isSelected ? "▌ " : "  "}</Text>

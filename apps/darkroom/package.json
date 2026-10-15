@@ -61,6 +61,7 @@
 		"consola": "catalog:runtime",
 		"effect": "catalog:runtime",
 		"env-paths": "catalog:runtime",
+		"fzf": "catalog:runtime",
 		"ink": "catalog:runtime",
 		"pretty-bytes": "catalog:runtime",
 		"react": "catalog:runtime",

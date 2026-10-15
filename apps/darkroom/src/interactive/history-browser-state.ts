@@ -1,9 +1,10 @@
 import { clampCursor, moveCursor } from "./list-cursor";
+import { reduceStatus } from "./status-message";
 
 import type { HistoryEntry } from "$history/history-entry";
 
 import type { CursorMove } from "./list-cursor";
-import type { StatusMessage } from "./status-message";
+import type { StatusAction, StatusMessage } from "./status-message";
 
 export const enum BrowserMode {
 	/** Asking whether to delete the selected run. */
@@ -26,10 +27,10 @@ export interface BrowserState {
 
 export type BrowserAction =
 	| CursorMove
+	| StatusAction
 	| { readonly filter: string; readonly type: "filter" }
 	| { readonly id: string; readonly type: "removed" }
 	| { readonly mode: BrowserMode; readonly type: "mode" }
-	| { readonly status: StatusMessage | undefined; readonly type: "status" }
 	| { readonly type: "cancel-filter" };
 
 export function createBrowserState(entries: ReadonlyArray<HistoryEntry>): BrowserState {
@@ -66,12 +67,12 @@ function isNavigation(action: BrowserAction): action is CursorMove {
 }
 
 function reduceNavigation(state: BrowserState, action: CursorMove): BrowserState {
-	return { ...state, cursor: moveCursor(state.cursor, action, getVisibleRuns(state).length), status: undefined };
+	return { ...state, cursor: moveCursor(state.cursor, action, getVisibleRuns(state).length) };
 }
 
 function setFilter(state: BrowserState, filter: string): BrowserState {
 	// The filter input reports its text from an effect, which can land after
-	// the filter was cancelled.
+	// the filter was canceled.
 	if (state.mode !== BrowserMode.Filter) return state;
 
 	// The input also re-reports unchanged text whenever its callback changes;
@@ -105,12 +106,12 @@ export function reduceBrowserState(state: BrowserState, action: BrowserAction): 
 			return setFilter(state, action.filter);
 
 		case "mode":
-			return { ...state, mode: action.mode, status: undefined };
+			return { ...state, mode: action.mode };
 
 		case "removed":
 			return removeRun(state, action.id);
 
 		default:
-			return { ...state, status: action.status };
+			return { ...state, status: reduceStatus(state.status, action) };
 	}
 }

@@ -33,7 +33,7 @@ export function HistoryRunRow({ entry }: Readonly<HistoryRunRowProperties>): Rea
 	const bar = isSelected ? "▌ " : "  ";
 
 	return (
-		<Box flexDirection="column" flexShrink={0}>
+		<Box backgroundColor={isSelected ? theme.element : theme.panel} flexDirection="column" flexShrink={0}>
 			<Text wrap="truncate-end">
 				<Text color={theme.accent}>{bar}</Text>
 				<Text bold={isSelected}>{previewPrompt(entry.prompt, MAX_PROMPT_LENGTH)}</Text>

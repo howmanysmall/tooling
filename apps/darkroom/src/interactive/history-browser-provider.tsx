@@ -25,12 +25,12 @@ export interface HistoryBrowserProviderProperties {
 	children: ReactNode;
 }
 
-// The header, the footer, and the list's top and bottom borders.
+// The header, the status bar, and the list's padding above and below.
 const CHROME_ROWS = 4;
-// The gap between the panes, then the detail pane's borders and padding.
-const DETAIL_CHROME_COLUMNS = 1 + 2 + 4;
-// The detail pane's borders and padding, above and below.
-const DETAIL_CHROME_ROWS = 2 + 2;
+// The gap between the panes, then the detail pane's padding on each side.
+const DETAIL_CHROME_COLUMNS = 1 + 6;
+// The detail pane's padding, above and below.
+const DETAIL_CHROME_ROWS = 2;
 // The share of the width the run list gets; the image gets the rest.
 const LIST_SHARE = 0.42;
 // The share of the detail pane the image may fill.

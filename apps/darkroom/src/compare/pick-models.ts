@@ -14,7 +14,7 @@ function describeModel(model: ImageModelListItem): string {
  * Asks which models to compare, on stderr. `DARKROOM_MODEL` starts selected.
  *
  * @returns The chosen model IDs, in list order.
- * @rejects An `InterruptedError` (exit 130) when the prompt is cancelled.
+ * @rejects An `InterruptedError` (exit 130) when the prompt is canceled.
  */
 export async function pickModelsAsync(): Promise<Array<string>> {
 	const [{ getImageModelsAsync }, { getEnvironmentAsync }] = await Promise.all([

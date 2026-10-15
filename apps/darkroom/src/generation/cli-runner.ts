@@ -73,8 +73,8 @@ export async function askForPromptAsync(): Promise<string> {
 	const { cancel, isCancel, multiline } = await import("@clack/prompts");
 	const answer = await multiline({ message: "Prompt", output: stderr });
 	if (isCancel(answer)) {
-		cancel("Cancelled.");
-		throw new InterruptedError("Cancelled.");
+		cancel("Canceled.");
+		throw new InterruptedError("Canceled.");
 	}
 	return answer;
 }

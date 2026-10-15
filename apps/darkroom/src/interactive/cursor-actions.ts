@@ -1,4 +1,18 @@
+import { CommandGroup } from "./browser-command";
+import { BrowserKey } from "./browser-keys";
+
+import type { BrowserCommand } from "./browser-command";
 import type { CursorMove } from "./list-cursor";
+
+/** What a browser calls its rows, for the navigation commands' titles. */
+export interface RowNames {
+	/** The row `g` goes to, like `Newest run`. */
+	readonly first: string;
+	/** One row, like `run`. */
+	readonly item: string;
+	/** The row `G` goes to, like `Oldest run`. */
+	readonly last: string;
+}
 
 /** The keys that move a browser's cursor. */
 export interface CursorActions {
@@ -14,6 +28,25 @@ const MOVE_DOWN: CursorMove = { delta: 1, type: "move" };
 const MOVE_UP: CursorMove = { delta: -1, type: "move" };
 const MOVE_FIRST: CursorMove = { type: "first" };
 const MOVE_LAST: CursorMove = { type: "last" };
+
+/**
+ * The navigation commands every browser shares, for help to list.
+ *
+ * @param actions - The browser's cursor actions.
+ * @param names - What the browser calls its rows.
+ * @returns The movement commands with their keys.
+ */
+export function getNavigationCommands(actions: CursorActions, names: RowNames): Array<BrowserCommand> {
+	const group = CommandGroup.Navigate;
+	return [
+		{ key: BrowserKey.Up, group, keyLabel: "↑ k", run: actions.moveUp, title: `Previous ${names.item}` },
+		{ key: BrowserKey.Down, group, keyLabel: "↓ j", run: actions.moveDown, title: `Next ${names.item}` },
+		{ key: BrowserKey.PageUp, group, keyLabel: "pgup", run: actions.movePageUp, title: "Page up" },
+		{ key: BrowserKey.PageDown, group, keyLabel: "pgdn", run: actions.movePageDown, title: "Page down" },
+		{ key: BrowserKey.First, group, keyLabel: "g", run: actions.moveToFirst, title: names.first },
+		{ key: BrowserKey.Last, group, keyLabel: "G", run: actions.moveToLast, title: names.last },
+	];
+}
 
 /**
  * Builds the cursor movements every browser shares.

@@ -16,7 +16,7 @@ export interface FactColumnsProperties {
  *
  * @param properties - What to show.
  * @param properties.facts - The facts, left to right.
- * @returns A row of labelled columns.
+ * @returns A row of labeled columns.
  */
 export function FactColumns({ facts }: Readonly<FactColumnsProperties>): ReactNode {
 	return (
