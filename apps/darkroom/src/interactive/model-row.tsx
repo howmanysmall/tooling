@@ -4,6 +4,8 @@ import { describeListPrice, UNKNOWN_PRICE } from "$generation/observed-prices";
 
 import { useModelBrowser } from "./model-browser-context";
 import { splitModelName } from "./model-facts";
+import { useMouseTarget } from "./mouse-context";
+import { getRowBackground } from "./row-background";
 import { theme } from "./theme";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
@@ -18,7 +20,8 @@ const PRICE_WIDTH = 13;
 
 /**
  * One model in the list: its name and maker, with its price at the right
- * edge. The selected model gets the accent bar and a bold name.
+ * edge. The selected model gets the accent bar and a bold name; the one
+ * under the pointer is lit, and a click selects it.
  *
  * @param properties - What to list.
  * @param properties.model - The image model.
@@ -26,15 +29,27 @@ const PRICE_WIDTH = 13;
  */
 export function ModelRow({ model }: Readonly<ModelRowProperties>): ReactNode {
 	const {
+		actions: { selectModel },
 		meta: { getPrices },
 		state: { selected },
 	} = useModelBrowser();
+	const { attachNode, isHovered } = useMouseTarget(`model:${model.id}`, {
+		onClick(): void {
+			selectModel(model.id);
+		},
+	});
 	const isSelected = model.id === selected?.id;
 	const { name, provider } = splitModelName(model.name);
 	const price = describeListPrice(getPrices(model));
 
 	return (
-		<Box backgroundColor={isSelected ? theme.element : theme.panel} columnGap={1} flexShrink={0} paddingRight={1}>
+		<Box
+			ref={attachNode}
+			backgroundColor={getRowBackground(isSelected, isHovered)}
+			columnGap={1}
+			flexShrink={0}
+			paddingRight={1}
+		>
 			<Box flexBasis={0} flexGrow={1} overflow="hidden">
 				<Text wrap="truncate-end">
 					<Text color={theme.accent}>{isSelected ? "▌ " : "  "}</Text>

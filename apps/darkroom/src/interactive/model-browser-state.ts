@@ -1,6 +1,6 @@
 import { filterModels, ModelSort, sortModels } from "$utilities/model-filters";
 
-import { clampCursor, moveCursor } from "./list-cursor";
+import { clampCursor, isCursorMove, moveCursor } from "./list-cursor";
 import { reduceStatus } from "./status-message";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
@@ -41,6 +41,7 @@ export type ModelBrowserAction =
 	| CursorMove
 	| StatusAction
 	| { readonly filter: string; readonly type: "filter" }
+	| { readonly id: string; readonly type: "select" }
 	| { readonly isFiltering: boolean; readonly type: "filtering" }
 	| { readonly type: "cancel-filter" }
 	| { readonly type: "next-sort" }
@@ -80,10 +81,6 @@ export function getVisibleModels(state: ModelBrowserState): Array<ImageModelList
 	const { models, observed, pricing } = state.catalog;
 	const search = state.filter.length === 0 ? undefined : state.filter;
 	return sortModels(filterModels(models, { search }), state.sort, pricing, observed);
-}
-
-function isCursorMove(action: ModelBrowserAction): action is CursorMove {
-	return action.type === "move" || action.type === "first" || action.type === "last";
 }
 
 function setFilter(state: ModelBrowserState, filter: string): ModelBrowserState {
@@ -129,6 +126,11 @@ export function reduceModelBrowserState(state: ModelBrowserState, action: ModelB
 
 		case "next-sort":
 			return cycleSort(state);
+
+		case "select": {
+			const index = getVisibleModels(state).findIndex((model) => model.id === action.id);
+			return index === -1 ? state : { ...state, cursor: index };
+		}
 
 		case "switch-example":
 			return { ...state, prefersShipped: !state.prefersShipped };

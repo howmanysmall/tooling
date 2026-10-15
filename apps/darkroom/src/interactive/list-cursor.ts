@@ -1,8 +1,27 @@
-/** How a key moves the cursor through a list. */
+/** How a key, a click, or the wheel moves the cursor through a list. */
 export type CursorMove =
 	| { readonly delta: number; readonly type: "move" }
+	| { readonly index: number; readonly type: "to" }
 	| { readonly type: "first" }
 	| { readonly type: "last" };
+
+const CURSOR_MOVES: ReadonlySet<string> = new Set(["first", "last", "move", "to"]);
+
+/**
+ * Tells cursor moves from a browser's other actions.
+ *
+ * @param action - Any browser action.
+ * @returns Whether it moves the cursor.
+ */
+export function isCursorMove(action: { readonly type: string }): action is CursorMove {
+	return CURSOR_MOVES.has(action.type);
+}
+
+function getTarget(cursor: number, move: CursorMove, count: number): number {
+	if (move.type === "move") return cursor + move.delta;
+	if (move.type === "to") return move.index;
+	return move.type === "last" ? count - 1 : 0;
+}
 
 /**
  * Keeps a cursor on a row that exists.
@@ -16,16 +35,15 @@ export function clampCursor(cursor: number, count: number): number {
 }
 
 /**
- * Moves a cursor by a step, or to either end.
+ * Moves a cursor by a step, to a row, or to either end.
  *
  * @param cursor - The current index.
- * @param move - The step, or `first` or `last`.
+ * @param move - The step, the row, or `first` or `last`.
  * @param count - How many rows there are.
  * @returns The new index, kept within the list.
  */
 export function moveCursor(cursor: number, move: CursorMove, count: number): number {
-	const target = move.type === "move" ? cursor + move.delta : 0;
-	return clampCursor(move.type === "last" ? count - 1 : target, count);
+	return clampCursor(getTarget(cursor, move, count), count);
 }
 
 /**

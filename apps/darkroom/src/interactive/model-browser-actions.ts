@@ -75,6 +75,9 @@ export function createModelBrowserActions({
 		quit(): void {
 			exit();
 		},
+		selectModel(id): void {
+			dispatch({ id, type: "select" });
+		},
 		setFilter(text): void {
 			dispatch({ filter: text, type: "filter" });
 		},

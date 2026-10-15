@@ -13,6 +13,7 @@ import type { ReactNode } from "react";
  */
 export function ModelList(): ReactNode {
 	const {
+		actions: { moveBy },
 		meta: { layout },
 		state: { models, selectedIndex },
 	} = useModelBrowser();
@@ -24,7 +25,9 @@ export function ModelList(): ReactNode {
 			emptyText="No models match."
 			height={layout.listHeight}
 			isEmpty={shown.length === 0}
+			target="pane:models"
 			width={layout.listWidth}
+			onWheel={moveBy}
 		>
 			{shown.map((model) => (
 				<ModelRow key={model.id} model={model} />

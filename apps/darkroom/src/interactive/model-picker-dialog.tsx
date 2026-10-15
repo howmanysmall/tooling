@@ -1,22 +1,21 @@
-import { useReducer } from "react";
 import { TextInput } from "@inkjs/ui";
 import { Box, Text } from "ink";
 
 import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 
-import { INITIAL_PALETTE_STATE, reducePaletteState } from "./command-palette-state";
 import { Dialog } from "./dialog";
-import { getWindowStart } from "./list-cursor";
+import { DialogList } from "./dialog-list";
 import { ModelPickerRow } from "./model-picker-row";
 import { getModelMatches } from "./model-picker-state";
 import { theme } from "./theme";
-import { useDialogListKeys } from "./use-dialog-list-keys";
+import { useSearchList } from "./use-search-list";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { ReactNode } from "react";
 
 import type { KeyHint } from "./key-hints";
 import type { ModelCatalog } from "./model-browser-state";
+import type { ModelMatch } from "./model-picker-state";
 
 export interface ModelPickerDialogProperties {
 	catalog: ModelCatalog;
@@ -62,43 +61,45 @@ export function ModelPickerDialog({
 	recentIds,
 	rows,
 }: Readonly<ModelPickerDialogProperties>): ReactNode {
-	const [picker, dispatch] = useReducer(reducePaletteState, INITIAL_PALETTE_STATE);
-	const matches = getModelMatches(catalog.models, recentIds, picker.query);
 	const visibleRows = Math.max(3, Math.min(VISIBLE_ROWS, rows - 12));
-	const start = getWindowStart(picker.cursor, matches.length, visibleRows);
-	const shown = matches.slice(start, start + visibleRows);
+	const list = useSearchList((query) => getModelMatches(catalog.models, recentIds, query), visibleRows, onClose);
 
-	function pickSelected(): void {
-		const chosen = matches[picker.cursor];
-		if (chosen === undefined) return;
-		onPick(chosen.model);
+	function pick(match: ModelMatch | undefined): void {
+		if (match === undefined) return;
+		onPick(match.model);
 		onClose();
 	}
 
-	function handleQueryChange(query: string): void {
-		dispatch({ query, type: "query" });
+	function pickSelected(): void {
+		pick(list.selected);
 	}
 
-	useDialogListKeys(matches.length, dispatch, onClose);
-
 	return (
-		<Dialog columns={columns} hints={HINTS} rows={rows} title="Choose a model" width={72}>
+		<Dialog columns={columns} hints={HINTS} rows={rows} title="Choose a model" width={72} onDismiss={onClose}>
 			<Box marginBottom={1}>
 				<Text bold={true} color={theme.accent}>
 					{"› "}
 				</Text>
-				<TextInput placeholder="Search models" onChange={handleQueryChange} onSubmit={pickSelected} />
+				<TextInput placeholder="Search models" onChange={list.handleQueryChange} onSubmit={pickSelected} />
 			</Box>
-			{shown.length === 0 ? <Text color={theme.muted}>{"No models match."}</Text> : null}
-			{shown.map((match, index) => (
-				<ModelPickerRow
-					key={match.model.id}
-					isCurrent={match.model.id === currentId}
-					isSelected={start + index === picker.cursor}
-					match={match}
-					price={describeListPrice(getModelPrices(catalog.pricing, catalog.observed, match.model.id))}
-				/>
-			))}
+			{list.visible.length === 0 ? <Text color={theme.muted}>{"No models match."}</Text> : null}
+			<DialogList target="picker:list" onWheel={list.handleWheel}>
+				{list.visible.map((match, index) => (
+					<ModelPickerRow
+						key={match.model.id}
+						isCurrent={match.model.id === currentId}
+						isSelected={list.start + index === list.cursor}
+						match={match}
+						price={describeListPrice(getModelPrices(catalog.pricing, catalog.observed, match.model.id))}
+						onChoose={(): void => {
+							pick(match);
+						}}
+						onPoint={(): void => {
+							list.pointAt(list.start + index);
+						}}
+					/>
+				))}
+			</DialogList>
 		</Dialog>
 	);
 }

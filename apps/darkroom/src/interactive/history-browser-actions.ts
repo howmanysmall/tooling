@@ -105,6 +105,9 @@ export function createBrowserActions({
 
 			services.requestRerun(selected);
 		},
+		selectRun(id): void {
+			dispatch({ id, type: "select" });
+		},
 		setFilter(text): void {
 			dispatch({ filter: text, type: "filter" });
 		},

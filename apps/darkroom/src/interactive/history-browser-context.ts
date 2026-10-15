@@ -37,6 +37,7 @@ export interface HistoryBrowserActions {
 	readonly cancelFilter: () => void;
 	readonly closeFilter: () => void;
 	readonly copySelected: () => void;
+	readonly moveBy: (delta: number) => void;
 	readonly moveDown: () => void;
 	readonly movePageDown: () => void;
 	readonly movePageUp: () => void;
@@ -48,6 +49,8 @@ export interface HistoryBrowserActions {
 	readonly quit: () => void;
 	/** Sends the selected run to the generate session, which confirms it. */
 	readonly rerunSelected: () => void;
+	/** Puts the cursor on a run, as a click does; also picks a compared run. */
+	readonly selectRun: (id: string) => void;
 	readonly setFilter: (text: string) => void;
 	/** Shows the next model's run in the selected comparison. */
 	readonly showNextInBatch: () => void;

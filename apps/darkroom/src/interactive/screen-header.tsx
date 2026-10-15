@@ -33,7 +33,15 @@ export function ScreenHeader({ title }: Readonly<ScreenHeaderProperties>): React
 			) : (
 				<Box>
 					{APP_TABS.map((tab, index) => (
-						<HeaderTab key={tab} isActive={tab === tabs.active} keyLabel={String(index + 1)} title={tab} />
+						<HeaderTab
+							key={tab}
+							isActive={tab === tabs.active}
+							keyLabel={String(index + 1)}
+							title={tab}
+							onSelect={(): void => {
+								tabs.select(tab);
+							}}
+						/>
 					))}
 				</Box>
 			)}

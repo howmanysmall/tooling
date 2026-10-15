@@ -6,6 +6,7 @@ import { findCommand } from "./browser-command";
 import { getBrowserKey } from "./browser-keys";
 import { CommandPalette } from "./command-palette";
 import { HelpDialog } from "./help-dialog";
+import { pickNewerMessage, useNotice } from "./notice-store";
 import { getShellCommands } from "./shell-commands";
 import { getShellRoute, ShellRoute } from "./shell-route";
 import { theme } from "./theme";
@@ -73,6 +74,8 @@ export function BrowserShell({
 	children,
 }: Readonly<BrowserShellProperties>): ReactNode {
 	const [overlay, setOverlay] = useState(Overlay.None);
+	const notice = useNotice();
+	const toast = pickNewerMessage(status, notice);
 	const tabs = useAppTabs();
 	const { exit } = useApp();
 	function showOverlay(next: Overlay): () => void {
@@ -125,8 +128,10 @@ export function BrowserShell({
 	return (
 		<Box backgroundColor={theme.background} flexDirection="column" height={rows} width={columns}>
 			{children}
-			{status === undefined ? null : <Toast status={status} />}
-			{overlay === Overlay.Help ? <HelpDialog columns={columns} commands={allCommands} rows={rows} /> : null}
+			{toast === undefined ? null : <Toast status={toast} />}
+			{overlay === Overlay.Help ? (
+				<HelpDialog columns={columns} commands={allCommands} rows={rows} onClose={closeOverlay} />
+			) : null}
 			{overlay === Overlay.Palette ? (
 				<CommandPalette columns={columns} commands={allCommands} rows={rows} onClose={closeOverlay} />
 			) : null}

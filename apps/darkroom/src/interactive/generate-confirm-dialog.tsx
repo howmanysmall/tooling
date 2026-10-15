@@ -49,7 +49,7 @@ export function GenerateConfirmDialog({
 	});
 
 	return (
-		<Dialog columns={columns} hints={HINTS} rows={rows} title="Generate?" width={72}>
+		<Dialog columns={columns} hints={HINTS} rows={rows} title="Generate?" width={72} onDismiss={onCancel}>
 			<Text>{summarizeRequest(pending.prepared, pending.cost)}</Text>
 			{pending.prepared.warnings.map((warning) => (
 				<Text key={warning} color={theme.warning}>{`! ${warning}`}</Text>

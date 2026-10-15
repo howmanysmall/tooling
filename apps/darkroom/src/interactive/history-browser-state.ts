@@ -1,4 +1,4 @@
-import { clampCursor, moveCursor } from "./list-cursor";
+import { clampCursor, isCursorMove, moveCursor } from "./list-cursor";
 import { reduceStatus } from "./status-message";
 
 import type { HistoryEntry } from "$history/history-entry";
@@ -33,6 +33,7 @@ export type BrowserAction =
 	| { readonly delta: number; readonly type: "step-batch" }
 	| { readonly filter: string; readonly type: "filter" }
 	| { readonly id: string; readonly type: "removed" }
+	| { readonly id: string; readonly type: "select" }
 	| { readonly mode: BrowserMode; readonly type: "mode" }
 	| { readonly type: "cancel-filter" };
 
@@ -116,10 +117,6 @@ export function getSelectedRun(state: BrowserState): HistoryEntry | undefined {
 	return getVisibleRuns(state)[state.cursor];
 }
 
-function isNavigation(action: BrowserAction): action is CursorMove {
-	return action.type === "move" || action.type === "first" || action.type === "last";
-}
-
 function reduceNavigation(state: BrowserState, action: CursorMove): BrowserState {
 	return { ...state, cursor: moveCursor(state.cursor, action, getVisibleRuns(state).length) };
 }
@@ -158,6 +155,25 @@ function stepBatch(state: BrowserState, delta: number): BrowserState {
 	return { ...state, picks: new Map(state.picks).set(selected.batch, next.id) };
 }
 
+/**
+ * Selects a run, as a click does. A run in a comparison becomes the one
+ * its row shows.
+ *
+ * @param state - The browser state.
+ * @param id - Which run to put the cursor on.
+ * @returns The state with the cursor on the run, or the same state when it
+ *   isn't listed.
+ */
+function selectRun(state: BrowserState, id: string): BrowserState {
+	const entry = state.entries.find((item) => item.id === id);
+	if (entry === undefined) return state;
+
+	const picks = entry.batch === undefined ? state.picks : new Map(state.picks).set(entry.batch, id);
+	const next = { ...state, picks };
+	const index = getVisibleRuns(next).findIndex((item) => item.id === id);
+	return index === -1 ? state : { ...next, cursor: index };
+}
+
 function removeRun(state: BrowserState, id: string): BrowserState {
 	const next = { ...state, entries: state.entries.filter((entry) => entry.id !== id), mode: BrowserMode.Normal };
 	return { ...next, cursor: clampCursor(state.cursor, getVisibleRuns(next).length) };
@@ -172,7 +188,7 @@ function removeRun(state: BrowserState, id: string): BrowserState {
  * @returns The next state.
  */
 export function reduceBrowserState(state: BrowserState, action: BrowserAction): BrowserState {
-	if (isNavigation(action)) return reduceNavigation(state, action);
+	if (isCursorMove(action)) return reduceNavigation(state, action);
 	switch (action.type) {
 		case "cancel-filter":
 			return { ...state, cursor: 0, filter: "", mode: BrowserMode.Normal };
@@ -185,6 +201,9 @@ export function reduceBrowserState(state: BrowserState, action: BrowserAction): 
 
 		case "removed":
 			return removeRun(state, action.id);
+
+		case "select":
+			return selectRun(state, action.id);
 
 		case "step-batch":
 			return stepBatch(state, action.delta);

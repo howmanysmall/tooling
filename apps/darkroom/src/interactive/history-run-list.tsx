@@ -14,6 +14,7 @@ import type { ReactNode } from "react";
  */
 export function HistoryRunList(): ReactNode {
 	const {
+		actions: { moveBy },
 		meta: { layout, now },
 		state,
 	} = useHistoryBrowser();
@@ -25,7 +26,9 @@ export function HistoryRunList(): ReactNode {
 			emptyText={emptyText}
 			height={layout.listHeight}
 			isEmpty={items.length === 0}
+			target="pane:history"
 			width={layout.listWidth}
+			onWheel={moveBy}
 		>
 			{items.map((item) =>
 				item.kind === "day" ? (
