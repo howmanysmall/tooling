@@ -12,10 +12,10 @@ import sharp from "sharp";
 
 import { environmentPaths } from "$constants/environment-paths";
 import { HistoryStore } from "$history/history-store";
-import { getModelExamples } from "$interactive/model-examples";
-import { EXAMPLES_MANIFEST, toExampleFileName } from "$interactive/shipped-examples";
+import { getModelExamples } from "$interactive/models/model-examples";
+import { EXAMPLES_MANIFEST, toExampleFileName } from "$interactive/models/shipped-examples";
 
-import type { ExamplesManifest } from "$interactive/shipped-examples";
+import type { ExamplesManifest } from "$interactive/models/shipped-examples";
 
 // The detail pane draws examples at about this size; more is wasted bytes.
 const LONG_EDGE = 512;

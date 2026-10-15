@@ -3,7 +3,7 @@ import { EnumType } from "@cliffy/command";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
-import { AppTab } from "$interactive/app-tab";
+import { AppTab } from "$interactive/app/app-tab";
 import { ModelSort } from "$utilities/model-filters";
 import { aspectRatioType, getAspectRatiosAsync } from "$validators/aspect-ratio-type";
 import { getProvidersAsync } from "$validators/image-model-id-type";
@@ -73,7 +73,7 @@ async function listModelsAsync(flags: ListFlags, search: string | undefined): Pr
 
 	if (wantsBrowser(flags.format)) {
 		// React and Ink only load for the browser.
-		const { openDarkroomAsync } = await import("$interactive/open-darkroom");
+		const { openDarkroomAsync } = await import("$interactive/app/open-darkroom");
 		await openDarkroomAsync({ models: { models: shown, observed, pricing }, sort, tab: AppTab.Models });
 		return;
 	}
