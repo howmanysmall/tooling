@@ -1,6 +1,7 @@
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 
-import { formatClipboardSequence } from "./history-browser-keys";
+import { formatClipboardSequence } from "./browser-keys";
+import { createCursorActions } from "./cursor-actions";
 import { BrowserMode } from "./history-browser-state";
 import { runBrowserTask } from "./run-browser-task";
 
@@ -24,10 +25,6 @@ export interface ActionEnvironment {
 	readonly write: (data: string) => void;
 }
 
-const MOVE_DOWN: BrowserAction = { delta: 1, type: "move" };
-const MOVE_UP: BrowserAction = { delta: -1, type: "move" };
-const MOVE_FIRST: BrowserAction = { type: "first" };
-const MOVE_LAST: BrowserAction = { type: "last" };
 const OPEN_FILTER: BrowserAction = { mode: BrowserMode.Filter, type: "mode" };
 const CANCEL_FILTER: BrowserAction = { type: "cancel-filter" };
 const ASK_DELETE: BrowserAction = { mode: BrowserMode.ConfirmDelete, type: "mode" };
@@ -63,6 +60,7 @@ export function createBrowserActions({
 	}
 
 	return {
+		...createCursorActions(dispatch, pageSize),
 		answerDelete(answer): void {
 			if (answer !== "y" || selected === undefined) {
 				dispatch(BACK_TO_LIST);
@@ -89,24 +87,6 @@ export function createBrowserActions({
 
 			write(formatClipboardSequence(selected.id));
 			reportSuccess(`Copied ${selected.id}`);
-		},
-		moveDown(): void {
-			dispatch(MOVE_DOWN);
-		},
-		movePageDown(): void {
-			dispatch({ delta: pageSize, type: "move" });
-		},
-		movePageUp(): void {
-			dispatch({ delta: -pageSize, type: "move" });
-		},
-		moveToFirst(): void {
-			dispatch(MOVE_FIRST);
-		},
-		moveToLast(): void {
-			dispatch(MOVE_LAST);
-		},
-		moveUp(): void {
-			dispatch(MOVE_UP);
 		},
 		openFilter(): void {
 			dispatch(OPEN_FILTER);

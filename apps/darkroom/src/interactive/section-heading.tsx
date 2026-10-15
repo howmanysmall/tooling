@@ -4,8 +4,8 @@ import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
-export interface HistoryDayHeadingProperties {
-	/** Like `Today` or `Mon 12 Oct`. */
+export interface SectionHeadingProperties {
+	/** Like `Today` or `Pricing`; shown in capitals. */
 	label: string;
 }
 
@@ -13,17 +13,17 @@ export interface HistoryDayHeadingProperties {
 const RULE = "─".repeat(240);
 
 /**
- * A quiet divider above the runs of one day.
+ * A quiet divider: a label followed by a rule across the pane.
  *
- * @param properties - Which day the runs below were made.
- * @param properties.label - Like `Today` or `Mon 12 Oct`.
- * @returns The day's name followed by a rule across the pane.
+ * @param properties - What the section holds.
+ * @param properties.label - Like `Today` or `Pricing`.
+ * @returns One line.
  */
-export function HistoryDayHeading({ label }: Readonly<HistoryDayHeadingProperties>): ReactNode {
+export function SectionHeading({ label }: Readonly<SectionHeadingProperties>): ReactNode {
 	// Truncating would end the rule with an ellipsis, so the rule wraps and
 	// its box clips it to one line instead.
 	return (
-		<Box columnGap={1} height={1}>
+		<Box columnGap={1} flexShrink={0} height={1}>
 			<Box flexShrink={0}>
 				<Text bold={true} color={theme.muted}>
 					{label.toUpperCase()}

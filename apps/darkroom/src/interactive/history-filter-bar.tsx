@@ -1,14 +1,10 @@
-import { TextInput } from "@inkjs/ui";
-import { Box, Text } from "ink";
-
+import { FilterInput } from "./filter-input";
 import { useHistoryBrowser } from "./history-browser-context";
-import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
 /**
- * The footer while filtering: a text input that filters as you type. Enter
- * keeps the filter; Esc clears it.
+ * The footer while filtering runs by prompt or model.
  *
  * @returns The filter input.
  */
@@ -24,19 +20,11 @@ export function HistoryFilterBar(): ReactNode {
 	}
 
 	return (
-		<Box columnGap={3}>
-			<Box>
-				<Text bold={true} color={theme.accent}>
-					{"/ "}
-				</Text>
-				<TextInput
-					defaultValue={state.filter}
-					placeholder="filter by prompt or model"
-					onChange={handleFilterChange}
-					onSubmit={handleFilterSubmit}
-				/>
-			</Box>
-			<Text color={theme.muted}>{"⏎ keep · esc clear"}</Text>
-		</Box>
+		<FilterInput
+			initialValue={state.filter}
+			placeholder="filter by prompt or model"
+			onChange={handleFilterChange}
+			onSubmit={handleFilterSubmit}
+		/>
 	);
 }

@@ -7,7 +7,6 @@ import {
 	createBrowserState,
 	getSelectedRun,
 	getVisibleRuns,
-	getWindowStart,
 	reduceBrowserState,
 } from "./history-browser-state.ts";
 
@@ -110,16 +109,5 @@ describe("history browser state", () => {
 
 		expect(state.status).toBe(status);
 		expect(reduceBrowserState(state, { delta: 1, type: "move" }).status).toBeUndefined();
-	});
-});
-
-describe("getWindowStart", () => {
-	it("keeps the cursor near the middle without scrolling past either end", ({ expect }) => {
-		expect.assertions(4);
-
-		expect(getWindowStart(3, 5, 10)).toBe(0);
-		expect(getWindowStart(1, 100, 10)).toBe(0);
-		expect(getWindowStart(50, 100, 10)).toBe(45);
-		expect(getWindowStart(99, 100, 10)).toBe(90);
 	});
 });

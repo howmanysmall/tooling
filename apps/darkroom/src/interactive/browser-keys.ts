@@ -12,6 +12,7 @@ export const enum BrowserKey {
 	PageUp = "page-up",
 	Quit = "quit",
 	Rerun = "rerun",
+	Sort = "sort",
 	Up = "up",
 }
 
@@ -25,6 +26,7 @@ const CHARACTER_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
 	["o", BrowserKey.Open],
 	["q", BrowserKey.Quit],
 	["r", BrowserKey.Rerun],
+	["s", BrowserKey.Sort],
 	["y", BrowserKey.Copy],
 ]);
 
@@ -40,7 +42,8 @@ const SPECIAL_KEYS: ReadonlyArray<readonly [keyof Key, BrowserKey]> = [
 ];
 
 /**
- * Maps a key press in the run list to what it does.
+ * Maps a key press in a browser's list to what it does. Each browser binds
+ * only the keys it uses.
  *
  * @param input - The typed character, if any.
  * @param key - Ink's description of the key.

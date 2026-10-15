@@ -1,4 +1,9 @@
+import { clampCursor, moveCursor } from "./list-cursor";
+
 import type { HistoryEntry } from "$history/history-entry";
+
+import type { CursorMove } from "./list-cursor";
+import type { StatusMessage } from "./status-message";
 
 export const enum BrowserMode {
 	/** Asking whether to delete the selected run. */
@@ -6,12 +11,6 @@ export const enum BrowserMode {
 	/** Typing into the filter. */
 	Filter = "filter",
 	Normal = "normal",
-}
-
-/** A one-line message for the footer, such as a copied ID or a failure. */
-export interface StatusMessage {
-	readonly text: string;
-	readonly tone: "error" | "success";
 }
 
 export interface BrowserState {
@@ -25,13 +24,8 @@ export interface BrowserState {
 	readonly status?: StatusMessage | undefined;
 }
 
-type NavigationAction =
-	| { readonly delta: number; readonly type: "move" }
-	| { readonly type: "first" }
-	| { readonly type: "last" };
-
 export type BrowserAction =
-	| NavigationAction
+	| CursorMove
 	| { readonly filter: string; readonly type: "filter" }
 	| { readonly id: string; readonly type: "removed" }
 	| { readonly mode: BrowserMode; readonly type: "mode" }
@@ -67,19 +61,12 @@ export function getSelectedRun(state: BrowserState): HistoryEntry | undefined {
 	return getVisibleRuns(state)[state.cursor];
 }
 
-function clampCursor(cursor: number, count: number): number {
-	return Math.max(0, Math.min(cursor, count - 1));
-}
-
-function isNavigation(action: BrowserAction): action is NavigationAction {
+function isNavigation(action: BrowserAction): action is CursorMove {
 	return action.type === "move" || action.type === "first" || action.type === "last";
 }
 
-function reduceNavigation(state: BrowserState, action: NavigationAction): BrowserState {
-	const count = getVisibleRuns(state).length;
-	const target = action.type === "move" ? state.cursor + action.delta : 0;
-	const cursor = action.type === "last" ? count - 1 : target;
-	return { ...state, cursor: clampCursor(cursor, count), status: undefined };
+function reduceNavigation(state: BrowserState, action: CursorMove): BrowserState {
+	return { ...state, cursor: moveCursor(state.cursor, action, getVisibleRuns(state).length), status: undefined };
 }
 
 function setFilter(state: BrowserState, filter: string): BrowserState {
@@ -126,18 +113,4 @@ export function reduceBrowserState(state: BrowserState, action: BrowserAction): 
 		default:
 			return { ...state, status: action.status };
 	}
-}
-
-/**
- * Works out the first row to show so the cursor stays in view, keeping it
- * near the middle while there is room.
- *
- * @param cursor - The selected index.
- * @param count - How many rows there are.
- * @param height - How many rows fit.
- * @returns The index of the first visible row.
- */
-export function getWindowStart(cursor: number, count: number, height: number): number {
-	if (height <= 0 || count <= height) return 0;
-	return Math.max(0, Math.min(cursor - Math.floor(height / 2), count - height));
 }
