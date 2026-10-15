@@ -1,8 +1,11 @@
+import { env, stdout } from "node:process";
 import { intro } from "@clack/prompts";
 import { render } from "ink";
 
 import { mergeRerunOptions } from "$generation/generation-flags";
 import { loadStoredReferencesAsync } from "$history/stored-references";
+import { getImageProtocol } from "$preview/image-protocol";
+import { createPreviewCache } from "$preview/preview-cache";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { confirmAndGenerateAsync } from "./confirm-and-generate";
@@ -10,10 +13,26 @@ import { HistoryBrowser } from "./history-browser";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
+import type { TerminalEnvironment } from "$preview/image-protocol";
+import type { PreviewCache } from "$preview/preview-cache";
 
 import type { BrowserServices } from "./history-browser";
 
-function createServices(store: HistoryStore, requestRerun: (entry: HistoryEntry) => void): BrowserServices {
+function pickTerminalVariables({
+	COLORTERM,
+	KITTY_WINDOW_ID,
+	TERM,
+	TERM_PROGRAM,
+	TMUX,
+}: NodeJS.ProcessEnv): TerminalEnvironment {
+	return { COLORTERM, KITTY_WINDOW_ID, TERM, TERM_PROGRAM, TMUX };
+}
+
+function createServices(
+	store: HistoryStore,
+	previews: PreviewCache | undefined,
+	requestRerun: (entry: HistoryEntry) => void,
+): BrowserServices {
 	return {
 		async deleteRunAsync(entry): Promise<void> {
 			const { log } = await import("$generation/cli-runner");
@@ -21,6 +40,7 @@ function createServices(store: HistoryStore, requestRerun: (entry: HistoryEntry)
 				log.warn(message);
 			});
 		},
+		getPreview: (path, box) => previews?.getPreview(path, box),
 		async openRunAsync(entry): Promise<void> {
 			const { openFilesAsync } = await import("$history/open-files");
 			await openFilesAsync(entry.images.map((image) => store.resolve(image.stored)));
@@ -51,23 +71,34 @@ async function rerunAsync(entry: HistoryEntry, store: HistoryStore): Promise<voi
  * @rejects When the history can't be read, or the re-run fails.
  */
 export async function browseHistoryAsync(): Promise<void> {
-	const { getHistoryStore, log } = await import("$generation/cli-runner");
+	const [{ getHistoryStore, log }, { getEnvironmentAsync }] = await Promise.all([
+		import("$generation/cli-runner"),
+		import("$functions/get-environment-async"),
+	]);
 	const store = getHistoryStore();
-	const entries = await store.readAllAsync((message) => {
-		log.warn(message);
+	const [entries, { DARKROOM_PREVIEW }] = await Promise.all([
+		store.readAllAsync((message) => {
+			log.warn(message);
+		}),
+		getEnvironmentAsync(),
+	]);
+	const protocol = getImageProtocol({ ...pickTerminalVariables(env), DARKROOM_PREVIEW });
+	const previews = createPreviewCache(protocol, (sequence) => {
+		stdout.write(sequence);
 	});
 
 	let rerunTarget: HistoryEntry | undefined;
 	const instance = render(
 		<HistoryBrowser
 			entries={entries.toReversed()}
-			services={createServices(store, (entry) => {
+			services={createServices(store, previews, (entry) => {
 				rerunTarget = entry;
 			})}
 		/>,
 		{ alternateScreen: true },
 	);
 	await instance.waitUntilExit();
+	previews?.dispose();
 
 	if (rerunTarget !== undefined) await rerunAsync(rerunTarget, store);
 }

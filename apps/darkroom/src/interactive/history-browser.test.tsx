@@ -11,6 +11,7 @@ import { HistoryStore } from "$history/history-store";
 import { HistoryBrowser } from "./history-browser.tsx";
 
 import type { HistoryEntry } from "$history/history-entry";
+import type { LoadingPreview } from "$preview/load-preview";
 
 import type { BrowserServices } from "./history-browser.tsx";
 
@@ -24,6 +25,9 @@ const OLDEST = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", { prompt: "a tree by th
 const NEWEST_FIRST: ReadonlyArray<HistoryEntry> = [NEWEST, MIDDLE, OLDEST];
 const MODEL_ROW = /model +openai\/gpt-image-1/u;
 const RETURNED_ROW = /returned +1 of 1/u;
+
+const PREVIEW: LoadingPreview = { result: Promise.resolve({ kind: "image", lines: ["IMAGE ROW 1", "IMAGE ROW 2"] }) };
+const PREVIEW_THEN_ID = /IMAGE ROW 2[\s\S]*id +01M4YV/u;
 
 // More detail rows than the pane can show.
 const CROWDED_RUNS: ReadonlyArray<HistoryEntry> = [
@@ -50,6 +54,7 @@ function createServices(store: HistoryStore, opened: Array<string>, reruns: Arra
 		async deleteRunAsync(entry: HistoryEntry): Promise<void> {
 			await store.deleteAsync(new Set([entry.id]), () => undefined);
 		},
+		getPreview: () => undefined,
 		async openRunAsync(entry: HistoryEntry): Promise<void> {
 			opened.push(entry.id);
 			await Promise.resolve();
@@ -59,6 +64,10 @@ function createServices(store: HistoryStore, opened: Array<string>, reruns: Arra
 		},
 		resolve: (stored) => store.resolve(stored),
 	};
+}
+
+function addPreview(services: BrowserServices): BrowserServices {
+	return { ...services, getPreview: () => PREVIEW };
 }
 
 async function renderBrowserAsync(): Promise<Harness> {
@@ -121,6 +130,17 @@ describe("history browser", () => {
 
 		expect(frame).toMatch(MODEL_ROW);
 		expect(frame).toMatch(RETURNED_ROW);
+	});
+
+	it("shows the selected run's image preview above its details", async ({ expect }) => {
+		expect.assertions(1);
+
+		const store = new HistoryStore(tmpdir());
+		const services = addPreview(createServices(store, [], []));
+		const instance = render(<HistoryBrowser entries={NEWEST_FIRST} services={services} />);
+
+		// React retries a suspended preview after about 300ms.
+		await expect.poll(() => String(instance.lastFrame())).toMatch(PREVIEW_THEN_ID);
 	});
 
 	it("filters the list as the filter is typed, and Esc clears it", async ({ expect }) => {
