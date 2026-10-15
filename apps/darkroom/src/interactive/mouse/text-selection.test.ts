@@ -34,13 +34,16 @@ interface FakeScreen extends TextSelectionScreen {
 }
 
 /**
- * A screen of rows like `row 0`, which tracks what is highlighted.
+ * A screen whose rows read `row 0`, `row 1`, and so on, in the first five
+ * columns, which tracks what is highlighted.
  *
  * @returns A screen that reads those rows and records what is lit.
  */
 function createFakeScreen(): FakeScreen {
 	const highlighted = new Map<number, SelectionSpan>();
 	return {
+		findText: (spans) =>
+			spans.flatMap(({ end, row, start }) => (start < 5 ? [{ end: Math.min(end, 5), row, start }] : [])),
 		getColumns: () => 10,
 		highlighted,
 		paint(spans, isHighlighted): void {
@@ -49,8 +52,7 @@ function createFakeScreen(): FakeScreen {
 				else highlighted.delete(span.row);
 			}
 		},
-		readText: (spans) =>
-			spans.map(({ end, row, start }) => `row ${row}     `.slice(start, end).trimEnd()).join("\n"),
+		readText: (runs) => runs.map(({ end, row, start }) => `row ${row}`.slice(start, end)).join("\n"),
 	};
 }
 
