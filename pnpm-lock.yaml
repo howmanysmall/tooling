@@ -712,6 +712,22 @@ importers:
         specifier: catalog:test
         version: 5.0.4(@types/node@26.6.5)(@vitest/coverage-istanbul@5.0.4)(vite@8.3.3(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
 
+  packages/english-utilities:
+    dependencies:
+      type-fest:
+        specifier: catalog:types
+        version: 5.10.0
+    devDependencies:
+      '@howmanysmall/project-configurations':
+        specifier: workspace:*
+        version: link:../../tools/project-configurations
+      '@types/node':
+        specifier: catalog:types
+        version: 26.6.5
+      vitest:
+        specifier: catalog:test
+        version: 5.0.4(@types/node@26.6.5)(@vitest/coverage-istanbul@5.0.4)(vite@8.3.3(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(yaml@2.9.1))
+
   scripts:
     dependencies:
       '@cliffy/command':
