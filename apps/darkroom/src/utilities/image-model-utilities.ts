@@ -1,6 +1,7 @@
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import nodePath from "node:path";
 
+import { CACHE_TTL_MS } from "$constants";
 import { environmentPaths } from "$constants/environment-paths";
 import { isImageModelListItem } from "$types/openrouter-types";
 
@@ -24,7 +25,6 @@ export async function getImageModelsRawAsync(): Promise<ReadonlyArray<ImageModel
 }
 
 const CACHE_FILE = nodePath.join(environmentPaths.cache, "image-models.json");
-const CACHE_TTL_MS = 1000 * 60 * 60 * 24;
 
 const isImageModelListItems = isImageModelListItem.array().readonly();
 

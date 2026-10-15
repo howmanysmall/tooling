@@ -8,8 +8,8 @@ const log = consola.withTag(scriptName);
 export const cacheCommand = createBaseCommand(scriptName, "1.0.0", "Regenerate the CLI completion cache.").action(
 	async () => {
 		log.info("Regenerating the CLI completion cache...");
-		await import("$utilities/image-model-utilities").then(async ({ getImageModelsAsync }) =>
-			getImageModelsAsync(false),
+		await import("$utilities/completion-cache-utilities").then(async ({ refreshCompletionCacheAsync }) =>
+			refreshCompletionCacheAsync(false),
 		);
 		log.success("CLI completion cache regenerated successfully.");
 	},
