@@ -45,6 +45,8 @@ hk.local.pkl
 .idea
 
 *.webp
+*.png
+*.jpg
 
 # vale: styles are synced from `Packages` in .vale.ini; only the project vocabulary is committed
 .vale/styles/*
