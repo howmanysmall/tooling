@@ -1,6 +1,7 @@
-import { stdin, stdout } from "node:process";
+import { stderr, stdin, stdout } from "node:process";
 import { render } from "ink";
 
+import { commandName } from "$constants";
 import { deleteAsync, readAllAsync, resolve } from "$history/history-store";
 import { listSessions } from "$history/session-list";
 import { createUlid } from "$history/ulid";
@@ -13,11 +14,12 @@ import { numberTurns } from "$interactive/session/session-actions";
 import { createSessionServices } from "$interactive/session/session-services";
 import { createSession } from "$interactive/session/session-state";
 import { createSessionStore } from "$interactive/session/session-store";
-import { createSessionTabs } from "$interactive/session/session-tabs";
+import { createSessionTabs, getActiveSession } from "$interactive/session/session-tabs";
 import { ModelSort } from "$utilities/model-filters";
 
 import { loadCatalogAsync } from "./app-catalog";
 import { DarkroomApp } from "./darkroom-app";
+import { formatExitSummary } from "./exit-summary";
 import { finishRunningAsync } from "./finish-running";
 import { createTerminalPreviewsAsync } from "./terminal-previews";
 
@@ -181,6 +183,8 @@ export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name,
 	mouse.dispose();
 	previews?.dispose();
 	await Promise.all([finishRunningAsync(session), sessions.flushAsync()]);
+	const summary = formatExitSummary(getActiveSession(sessions.getTabs()), commandName);
+	if (summary !== undefined) stderr.write(`${summary}\n`);
 
 	const guided = getRequest();
 	if (guided === undefined) return;

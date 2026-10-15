@@ -3,6 +3,8 @@ import packageJson from "../../package.json" with { type: "json" };
 export const description = packageJson.description satisfies string;
 export const name = packageJson.name satisfies string;
 export const version = packageJson.version satisfies string;
+/** The command people type, from the package's `bin`. */
+export const commandName = Object.keys(packageJson.bin)[0] ?? name;
 export const url = packageJson.author.url satisfies string;
 
 export const NON_SLUG_REGEXP = /[^a-zA-Z0-9-_]/gu;
