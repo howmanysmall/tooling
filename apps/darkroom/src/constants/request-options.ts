@@ -9,3 +9,9 @@ export const READ_ONLY_RETRIES: RetryConfig = {
 	retryConnectionErrors: true,
 	strategy: "backoff",
 };
+
+/**
+ * Paid calls such as `images.generate`: exactly one request. A retry after
+ * the provider has already produced an image could bill it twice.
+ */
+export const NO_RETRIES: RetryConfig = { strategy: "none" };
