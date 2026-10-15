@@ -8,12 +8,12 @@ import { render } from "ink-testing-library";
 import { createEntry } from "$history/history-fixture";
 import { HistoryStore } from "$history/history-store";
 
-import { HistoryBrowser } from "./history-browser.tsx";
+import { HistoryBrowserScreen } from "./history-browser-screen.tsx";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { LoadingPreview } from "$preview/load-preview";
 
-import type { BrowserServices } from "./history-browser.tsx";
+import type { BrowserServices } from "./history-browser-services.ts";
 
 const DOWN = "\u001B[B";
 const ESCAPE = "\u001B";
@@ -79,7 +79,7 @@ async function renderBrowserAsync(): Promise<Harness> {
 	const opened: Array<string> = [];
 	const reruns: Array<string> = [];
 	const services = createServices(store, opened, reruns);
-	const instance = render(<HistoryBrowser entries={NEWEST_FIRST} services={services} />);
+	const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} services={services} />);
 	await delay(20);
 
 	return {
@@ -124,7 +124,7 @@ describe("history browser", () => {
 		expect.assertions(2);
 
 		const services = createServices(new HistoryStore(tmpdir()), [], []);
-		const instance = render(<HistoryBrowser entries={CROWDED_RUNS} services={services} />);
+		const instance = render(<HistoryBrowserScreen entries={CROWDED_RUNS} services={services} />);
 		await delay(20);
 		const frame = String(instance.lastFrame());
 
@@ -137,7 +137,7 @@ describe("history browser", () => {
 
 		const store = new HistoryStore(tmpdir());
 		const services = addPreview(createServices(store, [], []));
-		const instance = render(<HistoryBrowser entries={NEWEST_FIRST} services={services} />);
+		const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} services={services} />);
 
 		// React retries a suspended preview after about 300ms.
 		await expect.poll(() => String(instance.lastFrame())).toMatch(PREVIEW_THEN_ID);

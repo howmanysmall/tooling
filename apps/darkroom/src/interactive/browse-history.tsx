@@ -9,14 +9,14 @@ import { createPreviewCache } from "$preview/preview-cache";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { confirmAndGenerateAsync } from "./confirm-and-generate";
-import { HistoryBrowser } from "./history-browser";
+import { HistoryBrowserScreen } from "./history-browser-screen";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 import type { TerminalEnvironment } from "$preview/image-protocol";
 import type { PreviewCache } from "$preview/preview-cache";
 
-import type { BrowserServices } from "./history-browser";
+import type { BrowserServices } from "./history-browser-services";
 
 function pickTerminalVariables({
 	COLORTERM,
@@ -89,7 +89,7 @@ export async function browseHistoryAsync(): Promise<void> {
 
 	let rerunTarget: HistoryEntry | undefined;
 	const instance = render(
-		<HistoryBrowser
+		<HistoryBrowserScreen
 			entries={entries.toReversed()}
 			services={createServices(store, previews, (entry) => {
 				rerunTarget = entry;

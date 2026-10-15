@@ -4,24 +4,14 @@ import { Box, Text } from "ink";
 import { toShowRows } from "$history/format-history";
 import { getParentChain } from "$history/resolve-run-reference";
 
+import { useHistoryBrowser } from "./history-browser-context";
 import { HistoryImagePreview } from "./history-image-preview";
 
 import type { ReactNode } from "react";
 
-import type { HistoryEntry } from "$history/history-entry";
-import type { LoadingPreview } from "$preview/load-preview";
 import type { Row } from "$utilities/output-format-utilities";
 
 const LOADING = <Text dimColor={true}>{"Loading preview…"}</Text>;
-
-export interface HistoryRunDetailProperties {
-	/** Every run, to find the selected run's parents. */
-	entries: ReadonlyArray<HistoryEntry>;
-	entry: HistoryEntry | undefined;
-	/** The selected run's first image, when previews are on and it has one. */
-	preview?: LoadingPreview | undefined;
-	resolve: (stored: string) => string;
-}
 
 function getLabelColumnWidth(rows: ReadonlyArray<Row>): number {
 	let widest = 0;
@@ -30,25 +20,20 @@ function getLabelColumnWidth(rows: ReadonlyArray<Row>): number {
 }
 
 /**
- * The browser's right pane: everything `history show` prints for the
- * selected run.
+ * The right pane: the selected run's first image, then everything
+ * `history show` prints for it.
  *
- * @param properties - The selected run and how to find its files.
- * @param properties.entries - Every run, to find the selected run's parents.
- * @param properties.entry - The selected run, if any.
- * @param properties.preview - The selected run's first image, if any.
- * @param properties.resolve - Turns a stored path into an absolute one.
- * @returns The detail pane.
+ * @returns The detail pane, empty when nothing is selected.
  */
-export function HistoryRunDetail({
-	entries,
-	entry,
-	preview,
-	resolve,
-}: Readonly<HistoryRunDetailProperties>): ReactNode {
-	if (entry === undefined) return <Box borderStyle="round" flexGrow={1} />;
-	const rows = toShowRows(entry, getParentChain(entries, entry), resolve);
+export function HistoryRunDetail(): ReactNode {
+	const { meta, state } = useHistoryBrowser();
+	const { selected } = state;
+	if (selected === undefined) return <Box borderStyle="round" flexGrow={1} />;
+
+	const preview = meta.getPreview(selected);
+	const rows = toShowRows(selected, getParentChain(state.entries, selected), meta.resolve);
 	const labelWidth = getLabelColumnWidth(rows);
+
 	return (
 		<Box borderStyle="round" flexDirection="column" flexGrow={1} overflow="hidden" paddingX={1}>
 			{preview === undefined ? null : (
