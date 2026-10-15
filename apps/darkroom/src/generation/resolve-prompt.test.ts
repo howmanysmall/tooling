@@ -1,8 +1,8 @@
 import { describe, it } from "vitest";
 
-import { resolvePromptAsync } from "./resolve-prompt.ts";
+import { resolvePromptAsync } from "./resolve-prompt";
 
-import type { PromptSources } from "./resolve-prompt.ts";
+import type { PromptSources } from "./resolve-prompt";
 
 function createSources(overrides: Partial<PromptSources>): PromptSources {
 	return { isStdinTty: true, readStdinAsync: async () => "from stdin", ...overrides };

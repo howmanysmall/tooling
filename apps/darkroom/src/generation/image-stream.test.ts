@@ -1,10 +1,10 @@
 import { describe, it } from "vitest";
 
-import { consumeImageStreamAsync, describeProgress } from "./image-stream.ts";
+import { consumeImageStreamAsync, describeProgress } from "./image-stream";
 
 import type { ImageStreamingResponseData } from "@openrouter/sdk/models";
 
-import type { StreamProgress } from "./image-stream.ts";
+import type { StreamProgress } from "./image-stream";
 
 async function* toStreamAsync(
 	events: ReadonlyArray<ImageStreamingResponseData>,

@@ -8,6 +8,7 @@ import prettyBytes from "pretty-bytes";
 import { InterruptedError } from "$errors/interrupted-error";
 import { log } from "$generation/cli-runner";
 import { formatHistoryList } from "$history/format-history";
+import { deleteAsync, getRunSizeAsync, readAllAsync } from "$history/history-store";
 import { selectForPrune, toPruneCriteria } from "$history/prune-selection";
 import { OutputFormat } from "$validators/output-format-type";
 
@@ -38,7 +39,7 @@ async function confirmAsync(count: number): Promise<boolean> {
 
 async function getSizesAsync(store: HistoryStore, entries: ReadonlyArray<HistoryEntry>): Promise<Map<string, number>> {
 	const sizes = await Promise.all(
-		entries.map(async (entry) => [entry.id, await store.getRunSizeAsync(entry.id)] as const),
+		entries.map(async (entry) => [entry.id, await getRunSizeAsync(store, entry.id)] as const),
 	);
 	return new Map(sizes);
 }
@@ -68,7 +69,7 @@ async function deleteRunsAsync(
 		log.info("Nothing deleted.");
 		return;
 	}
-	const removed = await store.deleteAsync(new Set(doomed.map((entry) => entry.id)), warn);
+	const removed = await deleteAsync(store, new Set(doomed.map((entry) => entry.id)), warn);
 	log.success(`Deleted ${removed} ${toPlural(removed, "run")} and freed ${freed}.`);
 }
 
@@ -86,7 +87,7 @@ export const pruneCommand = createBaseCommand(
 		const criteria = toPruneCriteria(flags);
 		const { getHistoryStore } = await import("$generation/cli-runner");
 		const store = getHistoryStore();
-		const entries = await store.readAllAsync(warn);
+		const entries = await readAllAsync(store, warn);
 		const sizes = await getSizesAsync(store, entries);
 
 		if (criteria === undefined) {

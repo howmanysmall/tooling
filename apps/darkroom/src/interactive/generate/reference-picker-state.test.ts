@@ -8,9 +8,9 @@ import {
 	moveCursor,
 	setFilter,
 	toggleCurrent,
-} from "./reference-picker-state.ts";
+} from "./reference-picker-state";
 
-import type { DirectoryItem } from "./reference-picker-state.ts";
+import type { DirectoryItem } from "./reference-picker-state";
 
 const MOODBOARD: ReadonlyArray<DirectoryItem> = [
 	{ name: "tree.jpg", isDirectory: false },

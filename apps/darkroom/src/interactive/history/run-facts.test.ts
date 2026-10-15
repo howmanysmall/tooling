@@ -4,7 +4,7 @@ import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
 
-import { describeRunLine, getModelName, getRunLinks, getRunStats } from "./run-facts.ts";
+import { describeRunLine, getModelName, getRunLinks, getRunStats } from "./run-facts";
 
 const ENTRY = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", {
 	created: new Date(2026, 9, 15, 9, 41).toISOString(),

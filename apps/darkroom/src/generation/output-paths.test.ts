@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { addCollisionSuffix, getOutputPath, OutputKind, parseOutputSpec, slugify } from "./output-paths.ts";
+import { addCollisionSuffix, getOutputPath, OutputKind, parseOutputSpec, slugify } from "./output-paths";
 
 describe("slugify", () => {
 	it("turns a prompt into lower-case kebab case without punctuation or accents", ({ expect }) => {

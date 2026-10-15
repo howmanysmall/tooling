@@ -1,3 +1,5 @@
+import { resolve } from "./history-store";
+
 import type { ReferenceImage } from "$generation/references";
 
 import type { HistoryEntry } from "./history-entry";
@@ -20,7 +22,7 @@ export async function loadStoredReferencesAsync(
 	const { loadReferenceAsync } = await import("$generation/references");
 	return Promise.all(
 		entry.references.map(async (reference) => {
-			const loaded = await loadReferenceAsync(store.resolve(reference.stored));
+			const loaded = await loadReferenceAsync(resolve(store, reference.stored));
 			return { ...loaded, source: reference.source };
 		}),
 	);

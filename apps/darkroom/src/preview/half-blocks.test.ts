@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { formatHalfBlocks } from "./half-blocks.ts";
+import { formatHalfBlocks } from "./half-blocks";
 
 const ESC = "\u001B";
 

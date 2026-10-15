@@ -1,6 +1,7 @@
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
+import { readAllAsync, resolve } from "$history/history-store";
 import { getHistoryIdsAsync, historyIdType } from "$validators/history-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 
@@ -24,11 +25,11 @@ export const showCommand = createBaseCommand(
 				import("$history/resolve-run-reference"),
 			]);
 		const store = getHistoryStore();
-		const entries = await store.readAllAsync((message) => {
+		const entries = await readAllAsync(store, (message) => {
 			log.warn(message);
 		});
 		const entry = resolveRunReference(entries, reference);
 		console.log(
-			formatHistoryEntry(entry, getRunRelations(entries, entry), format, (stored) => store.resolve(stored)),
+			formatHistoryEntry(entry, getRunRelations(entries, entry), format, (stored) => resolve(store, stored)),
 		);
 	});

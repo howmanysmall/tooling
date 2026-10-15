@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { removeControlCharacters } from "./text-utilities.ts";
+import { removeControlCharacters } from "./text-utilities";
 
 describe("removeControlCharacters", () => {
 	it("drops Ctrl-A and Ctrl-E left behind by a terminal prompt", ({ expect }) => {

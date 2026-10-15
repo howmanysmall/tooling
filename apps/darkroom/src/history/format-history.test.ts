@@ -2,8 +2,8 @@ import { describe, it } from "vitest";
 
 import { OutputFormat } from "$validators/output-format-type";
 
-import { formatHistoryEntry, formatHistoryList, previewPrompt } from "./format-history.ts";
-import { createEntry } from "./history-fixture.ts";
+import { formatHistoryEntry, formatHistoryList, previewPrompt } from "./format-history";
+import { createEntry } from "./history-fixture";
 
 const ENTRY = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", { prompt: "a cat in a hat" });
 const PARENT = createEntry("01M4YVBBBBBBBBBBBBBBBBBBBB");

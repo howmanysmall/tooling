@@ -1,6 +1,7 @@
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
+import { readAllAsync } from "$history/history-store";
 import { aspectRatioType, getAspectRatiosAsync } from "$validators/aspect-ratio-type";
 import {
 	backgroundType,
@@ -82,7 +83,7 @@ export const rerunCommand = createBaseCommand(
 			import("$history/resolve-run-reference"),
 		]);
 		const store = getHistoryStore();
-		const entries = await store.readAllAsync((message) => {
+		const entries = await readAllAsync(store, (message) => {
 			log.warn(message);
 		});
 		const entry = resolveRunReference(entries, reference);

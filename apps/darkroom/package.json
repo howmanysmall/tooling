@@ -82,7 +82,6 @@
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:types",
 		"@types/react": "catalog:types",
-		"ink-testing-library": "catalog:test",
 		"temporal-polyfill": "catalog:polyfills",
 		"tsdown": "catalog:build",
 		"vitest": "catalog:test"

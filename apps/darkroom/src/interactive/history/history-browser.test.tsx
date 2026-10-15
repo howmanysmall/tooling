@@ -3,17 +3,18 @@ import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, it } from "vitest";
-import { render } from "ink-testing-library";
 
 import { createEntry } from "$history/history-fixture";
-import { HistoryStore } from "$history/history-store";
+import { appendAsync, createHistoryStore, deleteAsync, readAllAsync, resolve } from "$history/history-store";
+import { renderScreen } from "$interactive/app/test-screen";
 
 import { HistoryBrowserScreen } from "./history-browser-screen.tsx";
 
 import type { HistoryEntry } from "$history/history-entry";
+import type { HistoryStore } from "$history/history-store";
 import type { LoadingPreview } from "$preview/load-preview";
 
-import type { BrowserServices } from "./history-browser-services.ts";
+import type { BrowserServices } from "./history-browser-services";
 
 // The fixtures are made on 2026-10-14, so their heading reads `Today`.
 const NOW = new Date("2026-10-14T21:00:00.000Z");
@@ -70,7 +71,7 @@ interface Harness {
 function createServices(store: HistoryStore, opened: Array<string>, reruns: Array<string>): BrowserServices {
 	return {
 		async deleteRunAsync(entry: HistoryEntry): Promise<void> {
-			await store.deleteAsync(new Set([entry.id]), () => undefined);
+			await deleteAsync(store, new Set([entry.id]), () => undefined);
 		},
 		getPreview: () => undefined,
 		async openRunAsync(entry: HistoryEntry): Promise<void> {
@@ -80,7 +81,7 @@ function createServices(store: HistoryStore, opened: Array<string>, reruns: Arra
 		requestRerun(entry: HistoryEntry): void {
 			reruns.push(entry.id);
 		},
-		resolve: (stored) => store.resolve(stored),
+		resolve: (stored) => resolve(store, stored),
 	};
 }
 
@@ -90,14 +91,14 @@ function addPreview(services: BrowserServices): BrowserServices {
 
 async function renderBrowserAsync(): Promise<Harness> {
 	const root = await mkdtemp(nodePath.join(tmpdir(), "darkroom-browser-"));
-	const store = new HistoryStore(root);
-	await store.appendAsync(OLDEST);
-	await store.appendAsync(MIDDLE);
-	await store.appendAsync(NEWEST);
+	const store = createHistoryStore(root);
+	await appendAsync(store, OLDEST);
+	await appendAsync(store, MIDDLE);
+	await appendAsync(store, NEWEST);
 	const opened: Array<string> = [];
 	const reruns: Array<string> = [];
 	const services = createServices(store, opened, reruns);
-	const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} now={NOW} services={services} />);
+	const instance = renderScreen(<HistoryBrowserScreen entries={NEWEST_FIRST} now={NOW} services={services} />);
 	await delay(20);
 
 	return {
@@ -117,7 +118,7 @@ async function renderBrowserAsync(): Promise<Harness> {
 }
 
 async function readIdsAsync(store: HistoryStore): Promise<Array<string>> {
-	const entries = await store.readAllAsync(() => undefined);
+	const entries = await readAllAsync(store, () => undefined);
 	return entries.map((entry) => entry.id);
 }
 
@@ -141,8 +142,8 @@ describe("history browser", () => {
 	it("keeps every detail row intact when the run is too long for the pane", async ({ expect }) => {
 		expect.assertions(2);
 
-		const services = createServices(new HistoryStore(tmpdir()), [], []);
-		const instance = render(<HistoryBrowserScreen entries={CROWDED_RUNS} now={NOW} services={services} />);
+		const services = createServices(createHistoryStore(tmpdir()), [], []);
+		const instance = renderScreen(<HistoryBrowserScreen entries={CROWDED_RUNS} now={NOW} services={services} />);
 		await delay(20);
 		const frame = String(instance.lastFrame());
 
@@ -153,9 +154,9 @@ describe("history browser", () => {
 	it("shows the selected run's image preview above its details", async ({ expect }) => {
 		expect.assertions(1);
 
-		const store = new HistoryStore(tmpdir());
+		const store = createHistoryStore(tmpdir());
 		const services = addPreview(createServices(store, [], []));
-		const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} now={NOW} services={services} />);
+		const instance = renderScreen(<HistoryBrowserScreen entries={NEWEST_FIRST} now={NOW} services={services} />);
 
 		// React retries a suspended preview after about 300ms.
 		await expect.poll(() => String(instance.lastFrame())).toMatch(PREVIEW_THEN_ID);
@@ -165,9 +166,9 @@ describe("history browser", () => {
 		// oxlint-disable-next-line small-rules/prefer-expect-assertions -- vitest counts expect.poll, this rule does not
 		expect.assertions(2);
 
-		const store = new HistoryStore(tmpdir());
+		const store = createHistoryStore(tmpdir());
 		const services = addPreview(createServices(store, [], []));
-		const instance = render(<HistoryBrowserScreen entries={COMPARISON} now={NOW} services={services} />);
+		const instance = renderScreen(<HistoryBrowserScreen entries={COMPARISON} now={NOW} services={services} />);
 
 		await expect.poll(() => String(instance.lastFrame())).toMatch(STRIP_LABELS);
 		expect(String(instance.lastFrame())).toMatch(COMPARED_ROW);
@@ -177,8 +178,8 @@ describe("history browser", () => {
 		// oxlint-disable-next-line small-rules/prefer-expect-assertions -- vitest counts expect.poll, this rule does not
 		expect.assertions(2);
 
-		const store = new HistoryStore(tmpdir());
-		const instance = render(
+		const store = createHistoryStore(tmpdir());
+		const instance = renderScreen(
 			<HistoryBrowserScreen entries={COMPARISON} now={NOW} services={createServices(store, [], [])} />,
 		);
 		await delay(20);

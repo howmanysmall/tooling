@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { getWindowStart, moveCursor } from "./list-cursor.ts";
+import { getWindowStart, moveCursor } from "./list-cursor";
 
 describe("moveCursor", () => {
 	it("steps, jumps to either end, and stays within the list", ({ expect }) => {

@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
-import { BrowserKey, formatClipboardSequence, getBrowserKey } from "./browser-keys.ts";
-import { NO_KEY } from "./test-key.ts";
+import { BrowserKey, formatClipboardSequence, getBrowserKey } from "./browser-keys";
+import { NO_KEY } from "./test-key";
 
 describe("getBrowserKey", () => {
 	it("maps arrows, letters, and Enter to their bindings", ({ expect }) => {

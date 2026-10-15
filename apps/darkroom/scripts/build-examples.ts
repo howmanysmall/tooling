@@ -11,7 +11,7 @@ import { argv, exit, stderr } from "node:process";
 import sharp from "sharp";
 
 import { environmentPaths } from "$constants/environment-paths";
-import { HistoryStore } from "$history/history-store";
+import { createHistoryStore, readAllAsync, resolve } from "$history/history-store";
 import { getModelExamples } from "$interactive/models/model-examples";
 import { EXAMPLES_MANIFEST, toExampleFileName } from "$interactive/models/shipped-examples";
 
@@ -29,13 +29,13 @@ if (folderArgument === undefined) {
 }
 
 const folder = nodePath.resolve(folderArgument) + nodePath.sep;
-const store = new HistoryStore(environmentPaths.data);
-const entries = await store.readAllAsync((message) => {
+const store = createHistoryStore(environmentPaths.data);
+const entries = await readAllAsync(store, (message) => {
 	stderr.write(`${message}\n`);
 });
 // The history knows each image's model and prompt; file names only hint.
 const batch = entries.filter((entry) => entry.images.some((image) => image.output.startsWith(folder)));
-const examples = getModelExamples(batch, (stored) => store.resolve(stored));
+const examples = getModelExamples(batch, (stored) => resolve(store, stored));
 
 const prompts = new Set(Array.from(examples.values(), (example) => example.prompt));
 const [prompt] = prompts;

@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { createUlid, isUlid } from "./ulid.ts";
+import { createUlid, isUlid } from "./ulid";
 
 describe("createUlid", () => {
 	it("creates 26-character IDs that sort by time", ({ expect }) => {

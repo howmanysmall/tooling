@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 
 import { createModel, MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 
-import { filterModels, ModelSort, sortModels } from "./model-filters.ts";
+import { filterModels, ModelSort, sortModels } from "./model-filters";
 
 const MODELS = [
 	MULTI_MODEL,

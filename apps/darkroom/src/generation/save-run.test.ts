@@ -3,13 +3,13 @@ import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { describe, it } from "vitest";
 
-import { HistoryStore } from "$history/history-store";
+import { createHistoryStore, getRunDirectory, readAllAsync, resolve } from "$history/history-store";
 
-import { MULTI_MODEL } from "./model-fixture.ts";
-import { prepareGenerationAsync } from "./run-generation.ts";
-import { saveRunAsync } from "./save-run.ts";
+import { MULTI_MODEL } from "./model-fixture";
+import { prepareGenerationAsync } from "./run-generation";
+import { saveRunAsync } from "./save-run";
 
-import type { GenerationInput, PreparedGeneration } from "./run-generation.ts";
+import type { GenerationInput, PreparedGeneration } from "./run-generation";
 
 const PNG_BYTES = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1]);
 const RUN_ID = "01M4YVAKWVPWQQRBEKXDKQYBW1";
@@ -30,7 +30,7 @@ describe("saveRunAsync", () => {
 		expect.assertions(3);
 
 		const cwd = await createDirectoryAsync();
-		const history = new HistoryStore(await createDirectoryAsync());
+		const history = createHistoryStore(await createDirectoryAsync());
 		const prepared = await prepareAsync(cwd, {
 			parent: "01M4YVAAAAAAAAAAAAAAAAAAA1",
 			references: [{ bytes: PNG_BYTES, mediaType: "image/png", source: "~/sky.png" }],
@@ -46,7 +46,7 @@ describe("saveRunAsync", () => {
 			},
 			{ history, warn: () => undefined, writeStdoutAsync: async () => undefined },
 		);
-		const [entry] = await history.readAllAsync(() => undefined);
+		const [entry] = await readAllAsync(history, () => undefined);
 
 		expect(entry).toMatchObject({
 			id: RUN_ID,
@@ -63,7 +63,7 @@ describe("saveRunAsync", () => {
 				stored: `images/${RUN_ID}/1.png`,
 			},
 		]);
-		await expect(readdir(history.getRunDirectory(RUN_ID))).resolves.toStrictEqual(["1.png", "refs"]);
+		await expect(readdir(getRunDirectory(history, RUN_ID))).resolves.toStrictEqual(["1.png", "refs"]);
 	});
 
 	it("points to the history copy when the image can't be written where asked", async ({ expect }) => {
@@ -73,7 +73,7 @@ describe("saveRunAsync", () => {
 		const locked = nodePath.join(cwd, "locked");
 		await mkdir(locked);
 		await chmod(locked, 0o500);
-		const history = new HistoryStore(await createDirectoryAsync());
+		const history = createHistoryStore(await createDirectoryAsync());
 		const prepared = await prepareAsync(cwd, { options: { output: "locked/cat.png" } });
 
 		const outcome = await saveRunAsync(
@@ -82,6 +82,6 @@ describe("saveRunAsync", () => {
 		);
 
 		expect(outcome.failures).toHaveLength(1);
-		expect(outcome.failures[0]?.recoveredPath).toBe(history.resolve(`images/${RUN_ID}/1.png`));
+		expect(outcome.failures[0]?.recoveredPath).toBe(resolve(history, `images/${RUN_ID}/1.png`));
 	});
 });

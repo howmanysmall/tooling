@@ -3,8 +3,8 @@ import { describe, it } from "vitest";
 import { createEntry } from "$history/history-fixture";
 import { OutputFormat } from "$validators/output-format-type";
 
-import { mergeRerunOptions } from "./generation-flags.ts";
-import { ImageType } from "./media-types.ts";
+import { mergeRerunOptions } from "./generation-flags";
+import { ImageType } from "./media-types";
 
 const ENTRY = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", {
 	// oxlint-disable-next-line id-length -- the API calls this field n

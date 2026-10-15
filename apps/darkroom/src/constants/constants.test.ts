@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { name } from "./constants.ts";
+import { name } from "./constants";
 
 describe("package metadata", () => {
 	it("exposes the published package name", ({ expect }) => {

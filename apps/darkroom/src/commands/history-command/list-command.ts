@@ -1,6 +1,7 @@
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
+import { readAllAsync } from "$history/history-store";
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 
@@ -18,7 +19,7 @@ export const listCommand = createBaseCommand(scriptName, "1.0.0", "List recent r
 			import("$generation/cli-runner"),
 			import("$history/format-history"),
 		]);
-		const entries = await getHistoryStore().readAllAsync((message) => {
+		const entries = await readAllAsync(getHistoryStore(), (message) => {
 			log.warn(message);
 		});
 		const matching = entries.filter((entry) => model === undefined || entry.model === model);

@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { getIndefiniteArticle } from "./get-indefinite-article.ts";
+import { getIndefiniteArticle } from "./get-indefinite-article";
 
 describe("getIndefiniteArticle", () => {
 	it("uses an before a vowel sound", ({ expect }) => {

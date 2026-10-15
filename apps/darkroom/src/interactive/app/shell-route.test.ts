@@ -1,10 +1,10 @@
 import { describe, it } from "vitest";
 
-import { NO_KEY } from "$interactive/keys/test-key.ts";
+import { NO_KEY } from "$interactive/keys/test-key";
 
-import { getShellRoute, ShellRoute } from "./shell-route.ts";
+import { getShellRoute, ShellRoute } from "./shell-route";
 
-import type { ShellSituation } from "./shell-route.ts";
+import type { ShellSituation } from "./shell-route";
 
 const PLAIN: ShellSituation = { hasDialog: false, hasTabs: true, isCapturing: false, isHelpOpen: false };
 const TAB = { ...NO_KEY, tab: true };

@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { toPlural } from "./to-plural.ts";
+import { toPlural } from "./to-plural";
 
 describe("toPlural", () => {
 	it("keeps the singular form for exactly one", ({ expect }) => {

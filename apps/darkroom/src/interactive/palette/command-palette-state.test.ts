@@ -1,11 +1,11 @@
 import { describe, it } from "vitest";
 
-import { CommandGroup } from "$interactive/keys/browser-command.ts";
-import { BrowserKey } from "$interactive/keys/browser-keys.ts";
+import { CommandGroup } from "$interactive/keys/browser-command";
+import { BrowserKey } from "$interactive/keys/browser-keys";
 
-import { getPaletteMatches, INITIAL_PALETTE_STATE, reducePaletteState, splitTitle } from "./command-palette-state.ts";
+import { getPaletteMatches, INITIAL_PALETTE_STATE, reducePaletteState, splitTitle } from "./command-palette-state";
 
-import type { BrowserCommand } from "$interactive/keys/browser-command.ts";
+import type { BrowserCommand } from "$interactive/keys/browser-command";
 
 function createCommand(title: string, key: BrowserKey): BrowserCommand {
 	return { key, group: CommandGroup.Act, keyLabel: key, run: () => undefined, title };

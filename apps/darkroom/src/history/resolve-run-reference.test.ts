@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
-import { createEntry } from "./history-fixture.ts";
-import { getParentChain, getRunRelations, resolveRunReference } from "./resolve-run-reference.ts";
+import { createEntry } from "./history-fixture";
+import { getParentChain, getRunRelations, resolveRunReference } from "./resolve-run-reference";
 
 const ENTRIES = [
 	createEntry("01M4YVAAAAAAAAAAAAAAAAAAAA"),

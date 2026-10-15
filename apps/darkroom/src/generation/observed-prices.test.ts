@@ -8,10 +8,10 @@ import {
 	getModelPrices,
 	getObservedPrices,
 	getPerImagePrice,
-} from "./observed-prices.ts";
+} from "./observed-prices";
 
-import type { EndpointPricing } from "./cost-estimate.ts";
-import type { ModelPrices } from "./observed-prices.ts";
+import type { EndpointPricing } from "./cost-estimate";
+import type { ModelPrices } from "./observed-prices";
 
 const TOKENS: ReadonlyArray<EndpointPricing> = [
 	{ pricing: [{ billable: "output_image", costUsd: 0.00003, unit: "token" }], provider: "google" },

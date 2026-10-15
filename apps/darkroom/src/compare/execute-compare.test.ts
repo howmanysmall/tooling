@@ -6,10 +6,10 @@ import { describe, it } from "vitest";
 import { InterruptGuard } from "$generation/interrupt-guard";
 import { MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
-import { HistoryStore } from "$history/history-store";
+import { createHistoryStore, readAllAsync } from "$history/history-store";
 
-import { getModelFileStem } from "./compare-plan.ts";
-import { executeCompareAsync } from "./execute-compare.ts";
+import { getModelFileStem } from "./compare-plan";
+import { executeCompareAsync } from "./execute-compare";
 
 import type { ImageGenerationRequest } from "@openrouter/sdk/models";
 import type { CreateImagesResponse } from "@openrouter/sdk/models/operations";
@@ -27,7 +27,9 @@ const CLIENT: ImagesClient = {
 	}: {
 		imageGenerationRequest: ImageGenerationRequest;
 	}): Promise<CreateImagesResponse> {
-		if (imageGenerationRequest.model === SINGLE_MODEL.id) throw new Error("The model refused the prompt.");
+		if (imageGenerationRequest.model === SINGLE_MODEL.id) {
+			throw new Error("The model refused the prompt.");
+		}
 
 		return {
 			created: 0,
@@ -65,7 +67,7 @@ describe("executeCompareAsync", () => {
 
 		const directory = await mkdtemp(nodePath.join(tmpdir(), "darkroom-compare-"));
 		const historyRoot = await mkdtemp(nodePath.join(tmpdir(), "darkroom-compare-history-"));
-		const history = new HistoryStore(historyRoot);
+		const history = createHistoryStore(historyRoot);
 		const prepared = await Promise.all([
 			prepareAsync(SINGLE_MODEL.id, directory),
 			prepareAsync(MULTI_MODEL.id, directory),
@@ -84,7 +86,7 @@ describe("executeCompareAsync", () => {
 				warn: () => undefined,
 			},
 		);
-		const entries = await history.readAllAsync(() => undefined);
+		const entries = await readAllAsync(history, () => undefined);
 
 		expect(outcomes.map(({ model, status }) => [model, status])).toStrictEqual([
 			[SINGLE_MODEL.id, "failed"],

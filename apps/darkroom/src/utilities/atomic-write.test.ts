@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { describe, it } from "vitest";
 
-import { writeFileAtomicAsync, writeFileNoClobberAsync } from "./atomic-write.ts";
+import { writeFileAtomicAsync, writeFileNoClobberAsync } from "./atomic-write";
 
 async function createDirectoryAsync(): Promise<string> {
 	return mkdtemp(nodePath.join(tmpdir(), "darkroom-write-"));

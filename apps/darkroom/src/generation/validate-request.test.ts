@@ -1,10 +1,10 @@
 import { describe, it } from "vitest";
 
-import { ImageType } from "./media-types.ts";
-import { MULTI_MODEL, SINGLE_MODEL } from "./model-fixture.ts";
-import { validateRequest } from "./validate-request.ts";
+import { ImageType } from "./media-types";
+import { MULTI_MODEL, SINGLE_MODEL } from "./model-fixture";
+import { validateRequest } from "./validate-request";
 
-import type { GenerationOptions, ValidationContext } from "./validate-request.ts";
+import type { GenerationOptions, ValidationContext } from "./validate-request";
 
 function validate(
 	options: GenerationOptions,

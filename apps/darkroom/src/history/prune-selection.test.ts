@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
-import { createEntry } from "./history-fixture.ts";
-import { parseDuration, parseSize, selectForPrune, toPruneCriteria } from "./prune-selection.ts";
+import { createEntry } from "./history-fixture";
+import { parseDuration, parseSize, selectForPrune, toPruneCriteria } from "./prune-selection";
 
 const DAY = 86_400_000;
 const NOW = Date.parse("2026-10-14T00:00:00.000Z");

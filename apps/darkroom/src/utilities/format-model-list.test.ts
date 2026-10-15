@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 import { OutputFormat } from "$validators/output-format-type";
 
-import { formatModelList } from "./format-model-list.ts";
+import { formatModelList } from "./format-model-list";
 
 const MODELS = [MULTI_MODEL, SINGLE_MODEL];
 const PRICING = {

@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { createModel } from "$generation/model-fixture";
 import { createEntry } from "$history/history-fixture";
 
-import { getModelMatches, getRecentModelIds, pickModel } from "./model-picker-state.ts";
+import { getModelMatches, getRecentModelIds, pickModel } from "./model-picker-state";
 
 const BANANA = { ...createModel("google/banana", {}), name: "Google: Nano Banana" };
 const FLUX = { ...createModel("bfl/flux", {}), name: "Black Forest Labs: Flux" };

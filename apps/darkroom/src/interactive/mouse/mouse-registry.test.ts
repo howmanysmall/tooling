@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 
-import { MouseAction } from "./mouse-input.ts";
-import { createMouseRegistry } from "./mouse-registry.ts";
+import { MouseAction } from "./mouse-input";
+import { createMouseRegistry } from "./mouse-registry";
 
-import type { CellRect, MouseRegistry } from "./mouse-registry.ts";
+import type { CellRect, MouseRegistry } from "./mouse-registry";
 
 /**
  * Each node is its own rectangle, so tests lay targets out directly.

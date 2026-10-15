@@ -6,13 +6,13 @@ import { HTTPClient, OpenRouter } from "@openrouter/sdk";
 
 import { CHARGE_NOTE } from "$errors/to-api-error";
 
-import { InterruptGuard } from "./interrupt-guard.ts";
-import { MULTI_MODEL } from "./model-fixture.ts";
-import { executeGenerationAsync, prepareGenerationAsync, requestImagesAsync } from "./run-generation.ts";
+import { InterruptGuard } from "./interrupt-guard";
+import { MULTI_MODEL } from "./model-fixture";
+import { executeGenerationAsync, prepareGenerationAsync, requestImagesAsync } from "./run-generation";
 
 import type { CreateImagesResponse } from "@openrouter/sdk/models/operations";
 
-import type { GenerationInput, ImagesClient } from "./run-generation.ts";
+import type { GenerationInput, ImagesClient } from "./run-generation";
 
 const PNG_BYTES = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 7, 7, 7]);
 const PNG_BASE64 = Buffer.from(PNG_BYTES).toString("base64");

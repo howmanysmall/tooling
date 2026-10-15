@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { getOpenCommands } from "./open-files.ts";
+import { getOpenCommands } from "./open-files";
 
 describe("getOpenCommands", () => {
 	it("opens everything at once on macOS and one file per process elsewhere", ({ expect }) => {

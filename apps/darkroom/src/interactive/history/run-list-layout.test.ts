@@ -2,11 +2,11 @@ import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
 
-import { buildRunListItems, formatDayLabel, getVisibleItems } from "./run-list-layout.ts";
+import { buildRunListItems, formatDayLabel, getVisibleItems } from "./run-list-layout";
 
 import type { HistoryEntry } from "$history/history-entry";
 
-import type { RunListItem } from "./run-list-layout.ts";
+import type { RunListItem } from "./run-list-layout";
 
 // Local times, so the day boundaries don't depend on the machine's time zone.
 const NOW = new Date(2026, 9, 15, 12);

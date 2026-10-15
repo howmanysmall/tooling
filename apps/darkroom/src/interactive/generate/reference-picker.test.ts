@@ -6,7 +6,7 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { describe, it } from "vitest";
 import ansis from "ansis";
 
-import { pickReferencesAsync } from "./reference-picker.ts";
+import { pickReferencesAsync } from "./reference-picker";
 
 const UP = "\u001B[A";
 const DOWN = "\u001B[B";

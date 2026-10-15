@@ -1,8 +1,8 @@
 import nodePath from "node:path";
 import { describe, it } from "vitest";
 
-import { ExampleSource } from "./model-examples.ts";
-import { toExampleFileName, toShippedExamples } from "./shipped-examples.ts";
+import { ExampleSource } from "./model-examples";
+import { toExampleFileName, toShippedExamples } from "./shipped-examples";
 
 describe("toExampleFileName", () => {
 	it("keeps the provider and slug apart without a folder", ({ expect }) => {

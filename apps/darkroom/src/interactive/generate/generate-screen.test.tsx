@@ -1,17 +1,17 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, it } from "vitest";
-import { render } from "ink-testing-library";
 
 import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
+import { renderScreen } from "$interactive/app/test-screen";
 import { SessionProvider } from "$interactive/session/session-provider.tsx";
 
 import { GenerateScreen } from "./generate-screen.tsx";
 
 import type { GenerationResult } from "$generation/run-generation";
-import type { ModelCatalog } from "$interactive/models/model-browser-state.ts";
-import type { SessionServices } from "$interactive/session/session-services.ts";
-import type { PendingRequest } from "$interactive/session/session-state.ts";
+import type { ModelCatalog } from "$interactive/models/model-browser-state";
+import type { SessionServices } from "$interactive/session/session-services";
+import type { PendingRequest } from "$interactive/session/session-state";
 
 const CATALOG: ModelCatalog = {
 	models: [MULTI_MODEL],
@@ -100,7 +100,7 @@ describe("generate screen", () => {
 		expect.assertions(4);
 
 		const { handleRunSaved, saved, sent, services } = createFakeSession();
-		const instance = render(
+		const instance = renderScreen(
 			<SessionProvider services={services} onRunSaved={handleRunSaved}>
 				<GenerateScreen
 					catalog={CATALOG}

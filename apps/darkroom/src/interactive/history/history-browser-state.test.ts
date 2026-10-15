@@ -8,9 +8,9 @@ import {
 	getSelectedRun,
 	getVisibleRuns,
 	reduceBrowserState,
-} from "./history-browser-state.ts";
+} from "./history-browser-state";
 
-import type { BrowserAction, BrowserState } from "./history-browser-state.ts";
+import type { BrowserAction, BrowserState } from "./history-browser-state";
 
 const CAT = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA3", { prompt: "A cat in a hat" });
 const DOG = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA2", { model: "google/gemini-cat-edition", prompt: "a dog" });

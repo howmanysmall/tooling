@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 
-import { MouseAction } from "./mouse-input.ts";
-import { createTextSelection, getSelectionSpans } from "./text-selection.ts";
+import { MouseAction } from "./mouse-input";
+import { createTextSelection, getSelectionSpans } from "./text-selection";
 
-import type { SelectionSpan, TextSelectionScreen } from "./text-selection.ts";
+import type { SelectionSpan, TextSelectionScreen } from "./text-selection";
 
 describe("getSelectionSpans", () => {
 	it("selects in reading order across rows, whichever way the drag went", ({ expect }) => {

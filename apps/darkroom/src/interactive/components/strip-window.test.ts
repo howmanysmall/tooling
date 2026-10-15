@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { getStripWindow } from "./strip-window.ts";
+import { getStripWindow } from "./strip-window";
 
 const LETTERS = ["a", "b", "c", "d", "e", "f", "g"];
 

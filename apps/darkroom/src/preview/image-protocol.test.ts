@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { getImageProtocol, ImageProtocol } from "./image-protocol.ts";
+import { getImageProtocol, ImageProtocol } from "./image-protocol";
 
 describe("getImageProtocol", () => {
 	it("draws real images in Ghostty and kitty", ({ expect }) => {

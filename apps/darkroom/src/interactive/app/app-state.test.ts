@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
-import { reduceAppState } from "./app-state.ts";
-import { AppTab, cycleTab } from "./app-tab.ts";
+import { reduceAppState } from "./app-state";
+import { AppTab, cycleTab } from "./app-tab";
 
 describe("cycleTab", () => {
 	it("steps through the tabs and wraps at either end", ({ expect }) => {

@@ -2,9 +2,9 @@ import { describe, it } from "vitest";
 
 import { OutputFormat } from "$validators/output-format-type";
 
-import { formatCost, formatResult, formatSummary, toDisplayPath } from "./format-result.ts";
+import { formatCost, formatResult, formatSummary, toDisplayPath } from "./format-result";
 
-import type { GenerationResult } from "./run-generation.ts";
+import type { GenerationResult } from "./run-generation";
 
 const RESULT: GenerationResult = {
 	id: "01JA9XK2000000000000000000",

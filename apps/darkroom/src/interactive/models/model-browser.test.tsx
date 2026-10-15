@@ -1,17 +1,17 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, it } from "vitest";
-import { render } from "ink-testing-library";
 
 import { createModel, MULTI_MODEL } from "$generation/model-fixture";
+import { renderScreen } from "$interactive/app/test-screen";
 import { ModelSort } from "$utilities/model-filters";
 
-import { ModelBrowserScreen } from "./model-browser-screen.tsx";
-import { ExampleSource } from "./model-examples.ts";
+import { ModelBrowserScreen } from "./model-browser-screen";
+import { ExampleSource } from "./model-examples";
 
 import type { LoadingPreview } from "$preview/load-preview";
 
-import type { ModelBrowserServices } from "./model-browser-services.ts";
-import type { ModelCatalog } from "./model-browser-state.ts";
+import type { ModelBrowserServices } from "./model-browser-services";
+import type { ModelCatalog } from "./model-browser-state";
 
 const DOWN = "\u001B[B";
 const ENTER = "\r";
@@ -75,7 +75,7 @@ function createServices(chosen: Array<string>): ModelBrowserServices {
 async function renderBrowserAsync(): Promise<Harness> {
 	const chosen: Array<string> = [];
 	const services = createServices(chosen);
-	const instance = render(
+	const instance = renderScreen(
 		<ModelBrowserScreen catalog={CATALOG} now={NOW} services={services} sort={ModelSort.Name} />,
 	);
 	await delay(20);
