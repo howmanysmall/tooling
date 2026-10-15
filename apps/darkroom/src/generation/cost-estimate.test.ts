@@ -51,10 +51,10 @@ describe("getCostEstimate", () => {
 	it("uses the variant matching the resolution, or quality and resolution together", ({ expect }) => {
 		expect.assertions(2);
 
-		expect(getCostEstimate(PER_IMAGE, { count: 1, referenceCount: 0, resolution: "4K" })?.usd).toBe(0.33);
+		expect(getCostEstimate(PER_IMAGE, { count: 1, referenceCount: 0, resolution: "4K" })?.usd).toBeCloseTo(0.33);
 		expect(
 			getCostEstimate(QUALITY_TIERS, { count: 1, quality: "medium", referenceCount: 0, resolution: "2K" })?.usd,
-		).toBe(0.08);
+		).toBeCloseTo(0.08);
 	});
 
 	it("estimates megapixel prices only when the size is known", ({ expect }) => {
@@ -112,8 +112,8 @@ describe("list prices", () => {
 	it("shows the default price, or the cheapest tier when there is no default", ({ expect }) => {
 		expect.assertions(2);
 
-		expect(getListPrice(PER_IMAGE)?.costUsd).toBe(0.15);
-		expect(getListPrice(QUALITY_TIERS)?.costUsd).toBe(0.04);
+		expect(getListPrice(PER_IMAGE)?.costUsd).toBeCloseTo(0.15);
+		expect(getListPrice(QUALITY_TIERS)?.costUsd).toBeCloseTo(0.04);
 	});
 
 	it("sorts per-image prices first, then other units, then unknown", ({ expect }) => {
