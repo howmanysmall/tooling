@@ -70,3 +70,17 @@ export function renderRows(rows: ReadonlyArray<Row>, labelWidth: number, width: 
 }
 
 export { INDENT };
+
+/**
+ * Renders a borderless table without the padding cliffy leaves at the end of
+ * each line.
+ *
+ * @param table - The rendered table.
+ * @returns The table with trailing spaces removed.
+ */
+export function trimTrailingSpaces(table: string): string {
+	return table
+		.split("\n")
+		.map((line) => line.trimEnd())
+		.join("\n");
+}

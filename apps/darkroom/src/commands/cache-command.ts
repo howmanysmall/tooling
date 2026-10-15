@@ -11,11 +11,16 @@ const log = consola.create({ stdout: stderr }).withTag(scriptName);
 export const cacheCommand = createBaseCommand(
 	scriptName,
 	"1.0.0",
-	renderHighlight("Regenerate the `darkroom` completion cache."),
+	renderHighlight("Refresh the cached model list, prices, and shell completions."),
 ).action(async () => {
-	log.info("Regenerating the CLI completion cache...");
-	await import("$utilities/completion-cache-utilities").then(async ({ refreshCompletionCacheAsync }) =>
-		refreshCompletionCacheAsync(false),
-	);
-	log.success("CLI completion cache regenerated successfully.");
+	log.info("Refreshing the model, price, and completion caches...");
+	const [{ refreshCompletionCacheAsync }, { getModelPricingAsync }] = await Promise.all([
+		import("$utilities/completion-cache-utilities"),
+		import("$utilities/model-pricing-utilities"),
+	]);
+	await refreshCompletionCacheAsync(false);
+	await getModelPricingAsync(false, (message) => {
+		log.warn(message);
+	});
+	log.success("Caches refreshed.");
 });

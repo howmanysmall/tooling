@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { wrapText } from "./output-format-utilities.ts";
+import { trimTrailingSpaces, wrapText } from "./output-format-utilities.ts";
 
 describe("wrapText", () => {
 	it("breaks text at spaces so no line is wider than the limit", ({ expect }) => {
@@ -19,5 +19,13 @@ describe("wrapText", () => {
 		expect.assertions(1);
 
 		expect(wrapText("\u001B[32mgreen\u001B[39m words", 11)).toStrictEqual(["\u001B[32mgreen\u001B[39m words"]);
+	});
+});
+
+describe("trimTrailingSpaces", () => {
+	it("removes padding at line ends only", ({ expect }) => {
+		expect.assertions(1);
+
+		expect(trimTrailingSpaces("a  b  \nc    ")).toBe("a  b\nc");
 	});
 });
