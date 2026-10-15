@@ -34,7 +34,7 @@
 	"devDependencies": {
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
-		"@types/node": "catalog:types",
+		"@types/node": "catalog:node-floor",
 		"@vitiate/core": "catalog:test",
 		"fast-check": "catalog:test",
 		"tsdown": "catalog:build",

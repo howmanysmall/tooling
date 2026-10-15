@@ -1,3 +1,5 @@
+import { Predicate } from "effect";
+
 // `globalThis.Temporal`, not a bare `Temporal`: a bare reference throws a
 // `ReferenceError` at module-evaluation time on runtimes without it (Node 22/24),
 // which kills the process before the `temporal-polyfill` fallback below can run.
@@ -7,7 +9,6 @@ const nativeTemporal = globalThis.Temporal;
 export type TemporalNative = typeof globalThis.Temporal;
 
 export async function getTemporalAsync(): Promise<TemporalNative> {
-	const { Predicate } = await import("effect");
 	// oxlint-disable-next-line typescript/no-unnecessary-condition -- it is required, lol.
 	if (Predicate.isFunction(nativeTemporal?.Now?.timeZoneId)) return nativeTemporal;
 

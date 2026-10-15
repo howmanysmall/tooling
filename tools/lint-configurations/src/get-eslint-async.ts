@@ -20,7 +20,7 @@ export async function getEslintAsync(tsconfigPath: string): Promise<LintConfigur
 			e18e: {
 				modernization: true,
 				moduleReplacements: true,
-				nodeMajor: 24,
+				nodeMajor: 22,
 				overrides: {
 					"e18e/ban-dependencies": ["error", BANNED_DEPENDENCIES],
 				},
