@@ -26,7 +26,7 @@
 		"lint:oxlint": "pnpm --workspace-root run lint:package apps/darkroom",
 		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent apps/darkroom",
 		"prepublishOnly": "turbo run build --filter=@pobammer-ts/darkroom",
-		"test": "vitest run",
+		"test": "bun x --bun vitest run",
 		"test:agent": "node --run test -- --reporter agent",
 		"type-check": "tsc --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
@@ -51,6 +51,7 @@
 		"@howmanysmall/english-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@howmanysmall/string-utilities": "workspace:*",
+		"@total-typescript/shoehorn": "catalog:test",
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:types",
 		"tsdown": "catalog:build",
