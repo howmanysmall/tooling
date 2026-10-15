@@ -5,7 +5,7 @@ import type { LoadingPreview } from "$preview/load-preview";
 
 /** What the model browser needs from outside: the session and previews. */
 export interface ModelBrowserServices {
-	/** Remembers the model to generate with once the browser has closed. */
+	/** Takes the model to generate with, to the prompt box. */
 	readonly chooseModel: (model: ImageModelListItem) => void;
 	/**
 	 * Loads a preview of an image in the history store, or `undefined` when

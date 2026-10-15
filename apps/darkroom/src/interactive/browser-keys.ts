@@ -1,23 +1,36 @@
 import type { Key } from "ink";
 
 export const enum BrowserKey {
+	ChooseModel = "choose-model",
+	ClearPrompt = "clear-prompt",
 	Copy = "copy",
 	Delete = "delete",
 	Down = "down",
 	Example = "example",
 	Filter = "filter",
 	First = "first",
+	Generate = "generate",
+	Guided = "guided",
+	Help = "help",
 	Last = "last",
+	NewLine = "new-line",
+	NextTab = "next-tab",
 	Open = "open",
 	PageDown = "page-down",
 	PageUp = "page-up",
 	Quit = "quit",
 	Rerun = "rerun",
+	ShowGenerate = "show-generate",
+	ShowHistory = "show-history",
+	ShowModels = "show-models",
 	Sort = "sort",
 	Up = "up",
 }
 
 const CHARACTER_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
+	["1", BrowserKey.ShowGenerate],
+	["2", BrowserKey.ShowHistory],
+	["3", BrowserKey.ShowModels],
 	["/", BrowserKey.Filter],
 	["d", BrowserKey.Delete],
 	["e", BrowserKey.Example],

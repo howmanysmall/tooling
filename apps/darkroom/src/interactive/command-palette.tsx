@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 import { TextInput } from "@inkjs/ui";
-import { Box, Text, useInput } from "ink";
+import { Box, Text } from "ink";
 
 import { CommandGroup } from "./browser-command";
 import { PaletteRow } from "./command-palette-row";
@@ -8,6 +8,7 @@ import { getPaletteMatches, INITIAL_PALETTE_STATE, reducePaletteState } from "./
 import { Dialog } from "./dialog";
 import { getWindowStart } from "./list-cursor";
 import { theme } from "./theme";
+import { useDialogListKeys } from "./use-dialog-list-keys";
 
 import type { ReactNode } from "react";
 
@@ -59,11 +60,7 @@ export function CommandPalette({ columns, commands, onClose, rows }: Readonly<Co
 		dispatch({ query, type: "query" });
 	}
 
-	useInput(function onPaletteInput(_input, key) {
-		if (key.escape) onClose();
-		else if (key.upArrow) dispatch({ count: matches.length, move: { delta: -1, type: "move" }, type: "move" });
-		else if (key.downArrow) dispatch({ count: matches.length, move: { delta: 1, type: "move" }, type: "move" });
-	});
+	useDialogListKeys(matches.length, dispatch, onClose);
 
 	return (
 		<Dialog columns={columns} hints={HINTS} rows={rows} title="Commands" width={60}>

@@ -9,7 +9,7 @@ import type { ModelBrowserActions } from "./model-browser-context";
 import type { ModelBrowserAction } from "./model-browser-state";
 
 export interface ModelActionEnvironment {
-	/** Remembers the model to generate with once the browser has closed. */
+	/** Takes the model to generate with, to the prompt box. */
 	readonly chooseModel: (model: ImageModelListItem) => void;
 	readonly dispatch: Dispatch<ModelBrowserAction>;
 	/** Closes the browser. */
@@ -56,7 +56,6 @@ export function createModelBrowserActions({
 			if (selected === undefined) return;
 
 			chooseModel(selected);
-			exit();
 		},
 		closeFilter(): void {
 			dispatch(CLOSE_FILTER);
