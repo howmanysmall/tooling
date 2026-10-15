@@ -132,3 +132,4 @@ hk.local.pkl
 .claude/skills/wayfinder
 .claude/skills/wizard
 .claude/skills/writing-for-agents
+.agents/skills/unix-cli/
