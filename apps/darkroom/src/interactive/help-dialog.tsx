@@ -17,7 +17,6 @@ export interface HelpDialogProperties {
 // The keys every browser shares, which aren't commands of their own.
 const GENERAL_KEYS: ReadonlyArray<HelpRow> = [
 	["ctrl+p", "Command palette"],
-	["?", "This help"],
 	["esc", "Close a dialog, or quit"],
 ];
 const HINTS: ReadonlyArray<KeyHint> = [["any key", "close"]];

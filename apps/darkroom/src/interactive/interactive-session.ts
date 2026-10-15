@@ -160,24 +160,43 @@ async function askOptionsAsync(model: ImageModelListItem): Promise<GenerationOpt
 	};
 }
 
+async function resolveModelAsync(chosen?: ImageModelListItem): Promise<ImageModelListItem> {
+	if (chosen === undefined) return askModelAsync();
+	log.step(`Model  ${dim(chosen.name)}`);
+	return chosen;
+}
+
+async function resolvePromptAsync(written?: string): Promise<string> {
+	if (written === undefined) return askPromptAsync();
+	log.step(`Prompt  ${dim(written)}`);
+	return written;
+}
+
+/** What the guided session already knows, so it doesn't ask again. */
+export interface SessionAnswers {
+	readonly model?: ImageModelListItem | undefined;
+	readonly prompt?: string | undefined;
+}
+
 /**
- * Bare `darkroom` on a terminal: a guided session that asks only what the
- * chosen model can use, shows the estimated cost, and generates through the
- * same code as `generate`, so the run lands in the history too.
+ * A guided session that asks only what the chosen model can use, shows the
+ * estimated cost, and generates through the same code as `generate`, so the
+ * run lands in the history too. The prompt box opens it for references and
+ * settings.
  *
- * @param chosen - A model already picked, as in the model browser; the
- *   model question is skipped.
+ * @param answers - What is already known, as from the prompt box; those
+ *   questions are skipped.
+ * @param answers.model - The model to generate with.
+ * @param answers.prompt - What to make, as typed in the prompt box.
  * @rejects Whatever generation rejects with.
  */
-export async function runInteractiveSessionAsync(chosen?: ImageModelListItem): Promise<void> {
+export async function runInteractiveSessionAsync({ model: chosen, prompt: written }: SessionAnswers): Promise<void> {
 	const runner = await import("$generation/cli-runner");
 	intro("darkroom");
 
 	// oxlint-disable react-doctor/server-sequential-independent-await -- each question waits for the previous answer on screen
-	const model = chosen ?? (await askModelAsync());
-	if (chosen !== undefined) log.step(`Model  ${dim(chosen.name)}`);
-
-	const prompt = await askPromptAsync();
+	const model = await resolveModelAsync(chosen);
+	const prompt = await resolvePromptAsync(written);
 	const references = await askReferencesAsync(model);
 	const options = await askOptionsAsync(model);
 	// oxlint-enable react-doctor/server-sequential-independent-await

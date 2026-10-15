@@ -3,6 +3,8 @@ import { ValidationError } from "@cliffy/command";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
+import { AppTab } from "$interactive/app-tab";
+
 const scriptName = getScriptName(true);
 
 export const browseCommand = createBaseCommand(
@@ -14,6 +16,6 @@ export const browseCommand = createBaseCommand(
 		throw new ValidationError("history browse needs a terminal. Use history list instead.");
 	}
 	// React and Ink only load for this command.
-	const { browseHistoryAsync } = await import("$interactive/browse-history");
-	await browseHistoryAsync();
+	const { openDarkroomAsync } = await import("$interactive/open-darkroom");
+	await openDarkroomAsync({ tab: AppTab.History });
 });

@@ -1,6 +1,6 @@
 import { Box, Text } from "ink";
 
-import { splitTitle } from "./command-palette-state";
+import { HighlightedText } from "./highlighted-text";
 import { theme } from "./theme";
 
 import type { ReactNode } from "react";
@@ -23,18 +23,10 @@ export interface PaletteRowProperties {
  */
 export function PaletteRow({ isSelected, match }: Readonly<PaletteRowProperties>): ReactNode {
 	const { command, positions } = match;
-	const background = isSelected ? theme.accent : theme.element;
-	const plain = isSelected ? theme.background : theme.text;
 
 	return (
-		<Box backgroundColor={background} justifyContent="space-between" paddingX={1}>
-			<Text bold={isSelected} color={plain}>
-				{splitTitle(command.title, positions).map(({ isMatch, start, text }) => (
-					<Text key={start} color={isMatch && !isSelected ? theme.accent : plain} underline={isMatch}>
-						{text}
-					</Text>
-				))}
-			</Text>
+		<Box backgroundColor={isSelected ? theme.accent : theme.element} justifyContent="space-between" paddingX={1}>
+			<HighlightedText isSelected={isSelected} positions={positions} text={command.title} />
 			<Text color={isSelected ? theme.background : theme.muted}>{command.keyLabel}</Text>
 		</Box>
 	);

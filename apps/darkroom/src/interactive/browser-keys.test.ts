@@ -1,31 +1,7 @@
 import { describe, it } from "vitest";
 
 import { BrowserKey, formatClipboardSequence, getBrowserKey } from "./browser-keys.ts";
-
-import type { Key } from "ink";
-
-const NO_KEY: Key = {
-	backspace: false,
-	capsLock: false,
-	ctrl: false,
-	delete: false,
-	downArrow: false,
-	end: false,
-	escape: false,
-	home: false,
-	hyper: false,
-	leftArrow: false,
-	meta: false,
-	numLock: false,
-	pageDown: false,
-	pageUp: false,
-	return: false,
-	rightArrow: false,
-	shift: false,
-	super: false,
-	tab: false,
-	upArrow: false,
-};
+import { NO_KEY } from "./test-key.ts";
 
 describe("getBrowserKey", () => {
 	it("maps arrows, letters, and Enter to their bindings", ({ expect }) => {

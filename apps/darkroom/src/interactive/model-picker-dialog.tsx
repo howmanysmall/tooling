@@ -1,0 +1,104 @@
+import { useReducer } from "react";
+import { TextInput } from "@inkjs/ui";
+import { Box, Text } from "ink";
+
+import { describeListPrice, getModelPrices } from "$generation/observed-prices";
+
+import { INITIAL_PALETTE_STATE, reducePaletteState } from "./command-palette-state";
+import { Dialog } from "./dialog";
+import { getWindowStart } from "./list-cursor";
+import { ModelPickerRow } from "./model-picker-row";
+import { getModelMatches } from "./model-picker-state";
+import { theme } from "./theme";
+import { useDialogListKeys } from "./use-dialog-list-keys";
+
+import type { ImageModelListItem } from "@openrouter/sdk/models";
+import type { ReactNode } from "react";
+
+import type { KeyHint } from "./key-hints";
+import type { ModelCatalog } from "./model-browser-state";
+
+export interface ModelPickerDialogProperties {
+	catalog: ModelCatalog;
+	columns: number;
+	/** The model the prompt box uses now, marked in the list. */
+	currentId?: string | undefined;
+	/** Closes the picker without changing the model. */
+	onClose: () => void;
+	/** Takes the picked model; the picker closes after. */
+	onPick: (model: ImageModelListItem) => void;
+	/** Models you used lately, most recent first. */
+	recentIds: ReadonlyArray<string>;
+	rows: number;
+}
+
+const HINTS: ReadonlyArray<KeyHint> = [
+	["↑↓", "choose"],
+	["⏎", "use"],
+];
+// Rows of models shown at once.
+const VISIBLE_ROWS = 12;
+
+/**
+ * Picks the model to generate with. Typing narrows the list by name or ID
+ * the way fzf does; recent models come first, each with its price.
+ *
+ * @param properties - The models and what to do with the pick.
+ * @param properties.catalog - The models and what they cost.
+ * @param properties.columns - The screen's width.
+ * @param properties.currentId - The model in use now.
+ * @param properties.onClose - Closes without picking.
+ * @param properties.onPick - Takes the picked model.
+ * @param properties.recentIds - Models used lately.
+ * @param properties.rows - The screen's height.
+ * @returns A dialog with a search line and the matching models.
+ */
+export function ModelPickerDialog({
+	catalog,
+	columns,
+	currentId,
+	onClose,
+	onPick,
+	recentIds,
+	rows,
+}: Readonly<ModelPickerDialogProperties>): ReactNode {
+	const [picker, dispatch] = useReducer(reducePaletteState, INITIAL_PALETTE_STATE);
+	const matches = getModelMatches(catalog.models, recentIds, picker.query);
+	const visibleRows = Math.max(3, Math.min(VISIBLE_ROWS, rows - 12));
+	const start = getWindowStart(picker.cursor, matches.length, visibleRows);
+	const shown = matches.slice(start, start + visibleRows);
+
+	function pickSelected(): void {
+		const chosen = matches[picker.cursor];
+		if (chosen === undefined) return;
+		onPick(chosen.model);
+		onClose();
+	}
+
+	function handleQueryChange(query: string): void {
+		dispatch({ query, type: "query" });
+	}
+
+	useDialogListKeys(matches.length, dispatch, onClose);
+
+	return (
+		<Dialog columns={columns} hints={HINTS} rows={rows} title="Choose a model" width={72}>
+			<Box marginBottom={1}>
+				<Text bold={true} color={theme.accent}>
+					{"› "}
+				</Text>
+				<TextInput placeholder="Search models" onChange={handleQueryChange} onSubmit={pickSelected} />
+			</Box>
+			{shown.length === 0 ? <Text color={theme.muted}>{"No models match."}</Text> : null}
+			{shown.map((match, index) => (
+				<ModelPickerRow
+					key={match.model.id}
+					isCurrent={match.model.id === currentId}
+					isSelected={start + index === picker.cursor}
+					match={match}
+					price={describeListPrice(getModelPrices(catalog.pricing, catalog.observed, match.model.id))}
+				/>
+			))}
+		</Dialog>
+	);
+}
