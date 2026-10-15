@@ -621,6 +621,9 @@ importers:
       '@openrouter/sdk':
         specifier: catalog:ai
         version: 1.4.25
+      ansis:
+        specifier: catalog:runtime
+        version: 4.4.0
       arktype:
         specifier: catalog:runtime
         version: 2.2.8
