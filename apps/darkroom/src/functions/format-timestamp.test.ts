@@ -4,7 +4,7 @@ import { fromAny } from "@total-typescript/shoehorn";
 import { TimestampFormat } from "$validators/timestamp-format-type";
 
 vi.stubEnv("TZ", "America/Denver");
-const { formatTimestamp } = await import("./format-timestamp.ts");
+const { formatTimestampAsync } = await import("./format-timestamp.ts");
 
 // 2026-10-05T20:26:57Z, which is 14:26:57 MDT (UTC-6) in America/Denver.
 const TIMESTAMP = 1_791_232_017;
@@ -26,142 +26,166 @@ function nowInSeconds(): number {
 
 describe("formatTimestamp", () => {
 	describe("iso formats", () => {
-		it("formats an ISO instant in UTC", ({ expect }) => {
+		it("formats an ISO instant in UTC", async ({ expect }) => {
 			expect.assertions(2);
 
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.IsoInstant)).toBe("2026-10-05T20:26:57Z");
-			expect(formatTimestamp(0, TimestampFormat.IsoInstant)).toBe("1970-01-01T00:00:00Z");
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.IsoInstant)).resolves.toBe(
+				"2026-10-05T20:26:57Z",
+			);
+			await expect(formatTimestampAsync(0, TimestampFormat.IsoInstant)).resolves.toBe("1970-01-01T00:00:00Z");
 		});
 
-		it("formats local ISO date and time in the system time zone", ({ expect }) => {
+		it("formats local ISO date and time in the system time zone", async ({ expect }) => {
 			expect.assertions(2);
 
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.IsoDate)).toBe("2026-10-05");
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.IsoTime)).toBe("14:26:57");
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.IsoDate)).resolves.toBe("2026-10-05");
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.IsoTime)).resolves.toBe("14:26:57");
 		});
 
 		// Catches the UTC date leaking through (02:00Z is still evening in
 		// Denver).
-		it("uses the local calendar date rather than the UTC date", ({ expect }) => {
+		it("uses the local calendar date rather than the UTC date", async ({ expect }) => {
 			expect.assertions(1);
 
 			const utcEarlyMorning = Date.UTC(2026, 9, 6, 2, 0, 0) / 1000;
 
-			expect(formatTimestamp(utcEarlyMorning, TimestampFormat.IsoDate)).toBe("2026-10-05");
+			await expect(formatTimestampAsync(utcEarlyMorning, TimestampFormat.IsoDate)).resolves.toBe("2026-10-05");
 		});
 
-		it("formats ISO local without an offset or zone name", ({ expect }) => {
+		it("formats ISO local without an offset or zone name", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.IsoLocal)).toBe("2026-10-05T14:26:57");
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.IsoLocal)).resolves.toBe(
+				"2026-10-05T14:26:57",
+			);
 		});
 
-		it("formats ISO zoned with the offset and zone name", ({ expect }) => {
+		it("formats ISO zoned with the offset and zone name", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.IsoZoned)).toBe(
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.IsoZoned)).resolves.toBe(
 				"2026-10-05T14:26:57-06:00[America/Denver]",
 			);
 		});
 
-		it("applies standard time offset outside daylight saving", ({ expect }) => {
+		it("applies standard time offset outside daylight saving", async ({ expect }) => {
 			expect.assertions(1);
 
 			const winter = Date.UTC(2026, 0, 15, 19, 0, 0) / 1000;
 
-			expect(formatTimestamp(winter, TimestampFormat.IsoZoned)).toBe("2026-01-15T12:00:00-07:00[America/Denver]");
+			await expect(formatTimestampAsync(winter, TimestampFormat.IsoZoned)).resolves.toBe(
+				"2026-01-15T12:00:00-07:00[America/Denver]",
+			);
 		});
 	});
 
 	describe("sub-second timestamps", () => {
-		it("keeps millisecond precision", ({ expect }) => {
+		it("keeps millisecond precision", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(formatTimestamp(TIMESTAMP + 0.25, TimestampFormat.IsoInstant)).toBe("2026-10-05T20:26:57.25Z");
+			await expect(formatTimestampAsync(TIMESTAMP + 0.25, TimestampFormat.IsoInstant)).resolves.toBe(
+				"2026-10-05T20:26:57.25Z",
+			);
 		});
 
-		it("rounds below a millisecond to the nearest millisecond", ({ expect }) => {
+		it("rounds below a millisecond to the nearest millisecond", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(formatTimestamp(TIMESTAMP + 0.000_6, TimestampFormat.IsoInstant)).toBe("2026-10-05T20:26:57.001Z");
+			await expect(formatTimestampAsync(TIMESTAMP + 0.000_6, TimestampFormat.IsoInstant)).resolves.toBe(
+				"2026-10-05T20:26:57.001Z",
+			);
 		});
 	});
 
 	describe.skipIf(!isEnglish)("locale formats (en)", () => {
-		it("formats the full date", ({ expect }) => {
+		it("formats the full date", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.FullDate)).toBe("Monday, October 5, 2026");
-		});
-
-		it("formats the long date", ({ expect }) => {
-			expect.assertions(1);
-
-			expect(formatTimestamp(TIMESTAMP, TimestampFormat.LongDate)).toBe("October 5, 2026");
-		});
-
-		it("formats the full date and time with the zone name", ({ expect }) => {
-			expect.assertions(1);
-
-			expect(normalizeSpaces(formatTimestamp(TIMESTAMP, TimestampFormat.FullDateTime))).toBe(
-				"Monday, October 5, 2026 at 2:26:57 PM MDT",
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.FullDate)).resolves.toBe(
+				"Monday, October 5, 2026",
 			);
 		});
 
-		it("formats the medium date and time", ({ expect }) => {
+		it("formats the long date", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(normalizeSpaces(formatTimestamp(TIMESTAMP, TimestampFormat.MediumDateTime))).toMatch(
-				MEDIUM_DATE_TIME_PATTERN,
-			);
+			await expect(formatTimestampAsync(TIMESTAMP, TimestampFormat.LongDate)).resolves.toBe("October 5, 2026");
 		});
 
-		it("formats the short weekday date and time with the zone name", ({ expect }) => {
+		it("formats the full date and time with the zone name", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(normalizeSpaces(formatTimestamp(TIMESTAMP, TimestampFormat.ShortWeekdayDateTime))).toMatch(
-				SHORT_WEEKDAY_PATTERN,
-			);
+			await expect(
+				formatTimestampAsync(TIMESTAMP, TimestampFormat.FullDateTime).then(normalizeSpaces),
+			).resolves.toBe("Monday, October 5, 2026 at 2:26:57 PM MDT");
+		});
+
+		it("formats the medium date and time", async ({ expect }) => {
+			expect.assertions(1);
+
+			await expect(
+				formatTimestampAsync(TIMESTAMP, TimestampFormat.MediumDateTime).then(normalizeSpaces),
+			).resolves.toMatch(MEDIUM_DATE_TIME_PATTERN);
+		});
+
+		it("formats the short weekday date and time with the zone name", async ({ expect }) => {
+			expect.assertions(1);
+
+			await expect(
+				formatTimestampAsync(TIMESTAMP, TimestampFormat.ShortWeekdayDateTime).then(normalizeSpaces),
+			).resolves.toMatch(SHORT_WEEKDAY_PATTERN);
 		});
 	});
 
 	describe.skipIf(!isEnglish)("relative format (en)", () => {
 		// Offsets carry a spare hour so units stay stable during the run.
-		it("describes past times", ({ expect }) => {
+		it("describes past times", async ({ expect }) => {
 			expect.assertions(3);
 
-			expect(formatTimestamp(nowInSeconds() - 3 * DAY - HOUR, TimestampFormat.Relative)).toBe("3 days ago");
-			expect(formatTimestamp(nowInSeconds() - 2 * HOUR - 60, TimestampFormat.Relative)).toBe("2 hours ago");
-			expect(formatTimestamp(nowInSeconds() - 5 * 60 - 5, TimestampFormat.Relative)).toBe("5 minutes ago");
+			await expect(formatTimestampAsync(nowInSeconds() - 3 * DAY - HOUR, TimestampFormat.Relative)).resolves.toBe(
+				"3 days ago",
+			);
+			await expect(formatTimestampAsync(nowInSeconds() - 2 * HOUR - 60, TimestampFormat.Relative)).resolves.toBe(
+				"2 hours ago",
+			);
+			await expect(formatTimestampAsync(nowInSeconds() - 5 * 60 - 5, TimestampFormat.Relative)).resolves.toBe(
+				"5 minutes ago",
+			);
 		});
 
-		it("describes future times", ({ expect }) => {
+		it("describes future times", async ({ expect }) => {
 			expect.assertions(2);
 
-			expect(formatTimestamp(nowInSeconds() + 3 * DAY + HOUR, TimestampFormat.Relative)).toBe("in 3 days");
-			expect(formatTimestamp(nowInSeconds() + 2 * HOUR + 60, TimestampFormat.Relative)).toBe("in 2 hours");
+			await expect(formatTimestampAsync(nowInSeconds() + 3 * DAY + HOUR, TimestampFormat.Relative)).resolves.toBe(
+				"in 3 days",
+			);
+			await expect(formatTimestampAsync(nowInSeconds() + 2 * HOUR + 60, TimestampFormat.Relative)).resolves.toBe(
+				"in 2 hours",
+			);
 		});
 
-		it("says now for the current moment", ({ expect }) => {
+		it("says now for the current moment", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(formatTimestamp(nowInSeconds(), TimestampFormat.Relative)).toBe("now");
+			await expect(formatTimestampAsync(nowInSeconds(), TimestampFormat.Relative)).resolves.toBe("now");
 		});
 
-		it("uses the largest non-zero unit", ({ expect }) => {
+		it("uses the largest non-zero unit", async ({ expect }) => {
 			expect.assertions(1);
 
 			const twoYearsAgo = nowInSeconds() - 2 * 366 * DAY - 10 * DAY;
 
-			expect(formatTimestamp(twoYearsAgo, TimestampFormat.Relative)).toBe("2 years ago");
+			await expect(formatTimestampAsync(twoYearsAgo, TimestampFormat.Relative)).resolves.toBe("2 years ago");
 		});
 	});
 
 	describe("invalid input", () => {
-		it("throws for an unknown format", ({ expect }) => {
+		it("throws for an unknown format", async ({ expect }) => {
 			expect.assertions(1);
 
-			expect(() => formatTimestamp(TIMESTAMP, fromAny("nope"))).toThrow("Unknown timestamp format kind: nope");
+			await expect(async () => formatTimestampAsync(TIMESTAMP, fromAny("nope"))).rejects.toThrow(
+				"Unknown timestamp format kind: nope",
+			);
 		});
 	});
 });

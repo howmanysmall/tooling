@@ -73,9 +73,17 @@
 		"@total-typescript/shoehorn": "catalog:test",
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:types",
-		"temporal-polyfill": "catalog:test",
+		"temporal-polyfill": "catalog:polyfills",
 		"tsdown": "catalog:build",
 		"vitest": "catalog:test"
+	},
+	"peerDependencies": {
+		"temporal-polyfill": "catalog:polyfills"
+	},
+	"peerDependenciesMeta": {
+		"temporal-polyfill": {
+			"optional": true
+		}
 	},
 	"engines": {
 		"node": ">=22.18.0"

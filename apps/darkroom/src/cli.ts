@@ -1,7 +1,5 @@
 #!/usr/bin/env bun
 
-import "$polyfills/temporal";
-
 import { argv, stdout } from "node:process";
 import { HelpCommand } from "@cliffy/command/help";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";

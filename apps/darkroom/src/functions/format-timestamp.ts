@@ -1,5 +1,9 @@
 import { TimestampFormat } from "$validators/timestamp-format-type";
 
+import { getTemporalAsync } from "./get-temporal-async";
+
+import type { TemporalNative } from "./get-temporal-async";
+
 const relativeTimeFormat = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
 
 const BOTH_NEVER = { offset: "never", timeZoneName: "never" } as const;
@@ -47,9 +51,9 @@ function getDateFormatters(timeZoneId: string): DateFormatters {
 	return formatters;
 }
 
-function formatRelative(zonedDateTime: Temporal.ZonedDateTime): string {
+function formatRelative(zonedDateTime: Temporal.ZonedDateTime, { Now }: TemporalNative): string {
 	const { timeZoneId } = zonedDateTime;
-	const now = Temporal.Now.zonedDateTimeISO(timeZoneId);
+	const now = Now.zonedDateTimeISO(timeZoneId);
 	const duration = zonedDateTime.since(now, YEARS);
 
 	for (const unit of RELATIVE_UNITS) {
@@ -61,7 +65,8 @@ function formatRelative(zonedDateTime: Temporal.ZonedDateTime): string {
 	return relativeTimeFormat.format(0, "seconds");
 }
 
-export function formatTimestamp(timestamp: number, timestampFormat: TimestampFormat): string {
+export async function formatTimestampAsync(timestamp: number, timestampFormat: TimestampFormat): Promise<string> {
+	const Temporal = await getTemporalAsync();
 	const timeZoneId = Temporal.Now.timeZoneId();
 	const { fullDateFormat, fullDateTimeFormat, longDateFormat, mediumDateTimeFormat, shortWeekdayDateTimeFormat } =
 		getDateFormatters(timeZoneId);
@@ -100,7 +105,7 @@ export function formatTimestamp(timestamp: number, timestampFormat: TimestampFor
 			return mediumDateTimeFormat.format(date);
 
 		case TimestampFormat.Relative:
-			return formatRelative(instant.toZonedDateTimeISO(timeZoneId));
+			return formatRelative(instant.toZonedDateTimeISO(timeZoneId), Temporal);
 
 		case TimestampFormat.ShortWeekdayDateTime:
 			return shortWeekdayDateTimeFormat.format(date);

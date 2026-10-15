@@ -297,6 +297,10 @@ catalogs:
     oxlint-tsgolint:
       specifier: 7.0.2004
       version: 7.0.2004
+  polyfills:
+    temporal-polyfill:
+      specifier: 1.0.6
+      version: 1.0.6
   runtime:
     '@arkenv/core':
       specifier: 1.0.0-rc.4
@@ -359,9 +363,6 @@ catalogs:
     jest-extended:
       specifier: 7.0.0
       version: 7.0.0
-    temporal-polyfill:
-      specifier: 1.0.6
-      version: 1.0.6
     vitest:
       specifier: 5.0.4
       version: 5.0.4
@@ -692,7 +693,7 @@ importers:
         specifier: catalog:types
         version: 26.6.5
       temporal-polyfill:
-        specifier: catalog:test
+        specifier: catalog:polyfills
         version: 1.0.6
       tsdown:
         specifier: catalog:build
