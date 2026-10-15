@@ -1,6 +1,7 @@
 entry = [
 	"apps/*/src/cli.ts",
 	"apps/*/src/index.ts",
+	"apps/*/scripts/*.ts",
 	"apps/*/src/**/*.fuzz.ts",
 	"apps/*/*.config.ts",
 	"apps/*/vitest.setup.ts",

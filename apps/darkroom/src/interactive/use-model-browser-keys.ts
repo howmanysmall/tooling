@@ -11,6 +11,7 @@ type KeyActionName = Exclude<keyof ModelBrowserActions, "setFilter">;
 const KEY_ACTIONS: ReadonlyMap<BrowserKey, KeyActionName> = new Map<BrowserKey, KeyActionName>([
 	[BrowserKey.Copy, "copySelected"],
 	[BrowserKey.Down, "moveDown"],
+	[BrowserKey.Example, "switchExample"],
 	[BrowserKey.Filter, "openFilter"],
 	[BrowserKey.First, "moveToFirst"],
 	[BrowserKey.Last, "moveToLast"],

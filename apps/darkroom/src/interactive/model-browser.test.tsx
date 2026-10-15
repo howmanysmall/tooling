@@ -6,6 +6,7 @@ import { createModel, MULTI_MODEL } from "$generation/model-fixture";
 import { ModelSort } from "$utilities/model-filters";
 
 import { ModelBrowserScreen } from "./model-browser-screen.tsx";
+import { ExampleSource } from "./model-examples.ts";
 
 import type { LoadingPreview } from "$preview/load-preview";
 
@@ -20,9 +21,6 @@ const PALETTE = { ...MULTI_MODEL, name: "OpenAI: Palette" };
 // Banana charges by the token, so its list price comes from past runs. Only
 // Palette has made an image.
 const CATALOG: ModelCatalog = {
-	examples: new Map([
-		[PALETTE.id, { created: "2026-10-14T20:30:00.000Z", prompt: "a fox in snow", stored: "images/x/1.png" }],
-	]),
 	models: [PALETTE, BANANA],
 	observed: new Map([[BANANA.id, { images: 2, usdPerImage: 0.039 }]]),
 	pricing: {
@@ -37,6 +35,18 @@ const CATALOG: ModelCatalog = {
 			},
 		],
 	},
+	shippedExamples: new Map(),
+	yourExamples: new Map([
+		[
+			PALETTE.id,
+			{
+				created: "2026-10-14T20:30:00.000Z",
+				path: "/data/images/x/1.png",
+				prompt: "a fox in snow",
+				source: ExampleSource.Yours,
+			},
+		],
+	]),
 };
 
 const BANANA_ROW = /Banana {2}Google +≈ \$0\.039\/img/u;

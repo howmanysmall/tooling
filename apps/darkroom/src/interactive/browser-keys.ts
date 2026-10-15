@@ -4,6 +4,7 @@ export const enum BrowserKey {
 	Copy = "copy",
 	Delete = "delete",
 	Down = "down",
+	Example = "example",
 	Filter = "filter",
 	First = "first",
 	Last = "last",
@@ -19,6 +20,7 @@ export const enum BrowserKey {
 const CHARACTER_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
 	["/", BrowserKey.Filter],
 	["d", BrowserKey.Delete],
+	["e", BrowserKey.Example],
 	["G", BrowserKey.Last],
 	["g", BrowserKey.First],
 	["j", BrowserKey.Down],

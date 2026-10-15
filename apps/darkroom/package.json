@@ -36,7 +36,8 @@
 		"darkroom": "./dist/cli.js"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"examples"
 	],
 	"scripts": {
 		"build": "tsdown",

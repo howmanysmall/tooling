@@ -11,14 +11,16 @@ import type { CursorMove } from "./list-cursor";
 import type { ModelExample } from "./model-examples";
 import type { StatusMessage } from "./status-message";
 
-/** The models to browse, what they cost, and what they made for you. */
+/** The models to browse, what they cost, and what they make. */
 export interface ModelCatalog {
-	/** The newest image each model made, keyed by model ID. */
-	readonly examples: ReadonlyMap<string, ModelExample>;
 	readonly models: ReadonlyArray<ImageModelListItem>;
 	/** What models have cost per image in past runs. */
 	readonly observed: ObservedPrices;
 	readonly pricing: ModelPricing;
+	/** The example shipped with darkroom for each model, keyed by model ID. */
+	readonly shippedExamples: ReadonlyMap<string, ModelExample>;
+	/** The newest image you made with each model, keyed by model ID. */
+	readonly yourExamples: ReadonlyMap<string, ModelExample>;
 }
 
 export interface ModelBrowserState {
@@ -28,6 +30,8 @@ export interface ModelBrowserState {
 	/** Text the name, ID, or description must contain. */
 	readonly filter: string;
 	readonly isFiltering: boolean;
+	/** Shows the shipped example even when you have your own. */
+	readonly prefersShipped: boolean;
 	readonly sort: ModelSort;
 	readonly status?: StatusMessage | undefined;
 }
@@ -38,7 +42,8 @@ export type ModelBrowserAction =
 	| { readonly isFiltering: boolean; readonly type: "filtering" }
 	| { readonly status: StatusMessage | undefined; readonly type: "status" }
 	| { readonly type: "cancel-filter" }
-	| { readonly type: "next-sort" };
+	| { readonly type: "next-sort" }
+	| { readonly type: "switch-example" };
 
 const NEXT_SORT: ReadonlyMap<ModelSort, ModelSort> = new Map([
 	[ModelSort.Created, ModelSort.Name],
@@ -47,7 +52,21 @@ const NEXT_SORT: ReadonlyMap<ModelSort, ModelSort> = new Map([
 ]);
 
 export function createModelBrowserState(catalog: ModelCatalog, sort: ModelSort): ModelBrowserState {
-	return { catalog, cursor: 0, filter: "", isFiltering: false, sort };
+	return { catalog, cursor: 0, filter: "", isFiltering: false, prefersShipped: false, sort };
+}
+
+/**
+ * Picks the image to show for a model: yours first, unless the shipped
+ * example was asked for; either one when only it exists.
+ *
+ * @param state - The browser state.
+ * @param modelId - Which model to show.
+ * @returns The example, or `undefined` when there is none.
+ */
+export function getExample(state: ModelBrowserState, modelId: string): ModelExample | undefined {
+	const yours = state.catalog.yourExamples.get(modelId);
+	const shipped = state.catalog.shippedExamples.get(modelId);
+	return state.prefersShipped ? (shipped ?? yours) : (yours ?? shipped);
 }
 
 /**
@@ -113,6 +132,9 @@ export function reduceModelBrowserState(state: ModelBrowserState, action: ModelB
 
 		case "next-sort":
 			return cycleSort(state);
+
+		case "switch-example":
+			return { ...state, prefersShipped: !state.prefersShipped };
 
 		default:
 			return { ...state, status: action.status };

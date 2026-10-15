@@ -11,6 +11,7 @@ const KEY_HINTS: ReadonlyArray<KeyHint> = [
 	["↑↓", "move"],
 	["/", "filter"],
 	["s", "sort"],
+	["e", "example"],
 	["⏎", "generate"],
 	["y", "copy id"],
 	["q", "quit"],
