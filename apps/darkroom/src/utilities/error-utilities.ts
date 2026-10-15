@@ -1,6 +1,7 @@
+import { isString } from "@howmanysmall/arktype-utilities";
 import { type } from "arktype";
 
-const isErrnoException = type({ code: "string" });
+const isErrnoException = type({ code: isString }).readonly();
 
 /**
  * Gets the Node.js error code, such as `EEXIST`, from a caught error.

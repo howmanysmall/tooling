@@ -1,5 +1,6 @@
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import nodePath from "node:path";
+import { isMaybeString, isNumber, isString } from "@howmanysmall/arktype-utilities";
 import { type } from "arktype";
 
 import { CACHE_TTL_MS } from "$constants";
@@ -12,13 +13,18 @@ const CACHE_FILE = nodePath.join(environmentPaths.cache, "model-pricing.json");
 const BATCH_SIZE = 8;
 
 const isPricingEntry = type({
-	billable: "string",
-	costUsd: "number",
-	unit: "string",
-	"variant?": "string | undefined",
-});
-const isEndpointPricing = type({ pricing: isPricingEntry.array(), provider: "string" });
-const isModelPricing = type({ "[string]": isEndpointPricing.array() });
+	billable: isString,
+	costUsd: isNumber,
+	unit: isString,
+	"variant?": isMaybeString,
+}).readonly();
+const isEndpointPricing = type({
+	pricing: isPricingEntry.array().readonly(),
+	provider: isString,
+}).readonly();
+const isModelPricing = type({
+	"[string]": isEndpointPricing.array().readonly(),
+}).readonly();
 
 /** Each model's endpoints and their prices, keyed by model ID. */
 export type ModelPricing = Readonly<Record<string, ReadonlyArray<EndpointPricing>>>;
@@ -77,6 +83,7 @@ async function readCacheAsync(): Promise<ModelPricing | undefined> {
 	try {
 		const stats = await stat(CACHE_FILE);
 		if (Date.now() - stats.mtimeMs >= CACHE_TTL_MS) return undefined;
+
 		const result = isModelPricing(JSON.parse(await readFile(CACHE_FILE, "utf8")));
 		return result instanceof type.errors ? undefined : result;
 	} catch {

@@ -18,7 +18,7 @@ const MODEL_FLAGS: ReadonlyArray<string> = ["-m", "--model"];
 export function selectParameterValues(
 	lines: ReadonlyArray<string>,
 	parameter: string,
-	modelId: string | undefined,
+	modelId?: string,
 ): Array<string> {
 	const union = new Set<string>();
 	for (const line of lines) {
