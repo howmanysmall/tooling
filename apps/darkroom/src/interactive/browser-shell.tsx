@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, useInput } from "ink";
+import { Box, useApp, useInput } from "ink";
 
 import { useAppTabs } from "./app-tabs-context";
 import { findCommand } from "./browser-command";
@@ -34,6 +34,8 @@ export interface BrowserShellProperties {
 	commands: ReadonlyArray<BrowserCommand>;
 	/** A dialog of the screen's own is open and reads every key itself. */
 	hasDialog?: boolean | undefined;
+	/** What `ctrl+c` does, such as clearing the prompt; quits by default. */
+	onInterrupt?: (() => void) | undefined;
 	rows: number;
 	/** The last action's outcome, shown as a toast. */
 	status?: StatusMessage | undefined;
@@ -53,6 +55,7 @@ export interface BrowserShellProperties {
  * @param properties.columns - The terminal's width.
  * @param properties.commands - What the screen can do.
  * @param properties.hasDialog - Whether a dialog of the screen's own is open.
+ * @param properties.onInterrupt - What `ctrl+c` does; quits by default.
  * @param properties.rows - The terminal's height.
  * @param properties.status - The last action's outcome, if any.
  * @param properties.children - The header, panes, status bar, and any
@@ -64,12 +67,14 @@ export function BrowserShell({
 	columns,
 	commands,
 	hasDialog,
+	onInterrupt,
 	rows,
 	status,
 	children,
 }: Readonly<BrowserShellProperties>): ReactNode {
 	const [overlay, setOverlay] = useState(Overlay.None);
 	const tabs = useAppTabs();
+	const { exit } = useApp();
 	function showOverlay(next: Overlay): () => void {
 		return () => {
 			setOverlay(next);
@@ -100,6 +105,10 @@ export function BrowserShell({
 			},
 			[ShellRoute.Ignore](): void {
 				// A dialog has the key.
+			},
+			[ShellRoute.Interrupt](): void {
+				if (onInterrupt === undefined) exit();
+				else onInterrupt();
 			},
 			[ShellRoute.NextTab](): void {
 				tabs?.cycle(1);

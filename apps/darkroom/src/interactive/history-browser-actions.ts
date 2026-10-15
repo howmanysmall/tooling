@@ -104,7 +104,6 @@ export function createBrowserActions({
 			if (selected === undefined) return;
 
 			services.requestRerun(selected);
-			exit();
 		},
 		setFilter(text): void {
 			dispatch({ filter: text, type: "filter" });

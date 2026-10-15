@@ -9,6 +9,8 @@ export const enum ShellRoute {
 	Command = "command",
 	/** A dialog reads its own keys; the shell stays out of the way. */
 	Ignore = "ignore",
+	/** `ctrl+c`: the screen's interrupt, which quits unless it has a use. */
+	Interrupt = "interrupt",
 	NextTab = "next-tab",
 	OpenHelp = "open-help",
 	OpenPalette = "open-palette",
@@ -25,9 +27,10 @@ export interface ShellSituation {
 }
 
 /**
- * Decides who handles a key. Dialogs come first, then any key closes help,
- * then `tab` and `ctrl+p`, which work even while the screen captures keys,
- * so the prompt box can't trap you.
+ * Decides who handles a key. `ctrl+c` always reaches the screen's
+ * interrupt; then dialogs come first, any key closes help, and `tab` and
+ * `ctrl+p` work even while the screen captures keys, so the prompt box
+ * can't trap you.
  *
  * @param input - The typed character, if any.
  * @param key - Ink's description of the key.
@@ -35,6 +38,7 @@ export interface ShellSituation {
  * @returns Where the key goes.
  */
 export function getShellRoute(input: string, key: Key, situation: ShellSituation): ShellRoute {
+	if (input === "c" && key.ctrl) return ShellRoute.Interrupt;
 	if (situation.hasDialog) return ShellRoute.Ignore;
 	if (situation.isHelpOpen) return ShellRoute.CloseHelp;
 	return getGlobalRoute(input, key, situation.hasTabs) ?? getScreenRoute(input, situation.isCapturing);

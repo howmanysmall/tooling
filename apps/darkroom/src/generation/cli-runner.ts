@@ -135,23 +135,34 @@ export async function resolveModelIdAsync(model: string | undefined): Promise<st
 }
 
 /**
+ * Validates a generation against the cached model list without printing,
+ * for the full-screen app, which shows the warnings itself.
+ *
+ * @param input - What to generate.
+ * @returns The prepared request, with its warnings.
+ */
+export async function prepareQuietlyAsync(input: GenerationInput): Promise<PreparedGeneration> {
+	const [{ prepareGenerationAsync }, { getImageModelsAsync }] = await Promise.all([
+		import("./run-generation"),
+		import("$utilities/image-model-utilities"),
+	]);
+	const models = await getImageModelsAsync();
+	return prepareGenerationAsync(input, {
+		cwd: cwd(),
+		isDirectoryAsync,
+		models,
+		stdoutIsTty: stdout.isTTY,
+	});
+}
+
+/**
  * Validates a generation against the cached model list and the terminal.
  *
  * @param input - What to generate.
  * @returns The prepared request.
  */
 export async function prepareForTerminalAsync(input: GenerationInput): Promise<PreparedGeneration> {
-	const [{ prepareGenerationAsync }, { getImageModelsAsync }] = await Promise.all([
-		import("./run-generation"),
-		import("$utilities/image-model-utilities"),
-	]);
-	const models = await getImageModelsAsync();
-	const prepared = await prepareGenerationAsync(input, {
-		cwd: cwd(),
-		isDirectoryAsync,
-		models,
-		stdoutIsTty: stdout.isTTY,
-	});
+	const prepared = await prepareQuietlyAsync(input);
 	for (const warning of prepared.warnings) log.warn(warning);
 	return prepared;
 }
@@ -182,33 +193,63 @@ export async function generateWithInterruptsAsync(
 	prepared: PreparedGeneration,
 	options: GenerateOptions = {},
 ): Promise<GenerationResult> {
-	const [{ executeGenerationAsync }, { getOpenRouterAsync }] = await Promise.all([
-		import("./run-generation"),
-		import("$functions/get-openrouter-async"),
-	]);
-	const openrouter = await getOpenRouterAsync();
 	const guard = new InterruptGuard();
 	const onInterrupt = createInterruptHandler(guard);
 
 	process.on("SIGINT", onInterrupt);
 	try {
 		if (options.isQuiet !== true) log.start(`Generating with ${bold.magenta(prepared.model.id)}…`);
-		const result = await executeGenerationAsync(prepared, {
-			client: openrouter.images,
+		const result = await generateQuietlyAsync(prepared, {
 			guard,
-			history: getHistoryStore(),
-			now: () => new Date(),
 			onProgress: options.onProgress,
 			warn(message) {
 				log.warn(message);
 			},
-			writeStdoutAsync,
 		});
 		if (guard.wasInterrupted) process.exitCode = 130;
 		return result;
 	} finally {
 		process.off("SIGINT", onInterrupt);
 	}
+}
+
+/** How the full-screen app runs a generation without touching the terminal. */
+export interface QuietGenerateOptions {
+	/** Aborts the request; the app's Esc and Ctrl-C go through it. */
+	readonly guard: InterruptGuard;
+	readonly onProgress?: ((progress: StreamProgress) => void) | undefined;
+	readonly warn: (message: string) => void;
+}
+
+/**
+ * Sends the request, saves the images, and records the run in the history,
+ * without printing or handling signals.
+ *
+ * @param prepared - The validated request.
+ * @param options - The interrupt guard, progress, and warnings.
+ * @param options.guard - Aborts the request.
+ * @param options.onProgress - Receives streaming progress.
+ * @param options.warn - Receives warnings instead of the log.
+ * @returns The finished run.
+ */
+export async function generateQuietlyAsync(
+	prepared: PreparedGeneration,
+	{ guard, onProgress, warn }: QuietGenerateOptions,
+): Promise<GenerationResult> {
+	const [{ executeGenerationAsync }, { getOpenRouterAsync }] = await Promise.all([
+		import("./run-generation"),
+		import("$functions/get-openrouter-async"),
+	]);
+	const openrouter = await getOpenRouterAsync();
+	return executeGenerationAsync(prepared, {
+		client: openrouter.images,
+		guard,
+		history: getHistoryStore(),
+		now: () => new Date(),
+		onProgress,
+		warn,
+		writeStdoutAsync,
+	});
 }
 
 /**
@@ -233,9 +274,15 @@ export function toEstimateRequest({ input, parameters }: PreparedGeneration): Es
  * Estimates a prepared request's cost from the cached prices.
  *
  * @param prepared - The validated request.
+ * @param warn - Reports prices that couldn't be read; the log by default.
  * @returns Something like `$0.08`, `≈ $0.08`, or `unknown (from $30/M tok)`.
  */
-export async function describeCostAsync(prepared: PreparedGeneration): Promise<string> {
+export async function describeCostAsync(
+	prepared: PreparedGeneration,
+	warn: (message: string) => void = (message) => {
+		log.warn(message);
+	},
+): Promise<string> {
 	const [{ describeEstimate, getCostEstimate }, { getModelPricingAsync }] = await Promise.all([
 		import("./cost-estimate"),
 		import("$utilities/model-pricing-utilities"),
@@ -252,7 +299,7 @@ export async function describeCostAsync(prepared: PreparedGeneration): Promise<s
 		return describeEstimate(estimate, endpoints);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-		log.warn(`Could not read prices: ${message}`);
+		warn(`Could not read prices: ${message}`);
 		return "unknown";
 	}
 }
