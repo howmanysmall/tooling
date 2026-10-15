@@ -5,6 +5,7 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
 		"jsx": "react-jsx",
 		"paths": {
+			"$compare/*": ["./src/compare/*"],
 			"$commands/*": ["./src/commands/*"],
 			"$constants": ["./src/constants/constants.ts"],
 			"$constants/*": ["./src/constants/*"],

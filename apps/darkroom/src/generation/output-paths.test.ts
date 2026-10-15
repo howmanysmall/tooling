@@ -41,6 +41,18 @@ describe("output paths", () => {
 		);
 	});
 
+	it("uses the stem instead of the date and slug when one is given", ({ expect }) => {
+		expect.assertions(1);
+
+		const spec = {
+			directory: "/work/cmp",
+			kind: OutputKind.Directory,
+			stem: "recraft_recraft-v4.1-flash",
+		} as const;
+
+		expect(getOutputPath(spec, naming)).toBe("/work/cmp/recraft_recraft-v4.1-flash_1.png");
+	});
+
 	it("treats a trailing slash or an existing directory as a directory", ({ expect }) => {
 		expect.assertions(2);
 

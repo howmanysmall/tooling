@@ -77,6 +77,28 @@ export function readCompletionContext(
 }
 
 /**
+ * Finds every value given for a repeatable option, in any of the forms
+ * `-m x`, `--model x`, or `--model=x`.
+ *
+ * @param words - The words typed so far.
+ * @param flags - The option's names, such as `["-m", "--model"]`.
+ * @returns The values, in the order given.
+ */
+export function getOptionValues(words: ReadonlyArray<string>, flags: ReadonlyArray<string>): Array<string> {
+	const flagSet = new Set(flags);
+	const values: Array<string> = [];
+	for (const [index, word] of words.entries()) {
+		const next = words[index + 1];
+		if (next !== undefined && flagSet.has(word)) values.push(next);
+
+		for (const flag of flags) {
+			if (flag.startsWith("--") && word.startsWith(`${flag}=`)) values.push(word.slice(flag.length + 1));
+		}
+	}
+	return values;
+}
+
+/**
  * Finds the last value given for an option, in any of the forms `-m x`,
  * `--model x`, or `--model=x`.
  *
@@ -85,15 +107,5 @@ export function readCompletionContext(
  * @returns The value, or `undefined` when the option is absent.
  */
 export function getOptionValue(words: ReadonlyArray<string>, flags: ReadonlyArray<string>): string | undefined {
-	const flagSet = new Set(flags);
-	let value: string | undefined;
-	for (const [index, word] of words.entries()) {
-		if (flagSet.has(word)) value = words[index + 1];
-
-		for (const flag of flags) {
-			if (!flag.startsWith("--") || !word.startsWith(`${flag}=`)) continue;
-			value = word.slice(flag.length + 1);
-		}
-	}
-	return value;
+	return getOptionValues(words, flags).at(-1);
 }

@@ -9,16 +9,29 @@ const LINES = [
 ];
 
 describe("selectParameterValues", () => {
+	it("offers only the values every compared model declares", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(selectParameterValues(LINES, "aspect_ratio", ["openai/gpt-image-1", "google/gemini"])).toStrictEqual([
+			"1:1",
+		]);
+		// gemini declares no quality, so it accepts any and does not narrow.
+		expect(selectParameterValues(LINES, "quality", ["openai/gpt-image-1", "google/gemini"])).toStrictEqual([
+			"low",
+			"high",
+		]);
+	});
+
 	it("offers only the values the chosen model declares", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(selectParameterValues(LINES, "aspect_ratio", "google/gemini")).toStrictEqual(["1:1", "16:9", "21:9"]);
+		expect(selectParameterValues(LINES, "aspect_ratio", ["google/gemini"])).toStrictEqual(["1:1", "16:9", "21:9"]);
 	});
 
 	it("offers every model's values when no model is chosen", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(selectParameterValues(LINES, "aspect_ratio", undefined)).toStrictEqual([
+		expect(selectParameterValues(LINES, "aspect_ratio", [])).toStrictEqual([
 			"1:1",
 			"3:2",
 			"2:3",
@@ -31,6 +44,6 @@ describe("selectParameterValues", () => {
 	it("falls back to every model's values when the chosen model doesn't declare the parameter", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(selectParameterValues(LINES, "quality", "google/gemini")).toStrictEqual(["low", "high"]);
+		expect(selectParameterValues(LINES, "quality", ["google/gemini"])).toStrictEqual(["low", "high"]);
 	});
 });

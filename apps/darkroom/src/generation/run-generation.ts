@@ -81,10 +81,14 @@ export async function requestImagesAsync(
 }
 
 export interface GenerationInput {
+	/** The comparison this run belongs to, for `compare`. */
+	readonly batch?: string | undefined;
 	/** Overwrite an explicit `-o` file. */
 	readonly force: boolean;
 	readonly modelId: string;
 	readonly options: GenerationOptions;
+	/** Names generated files `<stem>_N` instead of `<date>_<slug>_N`. */
+	readonly outputStem?: string | undefined;
 	/** The run this one repeats, for `history rerun`. */
 	readonly parent?: string | undefined;
 	readonly prompt: string;
@@ -190,7 +194,11 @@ export async function prepareGenerationAsync(
 
 	const { output } = input.options;
 	const isDirectory = output !== undefined && output !== "-" && (await environment.isDirectoryAsync(output));
-	const outputSpec = parseOutputSpec(output, environment.cwd, isDirectory);
+	const parsedSpec = parseOutputSpec(output, environment.cwd, isDirectory);
+	const outputSpec =
+		parsedSpec.kind === OutputKind.Directory && input.outputStem !== undefined
+			? { ...parsedSpec, stem: input.outputStem }
+			: parsedSpec;
 	await checkExplicitOutputAsync(outputSpec, parameters.count, input.force);
 
 	return {

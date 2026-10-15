@@ -47,7 +47,12 @@ export const enum OutputKind {
 }
 
 export type OutputSpec =
-	| { readonly directory: string; readonly kind: OutputKind.Directory }
+	| {
+			readonly directory: string;
+			readonly kind: OutputKind.Directory;
+			/** Replaces `<date>_<slug>` in generated names, such as a model name. */
+			readonly stem?: string | undefined;
+	  }
 	| { readonly kind: OutputKind.File; readonly path: string }
 	| { readonly kind: OutputKind.Stdout };
 
@@ -95,7 +100,8 @@ export function getOutputPath(
 	naming: OutputNaming,
 ): string {
 	if (spec.kind === OutputKind.Directory) {
-		return nodePath.join(spec.directory, `${naming.date}_${naming.slug}_${naming.index}.${naming.extension}`);
+		const stem = spec.stem ?? `${naming.date}_${naming.slug}`;
+		return nodePath.join(spec.directory, `${stem}_${naming.index}.${naming.extension}`);
 	}
 
 	const extension = nodePath.extname(spec.path);

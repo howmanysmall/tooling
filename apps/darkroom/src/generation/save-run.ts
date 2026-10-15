@@ -139,6 +139,7 @@ function toEntry(
 	const { input, parameters } = run.prepared;
 	return {
 		id: run.id,
+		batch: input.batch,
 		cost: run.cost,
 		created: run.createdAt.toISOString(),
 		images: saved.map((image, index) => ({
