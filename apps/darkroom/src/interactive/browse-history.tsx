@@ -88,9 +88,11 @@ export async function browseHistoryAsync(): Promise<void> {
 	});
 
 	let rerunTarget: HistoryEntry | undefined;
+	const openedAt = new Date();
 	const instance = render(
 		<HistoryBrowserScreen
 			entries={entries.toReversed()}
+			now={openedAt}
 			services={createServices(store, previews, (entry) => {
 				rerunTarget = entry;
 			})}

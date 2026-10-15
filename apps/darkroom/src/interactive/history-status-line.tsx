@@ -1,20 +1,25 @@
 import { Text } from "ink";
 
 import { useHistoryBrowser } from "./history-browser-context";
+import { HistoryKeyHints } from "./history-key-hints";
+import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
-const KEY_HELP = "↑↓ move · / filter · enter open · y copy id · r rerun · d delete · q quit";
-
 /**
- * The footer while browsing: the last status message, or the key bindings.
+ * The footer while browsing: the outcome of the last action, or the keys.
  *
- * @returns One line of text.
+ * @returns A coloured status line, or the key hints.
  */
 export function HistoryStatusLine(): ReactNode {
 	const {
 		state: { status },
 	} = useHistoryBrowser();
+	if (status === undefined) return <HistoryKeyHints />;
 
-	return status === undefined ? <Text dimColor={true}>{KEY_HELP}</Text> : <Text>{status}</Text>;
+	return status.tone === "error" ? (
+		<Text color={theme.danger}>{`✖ ${status.text}`}</Text>
+	) : (
+		<Text color={theme.success}>{`✔ ${status.text}`}</Text>
+	);
 }

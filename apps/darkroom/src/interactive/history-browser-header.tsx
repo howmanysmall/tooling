@@ -1,13 +1,25 @@
-import { Text } from "ink";
+import { Box, Text } from "ink";
+
+import { formatCost } from "$generation/format-result";
 
 import { useHistoryBrowser } from "./history-browser-context";
+import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
+import type { HistoryEntry } from "$history/history-entry";
+
+function getTotalCost(runs: ReadonlyArray<HistoryEntry>): number {
+	let total = 0;
+	for (const { cost } of runs) total += cost ?? 0;
+	return total;
+}
+
 /**
- * The title line, with how many runs are shown.
+ * The top line: the brand on the left, and how many runs are shown and what
+ * they cost on the right.
  *
- * @returns `darkroom history · 3 runs`, or `· 1 of 3 runs` while filtered.
+ * @returns `◐ darkroom history` and `4 runs · $0.039`.
  */
 export function HistoryBrowserHeader(): ReactNode {
 	const { state } = useHistoryBrowser();
@@ -15,9 +27,14 @@ export function HistoryBrowserHeader(): ReactNode {
 	const counts = state.filter.length === 0 ? `${shown} runs` : `${shown} of ${state.entries.length} runs`;
 
 	return (
-		<Text bold={true}>
-			{"darkroom history "}
-			<Text dimColor={true}>{`· ${counts}`}</Text>
-		</Text>
+		<Box justifyContent="space-between" paddingX={1}>
+			<Text>
+				<Text bold={true} color={theme.accent}>
+					{"◐ darkroom"}
+				</Text>
+				<Text color={theme.muted}>{"  history"}</Text>
+			</Text>
+			<Text color={theme.muted}>{`${counts} · ${formatCost(getTotalCost(state.runs))}`}</Text>
+		</Box>
 	);
 }

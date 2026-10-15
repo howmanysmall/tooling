@@ -28,7 +28,7 @@ export function HistoryPreviewArea(): ReactNode {
 	const batch = relations?.batch ?? [];
 	if (batch.length > 0) {
 		return (
-			<Box flexShrink={0} marginBottom={1}>
+			<Box flexShrink={0} justifyContent="center">
 				<HistoryBatchStrip runs={[selected, ...batch].toSorted(compareByModel)} />
 			</Box>
 		);
@@ -38,7 +38,7 @@ export function HistoryPreviewArea(): ReactNode {
 	if (preview === undefined) return null;
 
 	return (
-		<Box flexShrink={0} marginBottom={1}>
+		<Box flexShrink={0} justifyContent="center">
 			<HistoryPreviewSlot preview={preview} />
 		</Box>
 	);

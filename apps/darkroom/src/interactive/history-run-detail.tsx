@@ -1,51 +1,59 @@
 import { Box, Text } from "ink";
 
-import { toShowRows } from "$history/format-history";
+import { removeControlCharacters } from "$utilities/text-utilities";
 
 import { useHistoryBrowser } from "./history-browser-context";
 import { HistoryPreviewArea } from "./history-preview-area";
+import { HistoryRunLinks } from "./history-run-links";
+import { HistoryRunStats } from "./history-run-stats";
+import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
 import type { RunRelations } from "$history/resolve-run-reference";
-import type { Row } from "$utilities/output-format-utilities";
 
 const NO_RELATIONS: RunRelations = { batch: [], parents: [] };
 
-function getLabelColumnWidth(rows: ReadonlyArray<Row>): number {
-	let widest = 0;
-	for (const [label] of rows) widest = Math.max(widest, label.length);
-	return widest + 2;
-}
-
 /**
- * The right pane: the selected run's image (or its whole comparison, side by
- * side), then everything `history show` prints for it.
+ * The right pane: the image (or the whole comparison, side by side), the
+ * prompt as a heading, the run's headline facts, and its files and links.
  *
- * @returns The detail pane, empty when nothing is selected.
+ * @returns The detail pane, with a hint when nothing is selected.
  */
 export function HistoryRunDetail(): ReactNode {
-	const { meta, state } = useHistoryBrowser();
+	const { state } = useHistoryBrowser();
 	const { selected } = state;
-	if (selected === undefined) return <Box borderStyle="round" flexGrow={1} />;
-
-	const relations = state.relations ?? NO_RELATIONS;
-	const rows = toShowRows(selected, relations, meta.resolve);
-	const labelWidth = getLabelColumnWidth(rows);
+	if (selected === undefined) {
+		return (
+			<Box
+				alignItems="center"
+				borderColor={theme.border}
+				borderStyle="round"
+				flexGrow={1}
+				justifyContent="center"
+			>
+				<Text color={theme.muted}>{"Nothing selected"}</Text>
+			</Box>
+		);
+	}
 
 	return (
-		<Box borderStyle="round" flexDirection="column" flexGrow={1} overflow="hidden" paddingX={1}>
+		<Box
+			borderColor={theme.border}
+			borderStyle="round"
+			flexDirection="column"
+			flexGrow={1}
+			overflow="hidden"
+			paddingX={2}
+			paddingY={1}
+			rowGap={1}
+		>
 			<HistoryPreviewArea />
-			{rows.map(([label, value]) => (
-				// Rows keep their height; a long run is clipped at the bottom
-				// instead of its rows being squeezed on top of each other.
-				<Box key={`${label}:${value}`} flexShrink={0}>
-					<Box flexShrink={0} width={labelWidth}>
-						<Text dimColor={true}>{label}</Text>
-					</Box>
-					<Text>{value}</Text>
-				</Box>
-			))}
+			<Box flexShrink={0}>
+				<Text bold={true}>{removeControlCharacters(selected.prompt)}</Text>
+			</Box>
+			<HistoryRunStats entry={selected} />
+			<HistoryRunLinks entry={selected} relations={state.relations ?? NO_RELATIONS} />
 		</Box>
 	);
 }

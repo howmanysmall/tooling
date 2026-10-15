@@ -2,6 +2,7 @@ import { TextInput } from "@inkjs/ui";
 import { Box, Text } from "ink";
 
 import { useHistoryBrowser } from "./history-browser-context";
+import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
@@ -23,14 +24,19 @@ export function HistoryFilterBar(): ReactNode {
 	}
 
 	return (
-		<Box>
-			<Text color="cyan">{"/ "}</Text>
-			<TextInput
-				defaultValue={state.filter}
-				placeholder="filter by prompt or model"
-				onChange={handleFilterChange}
-				onSubmit={handleFilterSubmit}
-			/>
+		<Box columnGap={3}>
+			<Box>
+				<Text bold={true} color={theme.accent}>
+					{"/ "}
+				</Text>
+				<TextInput
+					defaultValue={state.filter}
+					placeholder="filter by prompt or model"
+					onChange={handleFilterChange}
+					onSubmit={handleFilterSubmit}
+				/>
+			</Box>
+			<Text color={theme.muted}>{"⏎ keep · esc clear"}</Text>
 		</Box>
 	);
 }

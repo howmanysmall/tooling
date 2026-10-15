@@ -19,25 +19,34 @@ import type { BrowserState } from "./history-browser-state";
 export interface HistoryBrowserProviderProperties {
 	/** Every run, newest first. */
 	entries: ReadonlyArray<HistoryEntry>;
+	/** When the browser opened, for naming days like `Today`. */
+	now: Date;
 	services: BrowserServices;
 	children: ReactNode;
 }
 
-// The title, the footer, and the list's top and bottom borders.
+// The header, the footer, and the list's top and bottom borders.
 const CHROME_ROWS = 4;
-// The detail pane's borders and padding.
-const DETAIL_CHROME_COLUMNS = 4;
+// The gap between the panes, then the detail pane's borders and padding.
+const DETAIL_CHROME_COLUMNS = 1 + 2 + 4;
+// The detail pane's borders and padding, above and below.
+const DETAIL_CHROME_ROWS = 2 + 2;
+// The share of the width the run list gets; the image gets the rest.
+const LIST_SHARE = 0.42;
+// The share of the detail pane the image may fill.
+const PREVIEW_SHARE = 0.6;
 
 function getLayout(columns: number, rows: number): HistoryBrowserLayout {
 	const listHeight = Math.max(1, rows - CHROME_ROWS);
-	const listWidth = Math.floor(columns / 2);
+	const listWidth = Math.floor(columns * LIST_SHARE);
+	const detailHeight = listHeight + 2 - DETAIL_CHROME_ROWS;
 	return {
 		columns,
 		listHeight,
 		listWidth,
 		previewBox: {
 			columns: Math.max(1, columns - listWidth - DETAIL_CHROME_COLUMNS),
-			rows: Math.max(3, Math.floor(listHeight / 2)),
+			rows: Math.max(3, Math.floor(detailHeight * PREVIEW_SHARE)),
 		},
 		rows,
 	};
@@ -47,6 +56,7 @@ interface ContextParts {
 	readonly actions: HistoryBrowserContextValue["actions"];
 	readonly browser: BrowserState;
 	readonly layout: HistoryBrowserLayout;
+	readonly now: Date;
 	readonly selected?: HistoryEntry | undefined;
 	readonly services: BrowserServices;
 }
@@ -55,6 +65,7 @@ function createContextValue({
 	actions,
 	browser,
 	layout,
+	now,
 	selected,
 	services,
 }: ContextParts): HistoryBrowserContextValue {
@@ -68,6 +79,7 @@ function createContextValue({
 				return services.getPreview(services.resolve(image.stored), box);
 			},
 			layout,
+			now,
 			resolve: services.resolve,
 		},
 		state: {
@@ -89,12 +101,14 @@ function createContextValue({
  *
  * @param properties - The runs, the services that act on them, and the parts.
  * @param properties.entries - Every run, newest first.
+ * @param properties.now - When the browser opened, for naming days.
  * @param properties.children - The browser's parts.
  * @param properties.services - Opens, deletes, previews, and re-runs runs.
  * @returns The parts, with the browser context around them.
  */
 export function HistoryBrowserProvider({
 	entries,
+	now,
 	services,
 	children,
 }: Readonly<HistoryBrowserProviderProperties>): ReactNode {
@@ -105,7 +119,7 @@ export function HistoryBrowserProvider({
 	const layout = getLayout(columns, rows);
 	const selected = getSelectedRun(browser);
 	const actions = createBrowserActions({ dispatch, exit, pageSize: layout.listHeight, selected, services, write });
-	const value = createContextValue({ actions, browser, layout, selected, services });
+	const value = createContextValue({ actions, browser, layout, now, selected, services });
 
 	return <HistoryBrowserContext value={value}>{children}</HistoryBrowserContext>;
 }

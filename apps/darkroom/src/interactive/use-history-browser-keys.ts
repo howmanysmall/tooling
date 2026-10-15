@@ -32,7 +32,7 @@ const KEY_ACTIONS: ReadonlyMap<BrowserKey, KeyActionName> = new Map<BrowserKey, 
 export function useHistoryBrowserKeys(): void {
 	const { actions, state } = useHistoryBrowser();
 
-	useInput((input, key) => {
+	useInput(function onInput(input, key) {
 		if (state.mode === BrowserMode.Filter) {
 			if (key.escape) actions.cancelFilter();
 			return;

@@ -8,6 +8,12 @@ export const enum BrowserMode {
 	Normal = "normal",
 }
 
+/** A one-line message for the footer, such as a copied ID or a failure. */
+export interface StatusMessage {
+	readonly text: string;
+	readonly tone: "error" | "success";
+}
+
 export interface BrowserState {
 	/** Index of the selected run within the visible ones. */
 	readonly cursor: number;
@@ -16,8 +22,7 @@ export interface BrowserState {
 	/** Lowercase text the prompt or model must contain. */
 	readonly filter: string;
 	readonly mode: BrowserMode;
-	/** A one-line message for the footer, such as a copied ID. */
-	readonly status?: string | undefined;
+	readonly status?: StatusMessage | undefined;
 }
 
 type NavigationAction =
@@ -30,7 +35,7 @@ export type BrowserAction =
 	| { readonly filter: string; readonly type: "filter" }
 	| { readonly id: string; readonly type: "removed" }
 	| { readonly mode: BrowserMode; readonly type: "mode" }
-	| { readonly status: string | undefined; readonly type: "status" }
+	| { readonly status: StatusMessage | undefined; readonly type: "status" }
 	| { readonly type: "cancel-filter" };
 
 export function createBrowserState(entries: ReadonlyArray<HistoryEntry>): BrowserState {
