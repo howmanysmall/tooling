@@ -1,3 +1,5 @@
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
+
 import { formatCost } from "$generation/format-result";
 
 import { useHistoryBrowser } from "./history-browser-context";
@@ -22,7 +24,11 @@ function getTotalCost(runs: ReadonlyArray<HistoryEntry>): number {
 export function HistoryBrowserHeader(): ReactNode {
 	const { state } = useHistoryBrowser();
 	const shown = state.runs.length;
-	const counts = state.filter.length === 0 ? `${shown} runs` : `${shown} of ${state.entries.length} runs`;
+	const total = state.entries.length;
+	const counts =
+		state.filter.length === 0
+			? `${shown} ${toPlural(shown, "run")}`
+			: `${shown} of ${total} ${toPlural(total, "run")}`;
 
 	return <ScreenHeader summary={`${counts} · ${formatCost(getTotalCost(state.runs))}`} title="history" />;
 }
