@@ -1,17 +1,27 @@
-import { exit, stderr, stdout } from "node:process";
+import { exit, stderr } from "node:process";
 import { Table } from "@cliffy/table";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
-import ansis, { bold, cyan, dim, green, link, red, underline } from "ansis";
+import { bold, cyan, dim, green, link, red, underline } from "ansis";
 import { consola } from "consola";
 
 import { formatTimestampAsync } from "$functions/format-timestamp";
+import {
+	formatJson,
+	getLabelWidth,
+	getOutputWidth,
+	INDENT,
+	renderRows,
+	wrapText,
+} from "$utilities/output-format-utilities";
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 import { TimestampFormat, timestampFormatType } from "$validators/timestamp-format-type";
 
 import type { CapabilityDescriptor, ImageModelListItem } from "@openrouter/sdk/models";
+
+import type { Row } from "$utilities/output-format-utilities";
 
 const scriptName = getScriptName(true);
 // Route every level to stderr so stdout only carries the requested output.
@@ -24,7 +34,7 @@ export const getCommand = createBaseCommand(scriptName, "1.1.0", "Used to acquir
 	.type("output-format", outputFormatType)
 	.type("timestamp-format", timestampFormatType)
 	.option("--regenerate", "Regenerate the CLI completion cache before executing the command.")
-	.option("-f, --output-format <type:output-format>", "The output format to use for the model information.", {
+	.option("-f, --format <format:output-format>", "The output format to use for the model information.", {
 		default: OutputFormat.Pretty,
 	})
 	.option(
@@ -35,7 +45,7 @@ export const getCommand = createBaseCommand(scriptName, "1.1.0", "Used to acquir
 		},
 	)
 	.argument("[model:image-model]", "The OpenRouter model to get information for.")
-	.action(async ({ outputFormat, regenerate = false, timestampFormat }, model) => {
+	.action(async ({ format: outputFormat, regenerate = false, timestampFormat }, model) => {
 		log.info(
 			model === undefined
 				? "Getting information for all models..."
@@ -155,8 +165,6 @@ async function toPrettyObjectAsync(
 	};
 }
 
-type Row = readonly [label: string, value: string];
-
 function toDetailRows(prettyObject: PrettyObject): Array<Row> {
 	return [
 		["created", prettyObject.created],
@@ -164,58 +172,6 @@ function toDetailRows(prettyObject: PrettyObject): Array<Row> {
 		["output", prettyObject.architecture.outputModalities],
 		["page", prettyObject.page],
 	];
-}
-
-const MAX_WIDTH = 100;
-const INDENT = "  ";
-const GAP = "  ";
-const WHITESPACE_PATTERN = /\s+/u;
-
-function getOutputWidth(): number {
-	return stdout.isTTY ? Math.min(stdout.columns, MAX_WIDTH) : MAX_WIDTH;
-}
-
-function getLabelWidth(rows: ReadonlyArray<Row>): number {
-	let labelWidth = 0;
-	for (const [label] of rows) labelWidth = Math.max(labelWidth, label.length);
-	return labelWidth;
-}
-
-function wrapText(text: string, width: number): Array<string> {
-	const lines: Array<string> = [];
-	let line = "";
-	let lineWidth = 0;
-	for (const word of text.split(WHITESPACE_PATTERN)) {
-		const wordWidth = ansis.strip(word).length;
-		if (line === "") {
-			line = word;
-			lineWidth = wordWidth;
-		} else if (lineWidth + 1 + wordWidth > width) {
-			lines.push(line);
-			line = word;
-			lineWidth = wordWidth;
-		} else {
-			line += ` ${word}`;
-			lineWidth += 1 + wordWidth;
-		}
-	}
-
-	if (line.length > 0) lines.push(line);
-	return lines;
-}
-
-function renderRows(rows: ReadonlyArray<Row>, labelWidth: number, width: number): string {
-	const valueWidth = Math.max(20, width - INDENT.length - labelWidth - GAP.length);
-	const hangingIndent = " ".repeat(INDENT.length + labelWidth + GAP.length);
-	return rows
-		.flatMap(([label, value]) => {
-			const [first = "", ...rest] = wrapText(value, valueWidth);
-			return [
-				`${INDENT}${dim(label.padEnd(labelWidth))}${GAP}${first}`,
-				...rest.map((line) => `${hangingIndent}${line}`),
-			];
-		})
-		.join("\n");
 }
 
 function renderPrettyObject(prettyObject: PrettyObject): string {
@@ -278,10 +234,8 @@ async function formatModelAsync(
 ): Promise<string> {
 	switch (outputFormat) {
 		case OutputFormat.Json:
-			return JSON.stringify(imageModel, undefined, "\t");
-
 		case OutputFormat.JsonMinified:
-			return JSON.stringify(imageModel);
+			return formatJson(imageModel, outputFormat);
 
 		case OutputFormat.Pretty:
 			return formatModelPrettyAsync(imageModel, timestampFormat);
@@ -300,10 +254,8 @@ async function formatModelsAsync(
 ): Promise<string> {
 	switch (outputFormat) {
 		case OutputFormat.Json:
-			return JSON.stringify(imageModels, undefined, "\t");
-
 		case OutputFormat.JsonMinified:
-			return JSON.stringify(imageModels);
+			return formatJson(imageModels, outputFormat);
 
 		case OutputFormat.Pretty: {
 			const results = await Promise.all(
@@ -315,7 +267,7 @@ async function formatModelsAsync(
 		case OutputFormat.Table: {
 			const body = await Promise.all(
 				imageModels.map(async (imageModel) => {
-					const prettyObject = await toPrettyObjectAsync(imageModel);
+					const prettyObject = await toPrettyObjectAsync(imageModel, timestampFormat);
 					return [
 						bold.magenta(prettyObject.id),
 						prettyObject.name,

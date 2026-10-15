@@ -7,7 +7,8 @@ let cachedEnvironment: Environment | undefined;
 export async function getEnvironmentAsync(): Promise<Environment> {
 	if (cachedEnvironment !== undefined) return cachedEnvironment;
 
-	await import("@dotenvx/dotenvx/config");
+	const { config } = await import("@dotenvx/dotenvx");
+	config({ quiet: true });
 	try {
 		const { environment } = await import("$environment");
 		cachedEnvironment = environment;
