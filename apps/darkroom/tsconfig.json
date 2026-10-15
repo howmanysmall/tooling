@@ -9,6 +9,7 @@
 			"$constants/*": ["./src/constants/*"],
 			"$environment": ["./src/environment.ts"],
 			"$functions/*": ["./src/functions/*"],
+			"$polyfills/*": ["./src/polyfills/*"],
 			"$types/*": ["./src/types/*"],
 			"$utilities/*": ["./src/utilities/*"],
 			"$validators/*": ["./src/validators/*"],
