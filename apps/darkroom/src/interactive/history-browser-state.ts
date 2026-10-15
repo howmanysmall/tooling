@@ -81,7 +81,13 @@ function setFilter(state: BrowserState, filter: string): BrowserState {
 	// The filter input reports its text from an effect, which can land after
 	// the filter was cancelled.
 	if (state.mode !== BrowserMode.Filter) return state;
-	return { ...state, cursor: 0, filter: filter.trim().toLowerCase() };
+
+	// The input also re-reports unchanged text whenever its callback changes;
+	// returning the same state lets React skip the render instead of looping.
+	const normalized = filter.trim().toLowerCase();
+	if (normalized === state.filter) return state;
+
+	return { ...state, cursor: 0, filter: normalized };
 }
 
 function removeRun(state: BrowserState, id: string): BrowserState {

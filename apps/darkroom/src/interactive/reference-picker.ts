@@ -4,6 +4,7 @@ import nodePath from "node:path";
 import { stdin } from "node:process";
 import { Prompt } from "@clack/core";
 import { limitOptions, S_BAR, S_BAR_END, S_CHECKBOX_INACTIVE, S_CHECKBOX_SELECTED, symbol } from "@clack/prompts";
+import { formatArrayAsEnglishList } from "@howmanysmall/english-utilities/format-array-as-english-list";
 import { cyan, dim, gray, green, yellow } from "ansis";
 
 import {
@@ -107,7 +108,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 	private describeChoice(): string {
 		if (this.state === "cancel") return "cancelled";
 		const names = this.picker.selected.map((path) => nodePath.basename(path));
-		return names.length === 0 ? "none" : names.join(", ");
+		return names.length === 0 ? "none" : formatArrayAsEnglishList(names);
 	}
 
 	private draw(message: string, output: Writable): string {

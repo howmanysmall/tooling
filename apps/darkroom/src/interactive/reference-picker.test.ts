@@ -80,7 +80,7 @@ describe("pickReferencesAsync", () => {
 
 		await expect(session.result).resolves.toStrictEqual([nodePath.join(root, "tree.jpg")]);
 		expect(session.readScreen()).toContain("filter: tree");
-		expect(session.readScreen()).toContain("This model takes at most 1 reference image(s).");
+		expect(session.readScreen()).toContain("This model takes at most 1 reference image.");
 	});
 
 	it("can be cancelled", async ({ expect }) => {

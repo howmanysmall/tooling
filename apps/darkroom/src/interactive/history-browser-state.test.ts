@@ -83,6 +83,17 @@ describe("history browser state", () => {
 		expect(state.mode).toBe(BrowserMode.Normal);
 	});
 
+	it("keeps the same state when the filter text has not changed", ({ expect }) => {
+		expect.assertions(1);
+
+		const state = applyActions(createBrowserState([CAT, DOG, TREE]), [
+			{ mode: BrowserMode.Filter, type: "mode" },
+			{ filter: "cat", type: "filter" },
+		]);
+
+		expect(reduceBrowserState(state, { filter: " CAT ", type: "filter" })).toBe(state);
+	});
+
 	it("ignores filter text that arrives after the filter was closed", ({ expect }) => {
 		expect.assertions(1);
 

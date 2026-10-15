@@ -3,11 +3,12 @@ import { ValidationError } from "@cliffy/command";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
+import prettyBytes from "pretty-bytes";
 
 import { InterruptedError } from "$errors/interrupted-error";
 import { log } from "$generation/cli-runner";
 import { formatHistoryList } from "$history/format-history";
-import { formatBytes, selectForPrune, toPruneCriteria } from "$history/prune-selection";
+import { selectForPrune, toPruneCriteria } from "$history/prune-selection";
 import { OutputFormat } from "$validators/output-format-type";
 
 import type { HistoryEntry } from "$history/history-entry";
@@ -89,7 +90,7 @@ export const pruneCommand = createBaseCommand(
 		const sizes = await getSizesAsync(store, entries);
 
 		if (criteria === undefined) {
-			const total = formatBytes(sumSizes(sizes, sizes.keys()));
+			const total = prettyBytes(sumSizes(sizes, sizes.keys()));
 			console.log(`${entries.length} ${toPlural(entries.length, "run")} · ${total} · ${store.root}`);
 			return;
 		}
@@ -100,5 +101,5 @@ export const pruneCommand = createBaseCommand(
 			return;
 		}
 		const doomed = entries.filter((entry) => selected.has(entry.id)).toReversed();
-		await deleteRunsAsync(store, doomed, formatBytes(sumSizes(sizes, selected)), flags);
+		await deleteRunsAsync(store, doomed, prettyBytes(sumSizes(sizes, selected)), flags);
 	});

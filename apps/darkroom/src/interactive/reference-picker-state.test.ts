@@ -64,7 +64,7 @@ describe("reference picker state", () => {
 		state = toggleCurrent(moveCursor(state, 1));
 
 		expect(state.selected).toStrictEqual(["/home/moodboard/sky.png"]);
-		expect(state.warning).toBe("This model takes at most 1 reference image(s).");
+		expect(state.warning).toBe("This model takes at most 1 reference image.");
 	});
 
 	it("opens folders and ../ but not files, and wraps the cursor", ({ expect }) => {

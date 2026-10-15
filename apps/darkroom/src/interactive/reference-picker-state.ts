@@ -1,4 +1,5 @@
 import nodePath from "node:path";
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 
 import { REFERENCE_EXTENSIONS } from "$generation/media-types";
 
@@ -109,7 +110,10 @@ export function toggleCurrent(state: PickerState): PickerState {
 		return { ...state, selected: state.selected.filter((path) => path !== entry.path), warning: undefined };
 	}
 	if (state.selected.length >= state.max) {
-		return { ...state, warning: `This model takes at most ${state.max} reference image(s).` };
+		return {
+			...state,
+			warning: `This model takes at most ${state.max} reference ${toPlural(state.max, "image")}.`,
+		};
 	}
 	return { ...state, selected: [...state.selected, entry.path], warning: undefined };
 }

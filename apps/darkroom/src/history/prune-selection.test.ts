@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
 import { createEntry } from "./history-fixture.ts";
-import { formatBytes, parseDuration, parseSize, selectForPrune, toPruneCriteria } from "./prune-selection.ts";
+import { parseDuration, parseSize, selectForPrune, toPruneCriteria } from "./prune-selection.ts";
 
 const DAY = 86_400_000;
 const NOW = Date.parse("2026-10-14T00:00:00.000Z");
@@ -29,13 +29,6 @@ describe("parsing", () => {
 		expect(parseSize("1.5 mib")).toBe(1.5 * 1024 ** 2);
 		expect(parseSize("512")).toBe(512);
 		expect(() => parseSize("big")).toThrow("is not a size");
-	});
-
-	it("formats sizes with decimal units", ({ expect }) => {
-		expect.assertions(2);
-
-		expect(formatBytes(1_500_000)).toBe("1.5 MB");
-		expect(formatBytes(999)).toBe("999 B");
 	});
 });
 
