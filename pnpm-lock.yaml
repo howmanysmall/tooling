@@ -338,6 +338,9 @@ catalogs:
     '@stryker-mutator/vitest-runner':
       specifier: 10.0.0
       version: 10.0.0
+    '@total-typescript/shoehorn':
+      specifier: 0.1.2
+      version: 0.1.2
     '@vitest/coverage-istanbul':
       specifier: 5.0.4
       version: 5.0.4
@@ -664,6 +667,9 @@ importers:
       '@howmanysmall/string-utilities':
         specifier: workspace:*
         version: link:../../packages/string-utilities
+      '@total-typescript/shoehorn':
+        specifier: catalog:test
+        version: 0.1.2
       '@total-typescript/ts-reset':
         specifier: catalog:types
         version: 0.6.1
@@ -3322,6 +3328,9 @@ packages:
 
   '@swc/types@0.1.28':
     resolution: {integrity: sha512-V6Mnml8v09QALx6K0elJ7o9K/MkVDtW3t6L+7Ou/JcWtb3xwId2AH4FeOceySd2JaO87IMw4+6vSZxLm34LPbw==}
+
+  '@total-typescript/shoehorn@0.1.2':
+    resolution: {integrity: sha512-p7nNZbOZIofpDNyP0u1BctFbjxD44Qc+oO5jufgQdFdGIXJLc33QRloJpq7k5T59CTgLWfQSUxsuqLcmeurYRw==}
 
   '@total-typescript/ts-reset@0.6.1':
     resolution: {integrity: sha512-cka47fVSo6lfQDIATYqb/vO1nvFfbPw7uWLayIXIhGETj0wcOOlrlkobOMDNQOFr9QOafegUPq13V2+6vtD7yg==}
@@ -8969,6 +8978,8 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
+  '@total-typescript/shoehorn@0.1.2': {}
+
   '@total-typescript/ts-reset@0.6.1': {}
 
   '@ts-graphviz/adapter@2.0.6':
@@ -12883,6 +12894,7 @@ time:
   '@stryker-mutator/core@10.0.0': '2026-08-14T16:51:22.686Z'
   '@stryker-mutator/vitest-runner@10.0.0': '2026-08-14T16:50:27.414Z'
   '@stylistic/eslint-plugin@5.10.0': '2026-03-06T04:00:09.407Z'
+  '@total-typescript/shoehorn@0.1.2': '2024-02-26T15:26:40.706Z'
   '@total-typescript/ts-reset@0.6.1': '2024-09-02T18:55:44.698Z'
   '@turbo/gen@2.11.8': '2026-10-13T18:09:47.573Z'
   '@types/node@26.6.5': '2026-10-09T18:46:47.657Z'
