@@ -1,5 +1,7 @@
 import { readFile } from "node:fs/promises";
 import nodePath from "node:path";
+import { regex } from "arktype";
+import { Predicate } from "effect";
 
 import { environmentPaths } from "$constants/environment-paths";
 import { formatLocalDate } from "$generation/output-paths";
@@ -17,14 +19,10 @@ export interface RunSummary {
 
 const SUMMARY_KEYS = ["id", "created", "model", "prompt"] as const;
 
-function isString(value: unknown): value is string {
-	return typeof value === "string";
-}
-
 function isRunSummary(value: unknown): value is RunSummary {
 	if (typeof value !== "object" || value === null) return false;
 	const fields = new Map(Object.entries(value));
-	return SUMMARY_KEYS.every((key) => isString(fields.get(key)));
+	return SUMMARY_KEYS.every((key) => Predicate.isString(fields.get(key)));
 }
 
 function parseSummary(line: string): RunSummary | undefined {
@@ -57,9 +55,11 @@ export function parseRunSummaries(content: string): Array<RunSummary> {
  * @param shell - The shell asking.
  * @returns The completion lines.
  */
-export function formatRunCompletions(summaries: ReadonlyArray<RunSummary>, shell: Shell | undefined): Array<string> {
+export function formatRunCompletions(summaries: ReadonlyArray<RunSummary>, shell?: Shell): Array<string> {
 	const newestFirst = summaries.toReversed();
-	if (shell !== Shell.Fish) return ["last", ...newestFirst.map((summary) => summary.id)];
+	if (shell !== Shell.Fish) {
+		return ["last", ...newestFirst.map((summary) => summary.id)];
+	}
 
 	return [
 		"last\tThe newest run",
@@ -71,7 +71,8 @@ export function formatRunCompletions(summaries: ReadonlyArray<RunSummary>, shell
 	];
 }
 
-const LAST_PATTERN = /^last(?:~(?<offset>\d+))?$/u;
+// oxlint-disable-next-line unicorn/prefer-string-raw -- arkregex
+const LAST_PATTERN = regex("^last(?:~(?<offset>\\d+))?$", "u");
 
 /**
  * Finds the run a completion argument refers to, without failing.
@@ -82,7 +83,7 @@ const LAST_PATTERN = /^last(?:~(?<offset>\d+))?$/u;
  */
 export function findRunSummary(summaries: ReadonlyArray<RunSummary>, reference: string): RunSummary | undefined {
 	const last = LAST_PATTERN.exec(reference);
-	if (last !== null) return summaries.at(-1 - Number(last.groups?.offset ?? "0"));
+	if (last !== null) return summaries.at(-1 - Number(last.groups.offset ?? "0"));
 	const matches = summaries.filter((summary) => summary.id.startsWith(reference.toUpperCase()));
 	return matches.length === 1 ? matches[0] : undefined;
 }
@@ -105,5 +106,6 @@ export async function getRerunModelAsync(words: ReadonlyArray<string>): Promise<
 	const index = words.indexOf("rerun");
 	const reference = index === -1 ? undefined : words[index + 1];
 	if (reference === undefined || reference.startsWith("-")) return undefined;
+
 	return findRunSummary(await readRunSummariesAsync(), reference)?.model;
 }

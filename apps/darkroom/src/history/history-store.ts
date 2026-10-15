@@ -185,7 +185,9 @@ export class HistoryStore {
 		}
 
 		const stats = await stat(this.lockFile).catch(() => undefined);
-		if (stats !== undefined && Date.now() - stats.mtimeMs > STALE_LOCK_MS) await rm(this.lockFile, { force: true });
+		if (stats !== undefined && Date.now() - stats.mtimeMs > STALE_LOCK_MS) {
+			await rm(this.lockFile, { force: true });
+		}
 		return false;
 	}
 }
@@ -202,8 +204,12 @@ function parseLine(line: string): HistoryEntry | undefined {
 async function getDirectorySizeAsync(directory: string): Promise<number> {
 	const entries = await readdir(directory, { recursive: true, withFileTypes: true }).catch(() => undefined);
 	if (entries === undefined) return 0;
+
 	const files: Array<string> = [];
 	for (const entry of entries) if (entry.isFile()) files.push(nodePath.join(entry.parentPath, entry.name));
 	const stats = await Promise.all(files.map(async (file) => stat(file)));
-	return stats.reduce((total, { size }) => total + size, 0);
+
+	let reduction = 0;
+	for (const { size } of stats) reduction += size;
+	return reduction;
 }

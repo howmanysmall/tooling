@@ -92,7 +92,8 @@ export function getOptionValues(words: ReadonlyArray<string>, flags: ReadonlyArr
 		if (next !== undefined && flagSet.has(word)) values.push(next);
 
 		for (const flag of flags) {
-			if (flag.startsWith("--") && word.startsWith(`${flag}=`)) values.push(word.slice(flag.length + 1));
+			if (!flag.startsWith("--") || !word.startsWith(`${flag}=`)) continue;
+			values.push(word.slice(flag.length + 1));
 		}
 	}
 	return values;

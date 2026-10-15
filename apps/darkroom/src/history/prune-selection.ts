@@ -116,7 +116,11 @@ export interface PruneFlags {
  */
 export function toPruneCriteria({ keep, maxSize, olderThan }: PruneFlags): PruneCriteria | undefined {
 	if (keep === undefined && maxSize === undefined && olderThan === undefined) return undefined;
-	if (keep !== undefined && keep < 0) throw new ValidationError("--keep must be 0 or more.");
+
+	if (keep !== undefined && keep < 0) {
+		throw new ValidationError("--keep must be 0 or more.");
+	}
+
 	return {
 		keep,
 		maxSize: maxSize === undefined ? undefined : parseSize(maxSize),
