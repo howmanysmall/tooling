@@ -66,6 +66,19 @@ describe("getRunLinks", () => {
 		]);
 	});
 
+	it("sums up a large comparison in one line", ({ expect }) => {
+		expect.assertions(1);
+
+		const batch = Array.from({ length: 52 }, (_, index) =>
+			createEntry(`01M4YVBBBBBBBBBBBBBBBBBB${String(index).padStart(2, "0")}`, {}),
+		);
+		const links = getRunLinks(ENTRY, { batch, parents: [] }, (stored) => `/data/${stored}`);
+
+		expect(links.filter(({ label }) => label === "compared")).toStrictEqual([
+			{ label: "compared", value: "with 52 other models" },
+		]);
+	});
+
 	it("shows the history copy when the image only went to stdout", ({ expect }) => {
 		expect.assertions(1);
 
