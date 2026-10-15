@@ -22,10 +22,43 @@ const isErrorBody = type({
 /** Status codes where the provider may already have billed an image. */
 const AMBIGUOUS_STATUS_CODES = new Set([500, 502, 524, 529]);
 
+/** The JSON a provider sends back, where it may say what went wrong. */
+const isProviderBody = type({
+	"details?": { "error?": isString, "message?": isString },
+	"error?": type(isString).or({ message: isString }),
+	"message?": isString,
+}).readonly();
+
+function findReason({ details, error, message }: typeof isProviderBody.infer): string | undefined {
+	const nested = isString.allows(error) ? error : error?.message;
+	return details?.error ?? details?.message ?? nested ?? message;
+}
+
+/**
+ * Shortens a provider's message that ends in the JSON it got back, like
+ * `poll returned 500: {"id":…,"details":{"error":"Server side error"}}`, to
+ * the reason inside it.
+ *
+ * @param message - OpenRouter's message.
+ * @returns The message with the JSON replaced by its reason, or as it was.
+ */
+export function describeProviderMessage(message: string): string {
+	const start = message.indexOf("{");
+	if (start === -1) return message;
+
+	try {
+		const body = isProviderBody(JSON.parse(message.slice(start)));
+		const reason = body instanceof type.errors ? undefined : findReason(body);
+		return reason === undefined ? message : `${message.slice(0, start).trimEnd()} ${reason}`;
+	} catch {
+		return message;
+	}
+}
+
 function getResponseMessage(error: OpenRouterError): string {
 	try {
 		const body = JSON.parse(error.body);
-		if (isErrorBody.allows(body)) return body.error.message;
+		if (isErrorBody.allows(body)) return describeProviderMessage(body.error.message);
 	} catch {
 		// The body was not JSON; fall back to its text.
 	}

@@ -10,7 +10,7 @@ import { InterruptGuard } from "./interrupt-guard";
 import { MULTI_MODEL } from "./model-fixture";
 import { executeGenerationAsync, prepareGenerationAsync, requestImagesAsync } from "./run-generation";
 
-import type { CreateImagesResponse } from "@openrouter/sdk/models/operations";
+import type { CreateImagesRequest, CreateImagesResponse } from "@openrouter/sdk/models/operations";
 
 import type { GenerationInput, ImagesClient } from "./run-generation";
 
@@ -70,6 +70,10 @@ async function runAsync(
 	return { result, warnings };
 }
 
+function ignoreProgress(): void {
+	// Progress and warnings are not under test.
+}
+
 async function createDirectoryAsync(): Promise<string> {
 	return mkdtemp(nodePath.join(tmpdir(), "darkroom-run-"));
 }
@@ -127,6 +131,38 @@ describe("executeGenerationAsync", () => {
 			"2026-10-14_a-cat-in-a-hat_1-2.png",
 			"2026-10-14_a-cat-in-a-hat_1.png",
 		]);
+	});
+});
+
+describe("streaming", () => {
+	it("never streams an edit, which OpenRouter refuses", async ({ expect }) => {
+		expect.assertions(1);
+
+		const cwd = await createDirectoryAsync();
+		const model = { ...MULTI_MODEL, supportsStreaming: true };
+		const reference = { bytes: PNG_BYTES, mediaType: "image/png", source: "cat.png" };
+		const prepared = await prepareGenerationAsync(
+			{ ...createInput(), references: [reference] },
+			{ cwd, isDirectoryAsync: async () => false, models: [model], stdoutIsTty: false },
+		);
+		const sent: Array<CreateImagesRequest> = [];
+		const client: ImagesClient = {
+			// oxlint-disable-next-line small-rules/require-async-suffix -- implements the SDK method name
+			async generate(request): Promise<CreateImagesResponse> {
+				sent.push(request);
+				return createClient(1).generate(request);
+			},
+		};
+		await executeGenerationAsync(prepared, {
+			client,
+			guard: new InterruptGuard(),
+			now: () => NOW,
+			onProgress: ignoreProgress,
+			warn: ignoreProgress,
+			writeStdoutAsync: async () => undefined,
+		});
+
+		expect(sent[0]?.imageGenerationRequest.stream).toBeUndefined();
 	});
 });
 

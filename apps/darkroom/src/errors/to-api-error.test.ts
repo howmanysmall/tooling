@@ -7,7 +7,7 @@ import {
 } from "@openrouter/sdk/models/errors";
 
 import { ConfigurationError } from "./configuration-error";
-import { CHARGE_NOTE, toApiError } from "./to-api-error";
+import { CHARGE_NOTE, describeProviderMessage, toApiError } from "./to-api-error";
 
 function createHttpError(status: number, body: string): OpenRouterDefaultError {
 	const response = new Response(body, { status });
@@ -58,5 +58,18 @@ describe("toApiError", () => {
 
 		expect(toApiError(configurationError, true)).toBe(configurationError);
 		expect(toApiError(new InvalidRequestError("bad input"), true).message).toBe("Request failed: bad input");
+	});
+});
+
+describe("describeProviderMessage", () => {
+	it("replaces the JSON a provider sent back with the reason inside it", ({ expect }) => {
+		expect.assertions(3);
+
+		const poll =
+			'Black Forest Labs poll returned 500: {"id":"ec99","status":"Error","result":null,"details":{"error":"Server side error"}}';
+
+		expect(describeProviderMessage(poll)).toBe("Black Forest Labs poll returned 500: Server side error");
+		expect(describeProviderMessage("Prompt too long")).toBe("Prompt too long");
+		expect(describeProviderMessage("Broken {json")).toBe("Broken {json");
 	});
 });
