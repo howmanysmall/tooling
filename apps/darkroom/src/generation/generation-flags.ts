@@ -1,26 +1,7 @@
 import type { HistoryEntry, StoredRequest } from "$history/history-entry";
-import type { OutputFormat } from "$validators/output-format-type";
 
 import type { ImageType } from "./media-types";
 import type { GenerationOptions } from "./validate-request";
-
-/** The generation flags shared by `generate` and `history rerun`. */
-export interface GenerationFlags {
-	readonly aspectRatio?: string | undefined;
-	readonly background?: string | undefined;
-	readonly compression?: number | undefined;
-	readonly count?: number | undefined;
-	readonly dryRun?: true | undefined;
-	readonly force?: true | undefined;
-	readonly format: OutputFormat;
-	readonly image?: Array<string> | undefined;
-	readonly model?: string | undefined;
-	readonly output?: string | undefined;
-	readonly quality?: string | undefined;
-	readonly resolution?: string | undefined;
-	readonly seed?: number | undefined;
-	readonly type?: ImageType | undefined;
-}
 
 /**
  * Picks the generation options out of the parsed flags, or any object that
