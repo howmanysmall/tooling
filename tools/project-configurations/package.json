@@ -9,6 +9,7 @@
 		"./package.json": "./package.json",
 		"./tsdown": "./src/tsdown/shared.ts",
 		"./tsdown/cli": "./src/tsdown/cli.ts",
+		"./tsdown/react-compiler": "./src/tsdown/react-compiler.ts",
 		"./vitest": "./src/vitest/shared.ts",
 		"./vitest/stryker": "./src/vitest/stryker.ts",
 		"./vitest/vitiate": "./src/vitest/vitiate.ts"
@@ -23,6 +24,7 @@
 		"@vitiate/core": "catalog:test",
 		"arktype": "catalog:runtime",
 		"jest-extended": "catalog:test",
+		"oxc-transform-react": "catalog:build",
 		"rolldown": "catalog:build",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",
