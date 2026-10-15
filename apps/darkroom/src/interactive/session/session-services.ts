@@ -1,5 +1,7 @@
 import { mergeRerunOptions } from "$generation/generation-flags";
 import { InterruptGuard } from "$generation/interrupt-guard";
+import { getReferenceRange } from "$generation/model-capabilities";
+import { loadReferenceAsync } from "$generation/references";
 import { loadStoredReferencesAsync } from "$history/stored-references";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 
@@ -13,12 +15,18 @@ import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 
 import type { RestoredTurn } from "./restore-turns";
-import type { PendingRequest } from "./session-state";
+import type { BaseImage, PendingRequest } from "./session-state";
 
 /** What to generate: a new prompt, or a past run again. */
 export type SessionRequest =
-	| { readonly entry: HistoryEntry; readonly type: "rerun" }
-	| { readonly model: ImageModelListItem; readonly prompt: string; readonly type: "new" };
+	| {
+			/** The image to edit, or `undefined` to start fresh. */
+			readonly base?: BaseImage | undefined;
+			readonly model: ImageModelListItem;
+			readonly prompt: string;
+			readonly type: "new";
+	  }
+	| { readonly entry: HistoryEntry; readonly type: "rerun" };
 
 /** Where a running generation reports to. */
 export interface RunHandlers {
@@ -58,16 +66,16 @@ export interface SessionServices {
 	readonly waitForRunningAsync: () => Promise<Array<SettledRun>>;
 }
 
+function canTakeImages(model: ImageModelListItem): boolean {
+	return getReferenceRange(model).max > 0;
+}
+
 async function toInputAsync(request: SessionRequest, session: string, store: HistoryStore): Promise<GenerationInput> {
 	if (request.type === "new") {
-		return {
-			force: false,
-			modelId: request.model.id,
-			options: {},
-			prompt: request.prompt,
-			references: [],
-			session,
-		};
+		const { base, model, prompt } = request;
+		const isEditing = base !== undefined && canTakeImages(model);
+		const references = isEditing ? [await loadReferenceAsync(base.path)] : [];
+		return { force: false, modelId: model.id, options: {}, prompt, references, session };
 	}
 
 	const { entry } = request;
@@ -117,7 +125,13 @@ export function createSessionServices(store: HistoryStore): SessionServices {
 			const { describeCostAsync, prepareQuietlyAsync } = await import("$generation/cli-runner");
 			const prepared = await prepareQuietlyAsync(await toInputAsync(request, session, store));
 			const cost = await describeCostAsync(prepared, () => undefined);
-			return { cost, prepared };
+			if (request.type === "rerun" || request.base === undefined || canTakeImages(request.model)) {
+				return { cost, prepared };
+			}
+
+			// Said before anything is spent, so you can pick a model that edits.
+			const note = `${prepared.model.name} can't take images, so this starts fresh instead of editing.`;
+			return { cost, prepared: { ...prepared, warnings: [...prepared.warnings, note] } };
 		},
 		async restoreAsync(runs): Promise<Array<RestoredTurn>> {
 			return Promise.all(runs.map(async (entry) => restoreTurnAsync(entry, store)));

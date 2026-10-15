@@ -1,7 +1,7 @@
 import { createUlid } from "$history/ulid";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 
-import { createSession } from "./session-state";
+import { createSession, PromptMode } from "./session-state";
 import { getActiveSession } from "./session-tabs";
 
 import type { SessionSummary } from "$history/session-list";
@@ -80,6 +80,9 @@ export function createSessionActions({
 	}
 
 	return {
+		chooseBase(image): void {
+			dispatchTo(active.id, { image, type: "choose-base" });
+		},
 		close(id): void {
 			dispatch({ id, replacement: createSession(createUlid()), type: "close" });
 		},
@@ -135,6 +138,10 @@ export function createSessionActions({
 			runBrowserTask(prepareAsync(session, id, request), (failure) => {
 				if (failure !== undefined) fail(session, id, failure);
 			});
+		},
+		toggleMode(): void {
+			const mode = active.mode === PromptMode.Edit ? PromptMode.New : PromptMode.Edit;
+			dispatchTo(active.id, { mode, type: "set-mode" });
 		},
 	};
 }

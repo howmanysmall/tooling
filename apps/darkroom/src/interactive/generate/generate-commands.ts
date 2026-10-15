@@ -3,6 +3,7 @@ import { BrowserKey } from "$interactive/keys/browser-keys";
 
 import type { Key } from "ink";
 
+import type { KeyHint } from "$interactive/components/key-hints";
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 
 /** What the generate screen can do. */
@@ -21,6 +22,8 @@ export interface GenerateActions {
 	readonly newSession: () => void;
 	/** Opens the list of past sessions. */
 	readonly showSessions: () => void;
+	/** Switches between editing the image above and starting fresh. */
+	readonly toggleMode: () => void;
 }
 
 /**
@@ -70,9 +73,47 @@ export function getGenerateCommands(actions: GenerateActions): Array<BrowserComm
 			run: actions.generateWithOptions,
 			title: "Generate with references and options",
 		},
+		{
+			key: BrowserKey.ToggleMode,
+			group,
+			keyLabel: "shift+tab",
+			run: actions.toggleMode,
+			title: "Edit the image, or start fresh",
+		},
 		{ key: BrowserKey.NewLine, group, keyLabel: "ctrl+j", run: actions.insertNewLine, title: "New line" },
 		{ key: BrowserKey.ClearPrompt, group, keyLabel: "ctrl+c", run: actions.clearPrompt, title: "Clear prompt" },
 	];
+}
+
+/** What the prompt box's next prompt builds on, for its key hints. */
+export const enum PromptBasis {
+	/** An image above, but the model can't take it. */
+	CantEdit = "cant-edit",
+	/** An image above, which the prompt edits. */
+	Editing = "editing",
+	/** An image above, which the prompt leaves alone. */
+	Fresh = "fresh",
+	/** No image yet, so the prompt can only start fresh. */
+	Nothing = "nothing",
+}
+
+/**
+ * The hints under the prompt box: always how to generate, break a line,
+ * and pick a model, and once there is an image, how to switch between
+ * editing it and starting fresh. A model that can't edit points to ctrl+o.
+ *
+ * @param basis - What the next prompt builds on.
+ * @returns The hints, left to right.
+ */
+export function getBoxHints(basis: PromptBasis): Array<KeyHint> {
+	const hints: Array<KeyHint> = [
+		["⏎", "generate"],
+		["ctrl+j", "new line"],
+		["ctrl+o", basis === PromptBasis.CantEdit ? "a model that edits" : "model"],
+	];
+	if (basis === PromptBasis.Fresh) hints.push(["shift+tab", "edit"]);
+	else if (basis !== PromptBasis.Nothing) hints.push(["shift+tab", "start fresh"]);
+	return hints;
 }
 
 const CTRL_KEYS: ReadonlyMap<string, BrowserKey> = new Map([

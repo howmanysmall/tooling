@@ -31,6 +31,7 @@ export const enum BrowserKey {
 	ShowHistory = "show-history",
 	ShowModels = "show-models",
 	Sort = "sort",
+	ToggleMode = "toggle-mode",
 	Up = "up",
 }
 

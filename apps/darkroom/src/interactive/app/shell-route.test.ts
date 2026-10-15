@@ -6,7 +6,13 @@ import { getShellRoute, ShellRoute } from "./shell-route";
 
 import type { ShellSituation } from "./shell-route";
 
-const PLAIN: ShellSituation = { hasDialog: false, hasTabs: true, isCapturing: false, isHelpOpen: false };
+const PLAIN: ShellSituation = {
+	hasDialog: false,
+	hasShiftTab: false,
+	hasTabs: true,
+	isCapturing: false,
+	isHelpOpen: false,
+};
 const TAB = { ...NO_KEY, tab: true };
 
 describe("getShellRoute", () => {
@@ -27,6 +33,15 @@ describe("getShellRoute", () => {
 		expect(getShellRoute("", { ...TAB, shift: true }, capturing)).toBe(ShellRoute.PreviousTab);
 		expect(getShellRoute("p", { ...NO_KEY, ctrl: true }, capturing)).toBe(ShellRoute.OpenPalette);
 		expect(getShellRoute("?", NO_KEY, capturing)).toBe(ShellRoute.Capture);
+	});
+
+	it("gives shift+tab to a screen that uses it, while tab still switches tabs", ({ expect }) => {
+		expect.assertions(2);
+
+		const generate = { ...PLAIN, hasShiftTab: true, isCapturing: true };
+
+		expect(getShellRoute("", { ...TAB, shift: true }, generate)).toBe(ShellRoute.ShiftTab);
+		expect(getShellRoute("", TAB, generate)).toBe(ShellRoute.NextTab);
 	});
 
 	it("opens help on ? and sends other keys to the commands", ({ expect }) => {

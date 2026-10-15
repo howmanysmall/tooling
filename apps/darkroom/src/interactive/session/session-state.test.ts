@@ -3,8 +3,8 @@ import { describe, it } from "vitest";
 import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
 
-import { createSession, reduceSession, TurnPhase } from "./session-state";
-import { getTurnPaths, summarizeTurn } from "./turn-summary";
+import { createSession, getEditBase, PromptMode, reduceSession, TurnPhase } from "./session-state";
+import { summarizeTurn } from "./turn-summary";
 
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
 
@@ -74,9 +74,46 @@ describe("reduceSession", () => {
 	});
 });
 
+describe("getEditBase", () => {
+	it("edits the newest image, or the one you chose, until you switch to starting fresh", ({ expect }) => {
+		expect.assertions(4);
+
+		const done = applyActions([
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
+			{ id: 1, at: 5, result: RESULT, type: "turn-done" },
+		]);
+		const chosen = reduceSession(done, {
+			image: { mediaType: "image/png", path: "/elsewhere/a-cat-2.png" },
+			type: "choose-base",
+		});
+		const fresh = reduceSession(chosen, { mode: PromptMode.New, type: "set-mode" });
+
+		expect(getEditBase(createSession("S"))).toBeUndefined();
+		expect(getEditBase(done)?.path).toBe("/work/a-cat.png");
+		expect(getEditBase(chosen)?.path).toBe("/elsewhere/a-cat-2.png");
+		expect(getEditBase(fresh)).toBeUndefined();
+	});
+
+	it("resumes a session editing its newest image", ({ expect }) => {
+		expect.assertions(1);
+
+		const turn = {
+			id: 1,
+			model: "m",
+			phase: TurnPhase.Done,
+			prompt: "a cat",
+			requested: 2,
+			result: RESULT,
+			warnings: [],
+		};
+
+		expect(getEditBase(createSession("S", [turn]))?.path).toBe("/work/a-cat.png");
+	});
+});
+
 describe("summarizeTurn", () => {
-	it("gives the model, time, and cost of a finished turn, with its saved paths", ({ expect }) => {
-		expect.assertions(2);
+	it("gives the model, time, and cost of a finished turn", ({ expect }) => {
+		expect.assertions(1);
 
 		const turn = {
 			id: 1,
@@ -91,7 +128,6 @@ describe("summarizeTurn", () => {
 		};
 
 		expect(summarizeTurn(turn, "Test Multi")).toBe("Test Multi · 14.2s · $0.08");
-		expect(getTurnPaths(turn, "/work")).toStrictEqual(["./a-cat.png", "/elsewhere/a-cat-2.png"]);
 	});
 
 	it("says when fewer images came back than were asked for", ({ expect }) => {

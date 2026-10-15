@@ -3,10 +3,12 @@ import { createContext, use } from "react";
 import type { SessionSummary } from "$history/session-list";
 
 import type { SessionRequest } from "./session-services";
-import type { SessionState } from "./session-state";
+import type { BaseImage, SessionState } from "./session-state";
 import type { SessionTabs } from "./session-tabs";
 
 export interface SessionActions {
+	/** Makes an image the one the next prompt edits, in edit mode. */
+	readonly chooseBase: (image: BaseImage) => void;
 	/** Closes a session's tab; the session stays in the history. */
 	readonly close: (id: string) => void;
 	/** Sends the request awaiting confirmation in the session on screen. */
@@ -23,6 +25,8 @@ export interface SessionActions {
 	readonly select: (id: string) => void;
 	/** Validates and prices a request, then asks to confirm it. */
 	readonly send: (request: SessionRequest) => void;
+	/** Switches between editing the base image and starting fresh. */
+	readonly toggleMode: () => void;
 }
 
 export interface SessionContextValue {
