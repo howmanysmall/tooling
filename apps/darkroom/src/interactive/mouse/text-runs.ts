@@ -6,13 +6,19 @@ export const enum CellKind {
 	Blank = 0,
 	/** The right half of a wide character, which goes with its left half. */
 	Continuation = 1,
-	/** A border, a block of an image preview, or the logo: not text. */
+	/**
+	 * A border, the logo, or part of an image preview: a half block, or a
+	 * kitty placeholder, which only draws right with the diacritics the app
+	 * wrote, so a selection must never redraw it.
+	 */
 	Graphic = 2,
 	Text = 3,
 }
 
 // Box drawing and block elements: borders, half-block images, the logo.
-const GRAPHIC = /^[─-▟]+$/u;
+const GRAPHIC = /^[\u2500-\u259F]+$/u;
+// Kitty's image placeholder, followed by the diacritics for its row and column.
+const KITTY_PLACEHOLDER = "\u{10EEEE}";
 
 /**
  * Sorts a cell by what it shows.
@@ -25,7 +31,7 @@ const GRAPHIC = /^[─-▟]+$/u;
 export function getCellKind(chars: string, width: number): CellKind {
 	if (width === 0) return CellKind.Continuation;
 	if (chars.trim().length === 0) return CellKind.Blank;
-	return GRAPHIC.test(chars) ? CellKind.Graphic : CellKind.Text;
+	return GRAPHIC.test(chars) || chars.startsWith(KITTY_PLACEHOLDER) ? CellKind.Graphic : CellKind.Text;
 }
 
 /**
