@@ -1,7 +1,7 @@
 import { useReducer } from "react";
 import { useInput } from "ink";
 
-import { getWindowStart } from "$interactive/components/list-cursor";
+import { CursorMoveType, getWindowStart } from "$interactive/components/list-cursor";
 
 import { INITIAL_PALETTE_STATE, PaletteActionType, reducePaletteState } from "./command-palette-state";
 
@@ -50,7 +50,7 @@ export function useSearchList<Item>(
 	const start = getWindowStart(state.cursor, count, visibleRows);
 
 	function handleWheel(delta: number): void {
-		dispatch({ count, move: { delta, type: "move" }, type: PaletteActionType.Move });
+		dispatch({ count, move: { delta, type: CursorMoveType.Move }, type: PaletteActionType.Move });
 	}
 
 	useInput(function onSearchListInput(_input, key) {
@@ -67,7 +67,7 @@ export function useSearchList<Item>(
 		handleWheel,
 		matches,
 		pointAt(index): void {
-			dispatch({ count, move: { index, type: "to" }, type: PaletteActionType.Move });
+			dispatch({ count, move: { index, type: CursorMoveType.To }, type: PaletteActionType.Move });
 		},
 		selected: matches[state.cursor],
 		start,

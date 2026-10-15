@@ -63,7 +63,7 @@ export function toMouseAction(code: number, isRelease: boolean): MouseAction | u
  * @returns The event in zero-based cells, or `undefined` for buttons
  *   darkroom doesn't use.
  */
-function toPointerEvent(groups: Record<string, string> | undefined): PointerEvent | undefined {
+function toPointerEvent(groups?: Record<string, string>): PointerEvent | undefined {
 	const action = toMouseAction(Number(groups?.code), groups?.final === "m");
 	if (action === undefined) return undefined;
 	return { action, column: Number(groups?.column) - 1, row: Number(groups?.row) - 1 };

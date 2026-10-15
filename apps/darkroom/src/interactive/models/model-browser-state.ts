@@ -36,15 +36,24 @@ export interface ModelBrowserState {
 	readonly status?: StatusMessage | undefined;
 }
 
+export const enum ModelBrowserActionType {
+	Filter = 13,
+	Select = 14,
+	Filtering = 15,
+	CancelFilter = 16,
+	NextSort = 17,
+	SwitchExample = 18,
+}
+
 export type ModelBrowserAction =
 	| CursorMove
 	| StatusAction
-	| { readonly filter: string; readonly type: "filter" }
-	| { readonly id: string; readonly type: "select" }
-	| { readonly isFiltering: boolean; readonly type: "filtering" }
-	| { readonly type: "cancel-filter" }
-	| { readonly type: "next-sort" }
-	| { readonly type: "switch-example" };
+	| { readonly filter: string; readonly type: ModelBrowserActionType.Filter }
+	| { readonly id: string; readonly type: ModelBrowserActionType.Select }
+	| { readonly isFiltering: boolean; readonly type: ModelBrowserActionType.Filtering }
+	| { readonly type: ModelBrowserActionType.CancelFilter }
+	| { readonly type: ModelBrowserActionType.NextSort }
+	| { readonly type: ModelBrowserActionType.SwitchExample };
 
 const NEXT_SORT: ReadonlyMap<ModelSort, ModelSort> = new Map([
 	[ModelSort.Created, ModelSort.Name],
@@ -76,7 +85,7 @@ export function getExample(state: ModelBrowserState, modelId: string): ModelExam
  * @param state - The browser state.
  * @returns The models to list.
  */
-export function getVisibleModels(state: ModelBrowserState): Array<ImageModelListItem> {
+export function getVisibleModels(state: ModelBrowserState): ReadonlyArray<ImageModelListItem> {
 	const { models, observed, pricing } = state.catalog;
 	const search = state.filter.length === 0 ? undefined : state.filter;
 	return sortModels(filterModels(models, { search }), state.sort, pricing, observed);
@@ -114,24 +123,24 @@ export function reduceModelBrowserState(state: ModelBrowserState, action: ModelB
 	}
 
 	switch (action.type) {
-		case "cancel-filter":
+		case ModelBrowserActionType.CancelFilter:
 			return { ...state, cursor: 0, filter: "", isFiltering: false };
 
-		case "filter":
+		case ModelBrowserActionType.Filter:
 			return setFilter(state, action.filter);
 
-		case "filtering":
+		case ModelBrowserActionType.Filtering:
 			return { ...state, isFiltering: action.isFiltering };
 
-		case "next-sort":
+		case ModelBrowserActionType.NextSort:
 			return cycleSort(state);
 
-		case "select": {
+		case ModelBrowserActionType.Select: {
 			const index = getVisibleModels(state).findIndex((model) => model.id === action.id);
 			return index === -1 ? state : { ...state, cursor: index };
 		}
 
-		case "switch-example":
+		case ModelBrowserActionType.SwitchExample:
 			return { ...state, prefersShipped: !state.prefersShipped };
 
 		default:

@@ -6,10 +6,15 @@ export interface StatusMessage {
 	readonly tone: "error" | "success";
 }
 
+export const enum StatusActionType {
+	StatusExpired = 11,
+	Status = 12,
+}
+
 /** What a browser's reducer accepts to show or expire a toast. */
 export type StatusAction =
-	| { readonly id: number; readonly type: "status-expired" }
-	| { readonly status: StatusMessage; readonly type: "status" };
+	| { readonly id: number; readonly type: StatusActionType.StatusExpired }
+	| { readonly status: StatusMessage; readonly type: StatusActionType.Status };
 
 export interface StatusReporter {
 	readonly reportError: (text: string) => void;
@@ -30,7 +35,7 @@ let nextId = 0;
  *   replaced it.
  */
 export function reduceStatus(current: StatusMessage | undefined, action: StatusAction): StatusMessage | undefined {
-	if (action.type === "status") return action.status;
+	if (action.type === StatusActionType.Status) return action.status;
 
 	return current?.id === action.id ? undefined : current;
 }
@@ -47,9 +52,9 @@ export function createStatusReporter(dispatch: (action: StatusAction) => void): 
 	function report(text: string, tone: StatusMessage["tone"]): void {
 		nextId += 1;
 		const id = nextId;
-		dispatch({ status: { id, text, tone }, type: "status" });
+		dispatch({ status: { id, text, tone }, type: StatusActionType.Status });
 		setTimeout(() => {
-			dispatch({ id, type: "status-expired" });
+			dispatch({ id, type: StatusActionType.StatusExpired });
 		}, TOAST_MILLISECONDS).unref();
 	}
 

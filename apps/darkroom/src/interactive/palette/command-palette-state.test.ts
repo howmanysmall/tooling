@@ -1,5 +1,6 @@
 import { describe, it } from "vitest";
 
+import { CursorMoveType } from "$interactive/components/list-cursor";
 import { CommandGroup } from "$interactive/keys/browser-command";
 import { BrowserKey } from "$interactive/keys/browser-keys";
 
@@ -62,7 +63,7 @@ describe("reducePaletteState", () => {
 
 		const moved = reducePaletteState(INITIAL_PALETTE_STATE, {
 			count: 3,
-			move: { delta: 5, type: "move" },
+			move: { delta: 5, type: CursorMoveType.Move },
 			type: PaletteActionType.Move,
 		});
 

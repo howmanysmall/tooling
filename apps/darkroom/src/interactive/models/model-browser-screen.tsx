@@ -1,11 +1,8 @@
 import { ModelBrowser } from "./model-browser";
 
 import type { ReactNode } from "react";
-import type { Except } from "type-fest";
 
 import type { ModelBrowserProviderProperties } from "./model-browser-provider";
-
-export type ModelBrowserScreenProperties = Except<ModelBrowserProviderProperties, "children">;
 
 /**
  * The full-screen model browser: models with their prices, the selected
@@ -23,7 +20,7 @@ export function ModelBrowserScreen({
 	now,
 	services,
 	sort,
-}: Readonly<ModelBrowserScreenProperties>): ReactNode {
+}: Readonly<ModelBrowserProviderProperties>): ReactNode {
 	return (
 		<ModelBrowser.Provider catalog={catalog} now={now} services={services} sort={sort}>
 			<ModelBrowser.Frame>

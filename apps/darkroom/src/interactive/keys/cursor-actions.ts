@@ -1,3 +1,5 @@
+import { CursorMoveType } from "$interactive/components/list-cursor";
+
 import { CommandGroup } from "./browser-command";
 import { BrowserKey } from "./browser-keys";
 
@@ -27,10 +29,10 @@ export interface CursorActions {
 	readonly moveUp: () => void;
 }
 
-const MOVE_DOWN: CursorMove = { delta: 1, type: "move" };
-const MOVE_UP: CursorMove = { delta: -1, type: "move" };
-const MOVE_FIRST: CursorMove = { type: "first" };
-const MOVE_LAST: CursorMove = { type: "last" };
+const MOVE_DOWN: CursorMove = { delta: 1, type: CursorMoveType.Move };
+const MOVE_UP: CursorMove = { delta: -1, type: CursorMoveType.Move };
+const MOVE_FIRST: CursorMove = { type: CursorMoveType.First };
+const MOVE_LAST: CursorMove = { type: CursorMoveType.Last };
 
 /**
  * The navigation commands every browser shares, for help to list.
@@ -61,16 +63,16 @@ export function getNavigationCommands(actions: CursorActions, names: RowNames): 
 export function createCursorActions(dispatch: (move: CursorMove) => void, pageSize: number): CursorActions {
 	return {
 		moveBy(delta): void {
-			dispatch({ delta, type: "move" });
+			dispatch({ delta, type: CursorMoveType.Move });
 		},
 		moveDown(): void {
 			dispatch(MOVE_DOWN);
 		},
 		movePageDown(): void {
-			dispatch({ delta: pageSize, type: "move" });
+			dispatch({ delta: pageSize, type: CursorMoveType.Move });
 		},
 		movePageUp(): void {
-			dispatch({ delta: -pageSize, type: "move" });
+			dispatch({ delta: -pageSize, type: CursorMoveType.Move });
 		},
 		moveToFirst(): void {
 			dispatch(MOVE_FIRST);

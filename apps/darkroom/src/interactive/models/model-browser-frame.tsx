@@ -4,11 +4,7 @@ import { useModelBrowser } from "./model-browser-context";
 import { getModelCommands } from "./model-commands";
 
 import type { Key } from "ink";
-import type { ReactNode } from "react";
-
-export interface ModelBrowserFrameProperties {
-	children: ReactNode;
-}
+import type { PropsWithChildren, ReactNode } from "react";
 
 /**
  * The model browser's frame: the shared shell with the browser's commands.
@@ -18,7 +14,7 @@ export interface ModelBrowserFrameProperties {
  * @param properties.children - The header, panes, and status bar.
  * @returns A box the size of the terminal.
  */
-export function ModelBrowserFrame({ children }: Readonly<ModelBrowserFrameProperties>): ReactNode {
+export function ModelBrowserFrame({ children }: Readonly<PropsWithChildren>): ReactNode {
 	const {
 		actions,
 		meta: { layout },

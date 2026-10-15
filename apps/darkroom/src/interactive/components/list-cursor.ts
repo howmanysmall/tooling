@@ -1,11 +1,23 @@
+export const enum CursorMoveType {
+	Move = 1,
+	To = 2,
+	First = 3,
+	Last = 4,
+}
+
 /** How a key, a click, or the wheel moves the cursor through a list. */
 export type CursorMove =
-	| { readonly delta: number; readonly type: "move" }
-	| { readonly index: number; readonly type: "to" }
-	| { readonly type: "first" }
-	| { readonly type: "last" };
+	| { readonly delta: number; readonly type: CursorMoveType.Move }
+	| { readonly index: number; readonly type: CursorMoveType.To }
+	| { readonly type: CursorMoveType.First }
+	| { readonly type: CursorMoveType.Last };
 
-const CURSOR_MOVES: ReadonlySet<string> = new Set(["first", "last", "move", "to"]);
+const CURSOR_MOVES: ReadonlySet<number> = new Set([
+	CursorMoveType.First,
+	CursorMoveType.Last,
+	CursorMoveType.Move,
+	CursorMoveType.To,
+]);
 
 /**
  * Tells cursor moves from a browser's other actions.
@@ -13,14 +25,14 @@ const CURSOR_MOVES: ReadonlySet<string> = new Set(["first", "last", "move", "to"
  * @param action - Any browser action.
  * @returns Whether it moves the cursor.
  */
-export function isCursorMove(action: { readonly type: string }): action is CursorMove {
+export function isCursorMove(action: { readonly type: number }): action is CursorMove {
 	return CURSOR_MOVES.has(action.type);
 }
 
 function getTarget(cursor: number, move: CursorMove, count: number): number {
-	if (move.type === "move") return cursor + move.delta;
-	if (move.type === "to") return move.index;
-	return move.type === "last" ? count - 1 : 0;
+	if (move.type === CursorMoveType.Move) return cursor + move.delta;
+	if (move.type === CursorMoveType.To) return move.index;
+	return move.type === CursorMoveType.Last ? count - 1 : 0;
 }
 
 /**

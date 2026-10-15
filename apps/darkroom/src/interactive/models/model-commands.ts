@@ -15,7 +15,7 @@ const ROW_NAMES: RowNames = { first: "First model", item: "model", last: "Last m
  * @param actions - The browser's actions.
  * @returns The commands, actions first, in the order help lists them.
  */
-export function getModelCommands(actions: ModelBrowserActions): Array<BrowserCommand> {
+export function getModelCommands(actions: ModelBrowserActions): ReadonlyArray<BrowserCommand> {
 	const group = CommandGroup.Act;
 	return [
 		{ key: BrowserKey.Filter, group, isFeatured: true, keyLabel: "/", run: actions.openFilter, title: "Filter" },

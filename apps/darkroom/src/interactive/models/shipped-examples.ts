@@ -85,8 +85,8 @@ export async function readShippedExamplesAsync(): Promise<Map<string, ModelExamp
 
 	try {
 		const text = await readFile(nodePath.join(directory, EXAMPLES_MANIFEST), "utf8");
-		const manifest = isManifest(JSON.parse(text));
-		return manifest instanceof type.errors ? new Map() : toShippedExamples(manifest, directory);
+		const manifest = JSON.parse(text);
+		return isManifest.allows(manifest) ? toShippedExamples(manifest, directory) : new Map();
 	} catch {
 		return new Map();
 	}

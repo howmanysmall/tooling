@@ -26,15 +26,24 @@ export interface BrowserState {
 	readonly status?: StatusMessage | undefined;
 }
 
+export const enum BrowserActionType {
+	StepBatch = 5,
+	Filter = 6,
+	Removed = 7,
+	Select = 8,
+	Mode = 9,
+	CancelFilter = 10,
+}
+
 export type BrowserAction =
 	| CursorMove
 	| StatusAction
-	| { readonly delta: number; readonly type: "step-batch" }
-	| { readonly filter: string; readonly type: "filter" }
-	| { readonly id: string; readonly type: "removed" }
-	| { readonly id: string; readonly type: "select" }
-	| { readonly mode: BrowserMode; readonly type: "mode" }
-	| { readonly type: "cancel-filter" };
+	| { readonly delta: number; readonly type: BrowserActionType.StepBatch }
+	| { readonly filter: string; readonly type: BrowserActionType.Filter }
+	| { readonly id: string; readonly type: BrowserActionType.Removed }
+	| { readonly id: string; readonly type: BrowserActionType.Select }
+	| { readonly mode: BrowserMode; readonly type: BrowserActionType.Mode }
+	| { readonly type: BrowserActionType.CancelFilter };
 
 export function createBrowserState(entries: ReadonlyArray<HistoryEntry>): BrowserState {
 	return { cursor: 0, entries, filter: "", mode: BrowserMode.Normal, picks: new Map() };
@@ -189,22 +198,22 @@ function removeRun(state: BrowserState, id: string): BrowserState {
 export function reduceBrowserState(state: BrowserState, action: BrowserAction): BrowserState {
 	if (isCursorMove(action)) return reduceNavigation(state, action);
 	switch (action.type) {
-		case "cancel-filter":
+		case BrowserActionType.CancelFilter:
 			return { ...state, cursor: 0, filter: "", mode: BrowserMode.Normal };
 
-		case "filter":
+		case BrowserActionType.Filter:
 			return setFilter(state, action.filter);
 
-		case "mode":
+		case BrowserActionType.Mode:
 			return { ...state, mode: action.mode };
 
-		case "removed":
+		case BrowserActionType.Removed:
 			return removeRun(state, action.id);
 
-		case "select":
+		case BrowserActionType.Select:
 			return selectRun(state, action.id);
 
-		case "step-batch":
+		case BrowserActionType.StepBatch:
 			return stepBatch(state, action.delta);
 
 		default:

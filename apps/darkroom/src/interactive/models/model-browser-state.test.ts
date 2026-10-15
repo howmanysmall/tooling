@@ -1,9 +1,16 @@
 import { describe, it } from "vitest";
 
 import { createModel } from "$generation/model-fixture";
+import { CursorMoveType } from "$interactive/components/list-cursor";
 import { ModelSort } from "$utilities/model-filters";
 
-import { createModelBrowserState, getExample, getVisibleModels, reduceModelBrowserState } from "./model-browser-state";
+import {
+	createModelBrowserState,
+	getExample,
+	getVisibleModels,
+	ModelBrowserActionType,
+	reduceModelBrowserState,
+} from "./model-browser-state";
 import { ExampleSource } from "./model-examples";
 
 import type { EndpointPricing } from "$generation/cost-estimate";
@@ -43,7 +50,7 @@ function apply(state: ModelBrowserState, ...actions: ReadonlyArray<ModelBrowserA
 	return next;
 }
 
-function listIds(state: ModelBrowserState): Array<string> {
+function getIds(state: ModelBrowserState): ReadonlyArray<string> {
 	return getVisibleModels(state).map((model) => model.id);
 }
 
@@ -51,13 +58,13 @@ describe("model browser state", () => {
 	it("lists the models in the chosen order", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(listIds(STATE)).toStrictEqual([CHEAP.id, DEAR.id, MIDDLE.id]);
+		expect(getIds(STATE)).toStrictEqual([CHEAP.id, DEAR.id, MIDDLE.id]);
 	});
 
 	it("keeps the same model selected when the sort changes", ({ expect }) => {
 		expect.assertions(2);
 
-		const sorted = apply(STATE, { delta: 2, type: "move" }, { type: "next-sort" });
+		const sorted = apply(STATE, { delta: 2, type: CursorMoveType.Move }, { type: ModelBrowserActionType.NextSort });
 
 		expect(sorted.sort).toBe(ModelSort.Price);
 		expect(getVisibleModels(sorted)[sorted.cursor]?.id).toBe(MIDDLE.id);
@@ -66,22 +73,26 @@ describe("model browser state", () => {
 	it("filters while typing and clears on cancel", ({ expect }) => {
 		expect.assertions(2);
 
-		const filtered = apply(STATE, { isFiltering: true, type: "filtering" }, { filter: " dear ", type: "filter" });
+		const filtered = apply(
+			STATE,
+			{ isFiltering: true, type: ModelBrowserActionType.Filtering },
+			{ filter: " dear ", type: ModelBrowserActionType.Filter },
+		);
 
-		expect(listIds(filtered)).toStrictEqual([DEAR.id]);
-		expect(listIds(apply(filtered, { type: "cancel-filter" }))).toHaveLength(3);
+		expect(getIds(filtered)).toStrictEqual([DEAR.id]);
+		expect(getIds(apply(filtered, { type: ModelBrowserActionType.CancelFilter }))).toHaveLength(3);
 	});
 
 	it("ignores filter text that arrives after the filter closed", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(apply(STATE, { filter: "dear", type: "filter" })).toBe(STATE);
+		expect(apply(STATE, { filter: "dear", type: ModelBrowserActionType.Filter })).toBe(STATE);
 	});
 
 	it("shows your image first, the shipped one on e, and whichever exists otherwise", ({ expect }) => {
 		expect.assertions(4);
 
-		const switched = apply(STATE, { type: "switch-example" });
+		const switched = apply(STATE, { type: ModelBrowserActionType.SwitchExample });
 
 		expect(getExample(STATE, CHEAP.id)).toBe(YOURS);
 		expect(getExample(switched, CHEAP.id)).toBe(SHIPPED);

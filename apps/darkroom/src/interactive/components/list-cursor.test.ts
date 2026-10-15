@@ -1,15 +1,15 @@
 import { describe, it } from "vitest";
 
-import { getWindowStart, moveCursor } from "./list-cursor";
+import { CursorMoveType, getWindowStart, moveCursor } from "./list-cursor";
 
 describe("moveCursor", () => {
 	it("steps, jumps to either end, and stays within the list", ({ expect }) => {
 		expect.assertions(4);
 
-		expect(moveCursor(2, { delta: 1, type: "move" }, 5)).toBe(3);
-		expect(moveCursor(2, { delta: -10, type: "move" }, 5)).toBe(0);
-		expect(moveCursor(0, { type: "last" }, 5)).toBe(4);
-		expect(moveCursor(3, { type: "first" }, 5)).toBe(0);
+		expect(moveCursor(2, { delta: 1, type: CursorMoveType.Move }, 5)).toBe(3);
+		expect(moveCursor(2, { delta: -10, type: CursorMoveType.Move }, 5)).toBe(0);
+		expect(moveCursor(0, { type: CursorMoveType.Last }, 5)).toBe(4);
+		expect(moveCursor(3, { type: CursorMoveType.First }, 5)).toBe(0);
 	});
 });
 
