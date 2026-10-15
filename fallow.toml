@@ -3,6 +3,7 @@ entry = [
 	"apps/*/src/index.ts",
 	"apps/*/src/**/*.fuzz.ts",
 	"apps/*/*.config.ts",
+	"apps/*/vitest.setup.ts",
 	"apps/*/src/**/*.bench.ts",
 	"packages/*/src/cli.ts",
 	"packages/*/src/index.ts",

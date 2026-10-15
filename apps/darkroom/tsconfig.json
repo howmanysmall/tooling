@@ -33,6 +33,6 @@
 			"path": "../../tools/project-configurations"
 		}
 	],
-	"include": ["src/**/*.ts", "./package.json", "*.config.ts"],
+	"include": ["src/**/*.ts", "./package.json", "*.config.ts", "vitest.setup.ts"],
 	"exclude": ["node_modules"]
 }
