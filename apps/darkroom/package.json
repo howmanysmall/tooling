@@ -61,6 +61,7 @@
 		"effect": "catalog:runtime",
 		"env-paths": "catalog:runtime",
 		"ink": "catalog:runtime",
+		"pretty-bytes": "catalog:runtime",
 		"react": "catalog:runtime",
 		"sharp": "catalog:runtime",
 		"type-fest": "catalog:types",
