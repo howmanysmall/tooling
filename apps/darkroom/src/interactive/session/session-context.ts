@@ -17,10 +17,24 @@ export interface SessionActions {
 	readonly cycle: (delta: number) => void;
 	/** Drops the request awaiting confirmation; nothing is sent. */
 	readonly dismiss: () => void;
+	/**
+	 * Opens a new tab with the session as it was before a turn, editing
+	 * the image before it. The session stays as it is.
+	 *
+	 * @param turnId - The first turn the fork leaves out.
+	 */
+	readonly fork: (turnId: number) => void;
 	/** Opens a new session, or shows the empty one already open. */
 	readonly newSession: () => void;
 	/** Shows a past session, opening its tab with its turns. */
 	readonly resume: (session: SessionSummary) => void;
+	/**
+	 * Goes back to before a turn, in the same tab, as a fork: the session
+	 * as it was stays in the history, with every image it made.
+	 *
+	 * @param turnId - The first turn to go back past.
+	 */
+	readonly rewind: (turnId: number) => void;
 	/** Shows an open session. */
 	readonly select: (id: string) => void;
 	/** Validates and prices a request, then asks to confirm it. */

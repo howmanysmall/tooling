@@ -14,6 +14,8 @@ export const enum CommandGroup {
  */
 export interface BrowserCommand {
 	readonly key: BrowserKey;
+	/** Says more after the title in the palette, like `undo later images`. */
+	readonly description?: string | undefined;
 	readonly group: CommandGroup;
 	/** Shown in the status bar as well as help and the palette. */
 	readonly isFeatured?: boolean | undefined;

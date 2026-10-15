@@ -70,6 +70,7 @@ function createFakeSession(): FakeSession {
 		saved,
 		sent,
 		services: {
+			forkAsync: async () => undefined,
 			getRunningCount: () => 0,
 			async prepareAsync(request): Promise<PendingRequest> {
 				const prepared = await prepareGenerationAsync(

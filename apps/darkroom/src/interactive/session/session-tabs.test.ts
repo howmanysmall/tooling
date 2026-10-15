@@ -72,6 +72,18 @@ describe("reduceSessionTabs", () => {
 		expect([getIds(last), last.activeId]).toStrictEqual([["N"], "N"]);
 	});
 
+	it("puts a rewound session in its tab's place and shows it", ({ expect }) => {
+		expect.assertions(1);
+
+		const rewound = reduceSessionTabs(openThree(), {
+			id: "B",
+			session: createSession("F", [DONE]),
+			type: "replace",
+		});
+
+		expect([getIds(rewound), rewound.activeId]).toStrictEqual([["A", "F", "C"], "F"]);
+	});
+
 	it("cycles through the tabs in both directions, wrapping around", ({ expect }) => {
 		expect.assertions(2);
 

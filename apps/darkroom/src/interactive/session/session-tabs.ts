@@ -16,6 +16,7 @@ export type SessionTabsAction =
 	| { readonly action: SessionAction; readonly session: string; readonly type: "in-session" }
 	| { readonly delta: number; readonly type: "cycle" }
 	| { readonly id: string; readonly replacement: SessionState; readonly type: "close" }
+	| { readonly id: string; readonly session: SessionState; readonly type: "replace" }
 	| { readonly id: string; readonly type: "select" }
 	| { readonly session: SessionState; readonly type: "open" };
 
@@ -105,6 +106,20 @@ function close(tabs: SessionTabs, id: string, replacement: SessionState): Sessio
 	return select({ ...tabs, sessions, unread }, neighbor.id);
 }
 
+/**
+ * Puts another session in a tab's place and shows it, as rewinding does.
+ * The session it replaces stays in the history.
+ *
+ * @param tabs - The open sessions.
+ * @param id - The session to replace.
+ * @param session - The session to show in its place.
+ * @returns The tabs with the new session on screen.
+ */
+function replace(tabs: SessionTabs, id: string, session: SessionState): SessionTabs {
+	const sessions = tabs.sessions.map((tab) => (tab.id === id ? session : tab));
+	return select({ ...tabs, sessions }, session.id);
+}
+
 function cycle(tabs: SessionTabs, delta: number): SessionTabs {
 	const { length } = tabs.sessions;
 	const index = tabs.sessions.findIndex((session) => session.id === tabs.activeId);
@@ -131,6 +146,8 @@ export function reduceSessionTabs(tabs: SessionTabs, action: SessionTabsAction):
 			return applyInSession(tabs, action.session, action.action);
 		case "open":
 			return open(tabs, action.session);
+		case "replace":
+			return replace(tabs, action.id, action.session);
 		default:
 			return select(tabs, action.id);
 	}

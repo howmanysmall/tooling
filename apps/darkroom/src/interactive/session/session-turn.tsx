@@ -3,6 +3,7 @@ import { Box, Text } from "ink";
 import { theme } from "$interactive/components/theme";
 
 import { TurnBody } from "./turn-body";
+import { TurnPrompt } from "./turn-prompt";
 
 import type { ReactNode } from "react";
 
@@ -22,18 +23,7 @@ import type { TurnResultProperties } from "./turn-result";
 export function SessionTurnView({ box, getPreview, turn }: Readonly<TurnResultProperties>): ReactNode {
 	return (
 		<Box flexDirection="column" flexShrink={0} rowGap={1}>
-			<Box
-				backgroundColor={theme.panel}
-				borderBottom={false}
-				borderColor={theme.accent}
-				borderRight={false}
-				borderStyle="bold"
-				borderTop={false}
-				paddingX={2}
-				paddingY={1}
-			>
-				<Text>{turn.prompt}</Text>
-			</Box>
+			<TurnPrompt turn={turn} />
 			<Box flexDirection="column" paddingLeft={3}>
 				<TurnBody box={box} getPreview={getPreview} turn={turn} />
 				{turn.warnings.map((warning) => (

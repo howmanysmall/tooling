@@ -4,6 +4,9 @@ import { theme } from "$interactive/components/theme";
 
 import type { ReactNode } from "react";
 
+// Between the label and the model that follows it.
+const SEPARATOR = " · ";
+
 export interface PromptModeLabelProperties {
 	/** Whether the model takes images; if not, the prompt starts fresh. */
 	canEdit: boolean;
@@ -20,13 +23,16 @@ export interface PromptModeLabelProperties {
  * @param properties - The image being edited, if any.
  * @param properties.canEdit - Whether the model takes images.
  * @param properties.editFileName - The image's file name, if any.
- * @returns The start of the line.
+ * @returns The start of the line, ending in a separator before the model.
  */
 export function PromptModeLabel({ canEdit, editFileName }: Readonly<PromptModeLabelProperties>): ReactNode {
 	if (editFileName === undefined) {
 		return (
-			<Text bold={true} color={theme.muted}>
-				{"New"}
+			<Text>
+				<Text bold={true} color={theme.muted}>
+					{"New"}
+				</Text>
+				<Text color={theme.muted}>{SEPARATOR}</Text>
 			</Text>
 		);
 	}
@@ -39,6 +45,7 @@ export function PromptModeLabel({ canEdit, editFileName }: Readonly<PromptModeLa
 			</Text>
 			<Text color={canEdit ? theme.text : theme.warning}>{` ◧ ${editFileName}`}</Text>
 			{canEdit ? null : <Text color={theme.warning}>{" · this model can't edit"}</Text>}
+			<Text color={theme.muted}>{SEPARATOR}</Text>
 		</Text>
 	);
 }

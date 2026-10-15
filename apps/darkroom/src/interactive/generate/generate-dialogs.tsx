@@ -1,9 +1,15 @@
+import { useStdout } from "ink";
+
+import { openFilesAsync } from "$history/open-files";
+import { CommandPalette } from "$interactive/palette/command-palette";
 import { useSession } from "$interactive/session/session-context";
 import { SessionListDialog } from "$interactive/session/session-list-dialog";
+import { copyImageAsync } from "$utilities/copy-image";
 
-import { GenerateConfirmDialog } from "./generate-confirm-dialog";
 import { GenerateDialog } from "./generate-screen-state";
 import { ModelPickerDialog } from "./model-picker-dialog";
+import { SessionConfirm } from "./session-confirm";
+import { getTranscriptDialog } from "./transcript-commands";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { ReactNode } from "react";
@@ -11,13 +17,16 @@ import type { ReactNode } from "react";
 import type { SessionSummary } from "$history/session-list";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
 
+import type { OpenDialog } from "./generate-screen-state";
+import type { TranscriptEnvironment } from "./transcript-commands";
+
 export interface GenerateDialogsProperties {
 	catalog: ModelCatalog;
 	columns: number;
 	/** The model the prompt box uses now. */
 	currentModelId?: string | undefined;
 	/** The dialog the screen opened, if any. */
-	dialog?: GenerateDialog | undefined;
+	dialog?: OpenDialog | undefined;
 	/** Whether the next prompt edits an image, so only models that edit fit. */
 	isEditing: boolean;
 	now: Date;
@@ -25,6 +34,12 @@ export interface GenerateDialogsProperties {
 	onChooseModel: (model: ImageModelListItem) => void;
 	/** Closes the screen's dialog. */
 	onClose: () => void;
+	/** Puts text in the prompt box, as rewinding does. */
+	onFillPrompt: (text: string) => void;
+	/** Shows a failure as a toast. */
+	onReportError: (text: string) => void;
+	/** Shows a success as a toast. */
+	onReportSuccess: (text: string) => void;
 	/** Models used lately, most recent first. */
 	recentIds: ReadonlyArray<string>;
 	rows: number;
@@ -33,9 +48,10 @@ export interface GenerateDialogsProperties {
 }
 
 /**
- * The dialogs over the generate screen: the model picker or the session
- * list when the screen opens one, and the confirmation whenever the session
- * on screen has a priced request waiting.
+ * The dialogs over the generate screen: the model picker, the session
+ * list, or the actions for a prompt or image you clicked when the screen
+ * opens one, and the confirmation whenever the session on screen has a
+ * priced request waiting.
  *
  * @param properties - What each dialog needs.
  * @param properties.catalog - The models and what they cost.
@@ -46,6 +62,9 @@ export interface GenerateDialogsProperties {
  * @param properties.now - When the app opened.
  * @param properties.onChooseModel - Takes a picked model.
  * @param properties.onClose - Closes the screen's dialog.
+ * @param properties.onFillPrompt - Puts text in the prompt box.
+ * @param properties.onReportError - Shows a failure.
+ * @param properties.onReportSuccess - Shows a success.
  * @param properties.recentIds - Models used lately.
  * @param properties.rows - The screen's height.
  * @param properties.sessions - Past sessions.
@@ -60,24 +79,38 @@ export function GenerateDialogs({
 	now,
 	onChooseModel,
 	onClose,
+	onFillPrompt,
+	onReportError,
+	onReportSuccess,
 	recentIds,
 	rows,
 	sessions,
 }: Readonly<GenerateDialogsProperties>): ReactNode {
-	const { actions, state } = useSession();
-	const { pending } = state;
-
-	function handleCancel(): void {
-		actions.dismiss();
-	}
-
-	function handleConfirm(): void {
-		actions.confirm();
-	}
+	const session = useSession();
+	const { write } = useStdout();
+	const transcript: TranscriptEnvironment = {
+		copyImageAsync,
+		fillPrompt: onFillPrompt,
+		openImagesAsync: openFilesAsync,
+		reportError: onReportError,
+		reportSuccess: onReportSuccess,
+		session: session.actions,
+		write,
+	};
+	const actions = getTranscriptDialog(dialog, transcript);
 
 	return (
 		<>
-			{dialog === GenerateDialog.Model ? (
+			{actions === undefined ? null : (
+				<CommandPalette
+					columns={columns}
+					commands={actions.commands}
+					rows={rows}
+					title={actions.title}
+					onClose={onClose}
+				/>
+			)}
+			{dialog?.kind === GenerateDialog.Model ? (
 				<ModelPickerDialog
 					catalog={catalog}
 					columns={columns}
@@ -89,18 +122,10 @@ export function GenerateDialogs({
 					onPick={onChooseModel}
 				/>
 			) : null}
-			{dialog === GenerateDialog.Sessions ? (
+			{dialog?.kind === GenerateDialog.Sessions ? (
 				<SessionListDialog columns={columns} now={now} rows={rows} sessions={sessions} onClose={onClose} />
 			) : null}
-			{pending === undefined ? null : (
-				<GenerateConfirmDialog
-					columns={columns}
-					pending={pending}
-					rows={rows}
-					onCancel={handleCancel}
-					onConfirm={handleConfirm}
-				/>
-			)}
+			<SessionConfirm columns={columns} rows={rows} />
 		</>
 	);
 }

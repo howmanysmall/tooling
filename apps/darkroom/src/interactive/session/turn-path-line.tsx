@@ -7,6 +7,7 @@ import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
 import { useSession } from "./session-context";
 import { getEditBase } from "./session-state";
+import { useTranscriptActions } from "./transcript-actions-context";
 
 import type { ReactNode } from "react";
 
@@ -24,7 +25,7 @@ function getColor(isBase: boolean, isHovered: boolean): string {
 /**
  * Where one of a turn's images was saved, relative to the working
  * directory when inside it. A `◧` marks the image the next prompt edits;
- * clicking a path makes its image that one.
+ * clicking a path offers what to do with its image.
  *
  * @param properties - The image.
  * @param properties.mediaType - Its media type.
@@ -32,11 +33,12 @@ function getColor(isBase: boolean, isHovered: boolean): string {
  * @returns One line.
  */
 export function TurnPathLine({ mediaType, path }: Readonly<TurnPathLineProperties>): ReactNode {
-	const { actions, state } = useSession();
+	const { state } = useSession();
+	const transcript = useTranscriptActions();
 	const isBase = getEditBase(state)?.path === path;
 	const { attachNode, isHovered } = useMouseTarget(`turn-path:${path}`, {
 		onClick(): void {
-			actions.chooseBase({ mediaType, path });
+			transcript?.showImage({ mediaType, path });
 		},
 	});
 

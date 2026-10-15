@@ -48,14 +48,14 @@ export function SessionProvider({
 	const tabs = useSyncExternalStore(store.subscribe, store.getTabs);
 	const notices = use(NoticeContext);
 
-	function handleResumed(failure: string | undefined): void {
-		if (failure !== undefined) notices?.reporter.reportError(`Couldn't resume the session: ${failure}`);
+	function reportError(message: string): void {
+		notices?.reporter.reportError(message);
 	}
 
 	const value = createSessionValue({
 		dispatch: store.dispatch,
-		onResumed: handleResumed,
 		onRunSaved,
+		reportError,
 		services,
 		tabs,
 	});

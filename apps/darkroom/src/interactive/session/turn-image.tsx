@@ -3,7 +3,7 @@ import { Box } from "ink";
 import { PreviewSlot } from "$interactive/components/preview-slot";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
-import { useSession } from "./session-context";
+import { useTranscriptActions } from "./transcript-actions-context";
 
 import type { ReactNode } from "react";
 
@@ -20,8 +20,8 @@ export interface TurnImageProperties {
 }
 
 /**
- * One image a turn made. Clicking it makes it the image the next prompt
- * edits, which branches the session from there.
+ * One image a turn made. Clicking it offers what to do with it: edit it
+ * next, which branches the session from there, copy it, or open it.
  *
  * @param properties - The image, its preview, and its width.
  * @param properties.image - Where it was saved, and its media type.
@@ -30,10 +30,10 @@ export interface TurnImageProperties {
  * @returns The preview.
  */
 export function TurnImage({ image, preview, width }: Readonly<TurnImageProperties>): ReactNode {
-	const { actions } = useSession();
+	const transcript = useTranscriptActions();
 	const { attachNode } = useMouseTarget(`turn-image:${image.path}`, {
 		onClick(): void {
-			actions.chooseBase(image);
+			transcript?.showImage(image);
 		},
 	});
 

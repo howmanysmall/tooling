@@ -142,7 +142,13 @@ export function BrowserShell({
 				<HelpDialog columns={columns} commands={allCommands} rows={rows} onClose={closeOverlay} />
 			) : null}
 			{overlay === Overlay.Palette ? (
-				<CommandPalette columns={columns} commands={allCommands} rows={rows} onClose={closeOverlay} />
+				<CommandPalette
+					columns={columns}
+					commands={allCommands}
+					rows={rows}
+					title="Commands"
+					onClose={closeOverlay}
+				/>
 			) : null}
 		</Box>
 	);

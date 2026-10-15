@@ -3,18 +3,30 @@ import { reduceStatus } from "$interactive/components/status-message";
 import { EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
 
 import type { StatusAction, StatusMessage } from "$interactive/components/status-message";
+import type { BaseImage, SessionTurn } from "$interactive/session/session-state";
 
 import type { EditorAction, PromptEditor } from "./prompt-editor-state";
 
 /** A dialog over the generate screen. */
 export const enum GenerateDialog {
+	/** What to do with an image you clicked. */
+	Image = "image",
 	Model = "model",
+	/** What to do with a prompt you clicked. */
+	Prompt = "prompt",
 	Sessions = "sessions",
 }
 
+/** The dialog open over the generate screen, with what it is about. */
+export type OpenDialog =
+	| { readonly image: BaseImage; readonly kind: GenerateDialog.Image }
+	| { readonly kind: GenerateDialog.Model }
+	| { readonly kind: GenerateDialog.Prompt; readonly turn: SessionTurn }
+	| { readonly kind: GenerateDialog.Sessions };
+
 export interface GenerateScreenState {
 	/** The dialog open over the prompt box, if any. */
-	readonly dialog?: GenerateDialog | undefined;
+	readonly dialog?: OpenDialog | undefined;
 	readonly editor: PromptEditor;
 	readonly status?: StatusMessage | undefined;
 }
@@ -22,7 +34,7 @@ export interface GenerateScreenState {
 export type GenerateScreenAction =
 	| StatusAction
 	| { readonly action: EditorAction; readonly type: "edit" }
-	| { readonly dialog: GenerateDialog | undefined; readonly type: "dialog" };
+	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" };
 
 export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR };
 

@@ -2,6 +2,7 @@ import { mergeRerunOptions } from "$generation/generation-flags";
 import { InterruptGuard } from "$generation/interrupt-guard";
 import { getReferenceRange } from "$generation/model-capabilities";
 import { loadReferenceAsync } from "$generation/references";
+import { addToForkAsync } from "$history/history-store";
 import { loadStoredReferencesAsync } from "$history/stored-references";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 
@@ -49,6 +50,13 @@ export interface SettledRun {
  * until its images are saved, even after the app closes.
  */
 export interface SessionServices {
+	/**
+	 * Records a fork on the runs it keeps, so it can be resumed with them.
+	 *
+	 * @param runs - The IDs of the runs the fork keeps.
+	 * @param fork - The fork's ULID.
+	 */
+	readonly forkAsync: (runs: ReadonlyArray<string>, fork: string) => Promise<void>;
 	/** How many requests are still generating or saving. */
 	readonly getRunningCount: () => number;
 	/**
@@ -120,6 +128,10 @@ export function createSessionServices(store: HistoryStore): SessionServices {
 	const running = new Set<Promise<SettledRun>>();
 
 	return {
+		async forkAsync(runs, fork): Promise<void> {
+			// A line that can't be read is kept out, as everywhere in the app.
+			await addToForkAsync(store, new Set(runs), fork, () => undefined);
+		},
 		getRunningCount: () => running.size,
 		async prepareAsync(request, session): Promise<PendingRequest> {
 			const { describeCostAsync, prepareQuietlyAsync } = await import("$generation/cli-runner");

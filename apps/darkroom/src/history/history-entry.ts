@@ -43,6 +43,8 @@ export const isHistoryEntry = type({
 	"batch?": isMaybeString,
 	"cost?": isMaybeNumber,
 	created: isIsoDateString,
+	/** Sessions forked from this run's session that keep this run. */
+	"forks?": isString.array().readonly().or("undefined"),
 	images: isStoredImage.array().readonly(),
 	model: isString,
 	"parent?": isMaybeString,

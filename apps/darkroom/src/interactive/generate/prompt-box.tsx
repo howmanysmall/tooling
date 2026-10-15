@@ -64,11 +64,10 @@ export function PromptBox({
 			width={width}
 		>
 			<PromptText editor={editor} placeholder={PLACEHOLDER} />
-			<Box columnGap={1}>
+			<Box>
 				<Box flexShrink={0}>
 					<PromptModeLabel canEdit={canEdit} editFileName={editFileName} />
 				</Box>
-				<Text color={theme.muted}>{"·"}</Text>
 				{model === undefined || prices === undefined ? (
 					<Text color={theme.muted}>{"No models"}</Text>
 				) : (

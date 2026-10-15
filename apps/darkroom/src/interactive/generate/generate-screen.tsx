@@ -15,6 +15,7 @@ import { useSession } from "$interactive/session/session-context";
 import { getEditBase, PromptMode } from "$interactive/session/session-state";
 import { SessionTabStrip } from "$interactive/session/session-tab-strip";
 import { SessionTranscript } from "$interactive/session/session-transcript";
+import { TranscriptActionsContext } from "$interactive/session/transcript-actions-context";
 
 import { getBoxHints, getGenerateCommands, getGenerateKey, PromptBasis } from "./generate-commands";
 import { GenerateDialogs } from "./generate-dialogs";
@@ -24,12 +25,13 @@ import { getEditorAction } from "./prompt-editor-state";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { Key } from "ink";
-import type { ReactNode } from "react";
+import type { Dispatch, ReactNode } from "react";
 
 import type { SessionSummary } from "$history/session-list";
 import type { KeyHint } from "$interactive/components/key-hints";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
 import type { SessionState } from "$interactive/session/session-state";
+import type { TranscriptActions } from "$interactive/session/transcript-actions-context";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
 
@@ -71,11 +73,22 @@ const MAX_HOME_WIDTH = 84;
 // the status bar.
 const SESSION_CHROME_ROWS = 1 + 1 + 6 + 1 + 1;
 
-const OPEN_PICKER: GenerateScreenAction = { dialog: GenerateDialog.Model, type: "dialog" };
-const OPEN_SESSIONS: GenerateScreenAction = { dialog: GenerateDialog.Sessions, type: "dialog" };
+const OPEN_PICKER: GenerateScreenAction = { dialog: { kind: GenerateDialog.Model }, type: "dialog" };
+const OPEN_SESSIONS: GenerateScreenAction = { dialog: { kind: GenerateDialog.Sessions }, type: "dialog" };
 const CLOSE_DIALOG: GenerateScreenAction = { dialog: undefined, type: "dialog" };
 const CLEAR_PROMPT: GenerateScreenAction = { action: { type: "clear" }, type: "edit" };
 const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: "insert" }, type: "edit" };
+
+function createTranscriptActions(dispatch: Dispatch<GenerateScreenAction>): TranscriptActions {
+	return {
+		showImage(image): void {
+			dispatch({ dialog: { image, kind: GenerateDialog.Image }, type: "dialog" });
+		},
+		showPrompt(turn): void {
+			dispatch({ dialog: { kind: GenerateDialog.Prompt, turn }, type: "dialog" });
+		},
+	};
+}
 
 function getPromptBasis({ base, mode }: SessionState, canEdit: boolean): PromptBasis {
 	if (base === undefined) return PromptBasis.Nothing;
@@ -115,7 +128,8 @@ export function GenerateScreen({
 	const session = useSession();
 	const { exit } = useApp();
 	const { columns, rows } = useWindowSize();
-	const { reportError } = createStatusReporter(dispatch);
+	const { reportError, reportSuccess } = createStatusReporter(dispatch);
+	const transcriptActions = createTranscriptActions(dispatch);
 	const isHome = session.state.turns.length === 0;
 	const boxWidth = isHome ? Math.min(MAX_HOME_WIDTH, columns - 8) : columns - 4;
 	const prompt = screen.editor.text.trim();
@@ -141,6 +155,11 @@ export function GenerateScreen({
 
 	function closeDialog(): void {
 		dispatch(CLOSE_DIALOG);
+	}
+
+	function fillPrompt(text: string): void {
+		dispatch(CLEAR_PROMPT);
+		dispatch({ action: { text, type: "insert" }, type: "edit" });
 	}
 
 	function handleShiftTab(): void {
@@ -225,12 +244,14 @@ export function GenerateScreen({
 				</Box>
 			) : (
 				<Box flexDirection="column" flexGrow={1}>
-					<SessionTranscript
-						columns={columns}
-						getPreview={getPreview}
-						rows={rows - SESSION_CHROME_ROWS}
-						turns={session.state.turns}
-					/>
+					<TranscriptActionsContext value={transcriptActions}>
+						<SessionTranscript
+							columns={columns}
+							getPreview={getPreview}
+							rows={rows - SESSION_CHROME_ROWS}
+							turns={session.state.turns}
+						/>
+					</TranscriptActionsContext>
 					<Box alignItems="center" flexDirection="column" flexShrink={0} marginTop={1}>
 						{promptBox}
 						{boxHints}
@@ -252,6 +273,9 @@ export function GenerateScreen({
 				sessions={sessions}
 				onChooseModel={onChooseModel}
 				onClose={closeDialog}
+				onFillPrompt={fillPrompt}
+				onReportError={reportError}
+				onReportSuccess={reportSuccess}
 			/>
 		</BrowserShell>
 	);
