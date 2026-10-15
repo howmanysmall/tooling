@@ -1,3 +1,5 @@
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
+
 import { ModelSort } from "$utilities/model-filters";
 
 import { useModelBrowser } from "./model-browser-context";
@@ -19,7 +21,10 @@ const SORT_LABELS: ReadonlyMap<ModelSort, string> = new Map([
 export function ModelBrowserHeader(): ReactNode {
 	const { state } = useModelBrowser();
 	const shown = state.models.length;
-	const counts = state.filter.length === 0 ? `${shown} models` : `${shown} of ${state.total} models`;
+	const counts =
+		state.filter.length === 0
+			? `${shown} ${toPlural(shown, "model")}`
+			: `${shown} of ${state.total} ${toPlural(state.total, "model")}`;
 
 	return <ScreenHeader summary={`${counts} · ${SORT_LABELS.get(state.sort) ?? state.sort}`} title="models" />;
 }
