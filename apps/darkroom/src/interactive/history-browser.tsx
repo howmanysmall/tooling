@@ -37,8 +37,8 @@ export interface BrowserServices {
 
 export interface HistoryBrowserProperties {
 	/** Every run, newest first. */
-	readonly entries: ReadonlyArray<HistoryEntry>;
-	readonly services: BrowserServices;
+	entries: ReadonlyArray<HistoryEntry>;
+	services: BrowserServices;
 }
 
 // The title, the footer, and the list's top and bottom borders.
@@ -64,7 +64,7 @@ const BACK_TO_LIST: BrowserAction = { mode: BrowserMode.Normal, type: "mode" };
  * @param properties.services - Opens, deletes, and re-runs runs.
  * @returns The whole screen, sized to the terminal.
  */
-export function HistoryBrowser({ entries, services }: HistoryBrowserProperties): ReactNode {
+export function HistoryBrowser({ entries, services }: Readonly<HistoryBrowserProperties>): ReactNode {
 	const [state, dispatch] = useReducer(reduceBrowserState, entries, createBrowserState);
 	const { exit } = useApp();
 	const { write } = useStdout();

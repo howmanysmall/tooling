@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
 import type { LoadingPreview } from "$preview/load-preview";
 
 export interface HistoryImagePreviewProperties {
-	readonly preview: LoadingPreview;
+	preview: LoadingPreview;
 }
 
 /**
