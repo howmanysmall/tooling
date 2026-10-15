@@ -13,12 +13,13 @@ import { InterruptAction, InterruptGuard } from "$generation/interrupt-guard";
 import { formatJson } from "$utilities/output-format-utilities";
 import { aspectRatioType, getAspectRatiosAsync } from "$validators/aspect-ratio-type";
 import {
-	BACKGROUNDS,
 	backgroundType,
+	getBackgroundsAsync,
+	getImageTypesAsync,
+	getQualitiesAsync,
+	getResolutionsAsync,
 	imageTypeType,
-	QUALITIES,
 	qualityType,
-	RESOLUTIONS,
 	resolutionType,
 } from "$validators/generation-parameter-types";
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
@@ -207,17 +208,18 @@ export const generateCommand = createBaseCommand(
 	.type("aspect-ratio", aspectRatioType)
 	.complete("aspect-ratio", getAspectRatiosAsync)
 	.type("background", backgroundType)
-	.complete("background", () => [...BACKGROUNDS])
+	.complete("background", getBackgroundsAsync)
 	.type("quality", qualityType)
-	.complete("quality", () => [...QUALITIES])
+	.complete("quality", getQualitiesAsync)
 	.type("resolution", resolutionType)
-	.complete("resolution", () => [...RESOLUTIONS])
+	.complete("resolution", getResolutionsAsync)
 	.type("image-type", imageTypeType)
+	.complete("image-type", getImageTypesAsync, { override: true })
 	.type("output-format", outputFormatType)
 	.arguments("[prompt:string]")
 	.option("--prompt-file <path:file>", "Read the prompt from a file.")
 	.option("-m, --model <model:image-model>", "The model to use. Defaults to DARKROOM_MODEL.")
-	.option("-i, --image <source:string>", "A reference image path or URL. Repeatable.", { collect: true })
+	.option("-i, --image <source:file>", "A reference image path or URL. Repeatable.", { collect: true })
 	.option("-a, --aspect-ratio <ratio:aspect-ratio>", "The aspect ratio, such as 16:9 or auto.")
 	.option("-r, --resolution <tier:resolution>", "The resolution tier: 512, 768, 1K, 1.5K, 2K, or 4K.")
 	.option("-q, --quality <level:quality>", "The quality: auto, low, medium, high, xhigh, or max.")

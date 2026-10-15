@@ -12,30 +12,37 @@ import type { ImageModelListItem } from "@openrouter/sdk/models";
 // validation.
 
 export const enum CompletionKind {
-	AspectRatios = 1,
 	ImageModelIds = 2,
+	/** One line per model and parameter: `id<Tab>parameter<Tab>value<Tab>…`. */
+	ModelParameters = 3,
 }
+
+/** The enum parameters whose values are completed per model. */
+const COMPLETED_PARAMETERS: ReadonlyArray<string> = [
+	"aspect_ratio",
+	"background",
+	"output_format",
+	"quality",
+	"resolution",
+];
 
 function getCompletionFile(completionKind: CompletionKind): string {
 	return nodePath.join(environmentPaths.cache, `${completionKind}.txt`);
 }
 
-function createCompletions(imageModels: ReadonlyArray<ImageModelListItem>): Record<CompletionKind, Array<string>> {
-	const aspectRatios = new Set<string>();
-	const imageModelIds: Array<string> = [];
-	let size = 0;
-
-	for (const { id, supportedParameters } of imageModels) {
-		imageModelIds[size++] = id;
-
-		const aspectRatio = supportedParameters.aspect_ratio;
-		if (aspectRatio?.type !== "enum") continue;
-		for (const value of aspectRatio.values) aspectRatios.add(value);
+function getParameterLines(imageModel: ImageModelListItem): Array<string> {
+	const lines: Array<string> = [];
+	for (const parameter of COMPLETED_PARAMETERS) {
+		const descriptor = imageModel.supportedParameters[parameter];
+		if (descriptor?.type === "enum") lines.push([imageModel.id, parameter, ...descriptor.values].join("\t"));
 	}
+	return lines;
+}
 
+function createCompletions(imageModels: ReadonlyArray<ImageModelListItem>): Record<CompletionKind, Array<string>> {
 	return {
-		[CompletionKind.AspectRatios]: [...aspectRatios],
-		[CompletionKind.ImageModelIds]: imageModelIds,
+		[CompletionKind.ImageModelIds]: imageModels.map(({ id }) => id),
+		[CompletionKind.ModelParameters]: imageModels.flatMap(getParameterLines),
 	};
 }
 
@@ -49,13 +56,13 @@ export async function refreshCompletionCacheAsync(usingCache = true): Promise<Re
 		await mkdir(environmentPaths.cache, { recursive: true });
 		await Promise.all([
 			writeFile(
-				getCompletionFile(CompletionKind.AspectRatios),
-				completions[CompletionKind.AspectRatios].join("\n"),
+				getCompletionFile(CompletionKind.ImageModelIds),
+				completions[CompletionKind.ImageModelIds].join("\n"),
 				"utf8",
 			),
 			writeFile(
-				getCompletionFile(CompletionKind.ImageModelIds),
-				completions[CompletionKind.ImageModelIds].join("\n"),
+				getCompletionFile(CompletionKind.ModelParameters),
+				completions[CompletionKind.ModelParameters].join("\n"),
 				"utf8",
 			),
 		]);

@@ -13,6 +13,24 @@ export const backgroundType = new StringType();
 export const qualityType = new StringType();
 export const resolutionType = new StringType();
 
-export const BACKGROUNDS: ReadonlyArray<string> = ["auto", "opaque", "transparent"];
-export const QUALITIES: ReadonlyArray<string> = ["auto", "low", "medium", "high", "xhigh", "max"];
-export const RESOLUTIONS: ReadonlyArray<string> = ["512", "768", "1K", "1.5K", "2K", "4K"];
+async function completeAsync(parameter: string): Promise<Array<string>> {
+	const { getParameterCompletionsAsync } = await import("$utilities/model-parameter-completions");
+	return getParameterCompletionsAsync(parameter);
+}
+
+export async function getBackgroundsAsync(): Promise<Array<string>> {
+	return completeAsync("background");
+}
+
+export async function getImageTypesAsync(): Promise<Array<string>> {
+	const declared = await completeAsync("output_format");
+	return declared.length === 0 ? [...IMAGE_TYPES] : declared;
+}
+
+export async function getQualitiesAsync(): Promise<Array<string>> {
+	return completeAsync("quality");
+}
+
+export async function getResolutionsAsync(): Promise<Array<string>> {
+	return completeAsync("resolution");
+}
