@@ -1,5 +1,6 @@
 import { access, readFile } from "node:fs/promises";
 import nodePath from "node:path";
+import { isReadonlyDictionaryOfStrings, isString } from "@howmanysmall/arktype-utilities";
 import { type } from "arktype";
 
 import { ExampleSource } from "./model-examples";
@@ -15,10 +16,10 @@ const MAX_LEVELS_UP = 4;
 
 const isManifest = type({
 	/** The image file of each model, keyed by model ID. */
-	models: "Record<string, string>",
+	models: isReadonlyDictionaryOfStrings,
 	/** The one prompt every example was made with. */
-	prompt: "string",
-});
+	prompt: isString,
+}).readonly();
 
 /** The examples folder's manifest. */
 export type ExamplesManifest = typeof isManifest.infer;
