@@ -3,7 +3,13 @@ import { describe, it } from "vitest";
 import { CommandGroup } from "$interactive/keys/browser-command";
 import { BrowserKey } from "$interactive/keys/browser-keys";
 
-import { getPaletteMatches, INITIAL_PALETTE_STATE, reducePaletteState, splitTitle } from "./command-palette-state";
+import {
+	getPaletteMatches,
+	INITIAL_PALETTE_STATE,
+	PaletteActionType,
+	reducePaletteState,
+	splitTitle,
+} from "./command-palette-state";
 
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 
@@ -57,10 +63,13 @@ describe("reducePaletteState", () => {
 		const moved = reducePaletteState(INITIAL_PALETTE_STATE, {
 			count: 3,
 			move: { delta: 5, type: "move" },
-			type: "move",
+			type: PaletteActionType.Move,
 		});
 
 		expect(moved.cursor).toBe(2);
-		expect(reducePaletteState(moved, { query: "op", type: "query" })).toStrictEqual({ cursor: 0, query: "op" });
+		expect(reducePaletteState(moved, { query: "op", type: PaletteActionType.Query })).toStrictEqual({
+			cursor: 0,
+			query: "op",
+		});
 	});
 });

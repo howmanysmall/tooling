@@ -17,9 +17,14 @@ export interface PaletteState {
 	readonly query: string;
 }
 
+export const enum PaletteActionType {
+	Move = 1,
+	Query = 2,
+}
+
 export type PaletteAction =
-	| { readonly count: number; readonly move: CursorMove; readonly type: "move" }
-	| { readonly query: string; readonly type: "query" };
+	| { readonly count: number; readonly move: CursorMove; readonly type: PaletteActionType.Move }
+	| { readonly query: string; readonly type: PaletteActionType.Query };
 
 export const INITIAL_PALETTE_STATE: PaletteState = { cursor: 0, query: "" };
 
@@ -33,7 +38,9 @@ const NO_POSITIONS: ReadonlySet<number> = new Set();
  * @returns Every command when the query is empty, otherwise the matches.
  */
 export function getPaletteMatches(commands: ReadonlyArray<BrowserCommand>, query: string): Array<PaletteMatch> {
-	if (query.trim().length === 0) return commands.map((command) => ({ command, positions: NO_POSITIONS }));
+	if (query.trim().length === 0) {
+		return commands.map((command) => ({ command, positions: NO_POSITIONS }));
+	}
 
 	const finder = new Fzf(commands, { selector: (command): string => command.title });
 	return finder.find(query.trim()).map(({ item, positions }) => ({ command: item, positions }));
@@ -67,6 +74,7 @@ export function splitTitle(title: string, positions: ReadonlySet<number>): Array
 			segments.push({ isMatch, start: index, text: title.charAt(index) });
 		}
 	}
+
 	return segments;
 }
 
@@ -78,7 +86,9 @@ export function splitTitle(title: string, positions: ReadonlySet<number>): Array
  * @returns The next state; a new query puts the cursor back on the best match.
  */
 export function reducePaletteState(state: PaletteState, action: PaletteAction): PaletteState {
-	if (action.type === "query") return action.query === state.query ? state : { cursor: 0, query: action.query };
+	if (action.type === PaletteActionType.Query) {
+		return action.query === state.query ? state : { cursor: 0, query: action.query };
+	}
 
 	return { ...state, cursor: moveCursor(state.cursor, action.move, action.count) };
 }

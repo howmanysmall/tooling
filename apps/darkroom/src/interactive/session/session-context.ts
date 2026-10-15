@@ -30,6 +30,8 @@ SessionContext.displayName = "SessionContext";
  */
 export function useSession(): SessionContextValue {
 	const value = use(SessionContext);
-	if (value === undefined) throw new Error("useSession needs a SessionProvider.");
+	if (value === undefined) {
+		throw new Error("useSession needs a SessionProvider.");
+	}
 	return value;
 }

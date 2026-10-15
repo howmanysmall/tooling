@@ -49,7 +49,10 @@ export async function loadPreviewAsync(
 	try {
 		const { default: sharp } = await import("sharp");
 		const { height, width } = await sharp(request.path).metadata();
-		if (width <= 0 || height <= 0) return { kind: "message", text: "No preview: the image has no size." };
+		if (width <= 0 || height <= 0) {
+			return { kind: "message", text: "No preview: the image has no size." };
+		}
+
 		const cells = fitImageToCells(width, height, request.box);
 
 		if (request.protocol === ImageProtocol.Kitty) {

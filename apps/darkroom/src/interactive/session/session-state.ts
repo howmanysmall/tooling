@@ -104,12 +104,16 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 	switch (action.type) {
 		case "dismiss":
 			return dismissPending(state);
+
 		case "new-session":
 			return { ...state, turns: state.turns.filter((turn) => UNSETTLED.has(turn.phase)) };
+
 		case "prepared":
 			return confirmTurn(state, action.id, action.pending);
+
 		case "turn-added":
 			return addTurn(state, action.id, action.modelName, action.prompt);
+
 		case "turn-done": {
 			return settleTurn(state, action.id, {
 				finishedAt: action.at,
@@ -117,6 +121,7 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 				result: action.result,
 			});
 		}
+
 		case "turn-failed": {
 			return settleTurn(state, action.id, {
 				error: action.error,
@@ -124,10 +129,13 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 				phase: TurnPhase.Failed,
 			});
 		}
+
 		case "turn-progress":
 			return settleTurn(state, action.id, { progress: action.progress });
+
 		case "turn-started":
 			return { turns: settleTurn(state, action.id, { phase: TurnPhase.Running, startedAt: action.at }).turns };
+
 		default:
 			return updateTurn(state, action.id, (turn) => ({ ...turn, warnings: [...turn.warnings, action.warning] }));
 	}
