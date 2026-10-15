@@ -1,11 +1,34 @@
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
-import { bold } from "ansis";
-import { consola } from "consola";
+
+import { getHistoryIdsAsync, historyIdType } from "$validators/history-id-type";
+import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 
 const scriptName = getScriptName(true);
-const log = consola.withTag(scriptName);
 
-export const showCommand = createBaseCommand(scriptName, "1.0.0", "NYI").action(() => {
-	log.info(`The ${bold(scriptName)} command is not yet implemented. Please check back later.`);
-});
+export const showCommand = createBaseCommand(
+	scriptName,
+	"1.0.0",
+	"Show everything recorded for a run, including the runs it was re-run from.",
+)
+	.type("history-id", historyIdType)
+	.complete("history-id", getHistoryIdsAsync)
+	.type("output-format", outputFormatType)
+	.arguments("<run:history-id>")
+	.option("-f, --format <format:output-format>", "The output format.", { default: OutputFormat.Pretty })
+	.action(async ({ format }, reference) => {
+		const [{ getHistoryStore, log }, { formatHistoryEntry }, { getParentChain, resolveRunReference }] =
+			await Promise.all([
+				import("$generation/cli-runner"),
+				import("$history/format-history"),
+				import("$history/resolve-run-reference"),
+			]);
+		const store = getHistoryStore();
+		const entries = await store.readAllAsync((message) => {
+			log.warn(message);
+		});
+		const entry = resolveRunReference(entries, reference);
+		console.log(
+			formatHistoryEntry(entry, getParentChain(entries, entry), format, (stored) => store.resolve(stored)),
+		);
+	});

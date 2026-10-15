@@ -13,24 +13,34 @@ export const backgroundType = new StringType();
 export const qualityType = new StringType();
 export const resolutionType = new StringType();
 
-async function completeAsync(parameter: string): Promise<Array<string>> {
-	const { getParameterCompletionsAsync } = await import("$utilities/model-parameter-completions");
-	return getParameterCompletionsAsync(parameter);
+/**
+ * Completes a model parameter for the model on the command line, or for the
+ * stored run when completing `history rerun <id>`.
+ *
+ * @param parameter - The wire name, such as `aspect_ratio`.
+ * @returns The values to offer.
+ */
+export async function completeModelParameterAsync(parameter: string): Promise<Array<string>> {
+	const [{ getParameterCompletionsAsync }, { getRerunModelAsync }] = await Promise.all([
+		import("$utilities/model-parameter-completions"),
+		import("$history/history-completions"),
+	]);
+	return getParameterCompletionsAsync(parameter, getRerunModelAsync);
 }
 
 export async function getBackgroundsAsync(): Promise<Array<string>> {
-	return completeAsync("background");
+	return completeModelParameterAsync("background");
 }
 
 export async function getImageTypesAsync(): Promise<Array<string>> {
-	const declared = await completeAsync("output_format");
+	const declared = await completeModelParameterAsync("output_format");
 	return declared.length === 0 ? [...IMAGE_TYPES] : declared;
 }
 
 export async function getQualitiesAsync(): Promise<Array<string>> {
-	return completeAsync("quality");
+	return completeModelParameterAsync("quality");
 }
 
 export async function getResolutionsAsync(): Promise<Array<string>> {
-	return completeAsync("resolution");
+	return completeModelParameterAsync("resolution");
 }
