@@ -10,6 +10,10 @@ export const historyCommand = createBaseCommand(
 	renderHighlight("Various subcommands for the usage history of the `darkroom` CLI."),
 	{ showHelpWithoutArguments: true },
 )
+	.command("browse", async () => {
+		const { browseCommand } = await import("./browse-command");
+		return browseCommand;
+	})
 	.command("list", async () => {
 		const { listCommand } = await import("./list-command");
 		return listCommand;

@@ -31,13 +31,8 @@ async function loadReferencesAsync(
 	const { loadReferenceAsync } = await import("$generation/references");
 	if (sources !== undefined) return Promise.all(sources.map(async (source) => loadReferenceAsync(source)));
 
-	// Use the stored copies, so a re-run works after the originals moved.
-	return Promise.all(
-		entry.references.map(async (reference) => {
-			const loaded = await loadReferenceAsync(store.resolve(reference.stored));
-			return { ...loaded, source: reference.source };
-		}),
-	);
+	const { loadStoredReferencesAsync } = await import("$history/stored-references");
+	return loadStoredReferencesAsync(entry, store);
 }
 
 async function rerunAsync(flags: GenerationFlags, reference: string): Promise<void> {
