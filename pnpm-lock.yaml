@@ -229,8 +229,8 @@ catalogs:
       specifier: 6.1.0
       version: 6.1.0
     '@pobammer-ts/small-rules':
-      specifier: 3.3.3
-      version: 3.3.3
+      specifier: 3.4.0
+      version: 3.4.0
     '@stylistic/eslint-plugin':
       specifier: 5.10.0
       version: 5.10.0
@@ -456,7 +456,7 @@ catalogs:
 
 overrides:
   '@isentinel/eslint-config>@e18e/eslint-plugin': 0.8.1
-  '@isentinel/eslint-config>@pobammer-ts/small-rules': 3.3.3
+  '@isentinel/eslint-config>@pobammer-ts/small-rules': 3.4.0
   '@isentinel/eslint-config>eslint-plugin-antfu': 3.2.3
   '@isentinel/eslint-config>eslint-plugin-better-max-params': 1.0.0
   '@isentinel/eslint-config>eslint-plugin-comment-length': 2.3.1
@@ -526,7 +526,7 @@ importers:
         version: 3.2.0(@types/node@26.6.5)(jiti@2.7.0)
       '@pobammer-ts/small-rules':
         specifier: catalog:lint
-        version: 3.3.3(@typescript/typescript6@6.0.2)
+        version: 3.4.0(@typescript/typescript6@6.0.2)
       '@stryker-mutator/api':
         specifier: catalog:test
         version: 10.0.0
@@ -3431,8 +3431,8 @@ packages:
     engines: {node: '>=22.18.0'}
     hasBin: true
 
-  '@pobammer-ts/small-rules@3.3.3':
-    resolution: {integrity: sha512-blVsILt9ANwAj2dccSaxGcVRNqdOQfVfA/8ZrOGow3afVDu0eYZPKiCqCIKwzEZrJUoPEyQReBtNibGZjgXtvg==}
+  '@pobammer-ts/small-rules@3.4.0':
+    resolution: {integrity: sha512-DhlDa46P9gtg0jaib+8dOAtukBsH5YotIogulWByQkx/Q3PINHHiiygDZd/kLnVaS+SbRb80noOdpMdfI8DL+w==}
     engines: {node: '>=22.12.0'}
     peerDependencies:
       typescript: '>=5 <8'
@@ -8956,7 +8956,7 @@ snapshots:
       '@isentinel/dict-rbxts': 1.0.27
       '@isentinel/dict-roblox': 1.0.20
       '@oxlint/plugins': 1.78.0
-      '@pobammer-ts/small-rules': 3.3.3(@typescript/typescript6@6.0.2)
+      '@pobammer-ts/small-rules': 3.4.0(@typescript/typescript6@6.0.2)
       '@stylistic/eslint-plugin': 5.10.0(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))
       '@typescript-eslint/eslint-plugin': 8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
       '@typescript-eslint/parser': 8.65.0(@typescript/typescript6@6.0.2)(eslint@10.12.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
@@ -9554,7 +9554,7 @@ snapshots:
       - giget
       - jiti
 
-  '@pobammer-ts/small-rules@3.3.3(@typescript/typescript6@6.0.2)':
+  '@pobammer-ts/small-rules@3.4.0(@typescript/typescript6@6.0.2)':
     dependencies:
       arktype: 2.2.7
       effect: 4.0.0
@@ -14061,7 +14061,7 @@ time:
   '@jsr/cliffy__table@1.3.1': '2026-09-18T20:43:40.070Z'
   '@openrouter/sdk@1.4.25': '2026-10-06T18:22:05.931Z'
   '@pobammer-ts/lsp-mux@3.2.0': '2026-10-12T23:59:44.197Z'
-  '@pobammer-ts/small-rules@3.3.3': '2026-10-12T19:34:46.724Z'
+  '@pobammer-ts/small-rules@3.4.0': '2026-10-15T22:23:26.855Z'
   '@stryker-mutator/api@10.0.0': '2026-08-14T16:51:10.145Z'
   '@stryker-mutator/core@10.0.0': '2026-08-14T16:51:22.686Z'
   '@stryker-mutator/vitest-runner@10.0.0': '2026-08-14T16:50:27.414Z'
