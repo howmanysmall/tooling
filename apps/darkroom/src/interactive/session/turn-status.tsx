@@ -3,6 +3,8 @@ import { Text, useAnimation } from "ink";
 import { describeProgress } from "$generation/image-stream";
 import { theme } from "$interactive/components/theme";
 
+import { useModelName } from "./model-name-context";
+
 import type { ReactNode } from "react";
 
 import type { SessionTurn } from "./session-state";
@@ -24,7 +26,7 @@ export interface TurnStatusProperties {
  */
 export function TurnStatus({ turn }: Readonly<TurnStatusProperties>): ReactNode {
 	const { frame, time } = useAnimation({ interval: 100 });
-	const parts = ["Generating", turn.modelName];
+	const parts = ["Generating", useModelName(turn.model)];
 	if (turn.progress !== undefined) parts.push(describeProgress(turn.progress, turn.requested));
 	parts.push(`${Math.floor(time / 1000)}s`);
 

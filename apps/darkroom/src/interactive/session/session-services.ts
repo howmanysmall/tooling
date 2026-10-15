@@ -3,6 +3,8 @@ import { InterruptGuard } from "$generation/interrupt-guard";
 import { loadStoredReferencesAsync } from "$history/stored-references";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 
+import { restoreTurnAsync } from "./restore-turns";
+
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
 import type { StreamProgress } from "$generation/image-stream";
@@ -10,6 +12,7 @@ import type { GenerationInput, GenerationResult, PreparedGeneration } from "$gen
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 
+import type { RestoredTurn } from "./restore-turns";
 import type { PendingRequest } from "./session-state";
 
 /** What to generate: a new prompt, or a past run again. */
@@ -40,17 +43,31 @@ export interface SettledRun {
 export interface SessionServices {
 	/** How many requests are still generating or saving. */
 	readonly getRunningCount: () => number;
-	/** Validates and prices a request, without spending anything. */
-	readonly prepareAsync: (request: SessionRequest) => Promise<PendingRequest>;
+	/**
+	 * Validates and prices a request, without spending anything.
+	 *
+	 * @param request - What to generate.
+	 * @param session - The session to save the run under.
+	 */
+	readonly prepareAsync: (request: SessionRequest, session: string) => Promise<PendingRequest>;
+	/** Rebuilds a session's finished turns from its runs, oldest first. */
+	readonly restoreAsync: (runs: ReadonlyArray<HistoryEntry>) => Promise<Array<RestoredTurn>>;
 	/** Sends a confirmed request. */
 	readonly start: (prepared: PreparedGeneration, handlers: RunHandlers) => void;
 	/** Waits for every running request to be saved, or to fail. */
 	readonly waitForRunningAsync: () => Promise<Array<SettledRun>>;
 }
 
-async function toInputAsync(request: SessionRequest, store: HistoryStore): Promise<GenerationInput> {
+async function toInputAsync(request: SessionRequest, session: string, store: HistoryStore): Promise<GenerationInput> {
 	if (request.type === "new") {
-		return { force: false, modelId: request.model.id, options: {}, prompt: request.prompt, references: [] };
+		return {
+			force: false,
+			modelId: request.model.id,
+			options: {},
+			prompt: request.prompt,
+			references: [],
+			session,
+		};
 	}
 
 	const { entry } = request;
@@ -61,6 +78,7 @@ async function toInputAsync(request: SessionRequest, store: HistoryStore): Promi
 		parent: entry.id,
 		prompt: entry.prompt,
 		references: await loadStoredReferencesAsync(entry, store),
+		session,
 	};
 }
 
@@ -95,11 +113,14 @@ export function createSessionServices(store: HistoryStore): SessionServices {
 
 	return {
 		getRunningCount: () => running.size,
-		async prepareAsync(request): Promise<PendingRequest> {
+		async prepareAsync(request, session): Promise<PendingRequest> {
 			const { describeCostAsync, prepareQuietlyAsync } = await import("$generation/cli-runner");
-			const prepared = await prepareQuietlyAsync(await toInputAsync(request, store));
+			const prepared = await prepareQuietlyAsync(await toInputAsync(request, session, store));
 			const cost = await describeCostAsync(prepared, () => undefined);
 			return { cost, prepared };
+		},
+		async restoreAsync(runs): Promise<Array<RestoredTurn>> {
+			return Promise.all(runs.map(async (entry) => restoreTurnAsync(entry, store)));
 		},
 		start(prepared, handlers): void {
 			const run = runAsync(prepared, handlers);

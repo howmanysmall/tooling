@@ -9,12 +9,18 @@ import type { BrowserCommand } from "$interactive/keys/browser-command";
 export interface GenerateActions {
 	readonly chooseModel: () => void;
 	readonly clearPrompt: () => void;
+	/** Closes the session on screen; it stays in the history. */
+	readonly closeSession: () => void;
+	/** Shows the next tab, or the previous one with a negative `delta`. */
+	readonly cycleSessions: (delta: number) => void;
 	/** Prices the prompt and asks to confirm before anything is sent. */
 	readonly generate: () => void;
 	/** Closes the app and asks for references and settings first. */
 	readonly generateWithOptions: () => void;
 	readonly insertNewLine: () => void;
 	readonly newSession: () => void;
+	/** Opens the list of past sessions. */
+	readonly showSessions: () => void;
 }
 
 /**
@@ -37,6 +43,26 @@ export function getGenerateCommands(actions: GenerateActions): Array<BrowserComm
 			title: "Choose model",
 		},
 		{ key: BrowserKey.NewSession, group, keyLabel: "ctrl+n", run: actions.newSession, title: "New session" },
+		{ key: BrowserKey.Sessions, group, keyLabel: "ctrl+s", run: actions.showSessions, title: "Sessions" },
+		{ key: BrowserKey.CloseSession, group, keyLabel: "", run: actions.closeSession, title: "Close session" },
+		{
+			key: BrowserKey.NextSession,
+			group: CommandGroup.Navigate,
+			keyLabel: "alt+↓",
+			run(): void {
+				actions.cycleSessions(1);
+			},
+			title: "Next session",
+		},
+		{
+			key: BrowserKey.PreviousSession,
+			group: CommandGroup.Navigate,
+			keyLabel: "alt+↑",
+			run(): void {
+				actions.cycleSessions(-1);
+			},
+			title: "Previous session",
+		},
 		{
 			key: BrowserKey.Guided,
 			group,
@@ -53,6 +79,7 @@ const CTRL_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
 	["g", BrowserKey.Guided],
 	["n", BrowserKey.NewSession],
 	["o", BrowserKey.ChooseModel],
+	["s", BrowserKey.Sessions],
 ]);
 
 /**
@@ -66,5 +93,7 @@ const CTRL_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
  */
 export function getGenerateKey(input: string, key: Key): BrowserKey | undefined {
 	if (key.return) return key.meta || key.shift ? undefined : BrowserKey.Generate;
+	if (key.meta && key.upArrow) return BrowserKey.PreviousSession;
+	if (key.meta && key.downArrow) return BrowserKey.NextSession;
 	return key.ctrl ? CTRL_KEYS.get(input) : undefined;
 }

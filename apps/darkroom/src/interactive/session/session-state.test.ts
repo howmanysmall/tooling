@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
 
-import { INITIAL_SESSION, reduceSession, TurnPhase } from "./session-state";
+import { createSession, reduceSession, TurnPhase } from "./session-state";
 import { getTurnPaths, summarizeTurn } from "./turn-summary";
 
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
@@ -18,7 +18,7 @@ async function prepareAsync(): Promise<PreparedGeneration> {
 }
 
 function applyActions(actions: ReadonlyArray<SessionAction>): SessionState {
-	let state = INITIAL_SESSION;
+	let state = createSession("SESSION-1");
 	for (const action of actions) state = reduceSession(state, action);
 	return state;
 }
@@ -44,7 +44,7 @@ describe("reduceSession", () => {
 
 		const pending = { cost: "$0.08", prepared: await prepareAsync() };
 		const confirming = applyActions([
-			{ id: 1, modelName: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
 			{ id: 1, pending, type: "prepared" },
 		]);
 		const running = reduceSession(confirming, { id: 1, at: 1000, type: "turn-started" });
@@ -60,30 +60,17 @@ describe("reduceSession", () => {
 
 		const pending = { cost: "$0.08", prepared: await prepareAsync() };
 		const canceled = applyActions([
-			{ id: 1, modelName: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
 			{ id: 1, pending, type: "prepared" },
 			{ type: "dismiss" },
 		]);
 		const failed = applyActions([
-			{ id: 2, modelName: "missing/model", prompt: "a dog", type: "turn-added" },
+			{ id: 2, model: "missing/model", prompt: "a dog", type: "turn-added" },
 			{ id: 2, at: 5, error: "Unknown model.", type: "turn-failed" },
 		]);
 
 		expect(canceled.turns).toHaveLength(0);
 		expect(failed.turns[0]).toMatchObject({ error: "Unknown model.", phase: TurnPhase.Failed });
-	});
-
-	it("keeps running turns when starting a new session", ({ expect }) => {
-		expect.assertions(1);
-
-		const state = applyActions([
-			{ id: 1, modelName: "a", prompt: "one", type: "turn-added" },
-			{ id: 1, at: 5, error: "Failed.", type: "turn-failed" },
-			{ id: 2, modelName: "b", prompt: "two", type: "turn-added" },
-			{ type: "new-session" },
-		]);
-
-		expect(state.turns.map((turn) => turn.id)).toStrictEqual([2]);
 	});
 });
 
@@ -94,7 +81,7 @@ describe("summarizeTurn", () => {
 		const turn = {
 			id: 1,
 			finishedAt: 15_200,
-			modelName: "Test Multi",
+			model: "Test Multi",
 			phase: TurnPhase.Done,
 			prompt: "a cat",
 			requested: 2,
@@ -103,7 +90,7 @@ describe("summarizeTurn", () => {
 			warnings: [],
 		};
 
-		expect(summarizeTurn(turn)).toBe("Test Multi · 14.2s · $0.08");
+		expect(summarizeTurn(turn, "Test Multi")).toBe("Test Multi · 14.2s · $0.08");
 		expect(getTurnPaths(turn, "/work")).toStrictEqual(["./a-cat.png", "/elsewhere/a-cat-2.png"]);
 	});
 
@@ -112,7 +99,7 @@ describe("summarizeTurn", () => {
 
 		const turn = {
 			id: 1,
-			modelName: "Test Multi",
+			model: "Test Multi",
 			phase: TurnPhase.Done,
 			prompt: "a cat",
 			requested: 2,
@@ -120,6 +107,6 @@ describe("summarizeTurn", () => {
 			warnings: [],
 		};
 
-		expect(summarizeTurn(turn)).toBe("Test Multi · $0.08 · 1 of 2 images");
+		expect(summarizeTurn(turn, "Test Multi")).toBe("Test Multi · $0.08 · 1 of 2 images");
 	});
 });

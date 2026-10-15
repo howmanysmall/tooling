@@ -5,13 +5,18 @@ import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
 import { renderScreen } from "$interactive/app/test-screen";
 import { SessionProvider } from "$interactive/session/session-provider.tsx";
+import { createSession } from "$interactive/session/session-state";
+import { createSessionStore } from "$interactive/session/session-store";
+import { createSessionTabs } from "$interactive/session/session-tabs";
 
 import { GenerateScreen } from "./generate-screen.tsx";
 
 import type { GenerationResult } from "$generation/run-generation";
+import type { SessionSummary } from "$history/session-list";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
 import type { SessionServices } from "$interactive/session/session-services";
 import type { PendingRequest } from "$interactive/session/session-state";
+import type { SessionStore } from "$interactive/session/session-store";
 
 const CATALOG: ModelCatalog = {
 	models: [MULTI_MODEL],
@@ -36,6 +41,8 @@ const CONFIRM = /Generate\?[\s\S]*cost +\$0\.04/u;
 const FINISHED = /a red fox[\s\S]*◆ test\/multi · [\d.]+s · \$0\.04[\s\S]*\/tmp\/a-red-fox\.png/u;
 
 const NO_RECENT: ReadonlyArray<string> = [];
+const NO_SESSIONS: ReadonlyArray<SessionSummary> = [];
+const NOW = new Date("2026-10-15T12:00:00.000Z");
 
 function getNoPreview(): undefined {
 	return undefined;
@@ -77,6 +84,7 @@ function createFakeSession(): FakeSession {
 				);
 				return { cost: "$0.04", prepared };
 			},
+			restoreAsync: async () => [],
 			start(prepared, handlers): void {
 				sent.push(prepared.input.prompt);
 				handlers.onDone(RESULT);
@@ -84,6 +92,11 @@ function createFakeSession(): FakeSession {
 			waitForRunningAsync: async () => [],
 		},
 	};
+}
+
+function createTestStore(): SessionStore {
+	const session = createSession("01M4YVAAAAAAAAAAAAAAAAAAS1");
+	return createSessionStore(createSessionTabs([session], session.id), async () => undefined);
 }
 
 async function typeAsync(write: (data: string) => void, ...keys: ReadonlyArray<string>): Promise<void> {
@@ -101,12 +114,14 @@ describe("generate screen", () => {
 
 		const { handleRunSaved, saved, sent, services } = createFakeSession();
 		const instance = renderScreen(
-			<SessionProvider services={services} onRunSaved={handleRunSaved}>
+			<SessionProvider services={services} store={createTestStore()} onRunSaved={handleRunSaved}>
 				<GenerateScreen
 					catalog={CATALOG}
 					getPreview={getNoPreview}
 					model={MULTI_MODEL}
+					now={NOW}
 					recentIds={NO_RECENT}
+					sessions={NO_SESSIONS}
 					onChooseModel={ignore}
 					onGenerateWithOptions={ignore}
 				/>

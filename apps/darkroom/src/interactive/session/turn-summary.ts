@@ -14,10 +14,11 @@ function formatSeconds(turn: SessionTurn): string | undefined {
  * cost, and how many images came back when that isn't what was asked for.
  *
  * @param turn - A finished or failed turn.
+ * @param modelName - The turn's model, by name.
  * @returns Like `Nano Banana 2.1 · 14.2s · $0.039`.
  */
-export function summarizeTurn(turn: SessionTurn): string {
-	const parts = [turn.modelName, formatSeconds(turn)];
+export function summarizeTurn(turn: SessionTurn, modelName: string): string {
+	const parts = [modelName, formatSeconds(turn)];
 	const { result } = turn;
 	if (result !== undefined) {
 		parts.push(formatCost(result.cost));

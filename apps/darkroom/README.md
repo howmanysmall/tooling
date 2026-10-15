@@ -27,6 +27,11 @@ lights up the cells and copies the text through OSC 52 when you let go.
   and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`
   continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,
   `ctrl+w`, `ctrl+u`, and `ctrl+k` work.
+- **sessions**: each conversation of prompts is a session, and the open ones are tabs over the prompt box, named by
+  their first prompt. A tab shows a spinner while it generates and a dot when it finishes out of sight. `ctrl+n` or `+`
+  opens a new session, `alt+↑` and `alt+↓` switch, and `ctrl+s` lists past sessions to resume. Closing a tab, with its
+  `✕` or from the palette, keeps the session in the history. Open tabs come back the next time the app starts.
+  `darkroom -c` resumes the session you used last, and `darkroom -s <id>` resumes one by a prefix of its ID.
 - **history**: every past run with its image, prompt, settings, and cost. Enter opens the images, `r` re-runs, `y`
   copies the ID, `d` deletes, and `/` filters. A comparison is one row, and `←` and `→` step through its models.
 - **models**: every image model with its price, the options it takes, and an example image: your newest one from that

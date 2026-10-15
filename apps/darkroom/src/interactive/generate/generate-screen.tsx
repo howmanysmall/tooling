@@ -10,11 +10,13 @@ import { StatusBar } from "$interactive/components/status-bar";
 import { createStatusReporter } from "$interactive/components/status-message";
 import { findCommand } from "$interactive/keys/browser-command";
 import { useSession } from "$interactive/session/session-context";
+import { SessionListDialog } from "$interactive/session/session-list-dialog";
+import { SessionTabStrip } from "$interactive/session/session-tab-strip";
 import { SessionTranscript } from "$interactive/session/session-transcript";
 
 import { getGenerateCommands, getGenerateKey } from "./generate-commands";
 import { GenerateConfirmDialog } from "./generate-confirm-dialog";
-import { INITIAL_GENERATE_STATE, reduceGenerateScreen } from "./generate-screen-state";
+import { GenerateDialog, INITIAL_GENERATE_STATE, reduceGenerateScreen } from "./generate-screen-state";
 import { ModelPickerDialog } from "./model-picker-dialog";
 import { PromptBox } from "./prompt-box";
 import { getEditorAction } from "./prompt-editor-state";
@@ -23,6 +25,7 @@ import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { Key } from "ink";
 import type { ReactNode } from "react";
 
+import type { SessionSummary } from "$history/session-list";
 import type { KeyHint } from "$interactive/components/key-hints";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
 import type { CellBox } from "$preview/cell-fit";
@@ -43,12 +46,16 @@ export interface GenerateScreenProperties {
 	getPreview: (path: string, box: CellBox) => LoadingPreview | undefined;
 	/** The model to generate with, or `undefined` when there are none. */
 	model?: ImageModelListItem | undefined;
+	/** When the app opened, for day names in the session list. */
+	now: Date;
 	/** Takes a model picked here; the app remembers it across tabs. */
 	onChooseModel: (model: ImageModelListItem) => void;
 	/** Closes the app for the guided session, with references and settings. */
 	onGenerateWithOptions: (request: GenerateRequest) => void;
 	/** Models you used lately, most recent first. */
 	recentIds: ReadonlyArray<string>;
+	/** Past sessions, the one used last first. */
+	sessions: ReadonlyArray<SessionSummary>;
 }
 
 const BOX_HINTS: ReadonlyArray<KeyHint> = [
@@ -59,14 +66,17 @@ const BOX_HINTS: ReadonlyArray<KeyHint> = [
 const STATUS_HINTS: ReadonlyArray<KeyHint> = [
 	["tab", "next tab"],
 	["ctrl+n", "new session"],
+	["ctrl+s", "sessions"],
 ];
 // The widest the prompt box gets on the home screen, so lines stay readable.
 const MAX_HOME_WIDTH = 84;
-// The header, the prompt box with its model line, its hints, and the status bar.
-const SESSION_CHROME_ROWS = 1 + 6 + 1 + 1;
+// The header, the tabs, the prompt box with its model line, its hints, and
+// the status bar.
+const SESSION_CHROME_ROWS = 1 + 1 + 6 + 1 + 1;
 
-const OPEN_PICKER: GenerateScreenAction = { isPicking: true, type: "picking" };
-const CLOSE_PICKER: GenerateScreenAction = { isPicking: false, type: "picking" };
+const OPEN_PICKER: GenerateScreenAction = { dialog: GenerateDialog.Model, type: "dialog" };
+const OPEN_SESSIONS: GenerateScreenAction = { dialog: GenerateDialog.Sessions, type: "dialog" };
+const CLOSE_DIALOG: GenerateScreenAction = { dialog: undefined, type: "dialog" };
 const CLEAR_PROMPT: GenerateScreenAction = { action: { type: "clear" }, type: "edit" };
 const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: "insert" }, type: "edit" };
 
@@ -81,18 +91,22 @@ const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: "insert" },
  * @param properties.catalog - The models and what they cost.
  * @param properties.getPreview - Loads previews of saved images.
  * @param properties.model - The model to generate with.
+ * @param properties.now - When the app opened.
  * @param properties.onChooseModel - Takes a model picked here.
  * @param properties.onGenerateWithOptions - Opens the guided session.
  * @param properties.recentIds - Models used lately.
+ * @param properties.sessions - Past sessions.
  * @returns The whole screen, sized to the terminal.
  */
 export function GenerateScreen({
 	catalog,
 	getPreview,
 	model,
+	now,
 	onChooseModel,
 	onGenerateWithOptions,
 	recentIds,
+	sessions,
 }: Readonly<GenerateScreenProperties>): ReactNode {
 	const [screen, dispatch] = useReducer(reduceGenerateScreen, INITIAL_GENERATE_STATE);
 	const session = useSession();
@@ -119,8 +133,8 @@ export function GenerateScreen({
 		else dispatch(CLEAR_PROMPT);
 	}
 
-	function closePicker(): void {
-		dispatch(CLOSE_PICKER);
+	function closeDialog(): void {
+		dispatch(CLOSE_DIALOG);
 	}
 
 	function handleCancel(): void {
@@ -138,6 +152,10 @@ export function GenerateScreen({
 		clearPrompt(): void {
 			dispatch(CLEAR_PROMPT);
 		},
+		closeSession(): void {
+			session.actions.close(session.state.id);
+		},
+		cycleSessions: session.actions.cycle,
 		generate,
 		generateWithOptions(): void {
 			if (model === undefined) reportError("There are no models to generate with.");
@@ -150,6 +168,9 @@ export function GenerateScreen({
 			dispatch(NEW_LINE);
 		},
 		newSession: session.actions.newSession,
+		showSessions(): void {
+			dispatch(OPEN_SESSIONS);
+		},
 	};
 	const commands = getGenerateCommands(actions);
 
@@ -184,12 +205,13 @@ export function GenerateScreen({
 			capture={captureTyping}
 			columns={columns}
 			commands={commands}
-			hasDialog={screen.isPicking || pending !== undefined}
+			hasDialog={screen.dialog !== undefined || pending !== undefined}
 			rows={rows}
 			status={screen.status}
 			onInterrupt={interrupt}
 		>
 			<ScreenHeader title="generate" />
+			<SessionTabStrip columns={columns} />
 			{isHome ? (
 				<Box alignItems="center" flexDirection="column" flexGrow={1} justifyContent="center" rowGap={1}>
 					<DarkroomLogo />
@@ -213,16 +235,19 @@ export function GenerateScreen({
 			<StatusBar commands={commands} summary={`${catalog.models.length} models`}>
 				<KeyHints hints={STATUS_HINTS} />
 			</StatusBar>
-			{screen.isPicking ? (
+			{screen.dialog === GenerateDialog.Model ? (
 				<ModelPickerDialog
 					catalog={catalog}
 					columns={columns}
 					currentId={model?.id}
 					recentIds={recentIds}
 					rows={rows}
-					onClose={closePicker}
+					onClose={closeDialog}
 					onPick={onChooseModel}
 				/>
+			) : null}
+			{screen.dialog === GenerateDialog.Sessions ? (
+				<SessionListDialog columns={columns} now={now} rows={rows} sessions={sessions} onClose={closeDialog} />
 			) : null}
 			{pending === undefined ? null : (
 				<GenerateConfirmDialog

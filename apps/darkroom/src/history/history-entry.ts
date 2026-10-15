@@ -51,6 +51,8 @@ export const isHistoryEntry = type({
 	request: isStoredRequest,
 	requested: isNonNegativeInteger,
 	returned: isNonNegativeInteger,
+	/** The ULID shared by the runs of one session in the app. */
+	"session?": isMaybeString,
 }).readonly();
 
 export type HistoryEntry = typeof isHistoryEntry.infer;

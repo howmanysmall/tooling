@@ -1,5 +1,6 @@
 import { Activity, Suspense, useReducer } from "react";
 
+import { listSessions } from "$history/session-list";
 import { GenerateTab } from "$interactive/generate/generate-tab";
 import { getRecentModelIds } from "$interactive/generate/model-picker-state";
 import { HistoryBrowserScreen } from "$interactive/history/history-browser-screen";
@@ -136,7 +137,9 @@ export function AppScreens({
 						catalog={catalog}
 						chosenModelId={app.chosenModelId}
 						getPreview={getPreview}
+						now={now}
 						recentIds={recentIds}
+						sessions={listSessions(entries)}
 						onChooseModel={handleChooseModel}
 						onGenerateWithOptions={onGenerateWithOptions}
 					/>

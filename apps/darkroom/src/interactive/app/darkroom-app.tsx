@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { SessionServices } from "$interactive/session/session-services";
+import type { SessionStore } from "$interactive/session/session-store";
 
 import type { AppScreensProperties } from "./app-screens";
 
@@ -17,6 +18,8 @@ export interface DarkroomAppProperties extends AppScreensProperties {
 	readHistoryAsync: () => Promise<ReadonlyArray<HistoryEntry>>;
 	/** Prices, confirms, and sends the prompt box's requests. */
 	session: SessionServices;
+	/** The open sessions, which outlive the screens. */
+	sessions: SessionStore;
 }
 
 /**
@@ -33,6 +36,7 @@ export interface DarkroomAppProperties extends AppScreensProperties {
  * @param properties.onGenerateWithOptions - Opens the guided session.
  * @param properties.readHistoryAsync - Reads every run again.
  * @param properties.session - Sends the session's requests.
+ * @param properties.sessions - The open sessions.
  * @param properties.sort - The order the models tab opens in.
  * @returns Every tab around the session.
  */
@@ -46,6 +50,7 @@ export function DarkroomApp({
 	onGenerateWithOptions,
 	readHistoryAsync,
 	session,
+	sessions,
 	sort,
 }: Readonly<DarkroomAppProperties>): ReactNode {
 	const [entries, setEntries] = useState(initialEntries);
@@ -60,7 +65,7 @@ export function DarkroomApp({
 	}
 
 	return (
-		<SessionProvider services={session} onRunSaved={handleRunSaved}>
+		<SessionProvider services={session} store={sessions} onRunSaved={handleRunSaved}>
 			<AppScreens
 				catalog={catalog}
 				entries={entries}
