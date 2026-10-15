@@ -17,7 +17,8 @@ describe("getGenerateKey", () => {
 
 		expect(getGenerateKey("o", { ...NO_KEY, ctrl: true })).toBe(BrowserKey.ChooseModel);
 		expect(getGenerateKey("g", { ...NO_KEY, ctrl: true })).toBe(BrowserKey.Guided);
-		expect(getGenerateKey("", { ...NO_KEY, escape: true })).toBe(BrowserKey.ClearPrompt);
+		// A sent request is never canceled, so Esc does nothing here.
+		expect(getGenerateKey("", { ...NO_KEY, escape: true })).toBeUndefined();
 		expect(getGenerateKey("o", NO_KEY)).toBeUndefined();
 	});
 });

@@ -46,7 +46,7 @@ export interface HistoryBrowserActions {
 	readonly openFilter: () => void;
 	readonly openSelected: () => void;
 	readonly quit: () => void;
-	/** Closes the browser and hands the selected run to the re-run step. */
+	/** Sends the selected run to the generate session, which confirms it. */
 	readonly rerunSelected: () => void;
 	readonly setFilter: (text: string) => void;
 	/** Shows the next model's run in the selected comparison. */

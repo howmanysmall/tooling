@@ -9,9 +9,10 @@ const PLAIN: ShellSituation = { hasDialog: false, hasTabs: true, isCapturing: fa
 const TAB = { ...NO_KEY, tab: true };
 
 describe("getShellRoute", () => {
-	it("leaves every key to an open dialog, and closes help on any key", ({ expect }) => {
-		expect.assertions(2);
+	it("leaves every key but ctrl+c to an open dialog, and closes help on any key", ({ expect }) => {
+		expect.assertions(3);
 
+		expect(getShellRoute("c", { ...NO_KEY, ctrl: true }, { ...PLAIN, hasDialog: true })).toBe(ShellRoute.Interrupt);
 		expect(getShellRoute("p", { ...NO_KEY, ctrl: true }, { ...PLAIN, hasDialog: true })).toBe(ShellRoute.Ignore);
 		expect(getShellRoute("x", NO_KEY, { ...PLAIN, isHelpOpen: true })).toBe(ShellRoute.CloseHelp);
 	});

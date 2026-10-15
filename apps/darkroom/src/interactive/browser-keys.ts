@@ -16,6 +16,7 @@ export const enum BrowserKey {
 	Help = "help",
 	Last = "last",
 	NewLine = "new-line",
+	NewSession = "new-session",
 	NextTab = "next-tab",
 	Open = "open",
 	PageDown = "page-down",

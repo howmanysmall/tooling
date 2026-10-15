@@ -9,12 +9,12 @@ import type { BrowserCommand } from "./browser-command";
 export interface GenerateActions {
 	readonly chooseModel: () => void;
 	readonly clearPrompt: () => void;
-	/** Closes the app and asks before spending, with the estimated cost. */
+	/** Prices the prompt and asks to confirm before anything is sent. */
 	readonly generate: () => void;
 	/** Closes the app and asks for references and settings first. */
 	readonly generateWithOptions: () => void;
 	readonly insertNewLine: () => void;
-	readonly quit: () => void;
+	readonly newSession: () => void;
 }
 
 /**
@@ -36,6 +36,7 @@ export function getGenerateCommands(actions: GenerateActions): Array<BrowserComm
 			run: actions.chooseModel,
 			title: "Choose model",
 		},
+		{ key: BrowserKey.NewSession, group, keyLabel: "ctrl+n", run: actions.newSession, title: "New session" },
 		{
 			key: BrowserKey.Guided,
 			group,
@@ -44,14 +45,20 @@ export function getGenerateCommands(actions: GenerateActions): Array<BrowserComm
 			title: "Generate with references and options",
 		},
 		{ key: BrowserKey.NewLine, group, keyLabel: "ctrl+j", run: actions.insertNewLine, title: "New line" },
-		{ key: BrowserKey.ClearPrompt, group, keyLabel: "esc", run: actions.clearPrompt, title: "Clear prompt" },
-		{ key: BrowserKey.Quit, group, keyLabel: "ctrl+c", run: actions.quit, title: "Quit" },
+		{ key: BrowserKey.ClearPrompt, group, keyLabel: "ctrl+c", run: actions.clearPrompt, title: "Clear prompt" },
 	];
 }
 
+const CTRL_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
+	["g", BrowserKey.Guided],
+	["n", BrowserKey.NewSession],
+	["o", BrowserKey.ChooseModel],
+]);
+
 /**
  * Maps a key press on the generate screen to a command. Everything else is
- * the prompt box's.
+ * the prompt box's. `ctrl+c` is the shell's: it clears the prompt, or quits
+ * when the prompt is empty.
  *
  * @param input - The typed character, if any.
  * @param key - Ink's description of the key.
@@ -59,8 +66,5 @@ export function getGenerateCommands(actions: GenerateActions): Array<BrowserComm
  */
 export function getGenerateKey(input: string, key: Key): BrowserKey | undefined {
 	if (key.return) return key.meta || key.shift ? undefined : BrowserKey.Generate;
-	if (key.escape) return BrowserKey.ClearPrompt;
-	if (!key.ctrl) return undefined;
-	if (input === "o") return BrowserKey.ChooseModel;
-	return input === "g" ? BrowserKey.Guided : undefined;
+	return key.ctrl ? CTRL_KEYS.get(input) : undefined;
 }

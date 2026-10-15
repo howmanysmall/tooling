@@ -1,14 +1,11 @@
-import { intro } from "@clack/prompts";
 import { render } from "ink";
 
-import { mergeRerunOptions } from "$generation/generation-flags";
-import { loadStoredReferencesAsync } from "$history/stored-references";
 import { ModelSort } from "$utilities/model-filters";
-import { OutputFormat } from "$validators/output-format-type";
 
 import { loadCatalogAsync } from "./app-catalog";
-import { confirmAndGenerateAsync } from "./confirm-and-generate";
 import { DarkroomApp } from "./darkroom-app";
+import { finishRunningAsync } from "./finish-running";
+import { createSessionServices } from "./session-services";
 import { createTerminalPreviewsAsync } from "./terminal-previews";
 
 import type { HistoryEntry } from "$history/history-entry";
@@ -18,9 +15,9 @@ import type { LoadingPreview } from "$preview/load-preview";
 import type { PreviewCache } from "$preview/preview-cache";
 
 import type { ModelSource } from "./app-catalog";
+import type { HistoryServices } from "./app-screens";
 import type { AppTab } from "./app-tab";
 import type { GenerateRequest } from "./generate-screen";
-import type { BrowserServices } from "./history-browser-services";
 
 export interface OpenOptions {
 	/** Models already loaded and filtered, as `models list` does. */
@@ -30,35 +27,22 @@ export interface OpenOptions {
 	readonly tab: AppTab;
 }
 
-/** What the app was closed to do, if anything. */
-type AppOutcome =
-	| { readonly entry: HistoryEntry; readonly type: "rerun" }
-	| { readonly request: GenerateRequest; readonly type: "generate"; readonly withOptions: boolean };
-
-interface OutcomeRecorder {
-	readonly getOutcome: () => AppOutcome | undefined;
-	readonly handleGenerate: (request: GenerateRequest, withOptions: boolean) => void;
-	readonly handleRerun: (entry: HistoryEntry) => void;
+interface GuidedRequest {
+	readonly getRequest: () => GenerateRequest | undefined;
+	readonly handleGenerateWithOptions: (request: GenerateRequest) => void;
 }
 
-function createOutcomeRecorder(): OutcomeRecorder {
-	let outcome: AppOutcome | undefined;
+function createGuidedRequest(): GuidedRequest {
+	let request: GenerateRequest | undefined;
 	return {
-		getOutcome: () => outcome,
-		handleGenerate(request, withOptions): void {
-			outcome = { request, type: "generate", withOptions };
-		},
-		handleRerun(entry): void {
-			outcome = { entry, type: "rerun" };
+		getRequest: () => request,
+		handleGenerateWithOptions(chosen): void {
+			request = chosen;
 		},
 	};
 }
 
-function createHistoryServices(
-	store: HistoryStore,
-	previews: PreviewCache | undefined,
-	requestRerun: (entry: HistoryEntry) => void,
-): BrowserServices {
+function createHistoryServices(store: HistoryStore, previews: PreviewCache | undefined): HistoryServices {
 	return {
 		async deleteRunAsync(entry): Promise<void> {
 			const { log } = await import("$generation/cli-runner");
@@ -71,61 +55,28 @@ function createHistoryServices(
 			const { openFilesAsync } = await import("$history/open-files");
 			await openFilesAsync(entry.images.map((image) => store.resolve(image.stored)));
 		},
-		requestRerun,
 		resolve: (stored) => store.resolve(stored),
 	};
 }
 
-async function rerunAsync(entry: HistoryEntry, store: HistoryStore): Promise<void> {
-	const { prepareForTerminalAsync } = await import("$generation/cli-runner");
-	intro(`darkroom · re-run ${entry.id}`);
-	const prepared = await prepareForTerminalAsync({
-		force: false,
-		modelId: entry.model,
-		options: mergeRerunOptions(entry, { format: OutputFormat.Pretty }),
-		parent: entry.id,
-		prompt: entry.prompt,
-		references: await loadStoredReferencesAsync(entry, store),
-	});
-	await confirmAndGenerateAsync(prepared);
-}
-
-async function generateAsync({ model, prompt }: GenerateRequest, withOptions: boolean): Promise<void> {
-	if (withOptions) {
-		const { runInteractiveSessionAsync } = await import("./interactive-session");
-		await runInteractiveSessionAsync({ model, prompt: prompt === "" ? undefined : prompt });
-		return;
-	}
-
-	const { prepareForTerminalAsync } = await import("$generation/cli-runner");
-	intro("darkroom");
-	const prepared = await prepareForTerminalAsync({
-		force: false,
-		modelId: model.id,
-		options: {},
-		prompt,
-		references: [],
-	});
-	await confirmAndGenerateAsync(prepared);
-}
-
-async function finishAsync(outcome: AppOutcome, store: HistoryStore): Promise<void> {
-	await (outcome.type === "rerun"
-		? rerunAsync(outcome.entry, store)
-		: generateAsync(outcome.request, outcome.withOptions));
+async function readNewestFirstAsync(store: HistoryStore): Promise<ReadonlyArray<HistoryEntry>> {
+	// Warnings would tear the full-screen app; a broken line is skipped.
+	const entries = await store.readAllAsync(() => undefined);
+	return entries.toReversed();
 }
 
 /**
  * Opens darkroom's full-screen app on a tab. The history shows at once; the
- * models load behind it. Generating or re-running closes the app and asks
- * before spending, with the estimated cost, so a paid request is never one
- * keystroke away.
+ * models load behind it. Generating happens inside the app, after a
+ * confirmation with the estimated cost, so a paid request is never one
+ * keystroke away. Quitting never cancels a sent request: darkroom stays
+ * until each one is saved.
  *
  * @param options - The tab to open on, and any models already loaded.
  * @param options.models - Models already loaded and filtered.
  * @param options.sort - The order the models tab opens in.
  * @param options.tab - The tab to open on.
- * @rejects When the history can't be read, or generating fails.
+ * @rejects When the history can't be read, or the guided session fails.
  */
 export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: OpenOptions): Promise<void> {
 	const { getHistoryStore, log } = await import("$generation/cli-runner");
@@ -138,11 +89,16 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 	]);
 	const entries = stored.toReversed();
 	const catalog = loadCatalogAsync(entries, (path) => store.resolve(path), models);
-	const { getOutcome, handleGenerate, handleRerun } = createOutcomeRecorder();
+	const session = createSessionServices(store);
+	const { getRequest, handleGenerateWithOptions } = createGuidedRequest();
 	const openedAt = new Date();
 
 	function getPreview(path: string, box: CellBox): LoadingPreview | undefined {
 		return previews?.getPreview(path, box);
+	}
+
+	async function readHistoryAsync(): Promise<ReadonlyArray<HistoryEntry>> {
+		return readNewestFirstAsync(store);
 	}
 
 	const instance = render(
@@ -150,17 +106,24 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 			catalog={catalog}
 			entries={entries}
 			getPreview={getPreview}
-			history={createHistoryServices(store, previews, handleRerun)}
+			history={createHistoryServices(store, previews)}
 			initialTab={tab}
 			now={openedAt}
+			readHistoryAsync={readHistoryAsync}
+			session={session}
 			sort={sort}
-			onGenerate={handleGenerate}
+			onGenerateWithOptions={handleGenerateWithOptions}
 		/>,
-		{ alternateScreen: true },
+		// The app decides what ctrl+c does: clear the prompt, or quit.
+		{ alternateScreen: true, exitOnCtrlC: false },
 	);
 	await instance.waitUntilExit();
 	previews?.dispose();
+	await finishRunningAsync(session);
 
-	const outcome = getOutcome();
-	if (outcome !== undefined) await finishAsync(outcome, store);
+	const guided = getRequest();
+	if (guided === undefined) return;
+
+	const { runInteractiveSessionAsync } = await import("./interactive-session");
+	await runInteractiveSessionAsync({ model: guided.model, prompt: guided.prompt === "" ? undefined : guided.prompt });
 }
