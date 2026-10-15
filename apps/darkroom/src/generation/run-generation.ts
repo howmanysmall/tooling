@@ -263,7 +263,9 @@ export async function executeGenerationAsync(
 	const id = createUlid(createdAt.getTime());
 
 	guard.enter(InterruptPhase.Requesting);
-	const onProgress = prepared.model.supportsStreaming ? dependencies.onProgress : undefined;
+	// OpenRouter refuses to stream an edit: a request with reference images.
+	const canStream = prepared.model.supportsStreaming && prepared.input.references.length === 0;
+	const onProgress = canStream ? dependencies.onProgress : undefined;
 	const response = await requestImagesAsync(dependencies.client, prepared.request, guard.signal, onProgress);
 	guard.enter(InterruptPhase.Saving);
 
