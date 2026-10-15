@@ -1,5 +1,7 @@
 #!/usr/bin/env bun
 
+import "$polyfills/color-only-on-terminals";
+
 import { argv } from "node:process";
 import { HelpCommand } from "@cliffy/command/help";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";

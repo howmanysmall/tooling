@@ -1,8 +1,9 @@
 import { StringType } from "@cliffy/command";
 
+import { completeModelParameterAsync } from "./generation-parameter-types";
+
 export const aspectRatioType = new StringType();
 
 export async function getAspectRatiosAsync(): Promise<Array<string>> {
-	const { getParameterCompletionsAsync } = await import("$utilities/model-parameter-completions");
-	return getParameterCompletionsAsync("aspect_ratio");
+	return completeModelParameterAsync("aspect_ratio");
 }

@@ -1,0 +1,81 @@
+import type { HistoryEntry, StoredRequest } from "$history/history-entry";
+import type { OutputFormat } from "$validators/output-format-type";
+
+import type { ImageType } from "./media-types";
+import type { GenerationOptions } from "./validate-request";
+
+/** The generation flags shared by `generate` and `history rerun`. */
+export interface GenerationFlags {
+	readonly aspectRatio?: string | undefined;
+	readonly background?: string | undefined;
+	readonly compression?: number | undefined;
+	readonly count?: number | undefined;
+	readonly dryRun?: true | undefined;
+	readonly force?: true | undefined;
+	readonly format: OutputFormat;
+	readonly image?: Array<string> | undefined;
+	readonly model?: string | undefined;
+	readonly output?: string | undefined;
+	readonly quality?: string | undefined;
+	readonly resolution?: string | undefined;
+	readonly seed?: number | undefined;
+	readonly type?: ImageType | undefined;
+}
+
+/**
+ * Picks the generation options out of the parsed flags.
+ *
+ * @param flags - The parsed flags.
+ * @returns The options for validation.
+ */
+export function toGenerationOptions(flags: GenerationFlags): GenerationOptions {
+	return {
+		aspectRatio: flags.aspectRatio,
+		background: flags.background,
+		compression: flags.compression,
+		count: flags.count,
+		output: flags.output,
+		quality: flags.quality,
+		resolution: flags.resolution,
+		seed: flags.seed,
+		type: flags.type,
+	};
+}
+
+const IMAGE_TYPE_NAMES: ReadonlySet<string> = new Set(["jpeg", "png", "svg", "webp"]);
+
+function isImageType(value: string | undefined): value is ImageType {
+	return value !== undefined && IMAGE_TYPE_NAMES.has(value);
+}
+
+function toStoredOptions(request: StoredRequest): GenerationOptions {
+	return {
+		aspectRatio: request.aspectRatio,
+		background: request.background,
+		compression: request.outputCompression,
+		count: request.n,
+		quality: request.quality,
+		resolution: request.resolution,
+		seed: request.seed,
+		type: isImageType(request.outputFormat) ? request.outputFormat : undefined,
+	};
+}
+
+function pickDefined(options: GenerationOptions): GenerationOptions {
+	const defined = Object.entries(options).filter(([, value]) => value !== undefined);
+	return Object.fromEntries(defined);
+}
+
+/**
+ * Builds the options for re-running a stored run: its stored request, with
+ * any flag given on the command line taking precedence. `-o` is never
+ * inherited, so a re-run writes fresh files instead of reusing old names.
+ *
+ * @param entry - The stored run.
+ * @param entry.request - Its stored request.
+ * @param flags - The flags given to `history rerun`.
+ * @returns The options for validation.
+ */
+export function mergeRerunOptions({ request }: HistoryEntry, flags: GenerationFlags): GenerationOptions {
+	return { ...toStoredOptions(request), ...pickDefined(toGenerationOptions(flags)), output: flags.output };
+}

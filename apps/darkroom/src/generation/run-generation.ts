@@ -1,5 +1,4 @@
 import { access } from "node:fs/promises";
-import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { ValidationError } from "@cliffy/command";
 import { unrecognized } from "@openrouter/sdk/types";
@@ -8,12 +7,11 @@ import { NO_RETRIES } from "$constants/request-options";
 import { ApiError } from "$errors/api-error";
 import { CHARGE_NOTE, toApiError } from "$errors/to-api-error";
 import { createUlid } from "$history/ulid";
-import { writeFileAtomicAsync, writeFileNoClobberAsync } from "$utilities/atomic-write";
 
 import { InterruptPhase } from "./interrupt-guard";
-import { getExtensionForMediaType, getMediaTypeForImageType, sniffMediaType } from "./media-types";
-import { formatLocalDate, getOutputPath, OutputKind, parseOutputSpec, slugify } from "./output-paths";
+import { getOutputPath, OutputKind, parseOutputSpec } from "./output-paths";
 import { toDataUrl } from "./references";
+import { saveRunAsync } from "./save-run";
 import { validateRequest } from "./validate-request";
 
 import type { RequestOptions } from "@openrouter/sdk/lib/sdks.js";
@@ -24,16 +22,12 @@ import type { Unrecognized } from "@openrouter/sdk/types";
 import type { InterruptGuard } from "./interrupt-guard";
 import type { OutputSpec } from "./output-paths";
 import type { ReferenceImage } from "./references";
+import type { GeneratedImage, SaveDependencies, SavedImage, SaveFailure } from "./save-run";
 import type { GenerationOptions, ResolvedParameters } from "./validate-request";
 
 /** The one SDK method darkroom spends money through. */
 export interface ImagesClient {
 	generate(request: CreateImagesRequest, options?: RequestOptions): Promise<CreateImagesResponse>;
-}
-
-export interface GeneratedImage {
-	readonly b64Json: string;
-	readonly mediaType?: string | undefined;
 }
 
 export interface ImagesResponse {
@@ -92,6 +86,8 @@ export interface GenerationInput {
 	readonly force: boolean;
 	readonly modelId: string;
 	readonly options: GenerationOptions;
+	/** The run this one repeats, for `history rerun`. */
+	readonly parent?: string | undefined;
 	readonly prompt: string;
 	readonly references: ReadonlyArray<ReferenceImage>;
 }
@@ -208,17 +204,6 @@ export async function prepareGenerationAsync(
 	};
 }
 
-export interface SavedImage {
-	readonly mediaType: string;
-	/** Where the image was written, or `undefined` for stdout. */
-	readonly path: string | undefined;
-}
-
-export interface SaveFailure {
-	readonly message: string;
-	readonly recoveredPath: string;
-}
-
 export interface GenerationResult {
 	readonly id: string;
 	readonly cost?: number | undefined;
@@ -231,98 +216,27 @@ export interface GenerationResult {
 	readonly returned: number;
 }
 
-export interface ExecutionDependencies {
+export interface ExecutionDependencies extends SaveDependencies {
 	readonly client: ImagesClient;
 	readonly guard: InterruptGuard;
 	readonly now: () => Date;
-	warn(message: string): void;
-	writeStdoutAsync(bytes: Uint8Array): Promise<void>;
-}
-
-interface DecodedImage {
-	readonly bytes: Uint8Array;
-	readonly mediaType: string;
-}
-
-function decodeImage(image: GeneratedImage, prepared: PreparedGeneration): DecodedImage {
-	const bytes = new Uint8Array(Buffer.from(image.b64Json, "base64"));
-	const { outputFormat } = prepared.parameters;
-	const mediaType =
-		image.mediaType ??
-		sniffMediaType(bytes) ??
-		(outputFormat === undefined ? "image/png" : getMediaTypeForImageType(outputFormat));
-	return { bytes, mediaType };
-}
-
-interface SaveContext {
-	readonly id: string;
-	readonly date: string;
-	readonly dependencies: ExecutionDependencies;
-	readonly prepared: PreparedGeneration;
-	readonly slug: string;
-}
-
-async function writeToOutputAsync(
-	context: SaveContext,
-	bytes: Uint8Array,
-	extension: string,
-	index: number,
-	count: number,
-): Promise<string | undefined> {
-	const { dependencies, prepared } = context;
-	const spec = prepared.outputSpec;
-	if (spec.kind === OutputKind.Stdout) {
-		await dependencies.writeStdoutAsync(bytes);
-		return undefined;
-	}
-
-	const planned = getOutputPath(spec, { count, date: context.date, extension, index, slug: context.slug });
-	if (prepared.input.force && spec.kind === OutputKind.File) return writeFileAtomicAsync(planned, bytes);
-
-	const written = await writeFileNoClobberAsync(planned, bytes);
-	if (written !== planned && spec.kind === OutputKind.File) {
-		dependencies.warn(`${planned} appeared while generating; saved as ${written} instead.`);
-	}
-	return written;
-}
-
-async function saveImageAsync(
-	context: SaveContext,
-	image: GeneratedImage,
-	index: number,
-	count: number,
-): Promise<{ failure?: SaveFailure; saved: SavedImage }> {
-	const { bytes, mediaType } = decodeImage(image, context.prepared);
-	const extension = getExtensionForMediaType(mediaType);
-	try {
-		const path = await writeToOutputAsync(context, bytes, extension, index, count);
-		return { saved: { mediaType, path } };
-	} catch (error) {
-		const recoveryPath = nodePath.join(tmpdir(), `darkroom-recovered-${context.id}`, `${index}.${extension}`);
-		const recoveredPath = await writeFileNoClobberAsync(recoveryPath, bytes);
-		const message = error instanceof Error ? error.message : String(error);
-		return { failure: { message, recoveredPath }, saved: { mediaType, path: recoveredPath } };
-	}
 }
 
 /**
  * Sends the prepared request and saves every image that comes back.
  *
- * Saving never loses a paid image: a write that fails falls back to a
- * recovery folder in the system temp directory, and the failure is reported
- * instead of thrown.
- *
  * @param prepared - From `prepareGenerationAsync`.
- * @param dependencies - The API client, clock, and output streams.
+ * @param dependencies - The API client, clock, history, and output streams.
  * @returns What was generated and where it went.
+ * @rejects An `ApiError` or `InterruptedError` when the request fails.
  */
 export async function executeGenerationAsync(
 	prepared: PreparedGeneration,
 	dependencies: ExecutionDependencies,
 ): Promise<GenerationResult> {
 	const { guard } = dependencies;
-	const startedAt = dependencies.now();
-	const id = createUlid(startedAt.getTime());
+	const createdAt = dependencies.now();
+	const id = createUlid(createdAt.getTime());
 
 	guard.enter(InterruptPhase.Requesting);
 	const response = await requestImagesAsync(dependencies.client, prepared.request, guard.signal);
@@ -332,27 +246,16 @@ export async function executeGenerationAsync(
 	const returned = response.images.length;
 	if (returned < requested) dependencies.warn(`Asked for ${requested} images, got ${returned}.`);
 
-	const context: SaveContext = {
-		id,
-		date: formatLocalDate(startedAt),
+	const { failures, images } = await saveRunAsync(
+		{ id, cost: response.cost, createdAt, images: response.images, prepared },
 		dependencies,
-		prepared,
-		slug: slugify(prepared.input.prompt),
-	};
-	const images: Array<SavedImage> = [];
-	const failures: Array<SaveFailure> = [];
-	for (const [index, image] of response.images.entries()) {
-		// oxlint-disable-next-line no-await-in-loop, react-doctor/async-await-in-loop -- sequential writes keep numbering predictable
-		const { failure, saved } = await saveImageAsync(context, image, index + 1, returned);
-		images.push(saved);
-		if (failure !== undefined) failures.push(failure);
-	}
+	);
 
 	guard.enter(InterruptPhase.Idle);
 	return {
 		id,
 		cost: response.cost,
-		created: startedAt.toISOString(),
+		created: createdAt.toISOString(),
 		failures,
 		images,
 		model: prepared.model.id,
