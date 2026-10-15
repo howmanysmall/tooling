@@ -15,6 +15,7 @@
 			"$history/*": ["./src/history/*"],
 			"$interactive/*": ["./src/interactive/*"],
 			"$polyfills/*": ["./src/polyfills/*"],
+			"$preview/*": ["./src/preview/*"],
 			"$types/*": ["./src/types/*"],
 			"$utilities/*": ["./src/utilities/*"],
 			"$validators/*": ["./src/validators/*"],

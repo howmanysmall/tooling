@@ -140,6 +140,7 @@ catalogs:
     env-paths: 4.0.0
     ink: 7.1.1
     react: 19.3.0
+    sharp: 0.34.5
   test:
     "@stryker-mutator/api": 10.0.0
     "@stryker-mutator/core": 10.0.0
@@ -174,6 +175,7 @@ allowBuilds:
   "@openrouter/sdk": true
   "@swc/core": true
   esbuild: true
+  sharp: true
 
 packageExtensions:
   # These import ink or react without declaring them, so the isolated store

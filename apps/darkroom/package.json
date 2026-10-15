@@ -62,6 +62,7 @@
 		"env-paths": "catalog:runtime",
 		"ink": "catalog:runtime",
 		"react": "catalog:runtime",
+		"sharp": "catalog:runtime",
 		"type-fest": "catalog:types",
 		"unplugin-macros": "catalog:build"
 	},

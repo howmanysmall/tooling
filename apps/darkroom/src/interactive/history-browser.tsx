@@ -17,12 +17,16 @@ import { runBrowserTask } from "./run-browser-task";
 import type { ReactNode } from "react";
 
 import type { HistoryEntry } from "$history/history-entry";
+import type { CellBox } from "$preview/cell-fit";
+import type { LoadingPreview } from "$preview/load-preview";
 
 import type { BrowserAction } from "./history-browser-state";
 
 export interface BrowserServices {
 	/** Removes a run and its stored files. */
 	readonly deleteRunAsync: (entry: HistoryEntry) => Promise<void>;
+	/** Loads an image preview, or `undefined` when previews are off. */
+	readonly getPreview: (path: string, box: CellBox) => LoadingPreview | undefined;
 	/** Opens a run's images in the system viewer. */
 	readonly openRunAsync: (entry: HistoryEntry) => Promise<void>;
 	/** Remembers the run to repeat once the browser has closed. */
@@ -67,6 +71,15 @@ export function HistoryBrowser({ entries, services }: HistoryBrowserProperties):
 	const { columns, rows } = useWindowSize();
 	const listHeight = Math.max(1, rows - CHROME_ROWS);
 	const selected = getSelectedRun(state);
+	const listWidth = Math.floor(columns / 2);
+	// The detail pane's borders and padding take four columns.
+	const previewBox: CellBox = {
+		columns: Math.max(1, columns - listWidth - 4),
+		rows: Math.max(3, Math.floor(listHeight / 2)),
+	};
+	const firstImage = selected?.images[0];
+	const preview =
+		firstImage === undefined ? undefined : services.getPreview(services.resolve(firstImage.stored), previewBox);
 
 	function report(message: string): void {
 		dispatch({ status: message, type: "status" });
@@ -154,8 +167,13 @@ export function HistoryBrowser({ entries, services }: HistoryBrowserProperties):
 				<Text dimColor={true}>{`· ${counts}`}</Text>
 			</Text>
 			<Box flexGrow={1}>
-				<HistoryRunList height={listHeight} state={state} width={Math.floor(columns * 0.55)} />
-				<HistoryRunDetail entries={state.entries} entry={selected} resolve={services.resolve} />
+				<HistoryRunList height={listHeight} state={state} width={listWidth} />
+				<HistoryRunDetail
+					entries={state.entries}
+					entry={selected}
+					preview={preview}
+					resolve={services.resolve}
+				/>
 			</Box>
 			<HistoryBrowserFooter dispatch={dispatch} selected={selected} state={state} />
 		</Box>

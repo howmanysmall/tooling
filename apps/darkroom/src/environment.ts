@@ -11,6 +11,7 @@ import { arkenv, type } from "@arkenv/core";
 export const environment = arkenv(
 	{
 		"DARKROOM_MODEL?": "string > 0",
+		"DARKROOM_PREVIEW?": "'blocks' | 'kitty' | 'off'",
 		NODE_ENV: "'development' | 'production' | 'test' = 'development'",
 		"OPENROUTER_API_KEY?": type(/^sk-or-v1-[a-zA-Z0-9]{64}$/u),
 	},
