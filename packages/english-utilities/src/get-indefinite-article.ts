@@ -34,7 +34,7 @@ export function getIndefiniteArticle(value: string): IndefiniteArticle {
 		if (remainingValue.length === 0) break;
 
 		const firstByte = remainingValue.codePointAt(0);
-		if (firstByte === undefined || !alphabet.has(firstByte)) break;
+		if (firstByte === undefined || alphabet.has(firstByte)) break;
 
 		remainingValue = remainingValue.slice(1);
 	}
@@ -43,7 +43,7 @@ export function getIndefiniteArticle(value: string): IndefiniteArticle {
 
 	const firstUpperByte = getFirstUpperByte(remainingValue);
 	if (firstUpperByte === undefined) return "a";
-	if (remainingValue === remainingValue.toUpperCase() && ACRONYM_VOWEL_SOUND.has(firstUpperByte)) return "an";
+	if (remainingValue === remainingValue.toUpperCase()) return ACRONYM_VOWEL_SOUND.has(firstUpperByte) ? "an" : "a";
 
 	const lower = remainingValue.toLowerCase();
 	if (startsWithAny(lower, SILENT_H_PREFIXES)) return "an";
