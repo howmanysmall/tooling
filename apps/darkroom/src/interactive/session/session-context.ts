@@ -1,31 +1,44 @@
 import { createContext, use } from "react";
 
+import type { SessionSummary } from "$history/session-list";
+
 import type { SessionRequest } from "./session-services";
 import type { SessionState } from "./session-state";
+import type { SessionTabs } from "./session-tabs";
 
 export interface SessionActions {
-	/** Sends the request awaiting confirmation. */
+	/** Closes a session's tab; the session stays in the history. */
+	readonly close: (id: string) => void;
+	/** Sends the request awaiting confirmation in the session on screen. */
 	readonly confirm: () => void;
+	/** Shows the next tab, or the previous one with a negative `delta`. */
+	readonly cycle: (delta: number) => void;
 	/** Drops the request awaiting confirmation; nothing is sent. */
 	readonly dismiss: () => void;
-	/** Clears the finished turns. */
+	/** Opens a new session, or shows the empty one already open. */
 	readonly newSession: () => void;
+	/** Shows a past session, opening its tab with its turns. */
+	readonly resume: (session: SessionSummary) => void;
+	/** Shows an open session. */
+	readonly select: (id: string) => void;
 	/** Validates and prices a request, then asks to confirm it. */
 	readonly send: (request: SessionRequest) => void;
 }
 
 export interface SessionContextValue {
 	readonly actions: SessionActions;
+	/** The session on screen. */
 	readonly state: SessionState;
+	readonly tabs: SessionTabs;
 }
 
 export const SessionContext = createContext<SessionContextValue | undefined>(undefined);
 SessionContext.displayName = "SessionContext";
 
 /**
- * Reads the generate session.
+ * Reads the open sessions and the one on screen.
  *
- * @returns The session's turns and actions.
+ * @returns The sessions and their actions.
  * @throws {Error} Outside a `SessionProvider`.
  */
 export function useSession(): SessionContextValue {

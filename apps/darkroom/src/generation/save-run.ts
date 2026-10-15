@@ -173,6 +173,7 @@ function toEntry(
 		},
 		requested: parameters.count,
 		returned: run.images.length,
+		session: input.session,
 	};
 }
 

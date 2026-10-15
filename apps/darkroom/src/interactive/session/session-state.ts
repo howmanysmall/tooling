@@ -25,8 +25,8 @@ export interface SessionTurn {
 	readonly error?: string | undefined;
 	/** When it settled, in milliseconds since the epoch. */
 	readonly finishedAt?: number | undefined;
-	/** The model's display name, or its ID until the request is validated. */
-	readonly modelName: string;
+	/** The model's ID; screens show its name. */
+	readonly model: string;
 	readonly phase: TurnPhase;
 	readonly progress?: StreamProgress | undefined;
 	readonly prompt: string;
@@ -40,6 +40,8 @@ export interface SessionTurn {
 }
 
 export interface SessionState {
+	/** The ULID its runs are saved under, so it can be resumed. */
+	readonly id: string;
 	/** The request the confirmation asks about, by turn ID. */
 	readonly pending?: (PendingRequest & { readonly id: number }) | undefined;
 	/** Oldest first. */
@@ -50,23 +52,40 @@ export type SessionAction =
 	| { readonly at: number; readonly error: string; readonly id: number; readonly type: "turn-failed" }
 	| { readonly at: number; readonly id: number; readonly result: GenerationResult; readonly type: "turn-done" }
 	| { readonly at: number; readonly id: number; readonly type: "turn-started" }
-	| { readonly id: number; readonly modelName: string; readonly prompt: string; readonly type: "turn-added" }
+	| { readonly id: number; readonly model: string; readonly prompt: string; readonly type: "turn-added" }
 	| { readonly id: number; readonly pending: PendingRequest; readonly type: "prepared" }
 	| { readonly id: number; readonly progress: StreamProgress; readonly type: "turn-progress" }
 	| { readonly id: number; readonly type: "turn-warned"; readonly warning: string }
-	| { readonly type: "dismiss" }
-	| { readonly type: "new-session" };
+	| { readonly type: "dismiss" };
 
-export const INITIAL_SESSION: SessionState = { turns: [] };
+/**
+ * Starts a session.
+ *
+ * @param id - The ULID its runs will be saved under.
+ * @param turns - Turns resumed from the history, oldest first.
+ * @returns A session with no request awaiting confirmation.
+ */
+export function createSession(id: string, turns: ReadonlyArray<SessionTurn> = []): SessionState {
+	return { id, turns };
+}
 
-const UNSETTLED: ReadonlySet<TurnPhase> = new Set([TurnPhase.Confirming, TurnPhase.Preparing, TurnPhase.Running]);
+/**
+ * Names a session after its first prompt, as its tab and the session list
+ * show it.
+ *
+ * @param state - The session to name.
+ * @returns The first prompt, or `New session` before there is one.
+ */
+export function getSessionTitle(state: SessionState): string {
+	return state.turns[0]?.prompt ?? "New session";
+}
 
 function updateTurn(state: SessionState, id: number, update: (turn: SessionTurn) => SessionTurn): SessionState {
 	return { ...state, turns: state.turns.map((turn) => (turn.id === id ? update(turn) : turn)) };
 }
 
-function addTurn(state: SessionState, id: number, modelName: string, prompt: string): SessionState {
-	const turn: SessionTurn = { id, modelName, phase: TurnPhase.Preparing, prompt, requested: 1, warnings: [] };
+function addTurn(state: SessionState, id: number, model: string, prompt: string): SessionState {
+	const turn: SessionTurn = { id, model, phase: TurnPhase.Preparing, prompt, requested: 1, warnings: [] };
 	return { ...state, turns: [...state.turns, turn] };
 }
 
@@ -74,7 +93,7 @@ function confirmTurn(state: SessionState, id: number, pending: PendingRequest): 
 	const { model, parameters, warnings } = pending.prepared;
 	const next = updateTurn(state, id, (turn) => ({
 		...turn,
-		modelName: model.name,
+		model: model.id,
 		phase: TurnPhase.Confirming,
 		requested: parameters.count,
 		warnings,
@@ -84,7 +103,7 @@ function confirmTurn(state: SessionState, id: number, pending: PendingRequest): 
 
 function dismissPending(state: SessionState): SessionState {
 	const id = state.pending?.id;
-	return { turns: state.turns.filter((turn) => turn.id !== id) };
+	return { id: state.id, turns: state.turns.filter((turn) => turn.id !== id) };
 }
 
 function settleTurn(state: SessionState, id: number, settled: Partial<SessionTurn>): SessionState {
@@ -105,14 +124,11 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 		case "dismiss":
 			return dismissPending(state);
 
-		case "new-session":
-			return { ...state, turns: state.turns.filter((turn) => UNSETTLED.has(turn.phase)) };
-
 		case "prepared":
 			return confirmTurn(state, action.id, action.pending);
 
 		case "turn-added":
-			return addTurn(state, action.id, action.modelName, action.prompt);
+			return addTurn(state, action.id, action.model, action.prompt);
 
 		case "turn-done": {
 			return settleTurn(state, action.id, {
@@ -133,8 +149,10 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 		case "turn-progress":
 			return settleTurn(state, action.id, { progress: action.progress });
 
-		case "turn-started":
-			return { turns: settleTurn(state, action.id, { phase: TurnPhase.Running, startedAt: action.at }).turns };
+		case "turn-started": {
+			const started = settleTurn(state, action.id, { phase: TurnPhase.Running, startedAt: action.at });
+			return { id: started.id, turns: started.turns };
+		}
 
 		default:
 			return updateTurn(state, action.id, (turn) => ({ ...turn, warnings: [...turn.warnings, action.warning] }));

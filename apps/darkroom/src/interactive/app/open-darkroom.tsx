@@ -2,10 +2,18 @@ import { stdin, stdout } from "node:process";
 import { render } from "ink";
 
 import { deleteAsync, readAllAsync, resolve } from "$history/history-store";
+import { listSessions } from "$history/session-list";
+import { createUlid } from "$history/ulid";
 import { NoticeContext } from "$interactive/components/notice-store";
 import { MouseRegistryContext } from "$interactive/mouse/mouse-context";
 import { createMouseSession } from "$interactive/mouse/mouse-session";
+import { readOpenTabsAsync, writeOpenTabsAsync } from "$interactive/session/open-tabs-file";
+import { planOpenTabs } from "$interactive/session/plan-open-tabs";
+import { numberTurns } from "$interactive/session/session-actions";
 import { createSessionServices } from "$interactive/session/session-services";
+import { createSession } from "$interactive/session/session-state";
+import { createSessionStore } from "$interactive/session/session-store";
+import { createSessionTabs } from "$interactive/session/session-tabs";
 import { ModelSort } from "$utilities/model-filters";
 
 import { loadCatalogAsync } from "./app-catalog";
@@ -16,6 +24,8 @@ import { createTerminalPreviewsAsync } from "./terminal-previews";
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 import type { GenerateRequest } from "$interactive/generate/generate-screen";
+import type { SessionServices } from "$interactive/session/session-services";
+import type { SessionTabs } from "$interactive/session/session-tabs";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
 import type { PreviewCache } from "$preview/preview-cache";
@@ -27,6 +37,11 @@ import type { AppTab } from "./app-tab";
 export interface OpenOptions {
 	/** Models already loaded and filtered, as `models list` does. */
 	readonly models?: ModelSource | undefined;
+	/**
+	 * The session to resume: `last`, or a prefix of its ID. With `last`
+	 * and no sessions yet, a new one starts.
+	 */
+	readonly resume?: string | undefined;
 	/** The order the models tab opens in. */
 	readonly sort?: ModelSort | undefined;
 	readonly tab: AppTab;
@@ -64,6 +79,34 @@ function createHistoryServices(store: HistoryStore, previews: PreviewCache | und
 	};
 }
 
+/**
+ * Opens the tabs from {@link planOpenTabs}, rebuilding each session's
+ * turns. Without a session asked for, a new one opens after the others.
+ *
+ * @param entries - Every run, newest first.
+ * @param resume - `last`, a prefix of a session's ID, or `undefined`.
+ * @param services - Rebuilds the sessions' turns.
+ * @param store - The history, beside which the open tabs are saved.
+ * @returns The tabs to open with.
+ * @rejects When no session matches.
+ */
+async function openTabsAsync(
+	entries: ReadonlyArray<HistoryEntry>,
+	resume: string | undefined,
+	services: SessionServices,
+	store: HistoryStore,
+): Promise<SessionTabs> {
+	const { open } = await readOpenTabsAsync(store);
+	const { activeId, toOpen } = planOpenTabs(listSessions(entries), open, resume);
+	const restored = await Promise.all(
+		toOpen.map(async ({ id, runs }) => createSession(id, numberTurns(await services.restoreAsync(runs)))),
+	);
+	if (activeId !== undefined) return createSessionTabs(restored, activeId);
+
+	const fresh = createSession(createUlid());
+	return createSessionTabs([...restored, fresh], fresh.id);
+}
+
 async function readNewestFirstAsync(store: HistoryStore): Promise<ReadonlyArray<HistoryEntry>> {
 	// Warnings would tear the full-screen app; a broken line is skipped.
 	const entries = await readAllAsync(store, () => undefined);
@@ -79,11 +122,13 @@ async function readNewestFirstAsync(store: HistoryStore): Promise<ReadonlyArray<
  *
  * @param options - The tab to open on, and any models already loaded.
  * @param options.models - Models already loaded and filtered.
+ * @param options.resume - The session to resume, if any.
  * @param options.sort - The order the models tab opens in.
  * @param options.tab - The tab to open on.
- * @rejects When the history can't be read, or the guided session fails.
+ * @rejects When the history can't be read, no session matches, or the
+ *   guided session fails.
  */
-export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: OpenOptions): Promise<void> {
+export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name, tab }: OpenOptions): Promise<void> {
 	const { getHistoryStore, log } = await import("$generation/cli-runner");
 	const store = getHistoryStore();
 	const [stored, previews] = await Promise.all([
@@ -95,6 +140,9 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 	const entries = stored.toReversed();
 	const catalog = loadCatalogAsync(entries, (path) => resolve(store, path), models);
 	const session = createSessionServices(store);
+	const sessions = createSessionStore(await openTabsAsync(entries, resume, session, store), async (tabs) =>
+		writeOpenTabsAsync(store, tabs),
+	);
 	const { getRequest, handleGenerateWithOptions } = createGuidedRequest();
 	const openedAt = new Date();
 
@@ -120,6 +168,7 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 					now={openedAt}
 					readHistoryAsync={readHistoryAsync}
 					session={session}
+					sessions={sessions}
 					sort={sort}
 					onGenerateWithOptions={handleGenerateWithOptions}
 				/>
@@ -131,7 +180,7 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 	await instance.waitUntilExit();
 	mouse.dispose();
 	previews?.dispose();
-	await finishRunningAsync(session);
+	await Promise.all([finishRunningAsync(session), sessions.flushAsync()]);
 
 	const guided = getRequest();
 	if (guided === undefined) return;

@@ -2,6 +2,7 @@ import { Text } from "ink";
 
 import { theme } from "$interactive/components/theme";
 
+import { useModelName } from "./model-name-context";
 import { TurnPhase } from "./session-state";
 import { TurnResult } from "./turn-result";
 import { TurnStatus } from "./turn-status";
@@ -22,8 +23,9 @@ import type { TurnResultProperties } from "./turn-result";
  * @returns The turn's status, or its images and summary.
  */
 export function TurnBody({ box, getPreview, turn }: Readonly<TurnResultProperties>): ReactNode {
+	const modelName = useModelName(turn.model);
 	if (turn.phase === TurnPhase.Preparing) {
-		return <Text color={theme.muted}>{`◌ Checking ${turn.modelName} and the price…`}</Text>;
+		return <Text color={theme.muted}>{`◌ Checking ${modelName} and the price…`}</Text>;
 	}
 	if (turn.phase === TurnPhase.Confirming) {
 		return <Text color={theme.muted}>{"◌ Waiting for you to confirm"}</Text>;
@@ -38,7 +40,7 @@ export function TurnBody({ box, getPreview, turn }: Readonly<TurnResultPropertie
 	return (
 		<Text>
 			<Text color={theme.danger}>{`✖ ${turn.error ?? "Failed."}`}</Text>
-			<Text color={theme.muted}>{`  ${summarizeTurn(turn)}`}</Text>
+			<Text color={theme.muted}>{`  ${summarizeTurn(turn, modelName)}`}</Text>
 		</Text>
 	);
 }

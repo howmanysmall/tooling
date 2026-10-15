@@ -14,12 +14,16 @@ import { AppTab } from "$interactive/app/app-tab";
 const scriptName = getScriptName(true);
 
 const command = createBaseCommand(scriptName, version, description)
-	.action(async () => {
+	.option("-c, --continue", "Resume the session you used last.")
+	.option("-s, --session <id:string>", "Resume a session by its ID or a unique prefix of it.", {
+		conflicts: ["continue"],
+	})
+	.action(async (options) => {
 		if (!stdin.isTTY || !stdout.isTTY) {
 			throw new ValidationError("Interactive mode needs a terminal. Use a command such as `darkroom generate`.");
 		}
 		const { openDarkroomAsync } = await import("$interactive/app/open-darkroom");
-		await openDarkroomAsync({ tab: AppTab.Generate });
+		await openDarkroomAsync({ resume: options.continue === true ? "last" : options.session, tab: AppTab.Generate });
 	})
 	.command("generate", async () => {
 		const { generateCommand } = await import("$commands/generate-command");

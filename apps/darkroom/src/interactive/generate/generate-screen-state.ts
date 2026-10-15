@@ -6,33 +6,39 @@ import type { StatusAction, StatusMessage } from "$interactive/components/status
 
 import type { EditorAction, PromptEditor } from "./prompt-editor-state";
 
+/** A dialog over the generate screen. */
+export const enum GenerateDialog {
+	Model = "model",
+	Sessions = "sessions",
+}
+
 export interface GenerateScreenState {
+	/** The dialog open over the prompt box, if any. */
+	readonly dialog?: GenerateDialog | undefined;
 	readonly editor: PromptEditor;
-	/** Whether the model picker is open over the prompt box. */
-	readonly isPicking: boolean;
 	readonly status?: StatusMessage | undefined;
 }
 
 export type GenerateScreenAction =
 	| StatusAction
 	| { readonly action: EditorAction; readonly type: "edit" }
-	| { readonly isPicking: boolean; readonly type: "picking" };
+	| { readonly dialog: GenerateDialog | undefined; readonly type: "dialog" };
 
-export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR, isPicking: false };
+export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR };
 
 /**
  * Applies one action to the generate screen.
  *
- * @param state - The prompt, the picker, and the toast.
- * @param action - An edit, the picker opening or closing, or a toast.
+ * @param state - The prompt, the open dialog, and the toast.
+ * @param action - An edit, a dialog opening or closing, or a toast.
  * @returns The next state.
  */
 export function reduceGenerateScreen(state: GenerateScreenState, action: GenerateScreenAction): GenerateScreenState {
 	switch (action.type) {
+		case "dialog":
+			return { ...state, dialog: action.dialog };
 		case "edit":
 			return { ...state, editor: reducePromptEditor(state.editor, action.action) };
-		case "picking":
-			return { ...state, isPicking: action.isPicking };
 		default:
 			return { ...state, status: reduceStatus(state.status, action) };
 	}

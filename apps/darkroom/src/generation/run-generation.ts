@@ -94,6 +94,8 @@ export interface GenerationInput {
 	readonly parent?: string | undefined;
 	readonly prompt: string;
 	readonly references: ReadonlyArray<ReferenceImage>;
+	/** The app session this run belongs to. */
+	readonly session?: string | undefined;
 }
 
 export interface GenerationEnvironment {
