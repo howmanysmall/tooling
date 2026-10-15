@@ -215,8 +215,8 @@ async function formatModelTableAsync(imageModel: ImageModelListItem): Promise<st
 		.toString();
 }
 
-async function formatModelAsync(imageModel: ImageModelListItem, format: OutputFormat): Promise<string> {
-	switch (format) {
+async function formatModelAsync(imageModel: ImageModelListItem, outputFormat: OutputFormat): Promise<string> {
+	switch (outputFormat) {
 		case OutputFormat.Json:
 			return JSON.stringify(imageModel, undefined, "\t");
 
@@ -230,15 +230,15 @@ async function formatModelAsync(imageModel: ImageModelListItem, format: OutputFo
 			return formatModelTableAsync(imageModel);
 
 		default:
-			throw new Error(`Unknown output format: ${String(format)}`);
+			throw new Error(`Unknown output format: ${String(outputFormat)}`);
 	}
 }
 
 async function formatModelsAsync(
 	imageModels: ReadonlyArray<ImageModelListItem>,
-	format: OutputFormat,
+	outputFormat: OutputFormat,
 ): Promise<string> {
-	switch (format) {
+	switch (outputFormat) {
 		case OutputFormat.Json:
 			return JSON.stringify(imageModels, undefined, "\t");
 
@@ -267,7 +267,7 @@ async function formatModelsAsync(
 		}
 
 		default:
-			throw new Error(`Unknown output format: ${String(format)}`);
+			throw new Error(`Unknown output format: ${String(outputFormat)}`);
 	}
 }
 
