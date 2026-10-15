@@ -131,6 +131,32 @@ export async function deleteAsync(
 }
 
 /**
+ * Adds runs to a session forked from theirs, so the fork keeps them when
+ * it is resumed. The runs stay in their own session too.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to update.
+ * @param ids - The runs the fork keeps.
+ * @param fork - The fork's ULID.
+ * @param warn - Receives a warning for each unreadable line.
+ */
+export async function addToForkAsync(
+	historyStore: HistoryStore,
+	ids: ReadonlySet<string>,
+	fork: string,
+	warn: (message: string) => void,
+): Promise<void> {
+	const historyFile = nodePath.join(historyStore.root, HISTORY_FILE);
+	await runLockedAsync(historyStore.root, async () => {
+		const entries = await readAllAsync(historyStore, warn);
+		const lines = entries.map((entry) => {
+			const updated = ids.has(entry.id) ? { ...entry, forks: [...(entry.forks ?? []), fork] } : entry;
+			return `${JSON.stringify(updated)}\n`;
+		});
+		await writeFileAtomicAsync(historyFile, lines.join(""));
+	});
+}
+
+/**
  * Resolves a path stored in an entry.
  *
  * @param historyStore - The {@linkcode HistoryStore} to resolve against.

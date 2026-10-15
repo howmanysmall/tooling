@@ -9,6 +9,8 @@ import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
 import type { ReactNode } from "react";
 
+import type { SessionSummary } from "$history/session-list";
+
 import type { SessionMatch } from "./session-list-state";
 
 export interface SessionListRowProperties {
@@ -24,9 +26,14 @@ export interface SessionListRowProperties {
 	onPoint: () => void;
 }
 
+function getMarks(isOpen: boolean, { forkedFrom }: SessionSummary): string {
+	return `${isOpen ? "●" : " "}${forkedFrom === undefined ? " " : "⑂"}`;
+}
+
 /**
- * One past session: a dot when it is open in a tab, its first prompt with
- * the matched characters highlighted, and how many runs it has, what they
+ * One past session: a dot when it is open in a tab and `⑂` when it was
+ * forked from another, its first prompt with the matched characters
+ * highlighted, and how many runs it has, what they
  * cost, and when it was last used.
  *
  * @param properties - The session and how it stands.
@@ -53,8 +60,8 @@ export function SessionListRow({
 
 	return (
 		<Box ref={attachNode} backgroundColor={isSelected ? theme.accent : theme.element} columnGap={2} paddingX={1}>
-			<Box flexShrink={0} width={2}>
-				<Text color={isSelected ? theme.background : theme.accent}>{isOpen ? "●" : " "}</Text>
+			<Box flexShrink={0} width={3}>
+				<Text color={isSelected ? theme.background : theme.accent}>{getMarks(isOpen, session)}</Text>
 			</Box>
 			<Box flexGrow={1} flexShrink={1} overflow="hidden">
 				<HighlightedText isSelected={isSelected} positions={match.positions} text={session.title} />

@@ -19,8 +19,9 @@ export interface PaletteRowProperties {
 
 /**
  * One command in the palette: its title, with the matched characters in the
- * accent color, and its key at the right. The chosen row is filled; the
- * pointer chooses the row it is over, and a click runs it.
+ * accent color, what it does when it says, and its key at the right. The
+ * chosen row is filled; the pointer chooses the row it is over, and a click
+ * runs it.
  *
  * @param properties - The command and whether it is chosen.
  * @param properties.isSelected - Whether Enter would run it.
@@ -40,7 +41,12 @@ export function PaletteRow({ isSelected, match, onChoose, onPoint }: Readonly<Pa
 			justifyContent="space-between"
 			paddingX={1}
 		>
-			<HighlightedText isSelected={isSelected} positions={positions} text={command.title} />
+			<Text wrap="truncate-end">
+				<HighlightedText isSelected={isSelected} positions={positions} text={command.title} />
+				{command.description === undefined ? null : (
+					<Text color={isSelected ? theme.background : theme.muted}>{`  ${command.description}`}</Text>
+				)}
+			</Text>
 			<Text color={isSelected ? theme.background : theme.muted}>{command.keyLabel}</Text>
 		</Box>
 	);

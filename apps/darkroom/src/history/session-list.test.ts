@@ -42,6 +42,19 @@ describe("listSessions", () => {
 	});
 });
 
+describe("listSessions with forks", () => {
+	it("gives a fork the runs it kept, and says what it was forked from", ({ expect }) => {
+		expect.assertions(2);
+
+		const kept = { ...createRun("01M4YVAAAAAAAAAAAAAAAAAAA1", "01SESSIONA", "a cat"), forks: ["01FORKB"] };
+		const own = createRun("01M4YVAAAAAAAAAAAAAAAAAAA5", "01FORKB", "a cat in a hat");
+		const fork = listSessions([own, kept]).find((session) => session.id === "01FORKB");
+
+		expect(fork?.runs.map((run) => run.prompt)).toStrictEqual(["a cat", "a cat in a hat"]);
+		expect(fork?.forkedFrom).toBe("01SESSIONA");
+	});
+});
+
 describe("resolveSessionReference", () => {
 	it("finds the session used last, or one by a unique prefix of its ID", ({ expect }) => {
 		expect.assertions(2);

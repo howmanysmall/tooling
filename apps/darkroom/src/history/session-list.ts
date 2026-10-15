@@ -9,6 +9,8 @@ export interface SessionSummary {
 	readonly id: string;
 	/** What the runs cost together, when any cost was reported. */
 	readonly cost?: number | undefined;
+	/** The session it was forked from, if it was. */
+	readonly forkedFrom?: string | undefined;
 	/** Oldest first. */
 	readonly runs: ReadonlyArray<HistoryEntry>;
 	/** The first prompt, which names the session. */
@@ -25,18 +27,25 @@ function sumCosts(runs: ReadonlyArray<HistoryEntry>): number | undefined {
 
 function toSummary(id: string, newestFirst: ReadonlyArray<HistoryEntry>): SessionSummary {
 	const runs = newestFirst.toReversed();
+	const origin = runs[0]?.session;
 	return {
 		id,
 		cost: sumCosts(runs),
+		forkedFrom: origin === id ? undefined : origin,
 		runs,
 		title: runs[0]?.prompt ?? "",
 		updated: newestFirst[0]?.created ?? "",
 	};
 }
 
+function getSessions({ forks, session }: HistoryEntry): ReadonlyArray<string> {
+	if (session === undefined) return [];
+	return forks === undefined ? [session] : [session, ...forks];
+}
+
 /**
  * Groups the runs made in the app into their sessions. Runs from the
- * command line belong to none.
+ * command line belong to none, and a run kept by a fork belongs to it too.
  *
  * @param entries - Every run, newest first.
  * @returns The sessions, the one used last first.
@@ -44,11 +53,11 @@ function toSummary(id: string, newestFirst: ReadonlyArray<HistoryEntry>): Sessio
 export function listSessions(entries: ReadonlyArray<HistoryEntry>): Array<SessionSummary> {
 	const groups = new Map<string, Array<HistoryEntry>>();
 	for (const entry of entries) {
-		if (entry.session === undefined) continue;
-
-		const group = groups.get(entry.session);
-		if (group === undefined) groups.set(entry.session, [entry]);
-		else group.push(entry);
+		for (const session of getSessions(entry)) {
+			const group = groups.get(session);
+			if (group === undefined) groups.set(session, [entry]);
+			else group.push(entry);
+		}
 	}
 	return Array.from(groups, ([id, runs]) => toSummary(id, runs));
 }

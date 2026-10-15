@@ -24,6 +24,8 @@ export interface CommandPaletteProperties {
 	/** Closes the palette, before the chosen command runs. */
 	onClose: () => void;
 	rows: number;
+	/** What the palette offers, like `Commands` or `Image`. */
+	title: string;
 }
 
 const HINTS: ReadonlyArray<KeyHint> = [
@@ -42,9 +44,16 @@ const VISIBLE_ROWS = 10;
  * @param properties.commands - The commands to offer.
  * @param properties.onClose - Closes the palette.
  * @param properties.rows - The screen's height.
+ * @param properties.title - What the palette offers.
  * @returns The palette dialog.
  */
-export function CommandPalette({ columns, commands, onClose, rows }: Readonly<CommandPaletteProperties>): ReactNode {
+export function CommandPalette({
+	columns,
+	commands,
+	onClose,
+	rows,
+	title,
+}: Readonly<CommandPaletteProperties>): ReactNode {
 	// Moving the cursor isn't worth a palette entry; help lists those keys.
 	const offered = commands.filter((command) => command.group === CommandGroup.Act);
 	const list = useSearchList((query) => getPaletteMatches(offered, query), VISIBLE_ROWS, onClose);
@@ -59,7 +68,7 @@ export function CommandPalette({ columns, commands, onClose, rows }: Readonly<Co
 	}
 
 	return (
-		<Dialog columns={columns} hints={HINTS} rows={rows} title="Commands" width={60} onDismiss={onClose}>
+		<Dialog columns={columns} hints={HINTS} rows={rows} title={title} width={60} onDismiss={onClose}>
 			<Box marginBottom={1}>
 				<Text bold={true} color={theme.accent}>
 					{"› "}

@@ -28,13 +28,17 @@ lights up the cells and copies the text through OSC 52 when you let go.
   continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,
   `ctrl+w`, `ctrl+u`, and `ctrl+k` work.
 - **editing**: once a session has an image, the next prompt edits it: the newest image goes to the model as a
-  reference, and the prompt box reads `Edit ◧ <file>`. Click any earlier image, or its path, to edit that one instead,
-  which branches from there. `shift+tab` switches to `New`, which starts fresh. A model that can't take images says
-  so, `ctrl+o` then lists only models that can, and a request sent anyway starts fresh with a warning first.
+  reference, and the prompt box reads `Edit ◧ <file>`. Clicking an image or its path opens its actions. Editing it
+  instead branches from there, and the others copy the picture itself or its path, or open it. `shift+tab` switches to `New`,
+  which starts fresh. A model that can't take images says so, `ctrl+o` then lists only models that can, and a request
+  sent anyway starts fresh with a warning first.
 - **sessions**: each conversation of prompts is a session, and the open ones are tabs over the prompt box, named by
   their first prompt. A tab shows a spinner while it generates and a dot when it finishes out of sight. `ctrl+n` or `+`
   opens a new session, `alt+↑` and `alt+↓` switch, and `ctrl+s` lists past sessions to resume. Closing a tab, with its
   `✕` or from the palette, keeps the session in the history. Open tabs come back the next time the app starts.
+  Clicking a prompt opens its actions: rewind to before it and edit it again, fork, which does the same in a new tab,
+  use it again, or copy it. Rewinding never deletes anything: the session as it was stays in the list, and forks are marked
+  `⑂` there. When the app closes, it prints how to resume the session on screen.
   `darkroom -c` resumes the session you used last, and `darkroom -s <id>` resumes one by a prefix of its ID.
 - **history**: every past run with its image, prompt, settings, and cost. Enter opens the images, `r` re-runs, `y`
   copies the ID, `d` deletes, and `/` filters. A comparison is one row, and `←` and `→` step through its models.
