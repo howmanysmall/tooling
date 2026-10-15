@@ -1,14 +1,61 @@
 # @pobammer-ts/darkroom
 
-A command-line tool.
+Generate images with any image model on [OpenRouter](https://openrouter.ai), compare models side by side, and keep every
+run in a browsable history.
 
-## Usage
+## Setup
+
+Set `OPENROUTER_API_KEY`, in the environment or in a `.env` file. Commands that never call the API, such as
+`--dry-run` and `history`, work without it.
+
+| Variable | What it does |
+| --- | --- |
+| `OPENROUTER_API_KEY` | Your OpenRouter key, `sk-or-v1-…`. |
+| `DARKROOM_MODEL` | The model to use when `-m` isn't given, and the one the prompt box starts with. |
+| `DARKROOM_PREVIEW` | How to draw image previews: `kitty`, `blocks`, or `off`. Detected from the terminal by default. |
+
+## The app
+
+Run `darkroom` with no arguments to open the full-screen app. It has three tabs; `tab` cycles them, and outside the
+prompt box `1`, `2`, and `3` jump to one. `ctrl+p` opens a command palette on every tab, and `?` lists every key.
+
+- **generate**: a prompt box with the model and its price beneath it. Enter shows the request with its estimated cost
+  and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`
+  continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,
+  `ctrl+w`, `ctrl+u`, and `ctrl+k` work.
+- **history**: every past run with its image, prompt, settings, and cost. Enter opens the images, `r` re-runs, `y`
+  copies the ID, `d` deletes, and `/` filters. A comparison is one row, and `←` and `→` step through its models.
+- **models**: every image model with its price, the options it takes, and an example image: your newest one from that
+  model, or the one included with darkroom (`e` switches). `s` sorts, `/` filters, and Enter takes the model to the
+  prompt box.
+
+`darkroom history browse` and `darkroom models list` open the app on their tab. When piped, or with `--format`, they
+print instead.
+
+## Commands
 
 ```sh
-darkroom --help
+darkroom generate "a red fox in snow" -m google/gemini-2.5-flash-image
+darkroom generate - --dry-run < prompt.txt
+darkroom compare "a lighthouse at dusk" -m black-forest-labs/flux-3-image -m openai/gpt-image-1
+darkroom models list --refs --sort price
+darkroom history rerun last -n 2
 ```
 
-The built binary runs on Bun primarily. The code only uses Node APIs, so `node dist/cli.js` works too.
+- `generate` writes the saved paths to stdout and progress and costs to stderr, so it composes with other tools. `-i`
+  adds reference images, from paths or URLs.
+- `compare` generates one prompt with several models into one folder. It shows the estimated total first and asks
+  before spending; `--yes` skips the question.
+- `history` lists, shows, opens, re-runs, and prunes past runs. Run IDs accept a unique prefix, `last`, or `last~N`.
+- `models` lists and filters models with their prices, and `models get` shows one in full.
+- `cache` refreshes the cached models, prices, and shell completions.
+
+A paid request is sent once, without automatic retries, and each image is copied into the history before
+anything else can fail. Estimates use published prices, or what a model has cost you before when it charges by the
+token.
+
+Run `darkroom --help`, or `--help` on any command, for every flag. The built binary runs on Bun primarily. The code
+only uses Node APIs, so `node dist/cli.js` works too.
 
 ## Scripts
 
@@ -21,6 +68,15 @@ Run these from this directory, or from the repository root with
 | `lint` | Lints this package with the repository's oxlint, ESLint, and Biome configuration. |
 | `test` | Runs the Vitest suite. |
 | `type-check` | Type-checks this package and its references with `tsc --build`. |
+
+### Example images
+
+The models tab shows an example for every model, built from a `darkroom compare` run and stored in `examples/`. After
+comparing new models, rebuild them from the comparison's folder:
+
+```sh
+bun apps/darkroom/scripts/build-examples.ts <compare folder>
+```
 
 ## Release
 
