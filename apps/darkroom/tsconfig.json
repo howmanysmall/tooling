@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
+		"jsx": "react-jsx",
 		"paths": {
 			"$commands/*": ["./src/commands/*"],
 			"$constants": ["./src/constants/constants.ts"],
@@ -38,6 +39,6 @@
 			"path": "../../tools/project-configurations"
 		}
 	],
-	"include": ["src/**/*.ts", "./package.json", "*.config.ts", "vitest.setup.ts"],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "./package.json", "*.config.ts"],
 	"exclude": ["node_modules"]
 }
