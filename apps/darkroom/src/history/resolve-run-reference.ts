@@ -68,3 +68,27 @@ export function getParentChain(entries: ReadonlyArray<HistoryEntry>, entry: Hist
 	}
 	return chain;
 }
+
+export interface RunRelations {
+	/** The other runs from the same `compare`, ordered by model. */
+	readonly batch: ReadonlyArray<HistoryEntry>;
+	/** The runs this one was re-run from, nearest first. */
+	readonly parents: ReadonlyArray<HistoryEntry>;
+}
+
+/**
+ * Finds the runs related to one run: what it was re-run from, and the other
+ * runs of the same comparison.
+ *
+ * @param entries - Every run.
+ * @param entry - The run whose relations to find.
+ * @returns The runs it was re-run from, and the other runs of its comparison.
+ */
+export function getRunRelations(entries: ReadonlyArray<HistoryEntry>, entry: HistoryEntry): RunRelations {
+	const { batch } = entry;
+	const siblings = batch === undefined ? [] : entries.filter((item) => item.batch === batch && item.id !== entry.id);
+	return {
+		batch: siblings.toSorted((first, second) => first.model.localeCompare(second.model)),
+		parents: getParentChain(entries, entry),
+	};
+}

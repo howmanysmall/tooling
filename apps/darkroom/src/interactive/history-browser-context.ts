@@ -1,6 +1,7 @@
 import { createContext, use } from "react";
 
 import type { HistoryEntry } from "$history/history-entry";
+import type { RunRelations } from "$history/resolve-run-reference";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
 
@@ -12,6 +13,8 @@ export interface HistoryBrowserState {
 	/** Lowercase filter text, empty when unfiltered. */
 	readonly filter: string;
 	readonly mode: BrowserMode;
+	/** The selected run's parents and comparison runs, if a run is selected. */
+	readonly relations?: RunRelations | undefined;
 	/** The runs that match the filter, newest first. */
 	readonly runs: ReadonlyArray<HistoryEntry>;
 	/** The run under the cursor, if any. */
@@ -54,8 +57,8 @@ export interface HistoryBrowserLayout {
 }
 
 export interface HistoryBrowserMeta {
-	/** The selected run's first image, sized for the detail pane. */
-	readonly getPreview: (entry: HistoryEntry) => LoadingPreview | undefined;
+	/** A run's first image, sized for the detail pane unless a box is given. */
+	readonly getPreview: (entry: HistoryEntry, box?: CellBox) => LoadingPreview | undefined;
 	readonly layout: HistoryBrowserLayout;
 	/** Turns a stored path into an absolute one. */
 	readonly resolve: (stored: string) => string;

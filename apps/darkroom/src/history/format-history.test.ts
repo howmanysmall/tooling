@@ -31,7 +31,12 @@ describe("formatHistoryEntry", () => {
 	it("includes the parent chain and resolved copies", ({ expect }) => {
 		expect.assertions(2);
 
-		const text = formatHistoryEntry(ENTRY, [PARENT], OutputFormat.Pretty, (stored) => `/data/${stored}`);
+		const text = formatHistoryEntry(
+			ENTRY,
+			{ batch: [], parents: [PARENT] },
+			OutputFormat.Pretty,
+			(stored) => `/data/${stored}`,
+		);
 
 		expect(text).toContain("01M4YVBB");
 		expect(text).toContain("/data/images/01M4YVAAAAAAAAAAAAAAAAAAA1/1.png");
@@ -40,9 +45,31 @@ describe("formatHistoryEntry", () => {
 	it("adds the parent IDs to the JSON", ({ expect }) => {
 		expect.assertions(1);
 
-		const json = formatHistoryEntry(ENTRY, [PARENT], OutputFormat.JsonMinified, (stored) => stored);
+		const json = formatHistoryEntry(
+			ENTRY,
+			{ batch: [], parents: [PARENT] },
+			OutputFormat.JsonMinified,
+			(stored) => stored,
+		);
 
 		expect(JSON.parse(json)).toMatchObject({ id: ENTRY.id, parents: [PARENT.id] });
+	});
+});
+
+describe("formatHistoryEntry with a comparison", () => {
+	it("lists the other runs of the comparison", ({ expect }) => {
+		expect.assertions(1);
+
+		const batch = "01M4YVBATCHAAAAAAAAAAAAAAA";
+		const other = createEntry("01M4YVOTHERAAAAAAAAAAAAAAA", { batch, model: "other/model" });
+		const text = formatHistoryEntry(
+			{ ...ENTRY, batch },
+			{ batch: [other], parents: [] },
+			OutputFormat.Pretty,
+			(stored) => stored,
+		);
+
+		expect(text).toContain("01M4YVBA · with 01M4YVOT other/model");
 	});
 });
 

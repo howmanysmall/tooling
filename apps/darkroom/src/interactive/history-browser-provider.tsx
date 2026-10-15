@@ -1,6 +1,8 @@
 import { useReducer } from "react";
 import { useApp, useStdout, useWindowSize } from "ink";
 
+import { getRunRelations } from "$history/resolve-run-reference";
+
 import { createBrowserActions } from "./history-browser-actions";
 import { HistoryBrowserContext } from "./history-browser-context";
 import { createBrowserState, getSelectedRun, getVisibleRuns, reduceBrowserState } from "./history-browser-state";
@@ -59,11 +61,11 @@ function createContextValue({
 	return {
 		actions,
 		meta: {
-			getPreview(entry): LoadingPreview | undefined {
+			getPreview(entry, box = layout.previewBox): LoadingPreview | undefined {
 				const [image] = entry.images;
 				if (image === undefined) return undefined;
 
-				return services.getPreview(services.resolve(image.stored), layout.previewBox);
+				return services.getPreview(services.resolve(image.stored), box);
 			},
 			layout,
 			resolve: services.resolve,
@@ -72,6 +74,7 @@ function createContextValue({
 			entries: browser.entries,
 			filter: browser.filter,
 			mode: browser.mode,
+			relations: selected === undefined ? undefined : getRunRelations(browser.entries, selected),
 			runs: getVisibleRuns(browser),
 			selected,
 			selectedIndex: browser.cursor,
