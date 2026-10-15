@@ -3,15 +3,28 @@ import nodePath from "node:path";
 
 import { CACHE_TTL_MS } from "$constants";
 import { environmentPaths } from "$constants/environment-paths";
+import { READ_ONLY_RETRIES } from "$constants/request-options";
 import { isImageModelListItem } from "$types/openrouter-types";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
+async function listImageModelsAsync(): Promise<ReadonlyArray<ImageModelListItem>> {
+	const [{ getOpenRouterAsync }, { toApiError }] = await Promise.all([
+		import("$functions/get-openrouter-async"),
+		import("$errors/to-api-error"),
+	]);
+	const openrouter = await getOpenRouterAsync();
+
+	try {
+		const { data } = await openrouter.images.listModels({}, { retries: READ_ONLY_RETRIES });
+		return data;
+	} catch (error) {
+		throw error instanceof Error ? toApiError(error, false) : error;
+	}
+}
+
 export async function getImageModelsRawAsync(): Promise<ReadonlyArray<ImageModelListItem>> {
-	const { data } = await import("$functions/get-openrouter-async").then(async ({ getOpenRouterAsync }) => {
-		const openrouter = await getOpenRouterAsync();
-		return openrouter.images.listModels({}, {});
-	});
+	const data = await listImageModelsAsync();
 
 	const imageModels: Array<ImageModelListItem> = [];
 	let size = 0;

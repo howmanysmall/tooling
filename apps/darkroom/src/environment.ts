@@ -3,11 +3,16 @@ import { arkenv, type } from "@arkenv/core";
 
 /**
  * Environment variable schema for server-side or runtime-only validation.
+ *
+ * `OPENROUTER_API_KEY` is optional here so that commands which never call the
+ * API (`--dry-run`, `history`) work without it. `getOpenRouterAsync` asserts it
+ * when a request is actually made.
  */
 export const environment = arkenv(
 	{
+		"DARKROOM_MODEL?": "string > 0",
 		NODE_ENV: "'development' | 'production' | 'test' = 'development'",
-		OPENROUTER_API_KEY: type(/^sk-or-v1-[a-zA-Z0-9]{64}$/u),
+		"OPENROUTER_API_KEY?": type(/^sk-or-v1-[a-zA-Z0-9]{64}$/u),
 	},
 	{
 		emptyAsUndefined: true,
