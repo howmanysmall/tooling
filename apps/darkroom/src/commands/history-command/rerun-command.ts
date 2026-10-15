@@ -16,7 +16,6 @@ import { getHistoryIdsAsync, historyIdType } from "$validators/history-id-type";
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 
-import type { GenerationFlags } from "$generation/generation-flags";
 import type { ReferenceImage } from "$generation/references";
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
@@ -33,34 +32,6 @@ async function loadReferencesAsync(
 
 	const { loadStoredReferencesAsync } = await import("$history/stored-references");
 	return loadStoredReferencesAsync(entry, store);
-}
-
-async function rerunAsync(flags: GenerationFlags, reference: string): Promise<void> {
-	const [
-		{ getHistoryStore, log, prepareForTerminalAsync, runPreparedAsync },
-		{ mergeRerunOptions },
-		{ resolveRunReference },
-	] = await Promise.all([
-		import("$generation/cli-runner"),
-		import("$generation/generation-flags"),
-		import("$history/resolve-run-reference"),
-	]);
-	const store = getHistoryStore();
-	const entries = await store.readAllAsync((message) => {
-		log.warn(message);
-	});
-	const entry = resolveRunReference(entries, reference);
-	const references = await loadReferencesAsync(entry, store, flags.image);
-
-	const prepared = await prepareForTerminalAsync({
-		force: flags.force === true,
-		modelId: flags.model ?? entry.model,
-		options: mergeRerunOptions(entry, flags),
-		parent: entry.id,
-		prompt: entry.prompt,
-		references,
-	});
-	await runPreparedAsync(prepared, flags.format, flags.dryRun === true);
 }
 
 export const rerunCommand = createBaseCommand(
@@ -100,4 +71,30 @@ export const rerunCommand = createBaseCommand(
 	})
 	.option("--force", "Allow overwriting an explicit -o file.")
 	.option("--dry-run", "Validate and print the request without sending it.")
-	.action(async (flags, reference) => rerunAsync(flags, reference));
+	.action(async (flags, reference) => {
+		const [
+			{ getHistoryStore, log, prepareForTerminalAsync, runPreparedAsync },
+			{ mergeRerunOptions },
+			{ resolveRunReference },
+		] = await Promise.all([
+			import("$generation/cli-runner"),
+			import("$generation/generation-flags"),
+			import("$history/resolve-run-reference"),
+		]);
+		const store = getHistoryStore();
+		const entries = await store.readAllAsync((message) => {
+			log.warn(message);
+		});
+		const entry = resolveRunReference(entries, reference);
+		const references = await loadReferencesAsync(entry, store, flags.image);
+
+		const prepared = await prepareForTerminalAsync({
+			force: flags.force === true,
+			modelId: flags.model ?? entry.model,
+			options: mergeRerunOptions(entry, flags),
+			parent: entry.id,
+			prompt: entry.prompt,
+			references,
+		});
+		await runPreparedAsync(prepared, flags.format, flags.dryRun === true);
+	});

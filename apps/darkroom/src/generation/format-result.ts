@@ -34,7 +34,7 @@ const costFormatter = new Intl.NumberFormat("en-US", {
  * @param cost - The cost, if the API reported one.
  * @returns Something like `$0.08`, or `cost unknown`.
  */
-export function formatCost(cost: number | undefined): string {
+export function formatCost(cost?: number): string {
 	return cost === undefined ? "cost unknown" : costFormatter.format(cost);
 }
 
@@ -122,9 +122,9 @@ interface ReferenceDescription {
 	readonly source: string;
 }
 
-export type RequestDescription = Except<PreparedGeneration["request"], "inputReferences"> & {
+export interface RequestDescription extends Except<PreparedGeneration["request"], "inputReferences"> {
 	readonly inputReferences: ReadonlyArray<ReferenceDescription>;
-};
+}
 
 /**
  * Describes the request for `--dry-run`, with reference images summarized

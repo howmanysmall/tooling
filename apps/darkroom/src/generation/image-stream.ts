@@ -26,7 +26,7 @@ interface StreamState {
 	readonly phase?: string | undefined;
 }
 
-function addCost(total: number | undefined, cost: null | number | undefined): number | undefined {
+function addCost(total?: number, cost?: null | number): number | undefined {
 	return cost === undefined || cost === null ? total : (total ?? 0) + cost;
 }
 

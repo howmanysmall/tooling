@@ -71,28 +71,6 @@ async function deleteRunsAsync(
 	log.success(`Deleted ${removed} ${toPlural(removed, "run")} and freed ${freed}.`);
 }
 
-async function pruneAsync(flags: PruneCommandFlags): Promise<void> {
-	const criteria = toPruneCriteria(flags);
-	const { getHistoryStore } = await import("$generation/cli-runner");
-	const store = getHistoryStore();
-	const entries = await store.readAllAsync(warn);
-	const sizes = await getSizesAsync(store, entries);
-
-	if (criteria === undefined) {
-		const total = formatBytes(sumSizes(sizes, sizes.keys()));
-		console.log(`${entries.length} ${toPlural(entries.length, "run")} · ${total} · ${store.root}`);
-		return;
-	}
-
-	const selected = selectForPrune(entries, sizes, criteria, Date.now());
-	if (selected.size === 0) {
-		log.info("Nothing to prune.");
-		return;
-	}
-	const doomed = entries.filter((entry) => selected.has(entry.id)).toReversed();
-	await deleteRunsAsync(store, doomed, formatBytes(sumSizes(sizes, selected)), flags);
-}
-
 export const pruneCommand = createBaseCommand(
 	scriptName,
 	"1.0.0",
@@ -103,4 +81,24 @@ export const pruneCommand = createBaseCommand(
 	.option("--max-size <size:string>", "Delete the oldest runs until the history fits, like 2GB.")
 	.option("-y, --yes", "Delete without asking.")
 	.option("--dry-run", "List what would be deleted without deleting it.")
-	.action(async (flags) => pruneAsync(flags));
+	.action(async (flags) => {
+		const criteria = toPruneCriteria(flags);
+		const { getHistoryStore } = await import("$generation/cli-runner");
+		const store = getHistoryStore();
+		const entries = await store.readAllAsync(warn);
+		const sizes = await getSizesAsync(store, entries);
+
+		if (criteria === undefined) {
+			const total = formatBytes(sumSizes(sizes, sizes.keys()));
+			console.log(`${entries.length} ${toPlural(entries.length, "run")} · ${total} · ${store.root}`);
+			return;
+		}
+
+		const selected = selectForPrune(entries, sizes, criteria, Date.now());
+		if (selected.size === 0) {
+			log.info("Nothing to prune.");
+			return;
+		}
+		const doomed = entries.filter((entry) => selected.has(entry.id)).toReversed();
+		await deleteRunsAsync(store, doomed, formatBytes(sumSizes(sizes, selected)), flags);
+	});

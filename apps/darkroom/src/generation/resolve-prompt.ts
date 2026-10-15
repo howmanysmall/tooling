@@ -46,6 +46,8 @@ async function readFromSourceAsync(sources: PromptSources): Promise<string> {
 export async function resolvePromptAsync(sources: PromptSources): Promise<string> {
 	const text = await readFromSourceAsync(sources);
 	const prompt = text.trim();
-	if (prompt === "") throw new ValidationError("The prompt is empty.");
+	if (prompt.length === 0) {
+		throw new ValidationError("The prompt is empty.");
+	}
 	return prompt;
 }

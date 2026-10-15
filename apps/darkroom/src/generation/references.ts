@@ -33,7 +33,11 @@ async function downloadAsync(url: string, fetchAsync: typeof fetch): Promise<Ref
 		if (!(error instanceof Error)) throw error;
 		throw new ValidationError(`Could not download reference ${url}: ${error.message}`, { cause: error });
 	}
-	if (!response.ok) throw new ValidationError(`Could not download reference ${url}: HTTP ${response.status}.`);
+
+	if (!response.ok) {
+		throw new ValidationError(`Could not download reference ${url}: HTTP ${response.status}.`);
+	}
+
 	return toReferenceImage(url, new Uint8Array(await response.arrayBuffer()));
 }
 
