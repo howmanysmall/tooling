@@ -6,7 +6,7 @@ import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import ansis, { bold, cyan, dim, green, link, red, underline } from "ansis";
 import { consola } from "consola";
 
-import { formatTimestamp } from "$functions/format-timestamp";
+import { formatTimestampAsync } from "$functions/format-timestamp";
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 import { TimestampFormat } from "$validators/timestamp-format-type";
@@ -94,7 +94,7 @@ function toPrettySupportedParameters(
 	);
 }
 
-function toPrettyObject(imageModelListItem: ImageModelListItem): PrettyObject {
+async function toPrettyObjectAsync(imageModelListItem: ImageModelListItem): Promise<PrettyObject> {
 	return {
 		id: imageModelListItem.id,
 		name: imageModelListItem.name,
@@ -102,7 +102,7 @@ function toPrettyObject(imageModelListItem: ImageModelListItem): PrettyObject {
 			inputModalities: toPrettyModalities(imageModelListItem.architecture.inputModalities),
 			outputModalities: toPrettyModalities(imageModelListItem.architecture.outputModalities),
 		},
-		created: formatTimestamp(imageModelListItem.created, TimestampFormat.ShortWeekdayDateTime),
+		created: await formatTimestampAsync(imageModelListItem.created, TimestampFormat.ShortWeekdayDateTime),
 		description: toPrettyDescription(imageModelListItem.description),
 		page: toModelPageLink(imageModelListItem.id),
 		supportedParameters: toPrettySupportedParameters(imageModelListItem.supportedParameters),
@@ -192,12 +192,12 @@ function renderPrettyObject(prettyObject: PrettyObject): string {
 	return sections.join("\n\n");
 }
 
-function formatModelPretty(imageModel: ImageModelListItem): string {
-	return renderPrettyObject(toPrettyObject(imageModel));
+async function formatModelPrettyAsync(imageModel: ImageModelListItem): Promise<string> {
+	return renderPrettyObject(await toPrettyObjectAsync(imageModel));
 }
 
-function formatModelTable(imageModel: ImageModelListItem): string {
-	const prettyObject = toPrettyObject(imageModel);
+async function formatModelTableAsync(imageModel: ImageModelListItem): Promise<string> {
+	const prettyObject = await toPrettyObjectAsync(imageModel);
 	const rows: Array<Row> = [
 		["id", bold.magenta(prettyObject.id)],
 		["name", prettyObject.name],
@@ -215,7 +215,7 @@ function formatModelTable(imageModel: ImageModelListItem): string {
 		.toString();
 }
 
-function formatModel(imageModel: ImageModelListItem, format: OutputFormat): string {
+async function formatModelAsync(imageModel: ImageModelListItem, format: OutputFormat): Promise<string> {
 	switch (format) {
 		case OutputFormat.Json:
 			return JSON.stringify(imageModel, undefined, "\t");
@@ -224,17 +224,20 @@ function formatModel(imageModel: ImageModelListItem, format: OutputFormat): stri
 			return JSON.stringify(imageModel);
 
 		case OutputFormat.Pretty:
-			return formatModelPretty(imageModel);
+			return formatModelPrettyAsync(imageModel);
 
 		case OutputFormat.Table:
-			return formatModelTable(imageModel);
+			return formatModelTableAsync(imageModel);
 
 		default:
 			throw new Error(`Unknown output format: ${String(format)}`);
 	}
 }
 
-function formatModels(imageModels: ReadonlyArray<ImageModelListItem>, format: OutputFormat): string {
+async function formatModelsAsync(
+	imageModels: ReadonlyArray<ImageModelListItem>,
+	format: OutputFormat,
+): Promise<string> {
 	switch (format) {
 		case OutputFormat.Json:
 			return JSON.stringify(imageModels, undefined, "\t");
@@ -242,26 +245,25 @@ function formatModels(imageModels: ReadonlyArray<ImageModelListItem>, format: Ou
 		case OutputFormat.JsonMinified:
 			return JSON.stringify(imageModels);
 
-		case OutputFormat.Pretty:
-			return imageModels.map(formatModelPretty).join("\n\n");
+		case OutputFormat.Pretty: {
+			const results = await Promise.all(imageModels.map(formatModelPrettyAsync));
+			return results.join("\n\n");
+		}
 
 		case OutputFormat.Table: {
-			return new Table()
-				.header(["ID", "Name", "Input", "Output", "Created"])
-				.body(
-					imageModels.map((imageModel) => {
-						const prettyObject = toPrettyObject(imageModel);
-						return [
-							bold.magenta(prettyObject.id),
-							prettyObject.name,
-							prettyObject.architecture.inputModalities,
-							prettyObject.architecture.outputModalities,
-							prettyObject.created,
-						];
-					}),
-				)
-				.border()
-				.toString();
+			const body = await Promise.all(
+				imageModels.map(async (imageModel) => {
+					const prettyObject = await toPrettyObjectAsync(imageModel);
+					return [
+						bold.magenta(prettyObject.id),
+						prettyObject.name,
+						prettyObject.architecture.inputModalities,
+						prettyObject.architecture.outputModalities,
+						prettyObject.created,
+					];
+				}),
+			);
+			return new Table().header(["ID", "Name", "Input", "Output", "Created"]).body(body).border().toString();
 		}
 
 		default:
@@ -291,7 +293,7 @@ export const getCommand = createBaseCommand(scriptName, "1.0.0", "Used to acquir
 
 		if (model === undefined) {
 			log.info(`Found ${bold.cyan(imageModels.length)} ${toPlural(imageModels.length, "model")}.`);
-			console.log(formatModels(imageModels, format));
+			console.log(await formatModelsAsync(imageModels, format));
 			return;
 		}
 
@@ -301,5 +303,5 @@ export const getCommand = createBaseCommand(scriptName, "1.0.0", "Used to acquir
 			exit(1);
 		}
 
-		console.log(formatModel(imageModel, format));
+		console.log(await formatModelAsync(imageModel, format));
 	});

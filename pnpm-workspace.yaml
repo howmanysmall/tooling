@@ -121,6 +121,8 @@ catalogs:
     oxlint: 1.88.0
     oxlint-plugin-react-doctor: 0.9.18
     oxlint-tsgolint: 7.0.2004
+  polyfills:
+    temporal-polyfill: 1.0.6
   runtime:
     "@arkenv/core": 1.0.0-rc.4
     "@clack/core": 1.5.1
@@ -143,7 +145,6 @@ catalogs:
     "@vitiate/core": 0.3.1
     fast-check: 4.10.2
     jest-extended: 7.0.0
-    temporal-polyfill: 1.0.6
     vitest: 5.0.4
     vitiate: 0.3.1
   tooling:
