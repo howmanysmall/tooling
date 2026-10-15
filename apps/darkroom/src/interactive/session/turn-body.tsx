@@ -25,9 +25,15 @@ export function TurnBody({ box, getPreview, turn }: Readonly<TurnResultPropertie
 	if (turn.phase === TurnPhase.Preparing) {
 		return <Text color={theme.muted}>{`◌ Checking ${turn.modelName} and the price…`}</Text>;
 	}
-	if (turn.phase === TurnPhase.Confirming) return <Text color={theme.muted}>{"◌ Waiting for you to confirm"}</Text>;
-	if (turn.phase === TurnPhase.Running) return <TurnStatus turn={turn} />;
-	if (turn.phase === TurnPhase.Done) return <TurnResult box={box} getPreview={getPreview} turn={turn} />;
+	if (turn.phase === TurnPhase.Confirming) {
+		return <Text color={theme.muted}>{"◌ Waiting for you to confirm"}</Text>;
+	}
+	if (turn.phase === TurnPhase.Running) {
+		return <TurnStatus turn={turn} />;
+	}
+	if (turn.phase === TurnPhase.Done) {
+		return <TurnResult box={box} getPreview={getPreview} turn={turn} />;
+	}
 
 	return (
 		<Text>

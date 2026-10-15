@@ -38,6 +38,7 @@ export class PreviewCache {
 		const key = `${box.columns}x${box.rows}:${path}`;
 		const cached = this.previews.get(key);
 		if (cached !== undefined) return cached;
+
 		const preview = { result: this.loadAsync(path, box) };
 		this.previews.set(key, preview);
 		return preview;

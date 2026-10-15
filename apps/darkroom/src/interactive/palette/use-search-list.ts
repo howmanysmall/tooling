@@ -3,7 +3,7 @@ import { useInput } from "ink";
 
 import { getWindowStart } from "$interactive/components/list-cursor";
 
-import { INITIAL_PALETTE_STATE, reducePaletteState } from "./command-palette-state";
+import { INITIAL_PALETTE_STATE, PaletteActionType, reducePaletteState } from "./command-palette-state";
 
 /**
  * A searchable dialog's list: the matches, the cursor, and the window.
@@ -50,7 +50,7 @@ export function useSearchList<Item>(
 	const start = getWindowStart(state.cursor, count, visibleRows);
 
 	function handleWheel(delta: number): void {
-		dispatch({ count, move: { delta, type: "move" }, type: "move" });
+		dispatch({ count, move: { delta, type: "move" }, type: PaletteActionType.Move });
 	}
 
 	useInput(function onSearchListInput(_input, key) {
@@ -62,12 +62,12 @@ export function useSearchList<Item>(
 	return {
 		cursor: state.cursor,
 		handleQueryChange(query): void {
-			dispatch({ query, type: "query" });
+			dispatch({ query, type: PaletteActionType.Query });
 		},
 		handleWheel,
 		matches,
 		pointAt(index): void {
-			dispatch({ count, move: { index, type: "to" }, type: "move" });
+			dispatch({ count, move: { index, type: "to" }, type: PaletteActionType.Move });
 		},
 		selected: matches[state.cursor],
 		start,
