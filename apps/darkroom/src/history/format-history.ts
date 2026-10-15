@@ -3,7 +3,7 @@ import { dim } from "ansis";
 
 import { formatCost } from "$generation/format-result";
 import { formatLocalDate } from "$generation/output-paths";
-import { formatJson, getLabelWidth, renderRows } from "$utilities/output-format-utilities";
+import { formatJson, getLabelWidth, renderRows, trimTrailingSpaces } from "$utilities/output-format-utilities";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { SHORT_ID_LENGTH } from "./resolve-run-reference";
@@ -55,7 +55,7 @@ export function formatHistoryList(entries: ReadonlyArray<HistoryEntry>, outputFo
 			return formatJson(entries, outputFormat);
 
 		case OutputFormat.Pretty:
-			return new Table().body(entries.map(toListRow)).padding(2).toString();
+			return trimTrailingSpaces(new Table().body(entries.map(toListRow)).padding(2).toString());
 
 		case OutputFormat.Table: {
 			return new Table()

@@ -142,11 +142,43 @@ export async function generateWithInterruptsAsync(prepared: PreparedGeneration):
 	}
 }
 
+/**
+ * Estimates a prepared request's cost from the cached prices.
+ *
+ * @param prepared - The validated request.
+ * @returns Something like `$0.08`, `≈ $0.08`, or `unknown (from $30/M tok)`.
+ */
+export async function describeCostAsync(prepared: PreparedGeneration): Promise<string> {
+	const [{ describeEstimate, getCostEstimate }, { getModelPricingAsync }] = await Promise.all([
+		import("./cost-estimate"),
+		import("$utilities/model-pricing-utilities"),
+	]);
+	try {
+		const pricing = await getModelPricingAsync(true, (message) => {
+			log.debug(message);
+		});
+		const endpoints = pricing[prepared.model.id] ?? [];
+		const { parameters } = prepared;
+		const estimate = getCostEstimate(endpoints, {
+			aspectRatio: parameters.aspectRatio,
+			count: parameters.count,
+			quality: parameters.quality,
+			referenceCount: prepared.input.references.length,
+			resolution: parameters.resolution,
+		});
+		return describeEstimate(estimate, endpoints);
+	} catch (error) {
+		const message = error instanceof Error ? error.message : String(error);
+		log.warn(`Could not read prices: ${message}`);
+		return "unknown";
+	}
+}
+
 export async function printDryRunAsync(prepared: PreparedGeneration, format: OutputFormat): Promise<void> {
-	const { describeRequest } = await import("./format-result");
+	const [{ describeRequest }, cost] = await Promise.all([import("./format-result"), describeCostAsync(prepared)]);
 	const jsonFormat = format === OutputFormat.JsonMinified ? format : OutputFormat.Json;
 	console.log(formatJson(describeRequest(prepared), jsonFormat));
-	log.info("Dry run: nothing was sent. Estimated cost: unknown.");
+	log.info(`Dry run: nothing was sent. Estimated cost: ${cost}.`);
 }
 
 /**
