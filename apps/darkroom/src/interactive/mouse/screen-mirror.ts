@@ -1,6 +1,8 @@
 import { Writable } from "node:stream";
 import xterm from "@xterm/headless";
 
+import { stripPlaceholderMarks } from "$preview/kitty-graphics";
+
 import { CellKind, findTextRuns, getCellKind } from "./text-runs";
 
 import type { IBufferCell } from "@xterm/headless";
@@ -81,7 +83,8 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 		decodeStrings: false,
 		write(chunk: Buffer | string, _encoding, callback): void {
 			output.write(chunk);
-			terminal.write(chunk, notify);
+			// Kitty's placeholder marks would push rows out of place in the copy.
+			terminal.write(stripPlaceholderMarks(chunk.toString()), notify);
 			callback();
 		},
 	});
