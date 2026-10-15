@@ -3,7 +3,7 @@ import { Table } from "@cliffy/table";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
-import ansis, { bold, cyan, dim, green, red } from "ansis";
+import ansis, { bold, cyan, dim, green, link, red, underline } from "ansis";
 import { consola } from "consola";
 
 import { formatTimestamp } from "$functions/format-timestamp";
@@ -68,6 +68,11 @@ function toPrettyDescription(description: string): string {
 	return `${withoutMarker.replace(TRAILING_PUNCTUATION_PATTERN, "")}…`;
 }
 
+function toModelPageLink(id: string): string {
+	const url = `https://openrouter.ai/${encodeURI(id)}`;
+	return underline(link(url, url));
+}
+
 interface PrettyObject {
 	readonly id: string;
 	readonly name: string;
@@ -77,6 +82,7 @@ interface PrettyObject {
 	};
 	readonly created: string;
 	readonly description: string;
+	readonly page: string;
 	readonly supportedParameters: Record<string, string>;
 }
 
@@ -98,6 +104,7 @@ function toPrettyObject(imageModelListItem: ImageModelListItem): PrettyObject {
 		},
 		created: formatTimestamp(imageModelListItem.created, TimestampFormat.ShortWeekdayDateTime),
 		description: toPrettyDescription(imageModelListItem.description),
+		page: toModelPageLink(imageModelListItem.id),
 		supportedParameters: toPrettySupportedParameters(imageModelListItem.supportedParameters),
 	};
 }
@@ -109,6 +116,7 @@ function toDetailRows(prettyObject: PrettyObject): Array<Row> {
 		["created", prettyObject.created],
 		["input", prettyObject.architecture.inputModalities],
 		["output", prettyObject.architecture.outputModalities],
+		["page", prettyObject.page],
 	];
 }
 
