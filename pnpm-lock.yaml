@@ -462,6 +462,9 @@ importers:
       '@isentinel/hooks':
         specifier: catalog:tooling
         version: 1.7.0(@typescript/typescript6@6.0.2)(jiti@2.7.0)(supports-color@10.2.2)
+      '@pobammer-ts/darkroom':
+        specifier: workspace:*
+        version: link:apps/darkroom
       '@pobammer-ts/lsp-mux':
         specifier: catalog:tooling
         version: 3.2.0(@types/node@26.6.5)(jiti@2.7.0)

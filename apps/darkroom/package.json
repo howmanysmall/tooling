@@ -1,6 +1,6 @@
 {
 	"name": "@pobammer-ts/darkroom",
-	"version": "0.0.0",
+	"version": "0.0.1",
 	"description": "A CLI for slopping together images with AI.",
 	"repository": {
 		"type": "git",
