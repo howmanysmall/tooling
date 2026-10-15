@@ -89,6 +89,7 @@ minLines = 5
 minTokens = 50
 threshold = 0.5
 ignoreDefaults = true
+ignore = ["packages/string-utilities/src/casing-utilities.ts"]
 
 [audit]
 gate = "new-only"

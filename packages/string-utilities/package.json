@@ -1,0 +1,34 @@
+{
+	"name": "@howmanysmall/string-utilities",
+	"version": "0.0.0",
+	"private": true,
+	"description": "String manipulation, casing, transliteration, and redaction helpers.",
+	"license": "MIT",
+	"author": {
+		"name": "HowManySmall",
+		"email": "contact@howmanysmall.com",
+		"url": "https://howmanysmall.com"
+	},
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		"./casing-utilities": "./src/casing-utilities.ts",
+		"./package.json": "./package.json"
+	},
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package packages/string-utilities",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent packages/string-utilities",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsc --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"devDependencies": {
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@types/node": "catalog:types",
+		"vitest": "catalog:test"
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	}
+}
