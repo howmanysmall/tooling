@@ -8,12 +8,14 @@ import { environmentPaths } from "$constants/environment-paths";
 import { ApiError } from "$errors/api-error";
 import { ConfigurationError } from "$errors/configuration-error";
 import { InterruptedError } from "$errors/interrupted-error";
+import { CHARGE_NOTE } from "$errors/to-api-error";
 import { HistoryStore } from "$history/history-store";
 import { formatJson } from "$utilities/output-format-utilities";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { InterruptAction, InterruptGuard } from "./interrupt-guard";
 
+import type { StreamProgress } from "./image-stream";
 import type { GenerationInput, GenerationResult, PreparedGeneration } from "./run-generation";
 
 // Shared by `generate`, `history rerun`, and interactive mode: everything
@@ -98,6 +100,12 @@ export async function prepareForTerminalAsync(input: GenerationInput): Promise<P
 	return prepared;
 }
 
+export interface GenerateOptions {
+	/** Skip the "Generating…" line, for callers that draw their own spinner. */
+	readonly isQuiet?: boolean | undefined;
+	readonly onProgress?: ((progress: StreamProgress) => void) | undefined;
+}
+
 function createInterruptHandler(guard: InterruptGuard): () => void {
 	return () => {
 		const action = guard.interrupt();
@@ -111,9 +119,13 @@ function createInterruptHandler(guard: InterruptGuard): () => void {
  * run in the history.
  *
  * @param prepared - The validated request.
+ * @param options - Streaming progress, and whether to announce the request.
  * @returns The finished run.
  */
-export async function generateWithInterruptsAsync(prepared: PreparedGeneration): Promise<GenerationResult> {
+export async function generateWithInterruptsAsync(
+	prepared: PreparedGeneration,
+	options: GenerateOptions = {},
+): Promise<GenerationResult> {
 	const [{ executeGenerationAsync }, { getOpenRouterAsync }] = await Promise.all([
 		import("./run-generation"),
 		import("$functions/get-openrouter-async"),
@@ -124,12 +136,13 @@ export async function generateWithInterruptsAsync(prepared: PreparedGeneration):
 
 	process.on("SIGINT", onInterrupt);
 	try {
-		log.start(`Generating with ${bold.magenta(prepared.model.id)}…`);
+		if (options.isQuiet !== true) log.start(`Generating with ${bold.magenta(prepared.model.id)}…`);
 		const result = await executeGenerationAsync(prepared, {
 			client: openrouter.images,
 			guard,
 			history: getHistoryStore(),
 			now: () => new Date(),
+			onProgress: options.onProgress,
 			warn(message) {
 				log.warn(message);
 			},
@@ -195,6 +208,20 @@ export async function printResultAsync(result: GenerationResult, format: OutputF
 	if (output !== undefined) console.log(output);
 	stderr.write(`${green("✔")} ${formatSummary(result)}\n`);
 
+	throwIfIncomplete(result);
+}
+
+/**
+ * Fails the run, after its images were printed, when the provider stopped
+ * early or an image could not be written where asked.
+ *
+ * @param result - The finished run.
+ * @throws {ApiError} Exit 1, saying where the affected images are.
+ */
+export function throwIfIncomplete(result: GenerationResult): void {
+	if (result.providerError !== undefined) {
+		throw new ApiError(`The provider stopped early: ${result.providerError} ${CHARGE_NOTE}`);
+	}
 	if (result.failures.length === 0) return;
 	const details = result.failures.map((failure) => `${failure.message} (saved to ${failure.recoveredPath})`);
 	throw new ApiError(`Some images could not be written where you asked:\n${details.join("\n")}`);

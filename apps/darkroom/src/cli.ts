@@ -2,7 +2,8 @@
 
 import "$polyfills/color-only-on-terminals";
 
-import { argv } from "node:process";
+import { argv, stdin, stdout } from "node:process";
+import { ValidationError } from "@cliffy/command";
 import { HelpCommand } from "@cliffy/command/help";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
@@ -11,7 +12,14 @@ import { description, version } from "$constants";
 
 const scriptName = getScriptName(true);
 
-const command = createBaseCommand(scriptName, version, description, { showHelpWithoutArguments: true })
+const command = createBaseCommand(scriptName, version, description)
+	.action(async () => {
+		if (!stdin.isTTY || !stdout.isTTY) {
+			throw new ValidationError("Interactive mode needs a terminal. Use a command such as `darkroom generate`.");
+		}
+		const { runInteractiveSessionAsync } = await import("$interactive/interactive-session");
+		await runInteractiveSessionAsync();
+	})
 	.command("generate", async () => {
 		const { generateCommand } = await import("$commands/generate-command");
 		return generateCommand;

@@ -4,10 +4,10 @@ import { ValidationError } from "@cliffy/command";
 import { unrecognized } from "@openrouter/sdk/types";
 
 import { NO_RETRIES } from "$constants/request-options";
-import { ApiError } from "$errors/api-error";
-import { CHARGE_NOTE, toApiError } from "$errors/to-api-error";
+import { toApiError } from "$errors/to-api-error";
 import { createUlid } from "$history/ulid";
 
+import { consumeImageStreamAsync } from "./image-stream";
 import { InterruptPhase } from "./interrupt-guard";
 import { getOutputPath, OutputKind, parseOutputSpec } from "./output-paths";
 import { toDataUrl } from "./references";
@@ -19,6 +19,7 @@ import type { ImageGenerationRequest, ImageModelListItem } from "@openrouter/sdk
 import type { CreateImagesRequest, CreateImagesResponse } from "@openrouter/sdk/models/operations";
 import type { Unrecognized } from "@openrouter/sdk/types";
 
+import type { StreamProgress } from "./image-stream";
 import type { InterruptGuard } from "./interrupt-guard";
 import type { OutputSpec } from "./output-paths";
 import type { ReferenceImage } from "./references";
@@ -32,6 +33,8 @@ export interface ImagesClient {
 
 export interface ImagesResponse {
 	readonly cost?: number | undefined;
+	/** The provider's error, when a stream ended with one after some images. */
+	readonly error?: string | undefined;
 	readonly images: ReadonlyArray<GeneratedImage>;
 }
 
@@ -41,19 +44,8 @@ function isStreamResponse(
 	return !("data" in response);
 }
 
-async function collectStreamAsync(stream: Exclude<CreateImagesResponse, { data: unknown }>): Promise<ImagesResponse> {
-	const images: Array<GeneratedImage> = [];
-	let cost: number | undefined;
-	for await (const event of stream) {
-		if (event.type === "image_generation.completed") {
-			images.push({ b64Json: event.b64Json, mediaType: event.mediaType });
-			const eventCost = event.usage?.cost ?? undefined;
-			if (eventCost !== undefined) cost = (cost ?? 0) + eventCost;
-		} else if (event.type === "error") {
-			throw new ApiError(`The provider reported an error mid-stream: ${event.error.message} ${CHARGE_NOTE}`);
-		}
-	}
-	return { cost, images };
+function ignoreProgress(): void {
+	// Used when the caller did not ask for progress.
 }
 
 /**
@@ -63,6 +55,8 @@ async function collectStreamAsync(stream: Exclude<CreateImagesResponse, { data: 
  * @param client - `openrouter.images`, or a fake in tests.
  * @param request - The request body.
  * @param signal - Aborts the request on Ctrl-C.
+ * @param onProgress - When given, the request is streamed and this receives
+ *   progress; otherwise the response arrives all at once.
  * @returns The images and their total cost, when reported.
  * @rejects An `ApiError` or `InterruptedError` describing the failure, which
  *   notes when the request may already have been charged.
@@ -71,10 +65,12 @@ export async function requestImagesAsync(
 	client: ImagesClient,
 	request: ImageGenerationRequest,
 	signal: AbortSignal,
+	onProgress?: (progress: StreamProgress) => void,
 ): Promise<ImagesResponse> {
+	const imageGenerationRequest = onProgress === undefined ? request : { ...request, stream: true };
 	try {
-		const response = await client.generate({ imageGenerationRequest: request }, { retries: NO_RETRIES, signal });
-		if (isStreamResponse(response)) return await collectStreamAsync(response);
+		const response = await client.generate({ imageGenerationRequest }, { retries: NO_RETRIES, signal });
+		if (isStreamResponse(response)) return await consumeImageStreamAsync(response, onProgress ?? ignoreProgress);
 		return { cost: response.usage?.cost ?? undefined, images: response.data };
 	} catch (error) {
 		throw error instanceof Error ? toApiError(error, true) : error;
@@ -212,6 +208,11 @@ export interface GenerationResult {
 	readonly images: ReadonlyArray<SavedImage>;
 	readonly model: string;
 	readonly prompt: string;
+	/**
+	 * The provider's error, when a stream stopped early. The images it did
+	 * finish are saved.
+	 */
+	readonly providerError?: string | undefined;
 	readonly requested: number;
 	readonly returned: number;
 }
@@ -220,6 +221,8 @@ export interface ExecutionDependencies extends SaveDependencies {
 	readonly client: ImagesClient;
 	readonly guard: InterruptGuard;
 	readonly now: () => Date;
+	/** Receives streaming progress. Only used when the model can stream. */
+	readonly onProgress?: ((progress: StreamProgress) => void) | undefined;
 }
 
 /**
@@ -239,7 +242,8 @@ export async function executeGenerationAsync(
 	const id = createUlid(createdAt.getTime());
 
 	guard.enter(InterruptPhase.Requesting);
-	const response = await requestImagesAsync(dependencies.client, prepared.request, guard.signal);
+	const onProgress = prepared.model.supportsStreaming ? dependencies.onProgress : undefined;
+	const response = await requestImagesAsync(dependencies.client, prepared.request, guard.signal, onProgress);
 	guard.enter(InterruptPhase.Saving);
 
 	const requested = prepared.parameters.count;
@@ -260,6 +264,7 @@ export async function executeGenerationAsync(
 		images,
 		model: prepared.model.id,
 		prompt: prepared.input.prompt,
+		providerError: response.error,
 		requested,
 		returned,
 	};
