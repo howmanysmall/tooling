@@ -114,3 +114,50 @@ describe("history browser state", () => {
 		expect(reduceBrowserState(replaced, { id: 1, type: "status-expired" }).status).toBe(second);
 	});
 });
+
+describe("comparison batches", () => {
+	const BANANA = createEntry("01M4YVAAAAAAAAAAAAAAAAAAB2", { batch: "b", model: "google/banana" });
+	const ADA = createEntry("01M4YVAAAAAAAAAAAAAAAAAAB1", { batch: "b", model: "ada/one" });
+	// Newest first; the batch sorts as ada, bfl, google.
+	const ENTRIES = [
+		CAT,
+		createEntry("01M4YVAAAAAAAAAAAAAAAAAAB3", { batch: "b", model: "bfl/flux" }),
+		BANANA,
+		ADA,
+		TREE,
+	];
+
+	it("lists a batch as one row, starting with its first model", ({ expect }) => {
+		expect.assertions(1);
+
+		expect(getVisibleRuns(createBrowserState(ENTRIES))).toStrictEqual([CAT, ADA, TREE]);
+	});
+
+	it("steps through the batch's runs by model, stopping at either end", ({ expect }) => {
+		expect.assertions(3);
+
+		const onBatch = reduceBrowserState(createBrowserState(ENTRIES), { delta: 1, type: "move" });
+		const stepped = applyActions(onBatch, [
+			{ delta: 1, type: "step-batch" },
+			{ delta: 1, type: "step-batch" },
+			{ delta: 1, type: "step-batch" },
+		]);
+
+		expect(getSelectedRun(stepped)).toBe(BANANA);
+		expect(getVisibleRuns(stepped)).toStrictEqual([CAT, BANANA, TREE]);
+		expect(getSelectedRun(reduceBrowserState(onBatch, { delta: -1, type: "step-batch" }))).toBe(ADA);
+	});
+
+	it("shows a batch's matching run when filtering, and ignores steps outside a batch", ({ expect }) => {
+		expect.assertions(2);
+
+		const filtered = applyActions(createBrowserState(ENTRIES), [
+			{ mode: BrowserMode.Filter, type: "mode" },
+			{ filter: "banana", type: "filter" },
+		]);
+		const plain = createBrowserState(ENTRIES);
+
+		expect(getVisibleRuns(filtered)).toStrictEqual([BANANA]);
+		expect(reduceBrowserState(plain, { delta: 1, type: "step-batch" })).toBe(plain);
+	});
+});

@@ -5,7 +5,14 @@ import { getRunRelations } from "$history/resolve-run-reference";
 
 import { createBrowserActions } from "./history-browser-actions";
 import { HistoryBrowserContext } from "./history-browser-context";
-import { createBrowserState, getSelectedRun, getVisibleRuns, reduceBrowserState } from "./history-browser-state";
+import {
+	createBrowserState,
+	getBatchRuns,
+	getMatchingRuns,
+	getSelectedRun,
+	getVisibleRuns,
+	reduceBrowserState,
+} from "./history-browser-state";
 
 import type { ReactNode } from "react";
 
@@ -83,8 +90,10 @@ function createContextValue({
 			resolve: services.resolve,
 		},
 		state: {
+			batchSizes: new Map(Array.from(getBatchRuns(browser), ([batch, runs]) => [batch, runs.length])),
 			entries: browser.entries,
 			filter: browser.filter,
+			matching: getMatchingRuns(browser),
 			mode: browser.mode,
 			relations: selected === undefined ? undefined : getRunRelations(browser.entries, selected),
 			runs: getVisibleRuns(browser),

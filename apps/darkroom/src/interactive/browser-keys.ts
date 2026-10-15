@@ -1,6 +1,8 @@
 import type { Key } from "ink";
 
 export const enum BrowserKey {
+	BatchNext = "batch-next",
+	BatchPrevious = "batch-previous",
 	ChooseModel = "choose-model",
 	ClearPrompt = "clear-prompt",
 	Copy = "copy",
@@ -36,8 +38,10 @@ const CHARACTER_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
 	["e", BrowserKey.Example],
 	["G", BrowserKey.Last],
 	["g", BrowserKey.First],
+	["h", BrowserKey.BatchPrevious],
 	["j", BrowserKey.Down],
 	["k", BrowserKey.Up],
+	["l", BrowserKey.BatchNext],
 	["o", BrowserKey.Open],
 	["q", BrowserKey.Quit],
 	["r", BrowserKey.Rerun],
@@ -48,6 +52,8 @@ const CHARACTER_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
 const SPECIAL_KEYS: ReadonlyArray<readonly [keyof Key, BrowserKey]> = [
 	["upArrow", BrowserKey.Up],
 	["downArrow", BrowserKey.Down],
+	["leftArrow", BrowserKey.BatchPrevious],
+	["rightArrow", BrowserKey.BatchNext],
 	["pageUp", BrowserKey.PageUp],
 	["pageDown", BrowserKey.PageDown],
 	["home", BrowserKey.First],

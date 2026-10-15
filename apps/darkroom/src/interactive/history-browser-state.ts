@@ -22,19 +22,22 @@ export interface BrowserState {
 	/** Lowercase text the prompt or model must contain. */
 	readonly filter: string;
 	readonly mode: BrowserMode;
+	/** The run shown for each comparison batch, by batch ID. */
+	readonly picks: ReadonlyMap<string, string>;
 	readonly status?: StatusMessage | undefined;
 }
 
 export type BrowserAction =
 	| CursorMove
 	| StatusAction
+	| { readonly delta: number; readonly type: "step-batch" }
 	| { readonly filter: string; readonly type: "filter" }
 	| { readonly id: string; readonly type: "removed" }
 	| { readonly mode: BrowserMode; readonly type: "mode" }
 	| { readonly type: "cancel-filter" };
 
 export function createBrowserState(entries: ReadonlyArray<HistoryEntry>): BrowserState {
-	return { cursor: 0, entries, filter: "", mode: BrowserMode.Normal };
+	return { cursor: 0, entries, filter: "", mode: BrowserMode.Normal, picks: new Map() };
 }
 
 function matchesFilter(entry: HistoryEntry, filter: string): boolean {
@@ -42,14 +45,65 @@ function matchesFilter(entry: HistoryEntry, filter: string): boolean {
 }
 
 /**
- * Gets the runs that match the filter, newest first.
+ * Gets every run that matches the filter, newest first, with each run of a
+ * comparison counted on its own.
+ *
+ * @param state - The browser state.
+ * @returns The runs the footer counts and totals.
+ */
+export function getMatchingRuns(state: BrowserState): ReadonlyArray<HistoryEntry> {
+	if (state.filter.length === 0) return state.entries;
+	return state.entries.filter((entry) => matchesFilter(entry, state.filter));
+}
+
+function compareByModel(first: HistoryEntry, second: HistoryEntry): number {
+	return first.model.localeCompare(second.model);
+}
+
+/**
+ * Groups the runs that match the filter by comparison batch.
+ *
+ * @param state - The browser state.
+ * @returns Each batch's matching runs, sorted by model, as the strip
+ *   shows them.
+ */
+export function getBatchRuns(state: BrowserState): Map<string, Array<HistoryEntry>> {
+	const batches = new Map<string, Array<HistoryEntry>>();
+	for (const entry of getMatchingRuns(state)) {
+		if (entry.batch === undefined) continue;
+		const runs = batches.get(entry.batch) ?? [];
+		runs.push(entry);
+		batches.set(entry.batch, runs);
+	}
+	for (const runs of batches.values()) runs.sort(compareByModel);
+	return batches;
+}
+
+function pickRun(state: BrowserState, batch: string, runs: ReadonlyArray<HistoryEntry>): HistoryEntry | undefined {
+	const picked = state.picks.get(batch);
+	return runs.find((entry) => entry.id === picked) ?? runs[0];
+}
+
+/**
+ * Gets the rows to list: the runs that match the filter, newest first, with
+ * each comparison batch as one row showing its picked run.
  *
  * @param state - The browser state.
  * @returns The runs to list.
  */
 export function getVisibleRuns(state: BrowserState): ReadonlyArray<HistoryEntry> {
-	if (state.filter.length === 0) return state.entries;
-	return state.entries.filter((entry) => matchesFilter(entry, state.filter));
+	const batches = getBatchRuns(state);
+	const listed = new Set<string>();
+	const rows: Array<HistoryEntry> = [];
+	for (const entry of getMatchingRuns(state)) {
+		if (entry.batch === undefined) {
+			rows.push(entry);
+		} else if (!listed.has(entry.batch)) {
+			listed.add(entry.batch);
+			rows.push(pickRun(state, entry.batch, batches.get(entry.batch) ?? []) ?? entry);
+		}
+	}
+	return rows;
 }
 
 /**
@@ -83,6 +137,27 @@ function setFilter(state: BrowserState, filter: string): BrowserState {
 	return { ...state, cursor: 0, filter: normalized };
 }
 
+/**
+ * Shows the previous or next run of the selected comparison batch, in the
+ * strip's order, stopping at either end.
+ *
+ * @param state - The browser state.
+ * @param delta - `-1` for the previous run, `1` for the next.
+ * @returns The state with the batch's pick moved, or the same state when
+ *   the selection isn't in a batch or is already at that end.
+ */
+function stepBatch(state: BrowserState, delta: number): BrowserState {
+	const selected = getSelectedRun(state);
+	if (selected?.batch === undefined) return state;
+
+	const runs = getBatchRuns(state).get(selected.batch) ?? [];
+	const index = runs.findIndex((entry) => entry.id === selected.id);
+	const next = runs[clampCursor(index + delta, runs.length)];
+	if (next === undefined || next.id === selected.id) return state;
+
+	return { ...state, picks: new Map(state.picks).set(selected.batch, next.id) };
+}
+
 function removeRun(state: BrowserState, id: string): BrowserState {
 	const next = { ...state, entries: state.entries.filter((entry) => entry.id !== id), mode: BrowserMode.Normal };
 	return { ...next, cursor: clampCursor(state.cursor, getVisibleRuns(next).length) };
@@ -110,6 +185,9 @@ export function reduceBrowserState(state: BrowserState, action: BrowserAction): 
 
 		case "removed":
 			return removeRun(state, action.id);
+
+		case "step-batch":
+			return stepBatch(state, action.delta);
 
 		default:
 			return { ...state, status: reduceStatus(state.status, action) };

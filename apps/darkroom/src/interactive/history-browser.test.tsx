@@ -40,9 +40,12 @@ const CTRL_P = "\u0010";
 const HELP_DIALOG = /Keys[\s\S]*y +Copy run ID[\s\S]*ctrl\+p +Command palette/u;
 const PALETTE_MATCH = /Commands[\s\S]*Re-run +r/u;
 const DELETE_DIALOG = /Delete run[\s\S]*“a cat in a hat”[\s\S]*y delete/u;
-const COMPARED_ROW = /compared +01M4YVAA · alpha-model/u;
-// Ordered by model, with the selected (newest) run marked.
-const STRIP_LABELS = /alpha-model +▲ zeta-model/u;
+const COMPARED_ROW = /compared +01M4YVAA · zeta-model/u;
+// Ordered by model, with the selected run marked; a comparison opens on
+// its first model.
+const STRIP_LABELS = /▲ alpha-model +zeta-model/u;
+const STEPPED_STRIP = /alpha-model +▲ zeta-model/u;
+const RIGHT = "\u001B[C";
 
 // More detail rows than the pane can show.
 const CROWDED_RUNS: ReadonlyArray<HistoryEntry> = [
@@ -168,6 +171,24 @@ describe("history browser", () => {
 
 		await expect.poll(() => String(instance.lastFrame())).toMatch(STRIP_LABELS);
 		expect(String(instance.lastFrame())).toMatch(COMPARED_ROW);
+	});
+
+	it("lists a comparison once, and steps through its models with →", async ({ expect }) => {
+		// oxlint-disable-next-line small-rules/prefer-expect-assertions -- vitest counts expect.poll, this rule does not
+		expect.assertions(2);
+
+		const store = new HistoryStore(tmpdir());
+		const instance = render(
+			<HistoryBrowserScreen entries={COMPARISON} now={NOW} services={createServices(store, [], [])} />,
+		);
+		await delay(20);
+
+		// The row is cut at the pane's edge in the test's narrow terminal.
+		expect(String(instance.lastFrame())).toContain("◫ 2 mode");
+
+		instance.stdin.write(RIGHT);
+
+		await expect.poll(() => String(instance.lastFrame())).toMatch(STEPPED_STRIP);
 	});
 
 	it("filters the list as the filter is typed, and Esc clears it", async ({ expect }) => {

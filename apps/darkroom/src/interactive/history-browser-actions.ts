@@ -30,6 +30,8 @@ const OPEN_FILTER: BrowserAction = { mode: BrowserMode.Filter, type: "mode" };
 const CANCEL_FILTER: BrowserAction = { type: "cancel-filter" };
 const ASK_DELETE: BrowserAction = { mode: BrowserMode.ConfirmDelete, type: "mode" };
 const BACK_TO_LIST: BrowserAction = { mode: BrowserMode.Normal, type: "mode" };
+const NEXT_IN_BATCH: BrowserAction = { delta: 1, type: "step-batch" };
+const PREVIOUS_IN_BATCH: BrowserAction = { delta: -1, type: "step-batch" };
 
 /**
  * Builds what the browser's keys and inputs can do. Each action that touches
@@ -106,6 +108,12 @@ export function createBrowserActions({
 		},
 		setFilter(text): void {
 			dispatch({ filter: text, type: "filter" });
+		},
+		showNextInBatch(): void {
+			dispatch(NEXT_IN_BATCH);
+		},
+		showPreviousInBatch(): void {
+			dispatch(PREVIOUS_IN_BATCH);
 		},
 	};
 }

@@ -1,3 +1,5 @@
+import { Box } from "ink";
+
 import { CommandGroup } from "./browser-command";
 import { Dialog } from "./dialog";
 import { HelpSection } from "./help-section";
@@ -26,7 +28,8 @@ function toRows(commands: ReadonlyArray<BrowserCommand>, group: CommandGroup): A
 }
 
 /**
- * Every key the browser understands, grouped, in a dialog. Any key closes it.
+ * Every key the browser understands, grouped, in a dialog: the actions on
+ * the left, moving and the shared keys on the right. Any key closes it.
  *
  * @param properties - The browser's commands and the screen's size.
  * @param properties.columns - The screen's width.
@@ -37,10 +40,16 @@ function toRows(commands: ReadonlyArray<BrowserCommand>, group: CommandGroup): A
  */
 export function HelpDialog({ columns, commands, rows }: Readonly<HelpDialogProperties>): ReactNode {
 	return (
-		<Dialog columns={columns} hints={HINTS} rows={rows} title="Keys" width={56}>
-			<HelpSection heading="Actions" rows={toRows(commands, CommandGroup.Act)} />
-			<HelpSection heading="Navigate" rows={toRows(commands, CommandGroup.Navigate)} />
-			<HelpSection heading="General" rows={GENERAL_KEYS} />
+		<Dialog columns={columns} hints={HINTS} rows={rows} title="Keys" width={88}>
+			<Box columnGap={4}>
+				<Box flexBasis={0} flexDirection="column" flexGrow={1}>
+					<HelpSection heading="Actions" rows={toRows(commands, CommandGroup.Act)} />
+				</Box>
+				<Box flexBasis={0} flexDirection="column" flexGrow={1}>
+					<HelpSection heading="Navigate" rows={toRows(commands, CommandGroup.Navigate)} />
+					<HelpSection heading="General" rows={GENERAL_KEYS} />
+				</Box>
+			</Box>
 		</Dialog>
 	);
 }

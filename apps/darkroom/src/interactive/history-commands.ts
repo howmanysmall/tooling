@@ -31,5 +31,19 @@ export function getHistoryCommands(actions: HistoryBrowserActions): Array<Browse
 		{ key: BrowserKey.Delete, group, keyLabel: "d", run: actions.askDelete, title: "Delete run" },
 		{ key: BrowserKey.Quit, group, keyLabel: "q", run: actions.quit, title: "Quit" },
 		...getNavigationCommands(actions, ROW_NAMES),
+		{
+			key: BrowserKey.BatchPrevious,
+			group: CommandGroup.Navigate,
+			keyLabel: "← h",
+			run: actions.showPreviousInBatch,
+			title: "Previous compared model",
+		},
+		{
+			key: BrowserKey.BatchNext,
+			group: CommandGroup.Navigate,
+			keyLabel: "→ l",
+			run: actions.showNextInBatch,
+			title: "Next compared model",
+		},
 	];
 }

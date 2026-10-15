@@ -9,14 +9,18 @@ import type { BrowserMode } from "./history-browser-state";
 import type { StatusMessage } from "./status-message";
 
 export interface HistoryBrowserState {
+	/** How many listed runs each comparison batch has, by batch ID. */
+	readonly batchSizes: ReadonlyMap<string, number>;
 	/** Every run, newest first, including filtered-out ones. */
 	readonly entries: ReadonlyArray<HistoryEntry>;
 	/** Lowercase filter text, empty when unfiltered. */
 	readonly filter: string;
+	/** Every run that matches the filter, with comparisons counted per run. */
+	readonly matching: ReadonlyArray<HistoryEntry>;
 	readonly mode: BrowserMode;
 	/** The selected run's parents and comparison runs, if a run is selected. */
 	readonly relations?: RunRelations | undefined;
-	/** The runs that match the filter, newest first. */
+	/** The rows to list, newest first, one per comparison. */
 	readonly runs: ReadonlyArray<HistoryEntry>;
 	/** The run under the cursor, if any. */
 	readonly selected?: HistoryEntry | undefined;
@@ -45,6 +49,10 @@ export interface HistoryBrowserActions {
 	/** Closes the browser and hands the selected run to the re-run step. */
 	readonly rerunSelected: () => void;
 	readonly setFilter: (text: string) => void;
+	/** Shows the next model's run in the selected comparison. */
+	readonly showNextInBatch: () => void;
+	/** Shows the previous model's run in the selected comparison. */
+	readonly showPreviousInBatch: () => void;
 }
 
 export interface HistoryBrowserLayout {
