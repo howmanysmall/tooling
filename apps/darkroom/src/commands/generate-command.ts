@@ -10,6 +10,7 @@ export const generateCommand = createBaseCommand(
 	"1.0.0",
 	"Generate a new image using OpenRouter's image generation API.",
 )
+	.env("OPENROUTER_API_KEY=<value:string>", "The OpenRouter API key to use for generating images.")
 	.type("image-model", imageModelIdType)
 	.complete("image-model", getImageModelIdsAsync)
 	.option("--model <model:image-model>", "The OpenRouter model to use for generating images.")
