@@ -15,6 +15,7 @@
 			"$generation/*": ["./src/generation/*"],
 			"$history/*": ["./src/history/*"],
 			"$interactive/*": ["./src/interactive/*"],
+			"$mcp/*": ["./src/mcp/*"],
 			"$polyfills/*": ["./src/polyfills/*"],
 			"$preview/*": ["./src/preview/*"],
 			"$types/*": ["./src/types/*"],

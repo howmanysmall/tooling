@@ -1,4 +1,3 @@
-import nodePath from "node:path";
 import process, { cwd, exit, stderr } from "node:process";
 import { confirm, isCancel, note } from "@clack/prompts";
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
@@ -6,64 +5,28 @@ import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import { ApiError } from "$errors/api-error";
 import { ExitCode } from "$errors/exit-code";
 import { InterruptedError } from "$errors/interrupted-error";
-import { describeEstimate, getCostEstimate } from "$generation/cost-estimate";
 import { describeRequest, toDisplayPath } from "$generation/format-result";
 import { InterruptAction, InterruptGuard } from "$generation/interrupt-guard";
-import { formatLocalDate, slugify } from "$generation/output-paths";
 import { previewPrompt } from "$history/format-history";
-import { createUlid } from "$history/ulid";
 import { formatJson } from "$utilities/output-format-utilities";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { describeFailures, formatComparePlan, formatCompareResult, formatCompareSummary } from "./compare-format";
-import {
-	checkModelIds,
-	collectPrepared,
-	combineInterruptActions,
-	describeTotalCost,
-	getCompareDirectory,
-	getModelFileStem,
-} from "./compare-plan";
+import { combineInterruptActions } from "./compare-plan";
 import { executeCompareAsync } from "./execute-compare";
+import { planCompareAsync } from "./plan-compare";
 
-import type { CostEstimate } from "$generation/cost-estimate";
-import type { ReferenceImage } from "$generation/references";
 import type { PreparedGeneration } from "$generation/run-generation";
-import type { GenerationOptions } from "$generation/validate-request";
-import type { ModelPricing } from "$utilities/model-pricing-utilities";
 
 import type { CompareOutcome } from "./compare-format";
 import type { CompareRun } from "./execute-compare";
+import type { ComparePlan, CompareRequest } from "./plan-compare";
 
-export interface CompareInput {
+export interface CompareInput extends CompareRequest {
 	readonly format: OutputFormat;
 	readonly isDryRun: boolean;
-	/** The models, in the order given; results are reported in this order. */
-	readonly modelIds: ReadonlyArray<string>;
-	/**
-	 * The generate options, applied to every model. `output` is the parent
-	 * directory.
-	 */
-	readonly options: GenerationOptions;
-	readonly prompt: string;
-	readonly references: ReadonlyArray<ReferenceImage>;
 	/** `--yes`: spend without asking. */
 	readonly skipConfirmation: boolean;
-}
-
-interface ModelEstimate {
-	readonly estimate?: CostEstimate | undefined;
-	readonly text: string;
-}
-
-/** Everything known before spending: the validated requests and their costs. */
-interface ComparePlan {
-	readonly batch: string;
-	readonly directory: string;
-	readonly estimates: ReadonlyArray<ModelEstimate>;
-	readonly prepared: ReadonlyArray<PreparedGeneration>;
-	/** The estimated total, like `$0.025` or `≥ $0.007`. */
-	readonly total: string;
 }
 
 interface ExecutionReport {
@@ -72,63 +35,27 @@ interface ExecutionReport {
 	readonly signalCode?: ExitCode | undefined;
 }
 
-async function prepareAllAsync(
-	input: CompareInput,
-	batch: string,
-	directory: string,
-): Promise<Array<PreparedGeneration>> {
-	const { prepareForTerminalAsync } = await import("$generation/cli-runner");
-	const settled = await Promise.allSettled(
-		input.modelIds.map(async (modelId) =>
-			prepareForTerminalAsync({
-				batch,
-				force: false,
-				modelId,
-				options: { ...input.options, output: `${directory}${nodePath.sep}` },
-				outputStem: getModelFileStem(modelId),
-				prompt: input.prompt,
-				references: input.references,
-			}),
-		),
-	);
-	return collectPrepared(settled);
-}
-
-async function getEstimatesAsync(prepared: ReadonlyArray<PreparedGeneration>): Promise<Array<ModelEstimate>> {
-	const [{ log, readObservedPricesAsync, toEstimateRequest }, { getModelPricingAsync }] = await Promise.all([
+async function planForTerminalAsync(input: CompareInput): Promise<ComparePlan> {
+	const [{ log, prepareForTerminalAsync, readObservedPricesAsync }, { getModelPricingAsync }] = await Promise.all([
 		import("$generation/cli-runner"),
 		import("$utilities/model-pricing-utilities"),
 	]);
-	const observedPromise = readObservedPricesAsync();
-	let pricing: ModelPricing = {};
-	try {
-		pricing = await getModelPricingAsync(true, (message) => {
-			log.debug(message);
-		});
-	} catch (error) {
-		// Without prices every estimate is unknown, which the plan says.
-		log.warn(`Could not read prices: ${error instanceof Error ? error.message : String(error)}`);
+	function warn(message: string): void {
+		log.warn(message);
 	}
-	const observed = await observedPromise;
-
-	return prepared.map((item) => {
-		const endpoints = pricing[item.model.id] ?? [];
-		const estimate = getCostEstimate(endpoints, toEstimateRequest(item), observed.get(item.model.id));
-		return { estimate, text: describeEstimate(estimate, endpoints) };
-	});
-}
-
-async function planCompareAsync(input: CompareInput): Promise<ComparePlan> {
-	checkModelIds(input.modelIds);
-	const now = new Date();
-	const folderName = `${formatLocalDate(now)}_${slugify(input.prompt)}`;
-	const directory = getCompareDirectory(input.options.output, cwd(), folderName);
-	const batch = createUlid(now.getTime());
-
-	const prepared = await prepareAllAsync(input, batch, directory);
-	const estimates = await getEstimatesAsync(prepared);
-	const total = describeTotalCost(estimates.map(({ estimate }) => estimate));
-	return { batch, directory, estimates, prepared, total };
+	return planCompareAsync(
+		input,
+		{ cwd: cwd(), now: () => new Date(), prepare: prepareForTerminalAsync, warn },
+		{
+			getObservedPricesAsync: readObservedPricesAsync,
+			async getPricingAsync() {
+				return getModelPricingAsync(true, (message) => {
+					log.debug(message);
+				});
+			},
+			warn,
+		},
+	);
 }
 
 async function printDryRunAsync(input: CompareInput, plan: ComparePlan): Promise<void> {
@@ -248,7 +175,7 @@ function finishCompare(input: CompareInput, plan: ComparePlan, { outcomes, signa
  *   `ApiError` (exit 1) after printing when any model failed.
  */
 export async function runCompareAsync(input: CompareInput): Promise<void> {
-	const plan = await planCompareAsync(input);
+	const plan = await planForTerminalAsync(input);
 	if (input.isDryRun) {
 		await printDryRunAsync(input, plan);
 		return;

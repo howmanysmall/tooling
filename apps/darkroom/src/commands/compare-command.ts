@@ -97,7 +97,7 @@ export const compareCommand = createBaseCommand(
 			format: flags.format,
 			isDryRun,
 			modelIds,
-			options: toGenerationOptions({ ...flags, model: undefined }),
+			options: toGenerationOptions(flags),
 			prompt,
 			references,
 			skipConfirmation,

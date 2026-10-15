@@ -167,6 +167,18 @@ catalogs:
     '@openrouter/sdk':
       specifier: 1.4.25
       version: 1.4.25
+    '@tmcp/adapter-arktype':
+      specifier: 0.2.3
+      version: 0.2.3
+    '@tmcp/transport-in-memory':
+      specifier: 0.1.0
+      version: 0.1.0
+    '@tmcp/transport-stdio':
+      specifier: 0.5.0
+      version: 0.5.0
+    tmcp:
+      specifier: 1.20.0
+      version: 1.20.0
   build:
     '@arethetypeswrong/core':
       specifier: 0.18.5
@@ -668,6 +680,12 @@ importers:
       '@openrouter/sdk':
         specifier: catalog:ai
         version: 1.4.25
+      '@tmcp/adapter-arktype':
+        specifier: catalog:ai
+        version: 0.2.3(arktype@2.2.8)(tmcp@1.20.0(typescript@6.0.3))
+      '@tmcp/transport-stdio':
+        specifier: catalog:ai
+        version: 0.5.0(tmcp@1.20.0(typescript@6.0.3))
       '@xterm/headless':
         specifier: catalog:runtime
         version: 6.0.0
@@ -698,6 +716,9 @@ importers:
       sharp:
         specifier: catalog:runtime
         version: 0.34.5
+      tmcp:
+        specifier: catalog:ai
+        version: 1.20.0(typescript@6.0.3)
       type-fest:
         specifier: catalog:types
         version: 5.10.0
@@ -723,6 +744,9 @@ importers:
       '@howmanysmall/string-utilities':
         specifier: workspace:*
         version: link:../../packages/string-utilities
+      '@tmcp/transport-in-memory':
+        specifier: catalog:ai
+        version: 0.1.0(tmcp@1.20.0(typescript@6.0.3))
       '@total-typescript/shoehorn':
         specifier: catalog:test
         version: 0.1.2
@@ -3647,6 +3671,9 @@ packages:
   '@sonarsource/analyzer-commons-configurations@2.31.0-5284':
     resolution: {integrity: sha512-ruk3blMs9BE9RNSp9LPpWZAIjxJmq4Cp00E3cELIHz7Kym3WxdWGRlKOMYLRQ5tJg/de7jN5AtEElY3bGIfTcw==}
 
+  '@standard-schema/spec@1.1.0':
+    resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
   '@stryker-mutator/api@10.0.0':
     resolution: {integrity: sha512-ZtAJ0ZT3MVRCWJTBE2h90XB/6E+4lifHYtcTyNG6nU2nLekPgTo4gD5esjX6Okxo1b/JB4jJzyxYB54fwKAoJw==}
     engines: {node: '>=22.0.0'}
@@ -3768,6 +3795,27 @@ packages:
 
   '@swc/types@0.1.28':
     resolution: {integrity: sha512-V6Mnml8v09QALx6K0elJ7o9K/MkVDtW3t6L+7Ou/JcWtb3xwId2AH4FeOceySd2JaO87IMw4+6vSZxLm34LPbw==}
+
+  '@tmcp/adapter-arktype@0.2.3':
+    resolution: {integrity: sha512-Rd1PV9a7xI35DDMU0kvFnZ2B9THc0xeS3CUFbjDz9AZKeu+gT5+p3bV87tZTwBmNaAdx4F8MS2c9kZjbkq42tg==}
+    peerDependencies:
+      arktype: ^2.0.0
+      tmcp: ^1.17.0
+
+  '@tmcp/session-manager@0.3.0':
+    resolution: {integrity: sha512-L16r8qlzXUoS0ec7kuap1P1nQorCcZHHUFe7UGijwwrfBRXB0hFnfC+/BM1PVdGlM7Ade8YxomecybQN5imYXA==}
+    peerDependencies:
+      tmcp: ^1.20.0-next.0 || ^1.20.0
+
+  '@tmcp/transport-in-memory@0.1.0':
+    resolution: {integrity: sha512-EsFmGCTv/L8tyGgFhFvFVZR6Cd6CWBj99VzafuwUCFVQvoGgr0bfDKW0MY26hTW+pq4Zy+tWFB/PGnFCpTLg+Q==}
+    peerDependencies:
+      tmcp: ^1.20.0-next.0 || ^1.20.0
+
+  '@tmcp/transport-stdio@0.5.0':
+    resolution: {integrity: sha512-1NZsGDveDraa/KWsOOn8VybPn5PbYJi5hRWuIRUKIX7joa3Lx7tSf+0EeXwzG1OyPlsEeTNagBWpBpvpfh5lpw==}
+    peerDependencies:
+      tmcp: ^1.20.0-next.0 || ^1.20.0
 
   '@total-typescript/shoehorn@0.1.2':
     resolution: {integrity: sha512-p7nNZbOZIofpDNyP0u1BctFbjxD44Qc+oO5jufgQdFdGIXJLc33QRloJpq7k5T59CTgLWfQSUxsuqLcmeurYRw==}
@@ -6835,6 +6883,9 @@ packages:
   spdx-license-ids@3.0.24:
     resolution: {integrity: sha512-cLS9TtWkIQFyLkJ3/5aFQAOHOSKTlOs/7WDut/XPSdjom1fJhUdkepeJAKXa9Y05+FabHd0sti+Et559vDtkpQ==}
 
+  sqids@0.3.0:
+    resolution: {integrity: sha512-lOQK1ucVg+W6n3FhRwwSeUijxe93b51Bfz5PMRMihVf1iVkl82ePQG7V5vwrhzB11v0NtsR25PSZRGiSomJaJw==}
+
   stack-utils@2.0.6:
     resolution: {integrity: sha512-XlkWvfIm6RmsWtNJx+uqtKLS8eqFbxUg0ZzLXqY0caEy9l7hruX8IpiDnjsLavoBgqCCR71TqWO8MaXYheJ3RQ==}
     engines: {node: '>=10'}
@@ -6960,6 +7011,9 @@ packages:
   tinyrainbow@3.2.0:
     resolution: {integrity: sha512-LgO3D9yZJjApUiuUfl9iFAwrtaX4+lok3wJIqttGoKCHlWUqHqbQpnxCf82L8FjgKsh4iGo78hqJwgL8F6To2A==}
     engines: {node: '>=14.0.0'}
+
+  tmcp@1.20.0:
+    resolution: {integrity: sha512-dcDximKQBGqLP/aEAVA26HcWRHhKipstg1w0fbDDJ0HcFZ6lolLU1YYmStYEn/73f534i7WrDNcjRfRYdV9CoA==}
 
   to-valid-identifier@1.0.0:
     resolution: {integrity: sha512-41wJyvKep3yT2tyPqX/4blcfybknGB4D+oETKLs7Q76UiPqRpUJK3hr1nxelyYO0PHKVzJwlu0aCeEAsGI6rpw==}
@@ -7182,6 +7236,9 @@ packages:
 
   uri-js@4.4.1:
     resolution: {integrity: sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==}
+
+  uri-template-matcher@1.1.2:
+    resolution: {integrity: sha512-uZc1h12jdO3m/R77SfTEOuo6VbMhgWznaawKpBjRGSJb7i91x5PgI37NQJtG+Cerxkk0yr1pylBY2qG1kQ+aEQ==}
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
@@ -9628,6 +9685,8 @@ snapshots:
 
   '@sonarsource/analyzer-commons-configurations@2.31.0-5284': {}
 
+  '@standard-schema/spec@1.1.0': {}
+
   '@stryker-mutator/api@10.0.0':
     dependencies:
       mutation-testing-metrics: 3.8.4
@@ -9766,6 +9825,29 @@ snapshots:
   '@swc/types@0.1.28':
     dependencies:
       '@swc/counter': 0.1.3
+
+  '@tmcp/adapter-arktype@0.2.3(arktype@2.2.8)(tmcp@1.20.0(typescript@6.0.3))':
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      '@types/json-schema': 7.0.15
+      arktype: 2.2.8
+      tmcp: 1.20.0(typescript@6.0.3)
+
+  '@tmcp/session-manager@0.3.0(tmcp@1.20.0(typescript@6.0.3))':
+    dependencies:
+      json-rpc-2.0: 1.8.1
+      tmcp: 1.20.0(typescript@6.0.3)
+
+  '@tmcp/transport-in-memory@0.1.0(tmcp@1.20.0(typescript@6.0.3))':
+    dependencies:
+      '@tmcp/session-manager': 0.3.0(tmcp@1.20.0(typescript@6.0.3))
+      json-rpc-2.0: 1.8.1
+      tmcp: 1.20.0(typescript@6.0.3)
+
+  '@tmcp/transport-stdio@0.5.0(tmcp@1.20.0(typescript@6.0.3))':
+    dependencies:
+      '@tmcp/session-manager': 0.3.0(tmcp@1.20.0(typescript@6.0.3))
+      tmcp: 1.20.0(typescript@6.0.3)
 
   '@total-typescript/shoehorn@0.1.2': {}
 
@@ -13287,6 +13369,8 @@ snapshots:
 
   spdx-license-ids@3.0.24: {}
 
+  sqids@0.3.0: {}
+
   stack-utils@2.0.6:
     dependencies:
       escape-string-regexp: 2.0.0
@@ -13398,6 +13482,16 @@ snapshots:
   tinypool@2.2.0: {}
 
   tinyrainbow@3.2.0: {}
+
+  tmcp@1.20.0(typescript@6.0.3):
+    dependencies:
+      '@standard-schema/spec': 1.1.0
+      json-rpc-2.0: 1.8.1
+      sqids: 0.3.0
+      uri-template-matcher: 1.1.2
+      valibot: 1.5.0(typescript@6.0.3)
+    transitivePeerDependencies:
+      - typescript
 
   to-valid-identifier@1.0.0:
     dependencies:
@@ -13692,6 +13786,8 @@ snapshots:
     dependencies:
       punycode: 2.3.1
 
+  uri-template-matcher@1.1.2: {}
+
   util-deprecate@1.0.2: {}
 
   valibot@1.5.0(@typescript/typescript6@6.0.2):
@@ -13970,6 +14066,9 @@ time:
   '@stryker-mutator/core@10.0.0': '2026-08-14T16:51:22.686Z'
   '@stryker-mutator/vitest-runner@10.0.0': '2026-08-14T16:50:27.414Z'
   '@stylistic/eslint-plugin@5.10.0': '2026-03-06T04:00:09.407Z'
+  '@tmcp/adapter-arktype@0.2.3': '2026-05-14T07:27:56.575Z'
+  '@tmcp/transport-in-memory@0.1.0': '2026-08-14T12:53:25.374Z'
+  '@tmcp/transport-stdio@0.5.0': '2026-08-14T12:53:23.628Z'
   '@total-typescript/shoehorn@0.1.2': '2024-02-26T15:26:40.706Z'
   '@total-typescript/ts-reset@0.6.1': '2024-09-02T18:55:44.698Z'
   '@turbo/gen@2.11.8': '2026-10-13T18:09:47.573Z'
@@ -14030,6 +14129,7 @@ time:
   skills@1.7.2: '2026-10-09T16:49:31.475Z'
   temporal-polyfill@1.0.6: '2026-10-13T20:13:31.257Z'
   tinyexec@1.3.1: '2026-09-03T08:50:07.324Z'
+  tmcp@1.20.0: '2026-08-14T12:55:39.458Z'
   tsdown@0.23.1: '2026-10-10T16:00:17.156Z'
   turbo@2.11.8: '2026-10-13T18:09:37.180Z'
   type-fest@5.10.0: '2026-09-17T09:11:18.201Z'

@@ -75,6 +75,10 @@ patchedDependencies:
 catalogs:
   ai:
     "@openrouter/sdk": 1.4.25
+    "@tmcp/adapter-arktype": 0.2.3
+    "@tmcp/transport-in-memory": 0.1.0
+    "@tmcp/transport-stdio": 0.5.0
+    tmcp: 1.20.0
   build:
     "@arethetypeswrong/core": 0.18.5
     oxc-transform-react: 0.154.0
