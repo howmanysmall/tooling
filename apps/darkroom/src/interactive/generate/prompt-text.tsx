@@ -24,7 +24,7 @@ export interface PromptTextProperties {
  * @returns The prompt's lines.
  */
 export function PromptText({ editor, placeholder }: Readonly<PromptTextProperties>): ReactNode {
-	if (editor.text === "") {
+	if (editor.text.length === 0) {
 		return (
 			<Text>
 				<Text inverse={true}>{placeholder.charAt(0)}</Text>

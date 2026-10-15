@@ -185,7 +185,8 @@ export function splitAtCursor({ cursor, text }: PromptEditor): CursorSplit {
 	const before = text.slice(0, cursor);
 	const end = getNextBoundary(text, cursor);
 	const at = text.slice(cursor, end);
-	if (at === "" || at === "\n") return { after: text.slice(cursor), at: " ", before };
+	// oxlint-disable-next-line unicorn-js/prefer-simple-condition-first -- not "simpler". slower.
+	if (at.length === 0 || at === "\n") return { after: text.slice(cursor), at: " ", before };
 
 	return { after: text.slice(end), at, before };
 }
@@ -252,6 +253,6 @@ function getModifiedAction(input: string, key: Key): EditorAction | undefined {
 
 function getTypedAction(input: string, key: Key): EditorAction | undefined {
 	if (input === "\n") return NEW_LINE;
-	if (input === "" || key.escape || key.tab) return undefined;
+	if (input.length === 0 || key.escape || key.tab) return undefined;
 	return { text: input, type: "insert" };
 }

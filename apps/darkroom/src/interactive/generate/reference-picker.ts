@@ -115,7 +115,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 		}
 
 		const bar = cyan(S_BAR);
-		const filter = this.picker.filter === "" ? "" : `  ${dim("filter:")} ${this.userInputWithCursor}`;
+		const filter = this.picker.filter.length === 0 ? "" : `  ${dim("filter:")} ${this.userInputWithCursor}`;
 		const header = [gray(S_BAR), title, `${bar}  ${dim(shortenHomePath(this.picker.directory))}${filter}`];
 		const footer = [
 			...(this.picker.warning === undefined ? [] : [`${bar}  ${yellow(this.picker.warning)}`]),
@@ -177,7 +177,9 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 
 	private handleKey(key: Key): void {
 		if (key.name === "tab") this.goTo(getOpenTarget(this.picker));
-		if (key.name === "backspace" && this.filterBeforeKey === "") this.goTo(nodePath.dirname(this.picker.directory));
+		if (key.name === "backspace" && this.filterBeforeKey.length === 0) {
+			this.goTo(nodePath.dirname(this.picker.directory));
+		}
 		this.filterBeforeKey = this.userInput;
 	}
 

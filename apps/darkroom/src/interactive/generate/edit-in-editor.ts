@@ -13,7 +13,7 @@ import { createUlid } from "$history/ulid";
  */
 export function getEditor(variables: Readonly<Record<string, string | undefined>>): string | undefined {
 	const editor = variables.VISUAL ?? variables.EDITOR;
-	return editor === undefined || editor.trim() === "" ? undefined : editor;
+	return editor === undefined || editor.trim().length === 0 ? undefined : editor;
 }
 
 /**
@@ -34,7 +34,7 @@ export async function editInEditorAsync(editor: string, initial = ""): Promise<s
 		if (status !== 0) return undefined;
 		const text = await readFile(file, "utf8");
 		const trimmed = text.trim();
-		return trimmed === "" ? undefined : trimmed;
+		return trimmed.length === 0 ? undefined : trimmed;
 	} finally {
 		await rm(file, { force: true });
 	}

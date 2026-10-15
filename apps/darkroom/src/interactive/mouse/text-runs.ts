@@ -24,7 +24,7 @@ const GRAPHIC = /^[─-▟]+$/u;
  */
 export function getCellKind(chars: string, width: number): CellKind {
 	if (width === 0) return CellKind.Continuation;
-	if (chars.trim() === "") return CellKind.Blank;
+	if (chars.trim().length === 0) return CellKind.Blank;
 	return GRAPHIC.test(chars) ? CellKind.Graphic : CellKind.Text;
 }
 

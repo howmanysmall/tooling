@@ -27,7 +27,7 @@ export interface ErrorCommand {
 function getDefaultIo(): CommandErrorIo {
 	return {
 		// biome-ignore lint/style/noProcessEnv: DEBUG is read before any app schema exists.
-		debug: (env.DEBUG ?? "") !== "",
+		debug: (env.DEBUG ?? "").length > 0,
 		exit,
 		writeError(text): void {
 			stderr.write(text);

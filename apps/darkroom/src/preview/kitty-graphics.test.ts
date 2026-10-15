@@ -11,7 +11,7 @@ describe("formatKittyTransmit", () => {
 		// 4000 bytes become 5336 base64 characters: two chunks.
 		const commands = formatKittyTransmit(7, new Uint8Array(4000), { columns: 20, rows: 10 })
 			.split(`${ESC}\\`)
-			.filter((command) => command !== "");
+			.filter((command) => command.length > 0);
 
 		expect(commands).toHaveLength(2);
 		expect(commands[0]?.split(";", 1)[0]).toBe(`${ESC}_Ga=T,f=100,t=d,U=1,q=2,i=7,c=20,r=10,m=1`);

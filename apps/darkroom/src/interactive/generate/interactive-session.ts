@@ -94,7 +94,7 @@ async function askOncePromptAsync(editor?: string): Promise<string | undefined> 
 
 	const typed = await multiline({
 		message: "Prompt",
-		validate: (value) => ((value ?? "").trim() === "" ? "Write a prompt." : undefined),
+		validate: (value) => ((value ?? "").trim().length === 0 ? "Write a prompt." : undefined),
 	});
 	exitIfCanceled(typed);
 	return typed;
@@ -106,7 +106,7 @@ async function askPromptAsync(): Promise<string> {
 		// oxlint-disable-next-line no-await-in-loop -- ask again until the prompt is not empty
 		const prompt = await askOncePromptAsync(editor);
 		const trimmed = prompt?.trim() ?? "";
-		if (trimmed !== "") return trimmed;
+		if (trimmed.length > 0) return trimmed;
 		log.warn("The prompt was empty.");
 	}
 }

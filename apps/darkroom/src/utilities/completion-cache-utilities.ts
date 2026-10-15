@@ -80,7 +80,7 @@ export async function getCompletionsAsync(completionKind: CompletionKind): Promi
 		const stats = await stat(completionFile);
 		if (Date.now() - stats.mtimeMs < CACHE_TTL_MS) {
 			const content = await readFile(completionFile, "utf8");
-			return content === "" ? [] : content.split("\n");
+			return content.length === 0 ? [] : content.split("\n");
 		}
 	} catch {
 		// The cache file does not exist.

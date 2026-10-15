@@ -106,7 +106,7 @@ export function GenerateScreen({
 	function generate(): void {
 		if (model === undefined) {
 			reportError("There are no models to generate with.");
-		} else if (prompt === "") {
+		} else if (prompt.length === 0) {
 			reportError("Write a prompt first.");
 		} else {
 			session.actions.send({ model, prompt, type: "new" });
@@ -115,7 +115,7 @@ export function GenerateScreen({
 	}
 
 	function interrupt(): void {
-		if (screen.editor.text === "") exit();
+		if (screen.editor.text.length === 0) exit();
 		else dispatch(CLEAR_PROMPT);
 	}
 
