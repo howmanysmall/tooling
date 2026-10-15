@@ -43,4 +43,12 @@ describe("findTextRuns", () => {
 
 		expect(findRuns("  ▀▄█  ", { end: 7, row: 0, start: 0 })).toStrictEqual([]);
 	});
+
+	it("leaves out a kitty image, whose placeholders only draw right as the app wrote them", ({ expect }) => {
+		expect.assertions(1);
+
+		const image = "\u{10EEEE}̅̅\u{10EEEE}̅̍";
+
+		expect(findRuns(`${image} cat`, { end: 6, row: 0, start: 0 })).toStrictEqual([{ end: 6, row: 0, start: 3 }]);
+	});
 });

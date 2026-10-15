@@ -86,6 +86,15 @@ describe("createScreenMirror", () => {
 		expect(mirror.readText(runs)).toBe("a cat  $1\n\nen");
 	});
 
+	it("leaves a kitty image's placeholders alone", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const { mirror } = openTerminal(onTestFinished);
+		await drawAsync(mirror, "\u001B[38;2;0;0;7m\u{10EEEE}̅̅\u{10EEEE}̅̍\u001B[39m cat");
+
+		expect(mirror.findText([{ end: 20, row: 0, start: 0 }])).toStrictEqual([{ end: 6, row: 0, start: 3 }]);
+	});
+
 	it("paints cells on the highlight, keeping their own style, and back again", async ({ expect, onTestFinished }) => {
 		expect.assertions(4);
 
