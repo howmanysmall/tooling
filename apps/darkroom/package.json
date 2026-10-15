@@ -33,9 +33,10 @@
 	},
 	"dependencies": {
 		"@arkenv/core": "catalog:runtime",
-		"@cliffy/command": "catalog:runtime",
+		"@cliffy/table": "catalog:runtime",
 		"@dotenvx/dotenvx": "catalog:runtime",
 		"@openrouter/sdk": "catalog:ai",
+		"ansis": "catalog:runtime",
 		"arktype": "catalog:runtime",
 		"consola": "catalog:runtime",
 		"effect": "catalog:runtime",
@@ -44,9 +45,12 @@
 		"unplugin-macros": "catalog:build"
 	},
 	"devDependencies": {
+		"@cliffy/command": "catalog:runtime",
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/english-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
+		"@howmanysmall/string-utilities": "workspace:*",
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:types",
 		"tsdown": "catalog:build",
