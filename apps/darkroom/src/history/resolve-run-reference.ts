@@ -35,7 +35,9 @@ export function resolveRunReference(entries: ReadonlyArray<HistoryEntry>, refere
 	const prefix = reference.toUpperCase();
 	const matches = entries.filter((entry) => entry.id.startsWith(prefix));
 	const [match] = matches;
-	if (match === undefined) throw new ValidationError(`No run matches "${reference}".`);
+	if (match === undefined) {
+		throw new ValidationError(`No run matches "${reference}".`);
+	}
 	if (matches.length > 1) {
 		const listing = matches.map((entry) => `  ${summarize(entry)}`).join("\n");
 		throw new ValidationError(`"${reference}" matches ${matches.length} runs:\n${listing}`);
