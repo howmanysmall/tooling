@@ -1,9 +1,9 @@
 import { Box, Text } from "ink";
 
 import { useHistoryBrowser } from "./history-browser-context";
-import { HistoryDayHeading } from "./history-day-heading";
 import { HistoryRunRow } from "./history-run-row";
 import { buildRunListItems, getVisibleItems } from "./run-list-layout";
+import { SectionHeading } from "./section-heading";
 import { theme } from "./theme";
 
 import type { ReactNode } from "react";
@@ -35,7 +35,7 @@ export function HistoryRunList(): ReactNode {
 			{items.length === 0 ? <Text color={theme.muted}>{emptyText}</Text> : null}
 			{items.map((item) =>
 				item.kind === "day" ? (
-					<HistoryDayHeading key={item.key} label={item.label} />
+					<SectionHeading key={item.key} label={item.label} />
 				) : (
 					<HistoryRunRow key={item.key} entry={item.entry} />
 				),

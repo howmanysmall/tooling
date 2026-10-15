@@ -10,10 +10,7 @@ import { formatDayLabel } from "./run-list-layout";
 import type { HistoryEntry } from "$history/history-entry";
 import type { RunRelations } from "$history/resolve-run-reference";
 
-export interface RunFact {
-	readonly label: string;
-	readonly value: string;
-}
+import type { Fact } from "./fact";
 
 const timeFormatter = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit" });
 
@@ -59,7 +56,7 @@ function describeImages(entry: HistoryEntry): string {
  * @param now - The current time, for the day name.
  * @returns Model, time, size, images, and cost.
  */
-export function getRunStats(entry: HistoryEntry, now: Date): Array<RunFact> {
+export function getRunStats(entry: HistoryEntry, now: Date): Array<Fact> {
 	const created = new Date(entry.created);
 	return [
 		{ label: "model", value: getModelName(entry.model) },
@@ -88,8 +85,8 @@ export function getRunLinks(
 	entry: HistoryEntry,
 	relations: RunRelations,
 	resolve: (stored: string) => string,
-): Array<RunFact> {
-	const links: Array<RunFact> = entry.images.map((image) => ({
+): Array<Fact> {
+	const links: Array<Fact> = entry.images.map((image) => ({
 		label: "file",
 		value: shortenHomePath(image.output === "-" ? resolve(image.stored) : image.output),
 	}));
@@ -106,6 +103,6 @@ export function getRunLinks(
 		links.push({ label: "compared", value: `${run.id.slice(0, SHORT_ID_LENGTH)} · ${getModelName(run.model)}` });
 	}
 
-	links.push({ label: "id", value: entry.id });
+	links.push({ isQuiet: true, label: "id", value: entry.id });
 	return links;
 }

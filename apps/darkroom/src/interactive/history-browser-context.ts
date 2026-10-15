@@ -5,7 +5,8 @@ import type { RunRelations } from "$history/resolve-run-reference";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
 
-import type { BrowserMode, StatusMessage } from "./history-browser-state";
+import type { BrowserMode } from "./history-browser-state";
+import type { StatusMessage } from "./status-message";
 
 export interface HistoryBrowserState {
 	/** Every run, newest first, including filtered-out ones. */

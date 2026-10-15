@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { BrowserKey, formatClipboardSequence, getBrowserKey } from "./history-browser-keys.ts";
+import { BrowserKey, formatClipboardSequence, getBrowserKey } from "./browser-keys.ts";
 
 import type { Key } from "ink";
 
@@ -29,9 +29,10 @@ const NO_KEY: Key = {
 
 describe("getBrowserKey", () => {
 	it("maps arrows, letters, and Enter to their bindings", ({ expect }) => {
-		expect.assertions(5);
+		expect.assertions(6);
 
 		expect(getBrowserKey("", { ...NO_KEY, downArrow: true })).toBe(BrowserKey.Down);
+		expect(getBrowserKey("s", NO_KEY)).toBe(BrowserKey.Sort);
 		expect(getBrowserKey("", { ...NO_KEY, return: true })).toBe(BrowserKey.Open);
 		expect(getBrowserKey("G", { ...NO_KEY, shift: true })).toBe(BrowserKey.Last);
 		expect(getBrowserKey("g", NO_KEY)).toBe(BrowserKey.First);

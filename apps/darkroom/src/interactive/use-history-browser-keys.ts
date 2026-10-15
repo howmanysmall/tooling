@@ -1,7 +1,7 @@
 import { useInput } from "ink";
 
+import { BrowserKey, getBrowserKey } from "./browser-keys";
 import { useHistoryBrowser } from "./history-browser-context";
-import { BrowserKey, getBrowserKey } from "./history-browser-keys";
 import { BrowserMode } from "./history-browser-state";
 
 import type { HistoryBrowserActions } from "./history-browser-context";

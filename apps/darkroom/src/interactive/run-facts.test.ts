@@ -62,7 +62,7 @@ describe("getRunLinks", () => {
 		expect(getRunLinks(ENTRY, { batch: [other], parents: [] }, (stored) => `/data/${stored}`)).toStrictEqual([
 			{ label: "file", value: "~/art/cat_1.png" },
 			{ label: "compared", value: "01M4YVBB · recraft-v4.1-flash" },
-			{ label: "id", value: ENTRY.id },
+			{ isQuiet: true, label: "id", value: ENTRY.id },
 		]);
 	});
 
