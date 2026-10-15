@@ -2,6 +2,23 @@
 	"name": "@pobammer-ts/darkroom",
 	"version": "0.0.1",
 	"description": "A CLI for slopping together images with AI.",
+	"keywords": [
+		"tools",
+		"cli",
+		"image-processing",
+		"artificial-intelligence",
+		"ai",
+		"generative-ai",
+		"image-manipulation",
+		"automation",
+		"typescript",
+		"openrouter",
+		"workflow"
+	],
+	"bugs": {
+		"email": "anna@howmanysmall.com",
+		"url": "https://github.com/howmanysmall/tooling/issues"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/howmanysmall/tooling.git",
@@ -33,9 +50,9 @@
 	},
 	"dependencies": {
 		"@arkenv/core": "catalog:runtime",
+		"@clack/core": "catalog:runtime",
+		"@clack/prompts": "catalog:runtime",
 		"@dotenvx/dotenvx": "catalog:runtime",
-		"@inquirer/core": "catalog:runtime",
-		"@inquirer/prompts": "catalog:runtime",
 		"@openrouter/sdk": "catalog:ai",
 		"ansis": "catalog:runtime",
 		"arktype": "catalog:runtime",
