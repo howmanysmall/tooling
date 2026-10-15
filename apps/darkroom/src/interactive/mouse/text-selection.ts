@@ -107,7 +107,7 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 		screen.paint(runs, false);
 		spans = [];
 		runs = [];
-		if (text !== "") copy(text);
+		if (text.length > 0) copy(text);
 		return true;
 	}
 

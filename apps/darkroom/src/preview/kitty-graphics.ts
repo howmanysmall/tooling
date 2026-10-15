@@ -7,7 +7,7 @@ const PLACEHOLDER = "\u{10EEEE}";
 const CHUNK_LENGTH = 4096;
 
 function formatCommand(control: string, payload = ""): string {
-	const data = payload === "" ? "" : `;${payload}`;
+	const data = payload.length === 0 ? "" : `;${payload}`;
 	return `${ESC}_G${control}${data}${ESC}\\`;
 }
 

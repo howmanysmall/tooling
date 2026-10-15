@@ -282,6 +282,7 @@ function getArktypeBindings(program: ESTree.Program): ArktypeBindings {
 
 function isBrandName(argument?: ESTree.Argument): boolean {
 	if (argument?.type !== "Literal") return false;
+	// oxlint-disable-next-line small-rules/no-useless-empty-string-comparison -- nullable.
 	return argument.value !== "" && Object.prototype.toString.call(argument.value) === "[object String]";
 }
 

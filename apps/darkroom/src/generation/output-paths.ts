@@ -110,8 +110,8 @@ export function getOutputPath(
 	}
 
 	const extension = nodePath.extname(spec.path);
-	const stem = extension === "" ? spec.path : spec.path.slice(0, -extension.length);
-	const finalExtension = extension === "" ? `.${naming.extension}` : extension;
+	const stem = extension.length === 0 ? spec.path : spec.path.slice(0, -extension.length);
+	const finalExtension = extension.length === 0 ? `.${naming.extension}` : extension;
 	return naming.count === 1 ? `${stem}${finalExtension}` : `${stem}_${naming.index}${finalExtension}`;
 }
 

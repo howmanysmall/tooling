@@ -137,5 +137,8 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 	if (guided === undefined) return;
 
 	const { runInteractiveSessionAsync } = await import("$interactive/generate/interactive-session");
-	await runInteractiveSessionAsync({ model: guided.model, prompt: guided.prompt === "" ? undefined : guided.prompt });
+	await runInteractiveSessionAsync({
+		model: guided.model,
+		prompt: guided.prompt.length === 0 ? undefined : guided.prompt,
+	});
 }
