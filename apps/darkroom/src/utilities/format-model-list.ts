@@ -60,6 +60,7 @@ export function formatModelList(
 			return new Table().header(HEADER).body(rows).border().toString();
 
 		default:
-			throw new Error(`Unknown output format: ${outputFormat}`);
+			// eslint-disable-next-line unicorn/no-useless-coercion -- useless rule!
+			throw new Error(`Unknown output format: ${String(outputFormat)}`);
 	}
 }

@@ -32,7 +32,7 @@ async function askModelAsync(models: ReadonlyArray<ImageModelListItem>): Promise
 	return model;
 }
 
-async function askOncePromptAsync(editor: string | undefined): Promise<string | undefined> {
+async function askOncePromptAsync(editor?: string): Promise<string | undefined> {
 	if (editor !== undefined) {
 		const useEditor = await select({
 			message: "Prompt",
@@ -67,6 +67,7 @@ async function askPromptAsync(): Promise<string> {
 async function askReferencesAsync(model: ImageModelListItem): Promise<Array<ReferenceImage>> {
 	const { max } = getReferenceRange(model);
 	if (max === 0) return [];
+
 	const picked = await pickReferencesAsync({ directory: cwd(), max, message: "Reference images", output: stdout });
 	exitIfCancelled(picked);
 	const paths = picked ?? [];
@@ -82,6 +83,7 @@ async function askChoiceAsync(
 	const values = getEnumValues(model, parameter);
 	if (values === undefined || values.length === 0) return undefined;
 	if (values.length === 1) return values[0];
+
 	const choice = await select({ message, options: values.map((value) => ({ label: value, value })) });
 	exitIfCancelled(choice);
 	return choice;

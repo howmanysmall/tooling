@@ -48,7 +48,7 @@ function matchesFilter(entry: HistoryEntry, filter: string): boolean {
  * @returns The runs to list.
  */
 export function getVisibleRuns(state: BrowserState): ReadonlyArray<HistoryEntry> {
-	if (state.filter === "") return state.entries;
+	if (state.filter.length === 0) return state.entries;
 	return state.entries.filter((entry) => matchesFilter(entry, state.filter));
 }
 
@@ -100,21 +100,17 @@ function removeRun(state: BrowserState, id: string): BrowserState {
 export function reduceBrowserState(state: BrowserState, action: BrowserAction): BrowserState {
 	if (isNavigation(action)) return reduceNavigation(state, action);
 	switch (action.type) {
-		case "cancel-filter": {
+		case "cancel-filter":
 			return { ...state, cursor: 0, filter: "", mode: BrowserMode.Normal };
-		}
 
-		case "filter": {
+		case "filter":
 			return setFilter(state, action.filter);
-		}
 
-		case "mode": {
+		case "mode":
 			return { ...state, mode: action.mode, status: undefined };
-		}
 
-		case "removed": {
+		case "removed":
 			return removeRun(state, action.id);
-		}
 
 		default:
 			return { ...state, status: action.status };
