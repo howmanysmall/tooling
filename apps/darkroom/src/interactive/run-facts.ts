@@ -82,6 +82,20 @@ function describeRun(entry: HistoryEntry): string {
 	return `${entry.id.slice(0, SHORT_ID_LENGTH)} · ${previewPrompt(entry.prompt, 40)}`;
 }
 
+// More compared runs than this become one summary line.
+const MAX_COMPARED_LINES = 3;
+
+function describeComparison(batch: ReadonlyArray<HistoryEntry>): Array<Fact> {
+	if (batch.length > MAX_COMPARED_LINES) {
+		return [{ label: "compared", value: `with ${batch.length} other models` }];
+	}
+
+	return batch.map((run) => ({
+		label: "compared",
+		value: `${run.id.slice(0, SHORT_ID_LENGTH)} · ${getModelName(run.model)}`,
+	}));
+}
+
 /**
  * Where a run's files are and how it relates to other runs. The history's
  * own copies are left out unless the image went to stdout, since then the
@@ -110,10 +124,5 @@ export function getRunLinks(
 		links.push({ label: "re-run of", value: describeRun(parent) });
 	}
 
-	for (const run of relations.batch) {
-		links.push({ label: "compared", value: `${run.id.slice(0, SHORT_ID_LENGTH)} · ${getModelName(run.model)}` });
-	}
-
-	links.push({ isQuiet: true, label: "id", value: entry.id });
-	return links;
+	return [...links, ...describeComparison(relations.batch), { isQuiet: true, label: "id", value: entry.id }];
 }
