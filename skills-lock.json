@@ -187,6 +187,12 @@
       "skillPath": "pstack/skills/typescript-best-practices/SKILL.md",
       "computedHash": "78b59d35ebcb7ce3df44536f095d61a88346ce53105ad338d5598fe89c33ff69"
     },
+    "unix-cli": {
+      "source": "pproenca/dot-skills",
+      "sourceType": "github",
+      "skillPath": "skills/.experimental/unix-cli/SKILL.md",
+      "computedHash": "dcd006b12120cf085859c9930b54389667b0293b618b2245f1c1d44ba4434f6b"
+    },
     "vitest": {
       "source": "antfu/skills",
       "sourceType": "github",
