@@ -15,6 +15,7 @@ import { OutputFormat } from "$validators/output-format-type";
 
 import { InterruptAction, InterruptGuard } from "./interrupt-guard";
 
+import type { EstimateRequest } from "./cost-estimate";
 import type { StreamProgress } from "./image-stream";
 import type { GenerationInput, GenerationResult, PreparedGeneration } from "./run-generation";
 
@@ -43,6 +44,28 @@ export async function askForPromptAsync(): Promise<string> {
 		throw new InterruptedError("Cancelled.");
 	}
 	return answer;
+}
+
+/**
+ * Reads the prompt from the first source that applies: the positional
+ * argument (`-` for stdin), `--prompt-file`, piped stdin, or a prompt on the
+ * terminal.
+ *
+ * @param positional - The `[prompt]` argument, if given.
+ * @param promptFile - The `--prompt-file` value, if given.
+ * @returns The prompt text.
+ * @rejects A `ValidationError` when no source applies or two are given.
+ */
+export async function readPromptAsync(positional?: string, promptFile?: string): Promise<string> {
+	const { resolvePromptAsync } = await import("./resolve-prompt");
+	const canAsk = stdin.isTTY && stderr.isTTY;
+	return resolvePromptAsync({
+		askAsync: canAsk ? askForPromptAsync : undefined,
+		isStdinTty: stdin.isTTY,
+		positional,
+		promptFile,
+		readStdinAsync,
+	});
 }
 
 async function isDirectoryAsync(path: string): Promise<boolean> {
@@ -156,6 +179,24 @@ export async function generateWithInterruptsAsync(
 }
 
 /**
+ * Describes a prepared request the way the price tables need it.
+ *
+ * @param prepared - The validated request.
+ * @param prepared.input - The prompt and references.
+ * @param prepared.parameters - The validated settings.
+ * @returns The count, size, and references being asked for.
+ */
+export function toEstimateRequest({ input, parameters }: PreparedGeneration): EstimateRequest {
+	return {
+		aspectRatio: parameters.aspectRatio,
+		count: parameters.count,
+		quality: parameters.quality,
+		referenceCount: input.references.length,
+		resolution: parameters.resolution,
+	};
+}
+
+/**
  * Estimates a prepared request's cost from the cached prices.
  *
  * @param prepared - The validated request.
@@ -171,14 +212,7 @@ export async function describeCostAsync(prepared: PreparedGeneration): Promise<s
 			log.debug(message);
 		});
 		const endpoints = pricing[prepared.model.id] ?? [];
-		const { parameters } = prepared;
-		const estimate = getCostEstimate(endpoints, {
-			aspectRatio: parameters.aspectRatio,
-			count: parameters.count,
-			quality: parameters.quality,
-			referenceCount: prepared.input.references.length,
-			resolution: parameters.resolution,
-		});
+		const estimate = getCostEstimate(endpoints, toEstimateRequest(prepared));
 		return describeEstimate(estimate, endpoints);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);

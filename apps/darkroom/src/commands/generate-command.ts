@@ -1,4 +1,3 @@
-import { stderr, stdin } from "node:process";
 import { renderHighlight } from "@howmanysmall/cli-utilities/cliffy-highlight";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
@@ -17,28 +16,7 @@ import {
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
 
-import type { GenerationFlags } from "$generation/generation-flags";
-
 const scriptName = getScriptName(true);
-
-interface GenerateFlags extends GenerationFlags {
-	readonly promptFile?: string | undefined;
-}
-
-async function readPromptAsync(flags: GenerateFlags, positional: string | undefined): Promise<string> {
-	const [{ resolvePromptAsync }, { askForPromptAsync, readStdinAsync }] = await Promise.all([
-		import("$generation/resolve-prompt"),
-		import("$generation/cli-runner"),
-	]);
-	const canAsk = stdin.isTTY && stderr.isTTY;
-	return resolvePromptAsync({
-		askAsync: canAsk ? askForPromptAsync : undefined,
-		isStdinTty: stdin.isTTY,
-		positional,
-		promptFile: flags.promptFile,
-		readStdinAsync,
-	});
-}
 
 export const generateCommand = createBaseCommand(
 	scriptName,
@@ -80,7 +58,7 @@ export const generateCommand = createBaseCommand(
 	.option("--dry-run", "Validate and print the request without sending it.")
 	.action(async (flags, positional) => {
 		const [
-			{ prepareForTerminalAsync, resolveModelIdAsync, runPreparedAsync },
+			{ prepareForTerminalAsync, readPromptAsync, resolveModelIdAsync, runPreparedAsync },
 			{ loadReferenceAsync },
 			{ toGenerationOptions },
 		] = await Promise.all([
@@ -91,7 +69,7 @@ export const generateCommand = createBaseCommand(
 
 		// oxlint-disable react-doctor/server-sequential-independent-await -- a missing model or prompt should fail before anything is fetched
 		const modelId = await resolveModelIdAsync(flags.model);
-		const prompt = await readPromptAsync(flags, positional);
+		const prompt = await readPromptAsync(positional, flags.promptFile);
 		const references = await Promise.all((flags.image ?? []).map(async (source) => loadReferenceAsync(source)));
 		// oxlint-enable react-doctor/server-sequential-independent-await
 

@@ -33,6 +33,8 @@ const isStoredRequest = type({
 export const isHistoryEntry = type({
 	id: /^[0-9A-HJKMNP-TV-Z]{26}$/u,
 	"+": "delete",
+	/** The ULID shared by the runs of one `darkroom compare`. */
+	"batch?": OPTIONAL_STRING,
 	"cost?": "number | undefined",
 	created: "string.date.iso",
 	images: isStoredImage.array(),
