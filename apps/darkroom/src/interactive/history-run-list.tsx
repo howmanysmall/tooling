@@ -14,9 +14,9 @@ import type { BrowserState } from "./history-browser-state";
 
 export interface HistoryRunListProperties {
 	/** How many runs fit. */
-	readonly height: number;
-	readonly state: BrowserState;
-	readonly width: number;
+	height: number;
+	state: BrowserState;
+	width: number;
 }
 
 function formatRunRow(entry: HistoryEntry): string {
@@ -35,7 +35,7 @@ function formatRunRow(entry: HistoryEntry): string {
  * @param properties.width - The pane's width in columns.
  * @returns A bordered box with one row per shown run.
  */
-export function HistoryRunList({ height, state, width }: HistoryRunListProperties): ReactNode {
+export function HistoryRunList({ height, state, width }: Readonly<HistoryRunListProperties>): ReactNode {
 	const runs = getVisibleRuns(state);
 	const start = getWindowStart(state.cursor, runs.length, height);
 	const shown = runs.slice(start, start + height);

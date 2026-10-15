@@ -55,9 +55,11 @@ export function getParentChain(entries: ReadonlyArray<HistoryEntry>, entry: Hist
 	const chain: Array<HistoryEntry> = [];
 	const seen = new Set([entry.id]);
 	let parentId = entry.parent;
+
 	while (parentId !== undefined && !seen.has(parentId)) {
 		const parent = byId.get(parentId);
 		if (parent === undefined) break;
+
 		chain.push(parent);
 		seen.add(parentId);
 		parentId = parent.parent;

@@ -12,9 +12,9 @@ import type { HistoryEntry } from "$history/history-entry";
 import type { BrowserAction, BrowserState } from "./history-browser-state";
 
 export interface HistoryBrowserFooterProperties {
-	readonly dispatch: Dispatch<BrowserAction>;
-	readonly selected: HistoryEntry | undefined;
-	readonly state: BrowserState;
+	dispatch: Dispatch<BrowserAction>;
+	selected: HistoryEntry | undefined;
+	state: BrowserState;
 }
 
 const HELP = "↑↓ move · / filter · enter open · y copy id · r rerun · d delete · q quit";
@@ -30,7 +30,11 @@ const BACK_TO_LIST: BrowserAction = { mode: BrowserMode.Normal, type: "mode" };
  * @param properties.state - The mode, filter, and status.
  * @returns One line of text, or the filter input.
  */
-export function HistoryBrowserFooter({ dispatch, selected, state }: HistoryBrowserFooterProperties): ReactNode {
+export function HistoryBrowserFooter({
+	dispatch,
+	selected,
+	state,
+}: Readonly<HistoryBrowserFooterProperties>): ReactNode {
 	if (state.mode === BrowserMode.Filter) {
 		return (
 			<Box>

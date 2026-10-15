@@ -104,6 +104,7 @@ export function setFilter(state: PickerState, filter: string): PickerState {
 export function toggleCurrent(state: PickerState): PickerState {
 	const entry = getCurrentEntry(state);
 	if (entry?.kind !== EntryKind.File) return state;
+
 	if (state.selected.includes(entry.path)) {
 		return { ...state, selected: state.selected.filter((path) => path !== entry.path), warning: undefined };
 	}
