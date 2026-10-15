@@ -6,7 +6,8 @@ import { argv } from "node:process";
 import { isMaybeString } from "@howmanysmall/arktype-utilities";
 import { Ansis } from "ansis";
 import { regex, type } from "arktype";
-import { defineMacro } from "unplugin-macros";
+
+import { defineMacro } from "./define-macro.ts";
 
 import type { MacroContext } from "unplugin-macros";
 

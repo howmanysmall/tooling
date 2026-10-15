@@ -222,7 +222,7 @@ export async function getOxlintAsync({
 				"jsdoc/check-tag-names": [
 					"error",
 					{
-						definedTags: ["expected-unused", "rejects"],
+						definedTags: ["expected-unused", "rejects", "__NO_SIDE_EFFECTS__"],
 						jsxTags: false,
 						typed: false,
 					},
