@@ -1,12 +1,5 @@
-import { sharedConfiguration } from "@howmanysmall/project-configurations/vitest";
-import { mergeConfig } from "vitest/config";
+import { createPackageConfiguration } from "@howmanysmall/project-configurations/vitest";
 
-const configuration = mergeConfig(sharedConfiguration, {
-	test: {
-		name: "cli-utilities",
-		include: ["src/**/*.test.ts"],
-		testTimeout: 5_000,
-	},
-});
+const configuration = createPackageConfiguration("cli-utilities");
 
 export default configuration;
