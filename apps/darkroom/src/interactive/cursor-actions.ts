@@ -16,6 +16,8 @@ export interface RowNames {
 
 /** The keys that move a browser's cursor. */
 export interface CursorActions {
+	/** Moves by rows, as the mouse wheel does: down for positive. */
+	readonly moveBy: (delta: number) => void;
 	readonly moveDown: () => void;
 	readonly movePageDown: () => void;
 	readonly movePageUp: () => void;
@@ -57,6 +59,9 @@ export function getNavigationCommands(actions: CursorActions, names: RowNames): 
  */
 export function createCursorActions(dispatch: (move: CursorMove) => void, pageSize: number): CursorActions {
 	return {
+		moveBy(delta): void {
+			dispatch({ delta, type: "move" });
+		},
 		moveDown(): void {
 			dispatch(MOVE_DOWN);
 		},

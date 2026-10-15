@@ -16,19 +16,32 @@ const HINTS: ReadonlyArray<KeyHint> = [
 ];
 
 /**
- * Asks whether to delete the selected run, naming it by its prompt.
+ * Asks whether to delete the selected run, naming it by its prompt. A
+ * click outside keeps it.
  *
  * @returns The question as a dialog.
  */
 export function HistoryDeleteDialog(): ReactNode {
 	const {
+		actions: { answerDelete },
 		meta: { layout },
 		state: { selected },
 	} = useHistoryBrowser();
 	const name = selected === undefined ? "this run" : `“${previewPrompt(selected.prompt, 80)}”`;
 
+	function keepRun(): void {
+		answerDelete("n");
+	}
+
 	return (
-		<Dialog columns={layout.columns} hints={HINTS} rows={layout.rows} title="Delete run" width={60}>
+		<Dialog
+			columns={layout.columns}
+			hints={HINTS}
+			rows={layout.rows}
+			title="Delete run"
+			width={60}
+			onDismiss={keepRun}
+		>
 			<Text>{name}</Text>
 			<Text color={theme.warning}>{"Its stored images are deleted too. Your own copies stay."}</Text>
 		</Dialog>

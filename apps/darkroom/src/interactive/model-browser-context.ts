@@ -35,6 +35,7 @@ export interface ModelBrowserActions {
 	readonly closeFilter: () => void;
 	readonly copySelected: () => void;
 	readonly cycleSort: () => void;
+	readonly moveBy: (delta: number) => void;
 	readonly moveDown: () => void;
 	readonly movePageDown: () => void;
 	readonly movePageUp: () => void;
@@ -43,6 +44,8 @@ export interface ModelBrowserActions {
 	readonly moveUp: () => void;
 	readonly openFilter: () => void;
 	readonly quit: () => void;
+	/** Puts the cursor on a model, as a click does. */
+	readonly selectModel: (id: string) => void;
 	readonly setFilter: (text: string) => void;
 	/** Flips between your image and the shipped example. */
 	readonly switchExample: () => void;

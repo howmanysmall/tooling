@@ -19,6 +19,10 @@ Set `OPENROUTER_API_KEY`, in the environment or in a `.env` file. Commands that 
 Run `darkroom` with no arguments to open the full-screen app. It has three tabs; `tab` cycles them, and outside the
 prompt box `1`, `2`, and `3` jump to one. `ctrl+p` opens a command palette on every tab, and `?` lists every key.
 
+Clicking a tab, a list row, or a palette entry chooses it, and the wheel scrolls the list under the pointer. A click
+outside a dialog closes it. Since the app takes the mouse, it selects text itself: drag across the screen, and darkroom
+lights up the cells and copies the text through OSC 52 when you let go.
+
 - **generate**: a prompt box with the model and its price beneath it. Enter shows the request with its estimated cost
   and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`
   continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,

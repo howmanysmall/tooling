@@ -1,18 +1,18 @@
-import { useReducer } from "react";
 import { TextInput } from "@inkjs/ui";
 import { Box, Text } from "ink";
 
 import { CommandGroup } from "./browser-command";
 import { PaletteRow } from "./command-palette-row";
-import { getPaletteMatches, INITIAL_PALETTE_STATE, reducePaletteState } from "./command-palette-state";
+import { getPaletteMatches } from "./command-palette-state";
 import { Dialog } from "./dialog";
-import { getWindowStart } from "./list-cursor";
+import { DialogList } from "./dialog-list";
 import { theme } from "./theme";
-import { useDialogListKeys } from "./use-dialog-list-keys";
+import { useSearchList } from "./use-search-list";
 
 import type { ReactNode } from "react";
 
 import type { BrowserCommand } from "./browser-command";
+import type { PaletteMatch } from "./command-palette-state";
 import type { KeyHint } from "./key-hints";
 
 export interface CommandPaletteProperties {
@@ -43,37 +43,43 @@ const VISIBLE_ROWS = 10;
  * @returns The palette dialog.
  */
 export function CommandPalette({ columns, commands, onClose, rows }: Readonly<CommandPaletteProperties>): ReactNode {
-	const [palette, dispatch] = useReducer(reducePaletteState, INITIAL_PALETTE_STATE);
 	// Moving the cursor isn't worth a palette entry; help lists those keys.
 	const offered = commands.filter((command) => command.group === CommandGroup.Act);
-	const matches = getPaletteMatches(offered, palette.query);
-	const start = getWindowStart(palette.cursor, matches.length, VISIBLE_ROWS);
-	const shown = matches.slice(start, start + VISIBLE_ROWS);
+	const list = useSearchList((query) => getPaletteMatches(offered, query), VISIBLE_ROWS, onClose);
+
+	function run(match: PaletteMatch | undefined): void {
+		onClose();
+		match?.command.run();
+	}
 
 	function runSelected(): void {
-		const chosen = matches[palette.cursor];
-		onClose();
-		chosen?.command.run();
+		run(list.selected);
 	}
-
-	function handleQueryChange(query: string): void {
-		dispatch({ query, type: "query" });
-	}
-
-	useDialogListKeys(matches.length, dispatch, onClose);
 
 	return (
-		<Dialog columns={columns} hints={HINTS} rows={rows} title="Commands" width={60}>
+		<Dialog columns={columns} hints={HINTS} rows={rows} title="Commands" width={60} onDismiss={onClose}>
 			<Box marginBottom={1}>
 				<Text bold={true} color={theme.accent}>
 					{"› "}
 				</Text>
-				<TextInput placeholder="Search" onChange={handleQueryChange} onSubmit={runSelected} />
+				<TextInput placeholder="Search" onChange={list.handleQueryChange} onSubmit={runSelected} />
 			</Box>
-			{shown.length === 0 ? <Text color={theme.muted}>{"No commands match."}</Text> : null}
-			{shown.map((match, index) => (
-				<PaletteRow key={match.command.key} isSelected={start + index === palette.cursor} match={match} />
-			))}
+			{list.visible.length === 0 ? <Text color={theme.muted}>{"No commands match."}</Text> : null}
+			<DialogList target="palette:list" onWheel={list.handleWheel}>
+				{list.visible.map((match, index) => (
+					<PaletteRow
+						key={match.command.key}
+						isSelected={list.start + index === list.cursor}
+						match={match}
+						onChoose={(): void => {
+							run(match);
+						}}
+						onPoint={(): void => {
+							list.pointAt(list.start + index);
+						}}
+					/>
+				))}
+			</DialogList>
 		</Dialog>
 	);
 }

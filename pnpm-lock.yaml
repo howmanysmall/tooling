@@ -326,6 +326,9 @@ catalogs:
     '@inkjs/ui':
       specifier: 2.0.0
       version: 2.0.0
+    '@xterm/headless':
+      specifier: 6.0.0
+      version: 6.0.0
     ansis:
       specifier: 4.4.0
       version: 4.4.0
@@ -670,6 +673,9 @@ importers:
       '@openrouter/sdk':
         specifier: catalog:ai
         version: 1.4.25
+      '@xterm/headless':
+        specifier: catalog:runtime
+        version: 6.0.0
       ansis:
         specifier: catalog:runtime
         version: 4.4.0
@@ -4257,6 +4263,9 @@ packages:
 
   '@vue/shared@3.5.43':
     resolution: {integrity: sha512-uksS7YGMR5NZyr4JNq0Rp+QyLns0ueaz20KwzIPW9R0LH1Vnt4E+XUM29PNseEbf1www2gOuhuDi5AKOIXag9Q==}
+
+  '@xterm/headless@6.0.0':
+    resolution: {integrity: sha512-5Yj1QINYCyzrZtf8OFIHi47iQtI+0qYFPHmouEfG8dHNxbZ9Tb9YGSuLcsEwj9Z+OL75GJqPyJbyoFer80a2Hw==}
 
   '@yuku-core/binding-android-arm64@0.17.0':
     resolution: {integrity: sha512-Uge3U7s9vdCcYb9IiIWBIQmGEttlvWkvWYb9Qu6iUNS2IhAu4/D/g4ucbEmjemkflWYGpWsKZlX+JxcacIlR+g==}
@@ -10314,6 +10323,8 @@ snapshots:
 
   '@vue/shared@3.5.43': {}
 
+  '@xterm/headless@6.0.0': {}
+
   '@yuku-core/binding-android-arm64@0.17.0':
     optional: true
 
@@ -13783,6 +13794,7 @@ time:
   '@vitest/coverage-istanbul@5.0.4': '2026-10-12T09:45:39.912Z'
   '@vitest/eslint-plugin@1.6.27': '2026-08-10T02:34:20.099Z'
   '@vitiate/core@0.3.1': '2026-06-22T01:48:29.902Z'
+  '@xterm/headless@6.0.0': '2025-12-22T13:50:15.183Z'
   ansis@4.4.0: '2026-09-13T12:00:39.135Z'
   arktype@2.2.8: '2026-10-07T22:53:53.585Z'
   bumpp@12.3.0: '2026-09-03T07:21:10.442Z'

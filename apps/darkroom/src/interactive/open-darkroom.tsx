@@ -1,3 +1,4 @@
+import { stdin, stdout } from "node:process";
 import { render } from "ink";
 
 import { ModelSort } from "$utilities/model-filters";
@@ -5,6 +6,9 @@ import { ModelSort } from "$utilities/model-filters";
 import { loadCatalogAsync } from "./app-catalog";
 import { DarkroomApp } from "./darkroom-app";
 import { finishRunningAsync } from "./finish-running";
+import { MouseRegistryContext } from "./mouse-context";
+import { createMouseSession } from "./mouse-session";
+import { NoticeContext } from "./notice-store";
 import { createSessionServices } from "./session-services";
 import { createTerminalPreviewsAsync } from "./terminal-previews";
 
@@ -101,23 +105,30 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 		return readNewestFirstAsync(store);
 	}
 
+	const mouse = createMouseSession(stdin, stdout);
+
 	const instance = render(
-		<DarkroomApp
-			catalog={catalog}
-			entries={entries}
-			getPreview={getPreview}
-			history={createHistoryServices(store, previews)}
-			initialTab={tab}
-			now={openedAt}
-			readHistoryAsync={readHistoryAsync}
-			session={session}
-			sort={sort}
-			onGenerateWithOptions={handleGenerateWithOptions}
-		/>,
+		<MouseRegistryContext value={mouse.registry}>
+			<NoticeContext value={mouse.notices}>
+				<DarkroomApp
+					catalog={catalog}
+					entries={entries}
+					getPreview={getPreview}
+					history={createHistoryServices(store, previews)}
+					initialTab={tab}
+					now={openedAt}
+					readHistoryAsync={readHistoryAsync}
+					session={session}
+					sort={sort}
+					onGenerateWithOptions={handleGenerateWithOptions}
+				/>
+			</NoticeContext>
+		</MouseRegistryContext>,
 		// The app decides what ctrl+c does: clear the prompt, or quit.
-		{ alternateScreen: true, exitOnCtrlC: false },
+		{ alternateScreen: true, exitOnCtrlC: false, stdin: mouse.stdin, stdout: mouse.stdout },
 	);
 	await instance.waitUntilExit();
+	mouse.dispose();
 	previews?.dispose();
 	await finishRunningAsync(session);
 

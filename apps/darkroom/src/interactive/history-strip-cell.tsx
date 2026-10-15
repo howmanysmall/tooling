@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 
 import { useHistoryBrowser } from "./history-browser-context";
+import { useMouseTarget } from "./mouse-context";
 import { PreviewSlot } from "./preview-slot";
 import { getModelName } from "./run-facts";
 import { theme } from "./theme";
@@ -18,7 +19,7 @@ export interface HistoryStripCellProperties {
 
 /**
  * One run of a comparison: its first image above its model, which is
- * highlighted when it is the selected run.
+ * highlighted when it is the selected run. A click selects it.
  *
  * @param properties - The run and the space for its image.
  * @param properties.box - The cells the image may use.
@@ -26,11 +27,16 @@ export interface HistoryStripCellProperties {
  * @returns A column as wide as the box.
  */
 export function HistoryStripCell({ box, run }: Readonly<HistoryStripCellProperties>): ReactNode {
-	const { meta, state } = useHistoryBrowser();
+	const { actions, meta, state } = useHistoryBrowser();
+	const { attachNode, isHovered } = useMouseTarget(`strip:${run.id}`, {
+		onClick(): void {
+			actions.selectRun(run.id);
+		},
+	});
 	const preview = meta.getPreview(run, box);
 
 	return (
-		<Box flexDirection="column" flexShrink={0} width={box.columns}>
+		<Box ref={attachNode} flexDirection="column" flexShrink={0} width={box.columns}>
 			{preview === undefined ? <Text color={theme.muted}>{"No image"}</Text> : <PreviewSlot preview={preview} />}
 			<Box justifyContent="center">
 				{run.id === state.selected?.id ? (
@@ -38,7 +44,7 @@ export function HistoryStripCell({ box, run }: Readonly<HistoryStripCellProperti
 						{`▲ ${getModelName(run.model)}`}
 					</Text>
 				) : (
-					<Text color={theme.muted} wrap="truncate-end">
+					<Text color={isHovered ? theme.text : theme.muted} wrap="truncate-end">
 						{getModelName(run.model)}
 					</Text>
 				)}
