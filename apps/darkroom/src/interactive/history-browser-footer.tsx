@@ -26,7 +26,7 @@ function getTotalCost(runs: ReadonlyArray<HistoryEntry>): number {
  */
 export function HistoryBrowserFooter(): ReactNode {
 	const { actions, state } = useHistoryBrowser();
-	const shown = state.runs.length;
+	const shown = state.matching.length;
 	const total = state.entries.length;
 	const counts =
 		state.filter.length === 0
@@ -36,7 +36,7 @@ export function HistoryBrowserFooter(): ReactNode {
 	return (
 		<StatusBar
 			commands={getHistoryCommands(actions)}
-			summary={`${counts} · ${formatCost(getTotalCost(state.runs))}`}
+			summary={`${counts} · ${formatCost(getTotalCost(state.matching))}`}
 		>
 			{state.mode === BrowserMode.Filter ? <HistoryFilterBar /> : null}
 		</StatusBar>

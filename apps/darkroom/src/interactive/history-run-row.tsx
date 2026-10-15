@@ -1,3 +1,4 @@
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import { Box, Text } from "ink";
 
 import { previewPrompt } from "$history/format-history";
@@ -18,7 +19,8 @@ export interface HistoryRunRowProperties {
 }
 
 /**
- * One run in the list: the prompt, then its model, time, and cost. The
+ * One run in the list: the prompt, then its model, time, and cost. A
+ * comparison is one row, marked with how many models it compared. The
  * selected run gets the accent bar and a bold prompt.
  *
  * @param properties - What to list.
@@ -27,10 +29,11 @@ export interface HistoryRunRowProperties {
  */
 export function HistoryRunRow({ entry }: Readonly<HistoryRunRowProperties>): ReactNode {
 	const {
-		state: { selected },
+		state: { batchSizes, selected },
 	} = useHistoryBrowser();
 	const isSelected = entry.id === selected?.id;
 	const bar = isSelected ? "▌ " : "  ";
+	const batchSize = entry.batch === undefined ? undefined : batchSizes.get(entry.batch);
 
 	return (
 		<Box backgroundColor={isSelected ? theme.element : theme.panel} flexDirection="column" flexShrink={0}>
@@ -41,7 +44,9 @@ export function HistoryRunRow({ entry }: Readonly<HistoryRunRowProperties>): Rea
 			<Text wrap="truncate-end">
 				<Text color={theme.accent}>{bar}</Text>
 				<Text color={theme.muted}>{describeRunLine(entry)}</Text>
-				{entry.batch === undefined ? null : <Text color={theme.accent}>{"  ◫ compare"}</Text>}
+				{batchSize === undefined ? null : (
+					<Text color={theme.accent}>{`  ◫ ${batchSize} ${toPlural(batchSize, "model")}`}</Text>
+				)}
 			</Text>
 		</Box>
 	);
