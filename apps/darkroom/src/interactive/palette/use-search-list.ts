@@ -18,8 +18,6 @@ export interface SearchList<Item> {
 	readonly handleWheel: (delta: number) => void;
 	/** Every match for the query, best first. */
 	readonly matches: ReadonlyArray<Item>;
-	/** Puts the cursor on a match, as the pointer moving onto it does. */
-	readonly pointAt: (index: number) => void;
 	/** The match under the cursor, if any. */
 	readonly selected: Item | undefined;
 	/** Index of the first match in view. */
@@ -66,9 +64,6 @@ export function useSearchList<Item>(
 		},
 		handleWheel,
 		matches,
-		pointAt(index): void {
-			dispatch({ count, move: { index, type: CursorMoveType.To }, type: PaletteActionType.Move });
-		},
 		selected: matches[state.cursor],
 		start,
 		visible: matches.slice(start, start + visibleRows),

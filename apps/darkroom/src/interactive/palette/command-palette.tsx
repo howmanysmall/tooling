@@ -85,9 +85,6 @@ export function CommandPalette({
 						onChoose={(): void => {
 							run(match);
 						}}
-						onPoint={(): void => {
-							list.pointAt(list.start + index);
-						}}
 					/>
 				))}
 			</DialogList>

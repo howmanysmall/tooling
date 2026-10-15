@@ -1,7 +1,7 @@
+import { useReducer } from "react";
 import { TextInput } from "@inkjs/ui";
-import { Box, Text } from "ink";
+import { Box, Text, useInput } from "ink";
 
-import { getReferenceRange } from "$generation/model-capabilities";
 import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 import { Dialog } from "$interactive/components/dialog";
 import { DialogList } from "$interactive/components/dialog-list";
@@ -9,7 +9,8 @@ import { theme } from "$interactive/components/theme";
 import { useSearchList } from "$interactive/palette/use-search-list";
 
 import { ModelPickerRow } from "./model-picker-row";
-import { getModelMatches } from "./model-picker-state";
+import { ModelPickerToolbar } from "./model-picker-toolbar";
+import { describeAbilities, findPickerModels, PickerFilter, PickerSort, reducePickerView } from "./model-picker-view";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { ReactNode } from "react";
@@ -18,13 +19,14 @@ import type { KeyHint } from "$interactive/components/key-hints";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
 
 import type { ModelMatch } from "./model-picker-state";
+import type { PickerContext, PickerView } from "./model-picker-view";
 
 export interface ModelPickerDialogProperties {
 	catalog: ModelCatalog;
 	columns: number;
 	/** The model the prompt box uses now, marked in the list. */
 	currentId?: string | undefined;
-	/** Lists only models that take images, for editing one. */
+	/** Starts with only models that take images, for editing one. */
 	isEditing: boolean;
 	/** Closes the picker without changing the model. */
 	onClose: () => void;
@@ -39,8 +41,8 @@ const HINTS: ReadonlyArray<KeyHint> = [
 	["↑↓", "choose"],
 	["⏎", "use"],
 ];
-function canTakeImages(model: ImageModelListItem): boolean {
-	return getReferenceRange(model).max > 0;
+function createInitialView(isEditing: boolean): PickerView {
+	return { filters: new Set(isEditing ? [PickerFilter.Edits] : []), sort: PickerSort.Recent };
 }
 
 // Rows of models shown at once.
@@ -58,7 +60,7 @@ const VISIBLE_ROWS = 12;
  * @param properties.onPick - Takes the picked model.
  * @param properties.recentIds - Models used lately.
  * @param properties.rows - The screen's height.
- * @param properties.isEditing - Whether to list only models that edit.
+ * @param properties.isEditing - Whether to start with only models that edit.
  * @returns A dialog with a search line and the matching models.
  */
 export function ModelPickerDialog({
@@ -71,9 +73,14 @@ export function ModelPickerDialog({
 	recentIds,
 	rows,
 }: Readonly<ModelPickerDialogProperties>): ReactNode {
-	const visibleRows = Math.max(3, Math.min(VISIBLE_ROWS, rows - 12));
-	const models = isEditing ? catalog.models.filter(canTakeImages) : catalog.models;
-	const list = useSearchList((query) => getModelMatches(models, recentIds, query), visibleRows, onClose);
+	const visibleRows = Math.max(3, Math.min(VISIBLE_ROWS, rows - 16));
+	const [view, dispatchView] = useReducer(reducePickerView, isEditing, createInitialView);
+	const context: PickerContext = { observed: catalog.observed, pricing: catalog.pricing, recentIds };
+	const list = useSearchList((query) => findPickerModels(catalog.models, query, view, context), visibleRows, onClose);
+
+	useInput(function onPickerInput(_input, key) {
+		if (key.tab) dispatchView({ delta: key.shift ? -1 : 1, type: "cycle-sort" });
+	});
 
 	function pick(match: ModelMatch | undefined): void {
 		if (match === undefined) return;
@@ -86,34 +93,26 @@ export function ModelPickerDialog({
 	}
 
 	return (
-		<Dialog
-			columns={columns}
-			hints={HINTS}
-			rows={rows}
-			title={isEditing ? "Choose a model that can edit" : "Choose a model"}
-			width={72}
-			onDismiss={onClose}
-		>
+		<Dialog columns={columns} hints={HINTS} rows={rows} title="Choose a model" width={72} onDismiss={onClose}>
 			<Box marginBottom={1}>
 				<Text bold={true} color={theme.accent}>
 					{"› "}
 				</Text>
 				<TextInput placeholder="Search models" onChange={list.handleQueryChange} onSubmit={pickSelected} />
 			</Box>
+			<ModelPickerToolbar dispatch={dispatchView} view={view} />
 			{list.visible.length === 0 ? <Text color={theme.muted}>{"No models match."}</Text> : null}
 			<DialogList target="picker:list" onWheel={list.handleWheel}>
 				{list.visible.map((match, index) => (
 					<ModelPickerRow
 						key={match.model.id}
+						abilities={describeAbilities(match.model)}
 						isCurrent={match.model.id === currentId}
 						isSelected={list.start + index === list.cursor}
 						match={match}
 						price={describeListPrice(getModelPrices(catalog.pricing, catalog.observed, match.model.id))}
 						onChoose={(): void => {
 							pick(match);
-						}}
-						onPoint={(): void => {
-							list.pointAt(list.start + index);
 						}}
 					/>
 				))}

@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 
 import { HighlightedText } from "$interactive/components/highlighted-text";
+import { getDialogRowBackground } from "$interactive/components/row-background";
 import { theme } from "$interactive/components/theme";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
@@ -13,8 +14,6 @@ export interface PaletteRowProperties {
 	match: PaletteMatch;
 	/** Runs the command, as a click does. */
 	onChoose: () => void;
-	/** Puts the cursor on the row, as the pointer moving onto it does. */
-	onPoint: () => void;
 }
 
 /**
@@ -27,17 +26,16 @@ export interface PaletteRowProperties {
  * @param properties.isSelected - Whether Enter would run it.
  * @param properties.match - The command and the characters the query hit.
  * @param properties.onChoose - Runs the command.
- * @param properties.onPoint - Puts the cursor on the row.
  * @returns One line.
  */
-export function PaletteRow({ isSelected, match, onChoose, onPoint }: Readonly<PaletteRowProperties>): ReactNode {
+export function PaletteRow({ isSelected, match, onChoose }: Readonly<PaletteRowProperties>): ReactNode {
 	const { command, positions } = match;
-	const { attachNode } = useMouseTarget(`palette:${command.key}`, { onClick: onChoose, onHover: onPoint });
+	const { attachNode, isHovered } = useMouseTarget(`palette:${command.key}`, { onClick: onChoose });
 
 	return (
 		<Box
 			ref={attachNode}
-			backgroundColor={isSelected ? theme.accent : theme.element}
+			backgroundColor={getDialogRowBackground(isSelected, isHovered)}
 			justifyContent="space-between"
 			paddingX={1}
 		>

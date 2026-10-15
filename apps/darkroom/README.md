@@ -27,6 +27,10 @@ lights up the cells and copies the text through OSC 52 when you let go.
   and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`
   continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,
   `ctrl+w`, `ctrl+u`, and `ctrl+k` work.
+- **the model picker** (`ctrl+o`) searches names the way fzf does and shows what each model can do beside its
+  price. `tab` cycles the order between recent, price, name, and newest, and the chips filter to models that edit,
+  make several images, or make transparent ones. The search also takes `@google` for a provider, `$0.02` for a top
+  price per image, and `+edits`, `+several`, or `+transparent`.
 - **editing**: once a session has an image, the next prompt edits it: the newest image goes to the model as a
   reference, and the prompt box reads `Edit ◧ <file>`. Clicking an image or its path opens its actions. Editing it
   instead branches from there, and the others copy the picture itself or its path, or open it. `shift+tab` switches to `New`,

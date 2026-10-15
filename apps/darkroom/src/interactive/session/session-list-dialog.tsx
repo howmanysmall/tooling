@@ -92,9 +92,6 @@ export function SessionListDialog({
 						onChoose={(): void => {
 							resume(match);
 						}}
-						onPoint={(): void => {
-							list.pointAt(list.start + index);
-						}}
 					/>
 				))}
 			</DialogList>
