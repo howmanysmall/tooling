@@ -123,11 +123,11 @@ catalogs:
     oxlint-tsgolint: 7.0.2004
   runtime:
     "@arkenv/core": 1.0.0-rc.4
+    "@clack/core": 1.5.1
+    "@clack/prompts": 1.8.1
     "@cliffy/command": jsr:1.3.1
     "@cliffy/table": jsr:1.3.1
     "@dotenvx/dotenvx": 2.34.2
-    "@inquirer/core": 12.0.4
-    "@inquirer/prompts": 8.7.3
     ansis: 4.4.0
     arktype: 2.2.8
     confbox: 0.3.1
