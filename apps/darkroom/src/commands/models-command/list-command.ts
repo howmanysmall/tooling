@@ -5,6 +5,7 @@ import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with
 
 import { ModelSort } from "$utilities/model-filters";
 import { aspectRatioType, getAspectRatiosAsync } from "$validators/aspect-ratio-type";
+import { getProvidersAsync } from "$validators/image-model-id-type";
 import { outputFormatType } from "$validators/output-format-type";
 
 import type { ModelFilter } from "$utilities/model-filters";
@@ -63,8 +64,9 @@ export const listCommand = createBaseCommand(scriptName, "1.0.0", "List and filt
 	.complete("aspect-ratio", getAspectRatiosAsync)
 	.type("output-format", outputFormatType)
 	.type("model-sort", sortType)
+	.complete("provider", getProvidersAsync)
 	.arguments("[search:string]")
-	.option("--provider <name:string>", "Only models from this provider, like google.")
+	.option("--provider <name:string:provider>", "Only models from this provider, like google.")
 	.option("--refs", "Only models that accept reference images.")
 	.option("--multi", "Only models that can return several images per request.")
 	.option("--ratio <ratio:aspect-ratio>", "Only models that accept this aspect ratio.")
