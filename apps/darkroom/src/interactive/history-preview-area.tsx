@@ -2,7 +2,7 @@ import { Box } from "ink";
 
 import { HistoryBatchStrip } from "./history-batch-strip";
 import { useHistoryBrowser } from "./history-browser-context";
-import { HistoryPreviewSlot } from "./history-preview-slot";
+import { PreviewSlot } from "./preview-slot";
 
 import type { ReactNode } from "react";
 
@@ -39,7 +39,7 @@ export function HistoryPreviewArea(): ReactNode {
 
 	return (
 		<Box flexShrink={0} justifyContent="center">
-			<HistoryPreviewSlot preview={preview} />
+			<PreviewSlot preview={preview} />
 		</Box>
 	);
 }

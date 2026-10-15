@@ -3,8 +3,11 @@ import { createContext, use } from "react";
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
 import type { ModelPrices } from "$generation/observed-prices";
+import type { CellBox } from "$preview/cell-fit";
+import type { LoadingPreview } from "$preview/load-preview";
 import type { ModelSort } from "$utilities/model-filters";
 
+import type { ModelExample } from "./model-examples";
 import type { StatusMessage } from "./status-message";
 
 /** What the parts see of the browser's state. */
@@ -48,13 +51,21 @@ export interface ModelBrowserLayout {
 	/** Rows of models the list can show. */
 	readonly listHeight: number;
 	readonly listWidth: number;
+	/** The most cells an example image may use. */
+	readonly previewBox: CellBox;
 	readonly rows: number;
 }
 
 export interface ModelBrowserMeta {
+	/** The newest image you made with a model, if any. */
+	readonly getExample: (model: ImageModelListItem) => ModelExample | undefined;
+	/** An example's image, sized for the detail pane. */
+	readonly getPreview: (example: ModelExample) => LoadingPreview | undefined;
 	/** A model's published prices, and what it has cost in past runs. */
 	readonly getPrices: (model: ImageModelListItem) => ModelPrices;
 	readonly layout: ModelBrowserLayout;
+	/** When the browser opened, for naming days like `Today`. */
+	readonly now: Date;
 }
 
 /**

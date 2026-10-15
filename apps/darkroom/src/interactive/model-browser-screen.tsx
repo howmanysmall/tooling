@@ -9,17 +9,23 @@ export type ModelBrowserScreenProperties = Except<ModelBrowserProviderProperties
 
 /**
  * The full-screen model browser: models with their prices, the selected
- * model's details, and a footer with the keys.
+ * model's details and your newest image from it, and a footer with the keys.
  *
- * @param properties - The models and what Enter does.
- * @param properties.catalog - The models to browse and what they cost.
- * @param properties.onChoose - Takes the model chosen with Enter.
+ * @param properties - The models and what the keys act on.
+ * @param properties.catalog - The models, what they cost, and your examples.
+ * @param properties.now - When the browser opened, for naming days.
+ * @param properties.services - Chooses a model and loads previews.
  * @param properties.sort - The order the list opens in.
  * @returns The whole screen, sized to the terminal.
  */
-export function ModelBrowserScreen({ catalog, onChoose, sort }: Readonly<ModelBrowserScreenProperties>): ReactNode {
+export function ModelBrowserScreen({
+	catalog,
+	now,
+	services,
+	sort,
+}: Readonly<ModelBrowserScreenProperties>): ReactNode {
 	return (
-		<ModelBrowser.Provider catalog={catalog} sort={sort} onChoose={onChoose}>
+		<ModelBrowser.Provider catalog={catalog} now={now} services={services} sort={sort}>
 			<ModelBrowser.Frame>
 				<ModelBrowser.Header />
 				<ModelBrowser.Panes>

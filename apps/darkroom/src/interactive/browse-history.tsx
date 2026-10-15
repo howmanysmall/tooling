@@ -1,32 +1,19 @@
-import { env, stdout } from "node:process";
 import { intro } from "@clack/prompts";
 import { render } from "ink";
 
 import { mergeRerunOptions } from "$generation/generation-flags";
 import { loadStoredReferencesAsync } from "$history/stored-references";
-import { getImageProtocol } from "$preview/image-protocol";
-import { createPreviewCache } from "$preview/preview-cache";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { confirmAndGenerateAsync } from "./confirm-and-generate";
 import { HistoryBrowserScreen } from "./history-browser-screen";
+import { createTerminalPreviewsAsync } from "./terminal-previews";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
-import type { TerminalEnvironment } from "$preview/image-protocol";
 import type { PreviewCache } from "$preview/preview-cache";
 
 import type { BrowserServices } from "./history-browser-services";
-
-function pickTerminalVariables({
-	COLORTERM,
-	KITTY_WINDOW_ID,
-	TERM,
-	TERM_PROGRAM,
-	TMUX,
-}: NodeJS.ProcessEnv): TerminalEnvironment {
-	return { COLORTERM, KITTY_WINDOW_ID, TERM, TERM_PROGRAM, TMUX };
-}
 
 function createServices(
 	store: HistoryStore,
@@ -71,21 +58,14 @@ async function rerunAsync(entry: HistoryEntry, store: HistoryStore): Promise<voi
  * @rejects When the history can't be read, or the re-run fails.
  */
 export async function browseHistoryAsync(): Promise<void> {
-	const [{ getHistoryStore, log }, { getEnvironmentAsync }] = await Promise.all([
-		import("$generation/cli-runner"),
-		import("$functions/get-environment-async"),
-	]);
+	const { getHistoryStore, log } = await import("$generation/cli-runner");
 	const store = getHistoryStore();
-	const [entries, { DARKROOM_PREVIEW }] = await Promise.all([
+	const [entries, previews] = await Promise.all([
 		store.readAllAsync((message) => {
 			log.warn(message);
 		}),
-		getEnvironmentAsync(),
+		createTerminalPreviewsAsync(),
 	]);
-	const protocol = getImageProtocol({ ...pickTerminalVariables(env), DARKROOM_PREVIEW });
-	const previews = createPreviewCache(protocol, (sequence) => {
-		stdout.write(sequence);
-	});
 
 	let rerunTarget: HistoryEntry | undefined;
 	const openedAt = new Date();

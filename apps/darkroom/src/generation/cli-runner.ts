@@ -15,6 +15,8 @@ import { OutputFormat } from "$validators/output-format-type";
 
 import { InterruptAction, InterruptGuard } from "./interrupt-guard";
 
+import type { HistoryEntry } from "$history/history-entry";
+
 import type { EstimateRequest } from "./cost-estimate";
 import type { StreamProgress } from "./image-stream";
 import type { ObservedPrices } from "./observed-prices";
@@ -32,22 +34,33 @@ export function getHistoryStore(): HistoryStore {
 }
 
 /**
- * Reads what each model has cost per image in past runs. Estimates are only
- * a convenience, so an unreadable history gives none instead of failing.
+ * Reads past runs for extras like estimates and examples, which are only a
+ * convenience, so an unreadable history gives none instead of failing.
+ *
+ * @returns Every past run, or none when the history can't be read.
+ */
+export async function readHistoryQuietlyAsync(): Promise<ReadonlyArray<HistoryEntry>> {
+	try {
+		return await getHistoryStore().readAllAsync((message) => {
+			log.debug(message);
+		});
+	} catch (error) {
+		log.debug(`Could not read the history: ${error instanceof Error ? error.message : String(error)}`);
+		return [];
+	}
+}
+
+/**
+ * Reads what each model has cost per image in past runs.
  *
  * @returns The observed prices, keyed by model ID.
  */
 export async function readObservedPricesAsync(): Promise<ObservedPrices> {
-	const { getObservedPrices } = await import("./observed-prices");
-	try {
-		const entries = await getHistoryStore().readAllAsync((message) => {
-			log.debug(message);
-		});
-		return getObservedPrices(entries);
-	} catch (error) {
-		log.debug(`Could not read past prices: ${error instanceof Error ? error.message : String(error)}`);
-		return new Map();
-	}
+	const [{ getObservedPrices }, entries] = await Promise.all([
+		import("./observed-prices"),
+		readHistoryQuietlyAsync(),
+	]);
+	return getObservedPrices(entries);
 }
 
 export async function readStdinAsync(): Promise<string> {

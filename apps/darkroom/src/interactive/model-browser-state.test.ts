@@ -19,6 +19,7 @@ function createPrice(costUsd: number): Array<EndpointPricing> {
 
 const STATE = createModelBrowserState(
 	{
+		examples: new Map(),
 		models: [MIDDLE, DEAR, CHEAP],
 		observed: new Map(),
 		pricing: { [CHEAP.id]: createPrice(0.01), [DEAR.id]: createPrice(0.2), [MIDDLE.id]: createPrice(0.05) },

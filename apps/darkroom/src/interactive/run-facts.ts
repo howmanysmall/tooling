@@ -36,6 +36,18 @@ export function describeRunLine(entry: HistoryEntry): string {
 	return [getModelName(entry.model), timeFormatter.format(new Date(entry.created)), cost].join(" · ");
 }
 
+/**
+ * Says when a run was made, relative to today.
+ *
+ * @param created - When the run was made, as an ISO timestamp.
+ * @param now - The current time, for the day name.
+ * @returns Like `Today 09:41` or `Mon 12 Oct 22:28`.
+ */
+export function describeMadeAt(created: string, now: Date): string {
+	const date = new Date(created);
+	return `${formatDayLabel(date, now)} ${timeFormatter.format(date)}`;
+}
+
 function describeSize({ request }: HistoryEntry): string {
 	const parts = [request.aspectRatio, request.resolution, request.quality].filter(
 		(part): part is string => part !== undefined,
@@ -57,10 +69,9 @@ function describeImages(entry: HistoryEntry): string {
  * @returns Model, time, size, images, and cost.
  */
 export function getRunStats(entry: HistoryEntry, now: Date): Array<Fact> {
-	const created = new Date(entry.created);
 	return [
 		{ label: "model", value: getModelName(entry.model) },
-		{ label: "made", value: `${formatDayLabel(created, now)} ${timeFormatter.format(created)}` },
+		{ label: "made", value: describeMadeAt(entry.created, now) },
 		{ label: "size", value: describeSize(entry) },
 		{ label: "images", value: describeImages(entry) },
 		{ label: "cost", value: entry.cost === undefined ? "unknown" : formatCost(entry.cost) },

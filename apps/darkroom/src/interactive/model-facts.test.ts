@@ -1,8 +1,8 @@
 import { describe, it } from "vitest";
 
-import { MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
+import { createModel, MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 
-import { getModelChoices, getModelStats, getPriceLines, splitModelName } from "./model-facts.ts";
+import { getModelOptions, getModelStats, getPriceLines, splitModelName } from "./model-facts.ts";
 
 import type { EndpointPricing } from "$generation/cost-estimate";
 
@@ -33,8 +33,9 @@ describe("getModelStats", () => {
 	it("shows the price and the limits, saying none when there are none", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(getModelStats(SINGLE_MODEL, { endpoints: FLUX_PRICES }).slice(0, 4)).toStrictEqual([
+		expect(getModelStats(SINGLE_MODEL, { endpoints: FLUX_PRICES }).slice(0, 5)).toStrictEqual([
 			{ label: "price", value: "$0.041/img" },
+			{ label: "inputs", value: "text · image" },
 			{ label: "refs", value: "none" },
 			{ label: "images", value: "up to 1" },
 			{ label: "streams", value: "no" },
@@ -42,15 +43,24 @@ describe("getModelStats", () => {
 	});
 });
 
-describe("getModelChoices", () => {
-	it("lists only the parameters the model declares", ({ expect }) => {
+describe("getModelOptions", () => {
+	it("lists every option the model declares, with ranges and switches", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(getModelChoices(MULTI_MODEL)).toStrictEqual([
+		const model = createModel("test/everything", {
+			...MULTI_MODEL.supportedParameters,
+			seed: { type: "boolean" },
+			style_preset: { type: "enum", values: ["anime", "photo"] },
+		});
+
+		expect(getModelOptions(model)).toStrictEqual([
 			{ label: "ratios", value: "1:1  16:9  auto" },
 			{ label: "quality", value: "low  medium  high" },
 			{ label: "background", value: "auto  transparent  opaque" },
 			{ label: "formats", value: "png  jpeg  webp" },
+			{ label: "compression", value: "0–100" },
+			{ label: "seed", value: "yes" },
+			{ label: "style preset", value: "anime  photo" },
 		]);
 	});
 });

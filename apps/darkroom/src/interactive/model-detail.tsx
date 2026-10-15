@@ -3,7 +3,8 @@ import { Box, Text } from "ink";
 import { FactColumns } from "./fact-columns";
 import { FactLines } from "./fact-lines";
 import { useModelBrowser } from "./model-browser-context";
-import { getModelChoices, getModelStats, getPriceLines, splitModelName } from "./model-facts";
+import { ModelExampleImage } from "./model-example-image";
+import { getModelOptions, getModelStats, getPriceLines, splitModelName } from "./model-facts";
 import { SectionHeading } from "./section-heading";
 import { theme } from "./theme";
 
@@ -12,8 +13,9 @@ import type { ReactNode } from "react";
 const LABEL_WIDTH = 16;
 
 /**
- * The right pane: the selected model's name, headline facts, every price it
- * charges, the choices it offers, and its description.
+ * The right pane: your newest image from the selected model, then its name,
+ * headline facts, every price it charges, every option it takes, and its
+ * description.
  *
  * @returns The detail pane, with a hint when nothing is selected.
  */
@@ -38,7 +40,7 @@ export function ModelDetail(): ReactNode {
 
 	const modelPrices = getPrices(selected);
 	const { name, provider } = splitModelName(selected.name);
-	const choices = getModelChoices(selected);
+	const options = getModelOptions(selected);
 	const prices = getPriceLines(modelPrices);
 
 	return (
@@ -52,6 +54,7 @@ export function ModelDetail(): ReactNode {
 			paddingY={1}
 			rowGap={1}
 		>
+			<ModelExampleImage model={selected} />
 			<Box flexDirection="column" flexShrink={0}>
 				<Text bold={true}>{name}</Text>
 				<Text color={theme.muted}>{provider === undefined ? selected.id : `${provider} · ${selected.id}`}</Text>
@@ -63,10 +66,10 @@ export function ModelDetail(): ReactNode {
 					<FactLines facts={prices} labelWidth={LABEL_WIDTH} overflow="truncate-middle" />
 				</Box>
 			)}
-			{choices.length === 0 ? null : (
+			{options.length === 0 ? null : (
 				<Box flexDirection="column" flexShrink={0}>
-					<SectionHeading label="Choices" />
-					<FactLines facts={choices} labelWidth={LABEL_WIDTH} overflow="wrap" />
+					<SectionHeading label="Options" />
+					<FactLines facts={options} labelWidth={LABEL_WIDTH} overflow="wrap" />
 				</Box>
 			)}
 			<Box flexDirection="column">
