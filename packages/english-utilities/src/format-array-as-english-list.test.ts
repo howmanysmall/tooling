@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { formatArrayAsEnglishList } from "./format-array-as-english-list.ts";
+import { formatArrayAsEnglishList } from "./format-array-as-english-list";
 
 describe("formatArrayAsEnglishList", () => {
 	it("joins three or more items with commas and a serial and", ({ expect }) => {

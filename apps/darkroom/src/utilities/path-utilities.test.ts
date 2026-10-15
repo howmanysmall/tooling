@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { makeStringSafeForPath } from "./path-utilities.ts";
+import { makeStringSafeForPath } from "./path-utilities";
 
 describe("path-utilities", () => {
 	describe("makeStringSafeForPath", () => {

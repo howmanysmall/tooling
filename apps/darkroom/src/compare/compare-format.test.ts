@@ -10,11 +10,11 @@ import {
 	formatCompareResult,
 	formatCompareSummary,
 	formatOutcomeLine,
-} from "./compare-format.ts";
+} from "./compare-format";
 
 import type { GenerationResult } from "$generation/run-generation";
 
-import type { CompareOutcome } from "./compare-format.ts";
+import type { CompareOutcome } from "./compare-format";
 
 const CWD = "/work";
 

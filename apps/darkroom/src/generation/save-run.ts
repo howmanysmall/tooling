@@ -1,6 +1,7 @@
 import { tmpdir } from "node:os";
 import nodePath from "node:path";
 
+import { appendAsync, resolve, storeFilesAsync } from "$history/history-store";
 import { writeFileAtomicAsync, writeFileNoClobberAsync } from "$utilities/atomic-write";
 
 import { getExtensionForMediaType, getMediaTypeForImageType, sniffMediaType } from "./media-types";
@@ -97,6 +98,11 @@ async function writeToOutputAsync(
 	return written;
 }
 
+interface StoredFile {
+	readonly images: ReadonlyArray<string>;
+	readonly references: ReadonlyArray<string>;
+}
+
 /**
  * Copies the images and references into the history first, so a paid image
  * is safe before anything else can fail.
@@ -111,7 +117,7 @@ async function storeCopiesAsync(
 	run: RunToSave,
 	images: ReadonlyArray<DecodedImage>,
 	dependencies: SaveDependencies,
-): Promise<undefined | { images: Array<string>; references: Array<string> }> {
+): Promise<StoredFile | undefined> {
 	const { history } = dependencies;
 	if (history === undefined) return undefined;
 
@@ -121,8 +127,8 @@ async function storeCopiesAsync(
 	}));
 	try {
 		return {
-			images: await history.storeFilesAsync(run.id, images, ""),
-			references: await history.storeFilesAsync(run.id, references, "refs"),
+			images: await storeFilesAsync(history, run.id, images, ""),
+			references: await storeFilesAsync(history, run.id, references, "refs"),
 		};
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -196,11 +202,17 @@ async function saveOneAsync(
 
 async function recordEntryAsync(entry: HistoryEntry, dependencies: SaveDependencies): Promise<void> {
 	try {
-		await dependencies.history?.appendAsync(entry);
+		if (dependencies.history === undefined) return;
+		await appendAsync(dependencies.history, entry);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		dependencies.warn(`Could not record the run in the history: ${message}`);
 	}
+}
+
+function resolvePathSafely(historyStore: HistoryStore | undefined, stored: string): string | undefined {
+	if (historyStore === undefined) return undefined;
+	return resolve(historyStore, stored);
 }
 
 /**
@@ -228,7 +240,8 @@ export async function saveRunAsync(run: RunToSave, dependencies: SaveDependencie
 	const images: Array<SavedImage> = [];
 	const failures: Array<SaveFailure> = [];
 	for (const [index, image] of decoded.entries()) {
-		const storedPath = stored === undefined ? undefined : dependencies.history?.resolve(stored.images[index] ?? "");
+		const storedPath =
+			stored === undefined ? undefined : resolvePathSafely(dependencies.history, stored.images[index] ?? "");
 		// oxlint-disable-next-line no-await-in-loop, react-doctor/async-await-in-loop -- sequential writes keep numbering predictable
 		const { failure, saved } = await saveOneAsync(context, run, image, index + 1, storedPath);
 		images.push(saved);

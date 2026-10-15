@@ -38,9 +38,9 @@ import {
 	isUndefined,
 	isUnixTimestamp,
 	isUnknown,
-} from "./index.ts";
+} from "./index";
 
-import type { DictionaryOfUnknowns, MaybeReadonlyDictionaryOfStrings, UndeclaredKeyBehavior } from "./index.ts";
+import type { DictionaryOfUnknowns, MaybeReadonlyDictionaryOfStrings, UndeclaredKeyBehavior } from "./index";
 
 describe("primitive validators", () => {
 	it("isBoolean accepts booleans and rejects strings", ({ expect }) => {

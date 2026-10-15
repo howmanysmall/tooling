@@ -4,10 +4,10 @@ import nodePath from "node:path";
 import { describe, it } from "vitest";
 import sharp from "sharp";
 
-import { ImageProtocol } from "./image-protocol.ts";
-import { PreviewCache } from "./preview-cache.ts";
+import { ImageProtocol } from "./image-protocol";
+import { PreviewCache } from "./preview-cache";
 
-import type { Preview } from "./load-preview.ts";
+import type { Preview } from "./load-preview";
 
 const BOX = { columns: 40, rows: 10 };
 

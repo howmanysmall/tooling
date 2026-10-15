@@ -28,167 +28,181 @@ export interface StoredFile {
  * The run history: `history.jsonl` plus copies of every image and reference
  * under `images/<id>/`. Paths stored in entries are relative to `root`.
  */
-export class HistoryStore {
-	public readonly root: string;
+export interface HistoryStore {
+	readonly root: string;
+}
 
-	public constructor(root: string) {
-		this.root = root;
+export function createHistoryStore(root: string): HistoryStore {
+	return { root };
+}
+
+/**
+ * Gets the folder holding a run's image copies.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to use.
+ * @param historyStore.root - The root folder of the history store.
+ * @param id - The run's ULID.
+ * @returns The absolute path.
+ */
+export function getRunDirectory({ root }: HistoryStore, id: string): string {
+	return nodePath.join(root, IMAGES_DIRECTORY, id);
+}
+
+/**
+ * Measures how much space a run's copies take.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to use.
+ * @param id - The run's ULID.
+ * @returns The total size in bytes, or 0 when the folder is missing.
+ */
+export async function getRunSizeAsync(historyStore: HistoryStore, id: string): Promise<number> {
+	return getDirectorySizeAsync(getRunDirectory(historyStore, id));
+}
+
+/**
+ * Adds an entry. Its image copies must already be stored.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to append to.
+ * @param historyEntry - The run to record.
+ */
+export async function appendAsync(historyStore: HistoryStore, historyEntry: HistoryEntry): Promise<void> {
+	const historyFile = nodePath.join(historyStore.root, HISTORY_FILE);
+	await runLockedAsync(historyStore.root, async () =>
+		appendFile(historyFile, `${JSON.stringify(historyEntry)}\n`, "utf8"),
+	);
+}
+/**
+ * Reads every valid entry, oldest first. A line that fails validation is
+ * skipped with a warning, so one bad line can't hide the rest.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to read from.
+ * @param warn - Receives a warning for each unreadable line.
+ * @returns The entries.
+ * @rejects When the history file exists but can't be read.
+ */
+export async function readAllAsync(
+	historyStore: HistoryStore,
+	warn: (message: string) => void,
+): Promise<ReadonlyArray<HistoryEntry>> {
+	const historyFile = nodePath.join(historyStore.root, HISTORY_FILE);
+	let content: string;
+	try {
+		content = await readFile(historyFile, "utf8");
+	} catch (error) {
+		if (error instanceof Error && getErrorCode(error) === "ENOENT") return [];
+		throw error;
 	}
 
-	/**
-	 * Adds an entry. Its image copies must already be stored.
-	 *
-	 * @param entry - The run to record.
-	 */
-	public async appendAsync(entry: HistoryEntry): Promise<void> {
-		await this.runLockedAsync(async () => appendFile(this.historyFile, `${JSON.stringify(entry)}\n`, "utf8"));
+	const entries: Array<HistoryEntry> = [];
+	for (const [index, line] of content.split("\n").entries()) {
+		if (line.trim().length === 0) continue;
+
+		const entry = parseLine(line);
+		if (entry === undefined) warn(`Skipping line ${index + 1} of ${historyFile}: it is not a valid run.`);
+		else entries.push(entry);
+	}
+	return entries;
+}
+/**
+ * Deletes runs' entries and their image folders.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to delete from.
+ * @param ids - The runs to delete.
+ * @param warn - Receives a warning for each unreadable line.
+ * @returns How many entries were removed.
+ */
+export async function deleteAsync(
+	historyStore: HistoryStore,
+	ids: ReadonlySet<string>,
+	warn: (message: string) => void,
+): Promise<number> {
+	const historyFile = nodePath.join(historyStore.root, HISTORY_FILE);
+	const removed = await runLockedAsync(historyStore.root, async () => {
+		const entries = await readAllAsync(historyStore, warn);
+		const kept = entries.filter((entry) => !ids.has(entry.id));
+		const lines = kept.map((entry) => `${JSON.stringify(entry)}\n`).join("");
+		await writeFileAtomicAsync(historyFile, lines);
+		return entries.length - kept.length;
+	});
+	await Promise.all(
+		Array.from(ids, async (id) => rm(getRunDirectory(historyStore, id), { force: true, recursive: true })),
+	);
+	return removed;
+}
+
+/**
+ * Resolves a path stored in an entry.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to resolve against.
+ * @param historyStore.root - The root folder of the history store.
+ * @param stored - A path relative to the history directory.
+ * @returns The absolute path.
+ */
+export function resolve({ root }: HistoryStore, stored: string): string {
+	return nodePath.join(root, stored);
+}
+
+/**
+ * Copies a run's files into its folder as `1.png`, `2.jpg`, and so on.
+ *
+ * @param historyStore - The {@linkcode HistoryStore} to store into.
+ * @param id - The run's ULID.
+ * @param files - The files, in order.
+ * @param subdirectory - `refs` for reference images, or `""`.
+ * @returns The stored paths, relative to the history directory.
+ */
+export async function storeFilesAsync(
+	historyStore: HistoryStore,
+	id: string,
+	files: ReadonlyArray<StoredFile>,
+	subdirectory: string,
+): Promise<ReadonlyArray<string>> {
+	const directory = nodePath.join(IMAGES_DIRECTORY, id, subdirectory);
+	await mkdir(nodePath.join(historyStore.root, directory), { recursive: true });
+	return Promise.all(
+		files.map(async (file, index) => {
+			const stored = nodePath.join(directory, `${index + 1}.${file.extension}`);
+			await writeFileAtomicAsync(resolve(historyStore, stored), file.bytes);
+			return stored;
+		}),
+	);
+}
+
+async function tryLockAsync(root: string): Promise<boolean> {
+	const lockFile = nodePath.join(root, LOCK_FILE);
+	try {
+		const handle = await open(lockFile, "wx");
+		await handle.close();
+		return true;
+	} catch (error) {
+		if (!(error instanceof Error) || getErrorCode(error) !== "EEXIST") throw error;
 	}
 
-	/**
-	 * Deletes runs' entries and their image folders.
-	 *
-	 * @param ids - The runs to delete.
-	 * @param warn - Receives a warning for each unreadable line.
-	 * @returns How many entries were removed.
-	 */
-	public async deleteAsync(ids: ReadonlySet<string>, warn: (message: string) => void): Promise<number> {
-		const removed = await this.runLockedAsync(async () => {
-			const entries = await this.readAllAsync(warn);
-			const kept = entries.filter((entry) => !ids.has(entry.id));
-			const lines = kept.map((entry) => `${JSON.stringify(entry)}\n`).join("");
-			await writeFileAtomicAsync(this.historyFile, lines);
-			return entries.length - kept.length;
-		});
-		await Promise.all(
-			Array.from(ids, async (id) => rm(this.getRunDirectory(id), { force: true, recursive: true })),
-		);
-		return removed;
+	const stats = await stat(lockFile).catch(() => undefined);
+	if (stats !== undefined && Date.now() - stats.mtimeMs > STALE_LOCK_MS) {
+		await rm(lockFile, { force: true });
 	}
-
-	/**
-	 * Gets the folder holding a run's image copies.
-	 *
-	 * @param id - The run's ULID.
-	 * @returns The absolute path.
-	 */
-	public getRunDirectory(id: string): string {
-		return nodePath.join(this.root, IMAGES_DIRECTORY, id);
+	return false;
+}
+async function acquireLockAsync(root: string): Promise<void> {
+	await mkdir(root, { recursive: true });
+	const deadline = Date.now() + LOCK_TIMEOUT_MS;
+	while (Date.now() < deadline) {
+		// oxlint-disable-next-line no-await-in-loop -- polling for the lock is inherently sequential
+		if (await tryLockAsync(root)) return;
+		// oxlint-disable-next-line no-await-in-loop -- see above
+		await sleep(LOCK_RETRY_MS);
 	}
-
-	/**
-	 * Measures how much space a run's copies take.
-	 *
-	 * @param id - The run's ULID.
-	 * @returns The total size in bytes, or 0 when the folder is missing.
-	 */
-	public async getRunSizeAsync(id: string): Promise<number> {
-		return getDirectorySizeAsync(this.getRunDirectory(id));
-	}
-
-	/**
-	 * Reads every valid entry, oldest first. A line that fails validation is
-	 * skipped with a warning, so one bad line can't hide the rest.
-	 *
-	 * @param warn - Receives a warning for each unreadable line.
-	 * @returns The entries.
-	 * @rejects When the history file exists but can't be read.
-	 */
-	public async readAllAsync(warn: (message: string) => void): Promise<Array<HistoryEntry>> {
-		let content: string;
-		try {
-			content = await readFile(this.historyFile, "utf8");
-		} catch (error) {
-			if (error instanceof Error && getErrorCode(error) === "ENOENT") return [];
-			throw error;
-		}
-
-		const entries: Array<HistoryEntry> = [];
-		for (const [index, line] of content.split("\n").entries()) {
-			if (line.trim() === "") continue;
-			const entry = parseLine(line);
-			if (entry === undefined) warn(`Skipping line ${index + 1} of ${this.historyFile}: it is not a valid run.`);
-			else entries.push(entry);
-		}
-		return entries;
-	}
-
-	/**
-	 * Resolves a path stored in an entry.
-	 *
-	 * @param stored - A path relative to the history directory.
-	 * @returns The absolute path.
-	 */
-	public resolve(stored: string): string {
-		return nodePath.join(this.root, stored);
-	}
-
-	/**
-	 * Copies a run's files into its folder as `1.png`, `2.jpg`, and so on.
-	 *
-	 * @param id - The run's ULID.
-	 * @param files - The files, in order.
-	 * @param subdirectory - `refs` for reference images, or `""`.
-	 * @returns The stored paths, relative to the history directory.
-	 */
-	public async storeFilesAsync(
-		id: string,
-		files: ReadonlyArray<StoredFile>,
-		subdirectory: string,
-	): Promise<Array<string>> {
-		const directory = nodePath.join(IMAGES_DIRECTORY, id, subdirectory);
-		await mkdir(nodePath.join(this.root, directory), { recursive: true });
-		return Promise.all(
-			files.map(async (file, index) => {
-				const stored = nodePath.join(directory, `${index + 1}.${file.extension}`);
-				await writeFileAtomicAsync(this.resolve(stored), file.bytes);
-				return stored;
-			}),
-		);
-	}
-
-	private async acquireLockAsync(): Promise<void> {
-		await mkdir(this.root, { recursive: true });
-		const deadline = Date.now() + LOCK_TIMEOUT_MS;
-		while (Date.now() < deadline) {
-			// oxlint-disable-next-line no-await-in-loop -- polling for the lock is inherently sequential
-			if (await this.tryLockAsync()) return;
-			// oxlint-disable-next-line no-await-in-loop -- see above
-			await sleep(LOCK_RETRY_MS);
-		}
-		throw new Error(`Timed out waiting for ${this.lockFile}. Delete it if no other darkroom is running.`);
-	}
-
-	private get historyFile(): string {
-		return nodePath.join(this.root, HISTORY_FILE);
-	}
-
-	private get lockFile(): string {
-		return nodePath.join(this.root, LOCK_FILE);
-	}
-
-	private async runLockedAsync<Result>(callback: () => Promise<Result>): Promise<Result> {
-		await this.acquireLockAsync();
-		try {
-			return await callback();
-		} finally {
-			await rm(this.lockFile, { force: true });
-		}
-	}
-
-	private async tryLockAsync(): Promise<boolean> {
-		try {
-			const handle = await open(this.lockFile, "wx");
-			await handle.close();
-			return true;
-		} catch (error) {
-			if (!(error instanceof Error) || getErrorCode(error) !== "EEXIST") throw error;
-		}
-
-		const stats = await stat(this.lockFile).catch(() => undefined);
-		if (stats !== undefined && Date.now() - stats.mtimeMs > STALE_LOCK_MS) {
-			await rm(this.lockFile, { force: true });
-		}
-		return false;
+	throw new Error(
+		`Timed out waiting for ${nodePath.join(root, LOCK_FILE)}. Delete it if no other darkroom is running.`,
+	);
+}
+async function runLockedAsync<Result>(root: string, callback: () => Promise<Result>): Promise<Result> {
+	await acquireLockAsync(root);
+	try {
+		return await callback();
+	} finally {
+		await rm(nodePath.join(root, LOCK_FILE), { force: true });
 	}
 }
 

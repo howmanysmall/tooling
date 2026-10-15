@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { selectParameterValues } from "./model-parameter-completions.ts";
+import { selectParameterValues } from "./model-parameter-completions";
 
 const LINES = [
 	"openai/gpt-image-1\taspect_ratio\t1:1\t3:2\t2:3\tauto",

@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { fitImageToCells } from "./cell-fit.ts";
+import { fitImageToCells } from "./cell-fit";
 
 describe("fitImageToCells", () => {
 	it("fills the height for a square image in a wide box, two rows per column pair", ({ expect }) => {

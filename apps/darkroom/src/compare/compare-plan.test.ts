@@ -12,7 +12,7 @@ import {
 	describeTotalCost,
 	getCompareDirectory,
 	getModelFileStem,
-} from "./compare-plan.ts";
+} from "./compare-plan";
 
 describe("getModelFileStem", () => {
 	it("keeps dots and dashes and replaces the provider slash", ({ expect }) => {

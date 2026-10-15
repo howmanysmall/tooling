@@ -7,9 +7,9 @@ import {
 	getCostEstimate,
 	getListPrice,
 	getMegapixels,
-} from "./cost-estimate.ts";
+} from "./cost-estimate";
 
-import type { EndpointPricing } from "./cost-estimate.ts";
+import type { EndpointPricing } from "./cost-estimate";
 
 const PER_IMAGE: ReadonlyArray<EndpointPricing> = [
 	{

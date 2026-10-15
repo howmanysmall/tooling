@@ -2,8 +2,8 @@ import { describe, it } from "vitest";
 
 import { Shell } from "$utilities/completion-context";
 
-import { findRunSummary, formatRunCompletions, parseRunSummaries } from "./history-completions.ts";
-import { createEntry } from "./history-fixture.ts";
+import { findRunSummary, formatRunCompletions, parseRunSummaries } from "./history-completions";
+import { createEntry } from "./history-fixture";
 
 const CONTENT = [
 	JSON.stringify(createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", { prompt: "a cat\nin a hat" })),

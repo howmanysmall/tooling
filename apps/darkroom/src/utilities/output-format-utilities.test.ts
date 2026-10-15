@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { trimTrailingSpaces, wrapText } from "./output-format-utilities.ts";
+import { trimTrailingSpaces, wrapText } from "./output-format-utilities";
 
 describe("wrapText", () => {
 	it("breaks text at spaces so no line is wider than the limit", ({ expect }) => {

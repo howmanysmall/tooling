@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { describe, it } from "vitest";
 
-import { loadReferenceAsync, toDataUrl } from "./references.ts";
+import { loadReferenceAsync, toDataUrl } from "./references";
 
 const PNG_BYTES = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
 

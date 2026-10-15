@@ -6,8 +6,8 @@ import {
 	RequestAbortedError,
 } from "@openrouter/sdk/models/errors";
 
-import { ConfigurationError } from "./configuration-error.ts";
-import { CHARGE_NOTE, toApiError } from "./to-api-error.ts";
+import { ConfigurationError } from "./configuration-error";
+import { CHARGE_NOTE, toApiError } from "./to-api-error";
 
 function createHttpError(status: number, body: string): OpenRouterDefaultError {
 	const response = new Response(body, { status });

@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { describeSettledRun } from "./finish-running.ts";
+import { describeSettledRun } from "./finish-running";
 
 import type { GenerationResult } from "$generation/run-generation";
 

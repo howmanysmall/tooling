@@ -3,18 +3,13 @@ import { describe, it } from "vitest";
 import { createModel } from "$generation/model-fixture";
 import { ModelSort } from "$utilities/model-filters";
 
-import {
-	createModelBrowserState,
-	getExample,
-	getVisibleModels,
-	reduceModelBrowserState,
-} from "./model-browser-state.ts";
-import { ExampleSource } from "./model-examples.ts";
+import { createModelBrowserState, getExample, getVisibleModels, reduceModelBrowserState } from "./model-browser-state";
+import { ExampleSource } from "./model-examples";
 
 import type { EndpointPricing } from "$generation/cost-estimate";
 
-import type { ModelBrowserAction, ModelBrowserState } from "./model-browser-state.ts";
-import type { ModelExample } from "./model-examples.ts";
+import type { ModelBrowserAction, ModelBrowserState } from "./model-browser-state";
+import type { ModelExample } from "./model-examples";
 
 const CHEAP = { ...createModel("alpha/cheap", {}), name: "Alpha: Cheap" };
 const DEAR = { ...createModel("beta/dear", {}), name: "Beta: Dear" };

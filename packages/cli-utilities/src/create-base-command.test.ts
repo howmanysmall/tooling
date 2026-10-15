@@ -1,11 +1,11 @@
 import { describe, it } from "vitest";
 import { ValidationError } from "@cliffy/command";
 
-import { CliError } from "./cli-error.ts";
-import { handleCommandError } from "./create-base-command.ts";
-import { ShowHelpError } from "./show-help-error.ts";
+import { CliError } from "./cli-error";
+import { handleCommandError } from "./create-base-command";
+import { ShowHelpError } from "./show-help-error";
 
-import type { CommandErrorIo, ErrorCommand } from "./create-base-command.ts";
+import type { CommandErrorIo, ErrorCommand } from "./create-base-command";
 
 class ExitSignalError extends Error {
 	public readonly code: number;

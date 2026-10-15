@@ -384,9 +384,6 @@ catalogs:
     fast-check:
       specifier: 4.10.2
       version: 4.10.2
-    ink-testing-library:
-      specifier: 4.0.0
-      version: 4.0.0
     jest-extended:
       specifier: 7.0.0
       version: 7.0.0
@@ -746,9 +743,6 @@ importers:
       '@types/react':
         specifier: catalog:types
         version: 19.3.0
-      ink-testing-library:
-        specifier: catalog:test
-        version: 4.0.0(@types/react@19.3.0)(ink@7.1.1(@types/react@19.3.0)(react@19.3.0))
       temporal-polyfill:
         specifier: catalog:polyfills
         version: 1.0.6
@@ -5659,16 +5653,6 @@ packages:
   ini@6.0.0:
     resolution: {integrity: sha512-IBTdIkzZNOpqm7q3dRqJvMaldXjDHWkEDfrwGEQTs5eaQMWV+djAhR+wahyNNMAa+qpbDUhBMVt4ZKNwpPm7xQ==}
     engines: {node: ^20.17.0 || >=22.9.0}
-
-  ink-testing-library@4.0.0:
-    resolution: {integrity: sha512-yF92kj3pmBvk7oKbSq5vEALO//o7Z9Ck/OaLNlkzXNeYdwfpxMQkSowGTFUCS5MSu9bWfSZMewGpp7bFc66D7Q==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@types/react': '>=18.0.0'
-      ink: '>=5.0.0'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
 
   ink@7.1.1:
     resolution: {integrity: sha512-Y43xxa1ZSPvpmfLHcN5o+OdP8Rf8ykkNJEuKYOUNZKT8wXVNLFTtEm1nSDMQkfBH+YANF4Xuu0hhZ4ejqAtN2w==}
@@ -11751,12 +11735,6 @@ snapshots:
 
   ini@6.0.0: {}
 
-  ink-testing-library@4.0.0(@types/react@19.3.0)(ink@7.1.1(@types/react@19.3.0)(react@19.3.0)):
-    dependencies:
-      ink: 7.1.1(@types/react@19.3.0)(react@19.3.0)
-    optionalDependencies:
-      '@types/react': 19.3.0
-
   ink@7.1.1(@types/react@19.3.0)(react@19.3.0):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.3.1
@@ -13826,7 +13804,6 @@ time:
   fallow@3.33.1: '2026-10-10T06:00:59.608Z'
   fast-check@4.10.2: '2026-09-19T19:34:54.991Z'
   fzf@0.5.2: '2023-04-25T19:26:05.874Z'
-  ink-testing-library@4.0.0: '2024-05-22T10:51:25.909Z'
   ink@7.1.1: '2026-07-16T13:07:31.525Z'
   jest-extended@7.0.0: '2025-11-05T19:15:00.324Z'
   jiti@2.7.0: '2026-05-05T21:02:47.918Z'

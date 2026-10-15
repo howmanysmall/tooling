@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { editInEditorAsync, getEditor } from "./edit-in-editor.ts";
+import { editInEditorAsync, getEditor } from "./edit-in-editor";
 
 /**
  * Builds a stand-in editor; the shell runs it with the file path as `$0`.

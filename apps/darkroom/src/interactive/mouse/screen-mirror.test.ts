@@ -1,11 +1,11 @@
 import { describe, it } from "vitest";
 import { fromPartial } from "@total-typescript/shoehorn";
 
-import { createScreenMirror } from "./screen-mirror.ts";
+import { createScreenMirror } from "./screen-mirror";
 
 import type { TestContext } from "vitest";
 
-import type { ScreenMirror } from "./screen-mirror.ts";
+import type { ScreenMirror } from "./screen-mirror";
 
 const HIGHLIGHT = 0x5c_3a_2e;
 

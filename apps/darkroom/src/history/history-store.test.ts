@@ -3,15 +3,26 @@ import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { describe, it } from "vitest";
 
-import { createEntry } from "./history-fixture.ts";
-import { HistoryStore } from "./history-store.ts";
+import { createEntry } from "./history-fixture";
+import {
+	appendAsync,
+	createHistoryStore,
+	deleteAsync,
+	getRunDirectory,
+	getRunSizeAsync,
+	readAllAsync,
+	resolve,
+	storeFilesAsync,
+} from "./history-store";
+
+import type { HistoryStore } from "./history-store";
 
 const FIRST = "01M4YVAKWVPWQQRBEKXDKQYBW1";
 const SECOND = "01M4YVAKWVPWQQRBEKXDKQYBW2";
 
 async function createStoreAsync(): Promise<HistoryStore> {
 	const root = await mkdtemp(nodePath.join(tmpdir(), "darkroom-history-"));
-	return new HistoryStore(root);
+	return createHistoryStore(root);
 }
 
 describe("historyStore", () => {
@@ -19,12 +30,12 @@ describe("historyStore", () => {
 		expect.assertions(2);
 
 		const store = await createStoreAsync();
-		await store.appendAsync(createEntry(FIRST));
+		await appendAsync(store, createEntry(FIRST));
 		await appendFile(nodePath.join(store.root, "history.jsonl"), "{not json\n");
-		await store.appendAsync(createEntry(SECOND));
+		await appendAsync(store, createEntry(SECOND));
 		const warnings: Array<string> = [];
 
-		const entries = await store.readAllAsync((message) => {
+		const entries = await readAllAsync(store, (message) => {
 			warnings.push(message);
 		});
 
@@ -39,14 +50,15 @@ describe("historyStore", () => {
 
 		const store = await createStoreAsync();
 
-		await expect(store.readAllAsync(() => undefined)).resolves.toStrictEqual([]);
+		await expect(readAllAsync(store, () => undefined)).resolves.toStrictEqual([]);
 	});
 
 	it("stores numbered copies and reports their size", async ({ expect }) => {
 		expect.assertions(3);
 
 		const store = await createStoreAsync();
-		const stored = await store.storeFilesAsync(
+		const stored = await storeFilesAsync(
+			store,
 			FIRST,
 			[
 				{ bytes: new Uint8Array(10), extension: "png" },
@@ -56,24 +68,24 @@ describe("historyStore", () => {
 		);
 
 		expect(stored).toStrictEqual([`images/${FIRST}/1.png`, `images/${FIRST}/2.webp`]);
-		await expect(readFile(store.resolve(`images/${FIRST}/2.webp`))).resolves.toHaveLength(5);
-		await expect(store.getRunSizeAsync(FIRST)).resolves.toBe(15);
+		await expect(readFile(resolve(store, `images/${FIRST}/2.webp`))).resolves.toHaveLength(5);
+		await expect(getRunSizeAsync(store, FIRST)).resolves.toBe(15);
 	});
 
 	it("deletes entries and their image folders, keeping the rest", async ({ expect }) => {
 		expect.assertions(3);
 
 		const store = await createStoreAsync();
-		await store.storeFilesAsync(FIRST, [{ bytes: new Uint8Array(1), extension: "png" }], "");
-		await store.appendAsync(createEntry(FIRST));
-		await store.appendAsync(createEntry(SECOND));
+		await storeFilesAsync(store, FIRST, [{ bytes: new Uint8Array(1), extension: "png" }], "");
+		await appendAsync(store, createEntry(FIRST));
+		await appendAsync(store, createEntry(SECOND));
 
-		const removed = await store.deleteAsync(new Set([FIRST]), () => undefined);
-		const entries = await store.readAllAsync(() => undefined);
+		const removed = await deleteAsync(store, new Set([FIRST]), () => undefined);
+		const entries = await readAllAsync(store, () => undefined);
 
 		expect(removed).toBe(1);
 		expect(entries.map((entry) => entry.id)).toStrictEqual([SECOND]);
-		await expect(stat(store.getRunDirectory(FIRST))).rejects.toThrow("ENOENT");
+		await expect(stat(getRunDirectory(store, FIRST))).rejects.toThrow("ENOENT");
 	});
 
 	it("keeps every run when many are appended at once", async ({ expect }) => {
@@ -84,9 +96,9 @@ describe("historyStore", () => {
 			{ length: 20 },
 			(_, index) => `01M4YVAKWVPWQQRBEKXDKQY${String(index).padStart(3, "0")}`,
 		);
-		await Promise.all(ids.map(async (id) => store.appendAsync(createEntry(id))));
+		await Promise.all(ids.map(async (id) => appendAsync(store, createEntry(id))));
 
-		const entries = await store.readAllAsync(() => undefined);
+		const entries = await readAllAsync(store, () => undefined);
 
 		expect(entries).toHaveLength(20);
 	});

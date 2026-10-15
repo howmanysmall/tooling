@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { InterruptAction, InterruptGuard, InterruptPhase } from "./interrupt-guard.ts";
+import { InterruptAction, InterruptGuard, InterruptPhase } from "./interrupt-guard";
 
 describe("interruptGuard", () => {
 	it("aborts the request while it is in flight", ({ expect }) => {

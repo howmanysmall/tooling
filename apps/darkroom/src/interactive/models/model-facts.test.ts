@@ -2,14 +2,8 @@ import { describe, it } from "vitest";
 
 import { createModel, MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 
-import { ExampleSource } from "./model-examples.ts";
-import {
-	describeExampleCaption,
-	getModelOptions,
-	getModelStats,
-	getPriceLines,
-	splitModelName,
-} from "./model-facts.ts";
+import { ExampleSource } from "./model-examples";
+import { describeExampleCaption, getModelOptions, getModelStats, getPriceLines, splitModelName } from "./model-facts";
 
 import type { EndpointPricing } from "$generation/cost-estimate";
 

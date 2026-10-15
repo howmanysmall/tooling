@@ -9,13 +9,14 @@ import { ApiError } from "$errors/api-error";
 import { ConfigurationError } from "$errors/configuration-error";
 import { InterruptedError } from "$errors/interrupted-error";
 import { CHARGE_NOTE } from "$errors/to-api-error";
-import { HistoryStore } from "$history/history-store";
+import { createHistoryStore, readAllAsync } from "$history/history-store";
 import { formatJson } from "$utilities/output-format-utilities";
 import { OutputFormat } from "$validators/output-format-type";
 
 import { InterruptAction, InterruptGuard } from "./interrupt-guard";
 
 import type { HistoryEntry } from "$history/history-entry";
+import type { HistoryStore } from "$history/history-store";
 
 import type { EstimateRequest } from "./cost-estimate";
 import type { StreamProgress } from "./image-stream";
@@ -30,7 +31,7 @@ const scriptName = getScriptName(true);
 export const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
 export function getHistoryStore(): HistoryStore {
-	return new HistoryStore(environmentPaths.data);
+	return createHistoryStore(environmentPaths.data);
 }
 
 /**
@@ -41,7 +42,7 @@ export function getHistoryStore(): HistoryStore {
  */
 export async function readHistoryQuietlyAsync(): Promise<ReadonlyArray<HistoryEntry>> {
 	try {
-		return await getHistoryStore().readAllAsync((message) => {
+		return await readAllAsync(getHistoryStore(), (message) => {
 			log.debug(message);
 		});
 	} catch (error) {
@@ -73,8 +74,8 @@ export async function askForPromptAsync(): Promise<string> {
 	const { cancel, isCancel, multiline } = await import("@clack/prompts");
 	const answer = await multiline({ message: "Prompt", output: stderr });
 	if (isCancel(answer)) {
-		cancel("Canceled.");
-		throw new InterruptedError("Canceled.");
+		cancel("Cancelled.");
+		throw new InterruptedError("Cancelled.");
 	}
 	return answer;
 }

@@ -28,7 +28,7 @@ import {
 	toSpaceCase,
 	toTitleCase,
 	toUpperCase,
-} from "./casing-utilities.ts";
+} from "./casing-utilities";
 
 describe("word splitting", () => {
 	it("splits on spaces, dots, slashes, hyphens, and underscores", ({ expect }) => {

@@ -1,9 +1,9 @@
 import { describe, it } from "vitest";
 
-import { BrowserKey } from "$interactive/keys/browser-keys.ts";
-import { NO_KEY } from "$interactive/keys/test-key.ts";
+import { BrowserKey } from "$interactive/keys/browser-keys";
+import { NO_KEY } from "$interactive/keys/test-key";
 
-import { getGenerateKey } from "./generate-commands.ts";
+import { getGenerateKey } from "./generate-commands";
 
 describe("getGenerateKey", () => {
 	it("generates on a plain Enter but leaves alt+enter for a new line", ({ expect }) => {

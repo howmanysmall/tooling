@@ -2,7 +2,7 @@
 import { spawnSync } from "node:child_process";
 import { describe, it } from "vitest";
 
-import { getOptionValue, injectCompletionContext, readCompletionContext, Shell } from "./completion-context.ts";
+import { getOptionValue, injectCompletionContext, readCompletionContext, Shell } from "./completion-context";
 
 const FISH_SCRIPT =
 	"complete -c darkroom -s a -l aspect-ratio -a '(darkroom completions complete aspect-ratio generate 2>/dev/null)'\n";

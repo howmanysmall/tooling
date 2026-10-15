@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { MouseAction, splitMouseInput, toMouseAction } from "./mouse-input.ts";
+import { MouseAction, splitMouseInput, toMouseAction } from "./mouse-input";
 
 describe("splitMouseInput", () => {
 	it("takes the reports out and leaves the typing, in zero-based cells", ({ expect }) => {

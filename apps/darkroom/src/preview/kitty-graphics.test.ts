@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { formatKittyDelete, formatKittyPlaceholders, formatKittyTransmit } from "./kitty-graphics.ts";
+import { formatKittyDelete, formatKittyPlaceholders, formatKittyTransmit } from "./kitty-graphics";
 
 const ESC = "\u001B";
 

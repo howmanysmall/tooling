@@ -3,12 +3,12 @@ import { describe, it } from "vitest";
 import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
 
-import { INITIAL_SESSION, reduceSession, TurnPhase } from "./session-state.ts";
-import { getTurnPaths, summarizeTurn } from "./turn-summary.ts";
+import { INITIAL_SESSION, reduceSession, TurnPhase } from "./session-state";
+import { getTurnPaths, summarizeTurn } from "./turn-summary";
 
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
 
-import type { SessionAction, SessionState } from "./session-state.ts";
+import type { SessionAction, SessionState } from "./session-state";
 
 async function prepareAsync(): Promise<PreparedGeneration> {
 	return prepareGenerationAsync(

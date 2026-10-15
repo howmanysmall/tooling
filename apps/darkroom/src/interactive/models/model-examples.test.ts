@@ -2,7 +2,7 @@ import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
 
-import { ExampleSource, getModelExamples } from "./model-examples.ts";
+import { ExampleSource, getModelExamples } from "./model-examples";
 
 describe("getModelExamples", () => {
 	it("keeps each model's newest run that has an image", ({ expect }) => {

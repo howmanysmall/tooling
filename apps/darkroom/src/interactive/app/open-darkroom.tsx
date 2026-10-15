@@ -1,6 +1,7 @@
 import { stdin, stdout } from "node:process";
 import { render } from "ink";
 
+import { deleteAsync, readAllAsync, resolve } from "$history/history-store";
 import { NoticeContext } from "$interactive/components/notice-store";
 import { MouseRegistryContext } from "$interactive/mouse/mouse-context";
 import { createMouseSession } from "$interactive/mouse/mouse-session";
@@ -50,22 +51,22 @@ function createHistoryServices(store: HistoryStore, previews: PreviewCache | und
 	return {
 		async deleteRunAsync(entry): Promise<void> {
 			const { log } = await import("$generation/cli-runner");
-			await store.deleteAsync(new Set([entry.id]), (message) => {
+			await deleteAsync(store, new Set([entry.id]), (message) => {
 				log.warn(message);
 			});
 		},
 		getPreview: (path, box) => previews?.getPreview(path, box),
 		async openRunAsync(entry): Promise<void> {
 			const { openFilesAsync } = await import("$history/open-files");
-			await openFilesAsync(entry.images.map((image) => store.resolve(image.stored)));
+			await openFilesAsync(entry.images.map((image) => resolve(store, image.stored)));
 		},
-		resolve: (stored) => store.resolve(stored),
+		resolve: (stored) => resolve(store, stored),
 	};
 }
 
 async function readNewestFirstAsync(store: HistoryStore): Promise<ReadonlyArray<HistoryEntry>> {
 	// Warnings would tear the full-screen app; a broken line is skipped.
-	const entries = await store.readAllAsync(() => undefined);
+	const entries = await readAllAsync(store, () => undefined);
 	return entries.toReversed();
 }
 
@@ -86,13 +87,13 @@ export async function openDarkroomAsync({ models, sort = ModelSort.Name, tab }: 
 	const { getHistoryStore, log } = await import("$generation/cli-runner");
 	const store = getHistoryStore();
 	const [stored, previews] = await Promise.all([
-		store.readAllAsync((message) => {
+		readAllAsync(store, (message) => {
 			log.warn(message);
 		}),
 		createTerminalPreviewsAsync(),
 	]);
 	const entries = stored.toReversed();
-	const catalog = loadCatalogAsync(entries, (path) => store.resolve(path), models);
+	const catalog = loadCatalogAsync(entries, (path) => resolve(store, path), models);
 	const session = createSessionServices(store);
 	const { getRequest, handleGenerateWithOptions } = createGuidedRequest();
 	const openedAt = new Date();

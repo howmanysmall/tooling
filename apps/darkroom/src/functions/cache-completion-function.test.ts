@@ -5,7 +5,7 @@ import { describe, it } from "vitest";
 
 import { CACHE_TTL_MS } from "$constants";
 
-import { cacheCompletionFunction } from "./cache-completion-function.ts";
+import { cacheCompletionFunction } from "./cache-completion-function";
 
 async function createDirectoryAsync(): Promise<string> {
 	return mkdtemp(nodePath.join(tmpdir(), "darkroom-completion-cache-"));
