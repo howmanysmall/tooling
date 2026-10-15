@@ -269,7 +269,7 @@ function formatModels(imageModels: ReadonlyArray<ImageModelListItem>, format: Ou
 	}
 }
 
-export const getCommand = createBaseCommand(scriptName, "1.0.0", "Used to easily acquire model information.")
+export const getCommand = createBaseCommand(scriptName, "1.0.0", "Used to acquire model information from OpenRouter.")
 	.env("OPENROUTER_API_KEY=<value:string>", "The OpenRouter API key to use for generating images.", {})
 	.type("image-model", imageModelIdType)
 	.complete("image-model", getImageModelIdsAsync)
