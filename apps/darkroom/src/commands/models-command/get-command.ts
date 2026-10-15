@@ -18,15 +18,14 @@ const scriptName = getScriptName(true);
 const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
 const naturalCollator = new Intl.Collator(undefined, { numeric: true });
+const numberFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
+
 function compareNatural(self: string, other: string): number {
 	return naturalCollator.compare(self, other);
 }
-
-const numberFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
 function formatNumber(value: number): string {
 	return cyan(numberFormatter.format(value));
 }
-
 function formatList(values: ReadonlyArray<string>): string {
 	return values.map(green).join(`${dim(",")} `);
 }
