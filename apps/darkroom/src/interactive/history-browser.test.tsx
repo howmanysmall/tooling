@@ -15,6 +15,8 @@ import type { LoadingPreview } from "$preview/load-preview";
 
 import type { BrowserServices } from "./history-browser-services.ts";
 
+// The fixtures are made on 2026-10-14, so their heading reads `Today`.
+const NOW = new Date("2026-10-14T21:00:00.000Z");
 const DOWN = "\u001B[B";
 const ESCAPE = "\u001B";
 const ENTER = "\r";
@@ -23,18 +25,20 @@ const NEWEST = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA3", { prompt: "a cat in a h
 const MIDDLE = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA2", { prompt: "a dog on a log" });
 const OLDEST = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", { prompt: "a tree by the sea" });
 const NEWEST_FIRST: ReadonlyArray<HistoryEntry> = [NEWEST, MIDDLE, OLDEST];
-const MODEL_ROW = /model +openai\/gpt-image-1/u;
-const RETURNED_ROW = /returned +1 of 1/u;
+const MODEL_ROW = /MODEL[\s\S]*gpt-image-1/u;
+const RETURNED_ROW = /IMAGES[\s\S]*1 image/u;
 
 const PREVIEW: LoadingPreview = { result: Promise.resolve({ kind: "image", lines: ["IMAGE ROW 1", "IMAGE ROW 2"] }) };
 const PREVIEW_THEN_ID = /IMAGE ROW 2[\s\S]*id +01M4YV/u;
 
 const BATCH = "01M4YVBATCHAAAAAAAAAAAAAAA";
 const COMPARISON: ReadonlyArray<HistoryEntry> = [
-	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB2", { batch: BATCH, model: "zeta/z" }),
-	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB1", { batch: BATCH, model: "alpha/a" }),
+	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB2", { batch: BATCH, model: "zeta/zeta-model" }),
+	createEntry("01M4YVAAAAAAAAAAAAAAAAAAB1", { batch: BATCH, model: "alpha/alpha-model" }),
 ];
-const STRIP_LABELS = /alpha\/a +zeta\/z/u;
+const COMPARED_ROW = /compared +01M4YVAA · alpha-model/u;
+// Ordered by model, with the selected (newest) run marked.
+const STRIP_LABELS = /alpha-model +▲ zeta-model/u;
 
 // More detail rows than the pane can show.
 const CROWDED_RUNS: ReadonlyArray<HistoryEntry> = [
@@ -86,7 +90,7 @@ async function renderBrowserAsync(): Promise<Harness> {
 	const opened: Array<string> = [];
 	const reruns: Array<string> = [];
 	const services = createServices(store, opened, reruns);
-	const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} services={services} />);
+	const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} now={NOW} services={services} />);
 	await delay(20);
 
 	return {
@@ -131,7 +135,7 @@ describe("history browser", () => {
 		expect.assertions(2);
 
 		const services = createServices(new HistoryStore(tmpdir()), [], []);
-		const instance = render(<HistoryBrowserScreen entries={CROWDED_RUNS} services={services} />);
+		const instance = render(<HistoryBrowserScreen entries={CROWDED_RUNS} now={NOW} services={services} />);
 		await delay(20);
 		const frame = String(instance.lastFrame());
 
@@ -144,7 +148,7 @@ describe("history browser", () => {
 
 		const store = new HistoryStore(tmpdir());
 		const services = addPreview(createServices(store, [], []));
-		const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} services={services} />);
+		const instance = render(<HistoryBrowserScreen entries={NEWEST_FIRST} now={NOW} services={services} />);
 
 		// React retries a suspended preview after about 300ms.
 		await expect.poll(() => String(instance.lastFrame())).toMatch(PREVIEW_THEN_ID);
@@ -156,10 +160,10 @@ describe("history browser", () => {
 
 		const store = new HistoryStore(tmpdir());
 		const services = addPreview(createServices(store, [], []));
-		const instance = render(<HistoryBrowserScreen entries={COMPARISON} services={services} />);
+		const instance = render(<HistoryBrowserScreen entries={COMPARISON} now={NOW} services={services} />);
 
 		await expect.poll(() => String(instance.lastFrame())).toMatch(STRIP_LABELS);
-		expect(String(instance.lastFrame())).toContain("batch");
+		expect(String(instance.lastFrame())).toMatch(COMPARED_ROW);
 	});
 
 	it("filters the list as the filter is typed, and Esc clears it", async ({ expect }) => {
@@ -173,7 +177,7 @@ describe("history browser", () => {
 
 		await browser.pressAsync(ESCAPE);
 
-		expect(browser.frame()).toContain("· 3 runs");
+		expect(browser.frame()).toContain("  3 runs ·");
 	});
 
 	it("keeps the run when the delete question is answered with n", async ({ expect }) => {
@@ -182,7 +186,7 @@ describe("history browser", () => {
 		const browser = await renderBrowserAsync();
 		await browser.pressAsync("d");
 
-		expect(browser.frame()).toContain("Delete run");
+		expect(browser.frame()).toContain("Delete “a cat in a hat” and its stored images?");
 
 		await browser.pressAsync("n");
 

@@ -54,8 +54,12 @@ export function createBrowserActions({
 	services,
 	write,
 }: ActionEnvironment): HistoryBrowserActions {
-	function report(status: string): void {
-		dispatch({ status, type: "status" });
+	function reportSuccess(text: string): void {
+		dispatch({ status: { text, tone: "success" }, type: "status" });
+	}
+
+	function reportError(text: string): void {
+		dispatch({ status: { text, tone: "error" }, type: "status" });
 	}
 
 	return {
@@ -68,7 +72,7 @@ export function createBrowserActions({
 			const { id } = selected;
 			runBrowserTask(services.deleteRunAsync(selected), (failure) => {
 				if (failure === undefined) dispatch({ id, type: "removed" });
-				else report(`Could not delete: ${failure}`);
+				else reportError(`Could not delete: ${failure}`);
 			});
 		},
 		askDelete(): void {
@@ -84,7 +88,7 @@ export function createBrowserActions({
 			if (selected === undefined) return;
 
 			write(formatClipboardSequence(selected.id));
-			report(`Copied ${selected.id}`);
+			reportSuccess(`Copied ${selected.id}`);
 		},
 		moveDown(): void {
 			dispatch(MOVE_DOWN);
@@ -112,11 +116,8 @@ export function createBrowserActions({
 
 			const count = selected.images.length;
 			runBrowserTask(services.openRunAsync(selected), (failure) => {
-				report(
-					failure === undefined
-						? `Opened ${count} ${toPlural(count, "image")}.`
-						: `Could not open: ${failure}`,
-				);
+				if (failure === undefined) reportSuccess(`Opened ${count} ${toPlural(count, "image")}`);
+				else reportError(`Could not open: ${failure}`);
 			});
 		},
 		quit(): void {

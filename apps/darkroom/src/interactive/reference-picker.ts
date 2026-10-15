@@ -1,11 +1,12 @@
 import { readdirSync } from "node:fs";
-import { homedir } from "node:os";
 import nodePath from "node:path";
 import { stdin } from "node:process";
 import { Prompt } from "@clack/core";
 import { limitOptions, S_BAR, S_BAR_END, S_CHECKBOX_INACTIVE, S_CHECKBOX_SELECTED, symbol } from "@clack/prompts";
 import { formatArrayAsEnglishList } from "@howmanysmall/english-utilities/format-array-as-english-list";
 import { cyan, dim, gray, green, yellow } from "ansis";
+
+import { shortenHomePath } from "$utilities/path-utilities";
 
 import {
 	createPickerState,
@@ -44,11 +45,6 @@ function readDirectory(directory: string): Array<DirectoryItem> {
 	} catch {
 		return [];
 	}
-}
-
-function shortenHome(path: string): string {
-	const home = homedir();
-	return path === home || path.startsWith(`${home}${nodePath.sep}`) ? `~${path.slice(home.length)}` : path;
 }
 
 function drawEntry(entry: PickerEntry, isActive: boolean, selected: ReadonlyArray<string>): string {
@@ -120,7 +116,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 
 		const bar = cyan(S_BAR);
 		const filter = this.picker.filter === "" ? "" : `  ${dim("filter:")} ${this.userInputWithCursor}`;
-		const header = [gray(S_BAR), title, `${bar}  ${dim(shortenHome(this.picker.directory))}${filter}`];
+		const header = [gray(S_BAR), title, `${bar}  ${dim(shortenHomePath(this.picker.directory))}${filter}`];
 		const footer = [
 			...(this.picker.warning === undefined ? [] : [`${bar}  ${yellow(this.picker.warning)}`]),
 			`${bar}  ${INSTRUCTIONS}`,

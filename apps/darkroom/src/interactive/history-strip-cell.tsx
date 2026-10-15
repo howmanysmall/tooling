@@ -2,6 +2,8 @@ import { Box, Text } from "ink";
 
 import { useHistoryBrowser } from "./history-browser-context";
 import { HistoryPreviewSlot } from "./history-preview-slot";
+import { getModelName } from "./run-facts";
+import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
@@ -30,13 +32,21 @@ export function HistoryStripCell({ box, run }: Readonly<HistoryStripCellProperti
 	return (
 		<Box flexDirection="column" flexShrink={0} width={box.columns}>
 			{preview === undefined ? (
-				<Text dimColor={true}>{"No image."}</Text>
+				<Text color={theme.muted}>{"No image"}</Text>
 			) : (
 				<HistoryPreviewSlot preview={preview} />
 			)}
-			<Text inverse={run.id === state.selected?.id} wrap="truncate-end">
-				{run.model}
-			</Text>
+			<Box justifyContent="center">
+				{run.id === state.selected?.id ? (
+					<Text bold={true} color={theme.accent} wrap="truncate-end">
+						{`▲ ${getModelName(run.model)}`}
+					</Text>
+				) : (
+					<Text color={theme.muted} wrap="truncate-end">
+						{getModelName(run.model)}
+					</Text>
+				)}
+			</Box>
 		</Box>
 	);
 }

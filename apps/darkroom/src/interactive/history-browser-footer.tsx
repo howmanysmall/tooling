@@ -1,27 +1,18 @@
-import { useHistoryBrowser } from "./history-browser-context";
-import { BrowserMode } from "./history-browser-state";
-import { HistoryDeletePrompt } from "./history-delete-prompt";
-import { HistoryFilterBar } from "./history-filter-bar";
-import { HistoryStatusLine } from "./history-status-line";
+import { Box } from "ink";
+
+import { HistoryFooterLine } from "./history-footer-line";
 
 import type { ReactNode } from "react";
 
 /**
- * The bottom line, which shows the variant for the current mode.
+ * The bottom line, inset to line up with the panes' contents.
  *
- * @returns The filter bar, the delete question, or the status line.
+ * @returns The footer for the current mode.
  */
 export function HistoryBrowserFooter(): ReactNode {
-	const {
-		state: { mode },
-	} = useHistoryBrowser();
-
-	switch (mode) {
-		case BrowserMode.ConfirmDelete:
-			return <HistoryDeletePrompt />;
-		case BrowserMode.Filter:
-			return <HistoryFilterBar />;
-		default:
-			return <HistoryStatusLine />;
-	}
+	return (
+		<Box paddingX={1}>
+			<HistoryFooterLine />
+		</Box>
+	);
 }

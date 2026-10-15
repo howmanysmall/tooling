@@ -15,5 +15,9 @@ export interface HistoryBrowserPanesProperties {
  * @returns A row that grows to fill the screen.
  */
 export function HistoryBrowserPanes({ children }: Readonly<HistoryBrowserPanesProperties>): ReactNode {
-	return <Box flexGrow={1}>{children}</Box>;
+	return (
+		<Box columnGap={1} flexGrow={1}>
+			{children}
+		</Box>
+	);
 }

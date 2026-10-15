@@ -13,12 +13,13 @@ export type HistoryBrowserScreenProperties = Except<HistoryBrowserProviderProper
  *
  * @param properties - The runs and what the keys act on.
  * @param properties.entries - Every run, newest first.
+ * @param properties.now - When the browser opened, for naming days.
  * @param properties.services - Opens, deletes, previews, and re-runs runs.
  * @returns The whole screen, sized to the terminal.
  */
-export function HistoryBrowserScreen({ entries, services }: Readonly<HistoryBrowserScreenProperties>): ReactNode {
+export function HistoryBrowserScreen({ entries, now, services }: Readonly<HistoryBrowserScreenProperties>): ReactNode {
 	return (
-		<HistoryBrowser.Provider entries={entries} services={services}>
+		<HistoryBrowser.Provider entries={entries} now={now} services={services}>
 			<HistoryBrowser.Frame>
 				<HistoryBrowser.Header />
 				<HistoryBrowser.Panes>

@@ -105,9 +105,10 @@ describe("history browser state", () => {
 	it("clears the status on the next move", ({ expect }) => {
 		expect.assertions(2);
 
-		const state = reduceBrowserState(createBrowserState([CAT, DOG]), { status: "Copied", type: "status" });
+		const status = { text: "Copied", tone: "success" } as const;
+		const state = reduceBrowserState(createBrowserState([CAT, DOG]), { status, type: "status" });
 
-		expect(state.status).toBe("Copied");
+		expect(state.status).toBe(status);
 		expect(reduceBrowserState(state, { delta: 1, type: "move" }).status).toBeUndefined();
 	});
 });

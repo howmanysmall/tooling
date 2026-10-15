@@ -5,7 +5,7 @@ import type { RunRelations } from "$history/resolve-run-reference";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
 
-import type { BrowserMode } from "./history-browser-state";
+import type { BrowserMode, StatusMessage } from "./history-browser-state";
 
 export interface HistoryBrowserState {
 	/** Every run, newest first, including filtered-out ones. */
@@ -22,7 +22,7 @@ export interface HistoryBrowserState {
 	/** Index of `selected` within `runs`. */
 	readonly selectedIndex: number;
 	/** A one-line message for the footer, such as a copied ID. */
-	readonly status?: string | undefined;
+	readonly status?: StatusMessage | undefined;
 }
 
 export interface HistoryBrowserActions {
@@ -60,6 +60,8 @@ export interface HistoryBrowserMeta {
 	/** A run's first image, sized for the detail pane unless a box is given. */
 	readonly getPreview: (entry: HistoryEntry, box?: CellBox) => LoadingPreview | undefined;
 	readonly layout: HistoryBrowserLayout;
+	/** When the browser opened, for naming days like `Today`. */
+	readonly now: Date;
 	/** Turns a stored path into an absolute one. */
 	readonly resolve: (stored: string) => string;
 }
