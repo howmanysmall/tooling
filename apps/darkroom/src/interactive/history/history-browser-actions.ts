@@ -5,7 +5,7 @@ import { createStatusReporter } from "$interactive/components/status-message";
 import { formatClipboardSequence } from "$interactive/keys/browser-keys";
 import { createCursorActions } from "$interactive/keys/cursor-actions";
 
-import { BrowserMode } from "./history-browser-state";
+import { BrowserActionType, BrowserMode } from "./history-browser-state";
 
 import type { Dispatch } from "react";
 
@@ -27,12 +27,12 @@ export interface ActionEnvironment {
 	readonly write: (data: string) => void;
 }
 
-const OPEN_FILTER: BrowserAction = { mode: BrowserMode.Filter, type: "mode" };
-const CANCEL_FILTER: BrowserAction = { type: "cancel-filter" };
-const ASK_DELETE: BrowserAction = { mode: BrowserMode.ConfirmDelete, type: "mode" };
-const BACK_TO_LIST: BrowserAction = { mode: BrowserMode.Normal, type: "mode" };
-const NEXT_IN_BATCH: BrowserAction = { delta: 1, type: "step-batch" };
-const PREVIOUS_IN_BATCH: BrowserAction = { delta: -1, type: "step-batch" };
+const OPEN_FILTER: BrowserAction = { mode: BrowserMode.Filter, type: BrowserActionType.Mode };
+const CANCEL_FILTER: BrowserAction = { type: BrowserActionType.CancelFilter };
+const ASK_DELETE: BrowserAction = { mode: BrowserMode.ConfirmDelete, type: BrowserActionType.Mode };
+const BACK_TO_LIST: BrowserAction = { mode: BrowserMode.Normal, type: BrowserActionType.Mode };
+const NEXT_IN_BATCH: BrowserAction = { delta: 1, type: BrowserActionType.StepBatch };
+const PREVIOUS_IN_BATCH: BrowserAction = { delta: -1, type: BrowserActionType.StepBatch };
 
 /**
  * Builds what the browser's keys and inputs can do. Each action that touches
@@ -67,7 +67,7 @@ export function createBrowserActions({
 
 			const { id } = selected;
 			runBrowserTask(services.deleteRunAsync(selected), (failure) => {
-				if (failure === undefined) dispatch({ id, type: "removed" });
+				if (failure === undefined) dispatch({ id, type: BrowserActionType.Removed });
 				else reportError(`Could not delete: ${failure}`);
 			});
 		},
@@ -107,10 +107,10 @@ export function createBrowserActions({
 			services.requestRerun(selected);
 		},
 		selectRun(id): void {
-			dispatch({ id, type: "select" });
+			dispatch({ id, type: BrowserActionType.Select });
 		},
 		setFilter(text): void {
-			dispatch({ filter: text, type: "filter" });
+			dispatch({ filter: text, type: BrowserActionType.Filter });
 		},
 		showNextInBatch(): void {
 			dispatch(NEXT_IN_BATCH);

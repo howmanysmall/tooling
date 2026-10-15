@@ -1,8 +1,11 @@
 import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
+import { CursorMoveType } from "$interactive/components/list-cursor";
+import { StatusActionType } from "$interactive/components/status-message";
 
 import {
+	BrowserActionType,
 	BrowserMode,
 	createBrowserState,
 	getSelectedRun,
@@ -27,9 +30,9 @@ describe("history browser state", () => {
 		expect.assertions(2);
 
 		const state = applyActions(createBrowserState([CAT, DOG, TREE]), [
-			{ delta: 2, type: "move" },
-			{ mode: BrowserMode.Filter, type: "mode" },
-			{ filter: " CAT ", type: "filter" },
+			{ delta: 2, type: CursorMoveType.Move },
+			{ mode: BrowserMode.Filter, type: BrowserActionType.Mode },
+			{ filter: " CAT ", type: BrowserActionType.Filter },
 		]);
 
 		expect(getVisibleRuns(state).map((entry) => entry.id)).toStrictEqual([CAT.id, DOG.id]);
@@ -41,19 +44,21 @@ describe("history browser state", () => {
 
 		const state = createBrowserState([CAT, DOG, TREE]);
 
-		expect(getSelectedRun(reduceBrowserState(state, { delta: 10, type: "move" }))).toBe(TREE);
-		expect(getSelectedRun(reduceBrowserState(state, { delta: -10, type: "move" }))).toBe(CAT);
-		expect(getSelectedRun(reduceBrowserState(state, { type: "last" }))).toBe(TREE);
-		expect(getSelectedRun(applyActions(state, [{ type: "last" }, { type: "first" }]))).toBe(CAT);
+		expect(getSelectedRun(reduceBrowserState(state, { delta: 10, type: CursorMoveType.Move }))).toBe(TREE);
+		expect(getSelectedRun(reduceBrowserState(state, { delta: -10, type: CursorMoveType.Move }))).toBe(CAT);
+		expect(getSelectedRun(reduceBrowserState(state, { type: CursorMoveType.Last }))).toBe(TREE);
+		expect(
+			getSelectedRun(applyActions(state, [{ type: CursorMoveType.Last }, { type: CursorMoveType.First }])),
+		).toBe(CAT);
 	});
 
 	it("selects the next run up when the last one is removed, and returns to the list", ({ expect }) => {
 		expect.assertions(3);
 
 		const state = applyActions(createBrowserState([CAT, DOG, TREE]), [
-			{ type: "last" },
-			{ mode: BrowserMode.ConfirmDelete, type: "mode" },
-			{ id: TREE.id, type: "removed" },
+			{ type: CursorMoveType.Last },
+			{ mode: BrowserMode.ConfirmDelete, type: BrowserActionType.Mode },
+			{ id: TREE.id, type: BrowserActionType.Removed },
 		]);
 
 		expect(getVisibleRuns(state)).toStrictEqual([CAT, DOG]);
@@ -64,7 +69,7 @@ describe("history browser state", () => {
 	it("selects nothing once every run is gone", ({ expect }) => {
 		expect.assertions(1);
 
-		const state = reduceBrowserState(createBrowserState([CAT]), { id: CAT.id, type: "removed" });
+		const state = reduceBrowserState(createBrowserState([CAT]), { id: CAT.id, type: BrowserActionType.Removed });
 
 		expect(getSelectedRun(state)).toBeUndefined();
 	});
@@ -73,9 +78,9 @@ describe("history browser state", () => {
 		expect.assertions(2);
 
 		const state = applyActions(createBrowserState([CAT, DOG, TREE]), [
-			{ mode: BrowserMode.Filter, type: "mode" },
-			{ filter: "tree", type: "filter" },
-			{ type: "cancel-filter" },
+			{ mode: BrowserMode.Filter, type: BrowserActionType.Mode },
+			{ filter: "tree", type: BrowserActionType.Filter },
+			{ type: BrowserActionType.CancelFilter },
 		]);
 
 		expect(getVisibleRuns(state)).toHaveLength(3);
@@ -86,17 +91,20 @@ describe("history browser state", () => {
 		expect.assertions(1);
 
 		const state = applyActions(createBrowserState([CAT, DOG, TREE]), [
-			{ mode: BrowserMode.Filter, type: "mode" },
-			{ filter: "cat", type: "filter" },
+			{ mode: BrowserMode.Filter, type: BrowserActionType.Mode },
+			{ filter: "cat", type: BrowserActionType.Filter },
 		]);
 
-		expect(reduceBrowserState(state, { filter: " CAT ", type: "filter" })).toBe(state);
+		expect(reduceBrowserState(state, { filter: " CAT ", type: BrowserActionType.Filter })).toBe(state);
 	});
 
 	it("ignores filter text that arrives after the filter was closed", ({ expect }) => {
 		expect.assertions(1);
 
-		const state = reduceBrowserState(createBrowserState([CAT, DOG, TREE]), { filter: "tree", type: "filter" });
+		const state = reduceBrowserState(createBrowserState([CAT, DOG, TREE]), {
+			filter: "tree",
+			type: BrowserActionType.Filter,
+		});
 
 		expect(getVisibleRuns(state)).toHaveLength(3);
 	});
@@ -106,12 +114,15 @@ describe("history browser state", () => {
 
 		const first = { id: 1, text: "Copied", tone: "success" } as const;
 		const second = { id: 2, text: "Opened", tone: "success" } as const;
-		const shown = reduceBrowserState(createBrowserState([CAT, DOG]), { status: first, type: "status" });
-		const replaced = reduceBrowserState(shown, { status: second, type: "status" });
+		const shown = reduceBrowserState(createBrowserState([CAT, DOG]), {
+			status: first,
+			type: StatusActionType.Status,
+		});
+		const replaced = reduceBrowserState(shown, { status: second, type: StatusActionType.Status });
 
-		expect(reduceBrowserState(shown, { delta: 1, type: "move" }).status).toBe(first);
-		expect(reduceBrowserState(shown, { id: 1, type: "status-expired" }).status).toBeUndefined();
-		expect(reduceBrowserState(replaced, { id: 1, type: "status-expired" }).status).toBe(second);
+		expect(reduceBrowserState(shown, { delta: 1, type: CursorMoveType.Move }).status).toBe(first);
+		expect(reduceBrowserState(shown, { id: 1, type: StatusActionType.StatusExpired }).status).toBeUndefined();
+		expect(reduceBrowserState(replaced, { id: 1, type: StatusActionType.StatusExpired }).status).toBe(second);
 	});
 });
 
@@ -136,28 +147,28 @@ describe("comparison batches", () => {
 	it("steps through the batch's runs by model, stopping at either end", ({ expect }) => {
 		expect.assertions(3);
 
-		const onBatch = reduceBrowserState(createBrowserState(ENTRIES), { delta: 1, type: "move" });
+		const onBatch = reduceBrowserState(createBrowserState(ENTRIES), { delta: 1, type: CursorMoveType.Move });
 		const stepped = applyActions(onBatch, [
-			{ delta: 1, type: "step-batch" },
-			{ delta: 1, type: "step-batch" },
-			{ delta: 1, type: "step-batch" },
+			{ delta: 1, type: BrowserActionType.StepBatch },
+			{ delta: 1, type: BrowserActionType.StepBatch },
+			{ delta: 1, type: BrowserActionType.StepBatch },
 		]);
 
 		expect(getSelectedRun(stepped)).toBe(BANANA);
 		expect(getVisibleRuns(stepped)).toStrictEqual([CAT, BANANA, TREE]);
-		expect(getSelectedRun(reduceBrowserState(onBatch, { delta: -1, type: "step-batch" }))).toBe(ADA);
+		expect(getSelectedRun(reduceBrowserState(onBatch, { delta: -1, type: BrowserActionType.StepBatch }))).toBe(ADA);
 	});
 
 	it("shows a batch's matching run when filtering, and ignores steps outside a batch", ({ expect }) => {
 		expect.assertions(2);
 
 		const filtered = applyActions(createBrowserState(ENTRIES), [
-			{ mode: BrowserMode.Filter, type: "mode" },
-			{ filter: "banana", type: "filter" },
+			{ mode: BrowserMode.Filter, type: BrowserActionType.Mode },
+			{ filter: "banana", type: BrowserActionType.Filter },
 		]);
 		const plain = createBrowserState(ENTRIES);
 
 		expect(getVisibleRuns(filtered)).toStrictEqual([BANANA]);
-		expect(reduceBrowserState(plain, { delta: 1, type: "step-batch" })).toBe(plain);
+		expect(reduceBrowserState(plain, { delta: 1, type: BrowserActionType.StepBatch })).toBe(plain);
 	});
 });

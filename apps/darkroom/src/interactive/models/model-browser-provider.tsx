@@ -7,7 +7,7 @@ import { createModelBrowserActions } from "./model-browser-actions";
 import { ModelBrowserContext } from "./model-browser-context";
 import { createModelBrowserState, getExample, getVisibleModels, reduceModelBrowserState } from "./model-browser-state";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { ModelSort } from "$utilities/model-filters";
 
@@ -22,7 +22,6 @@ export interface ModelBrowserProviderProperties {
 	services: ModelBrowserServices;
 	/** The order the list opens in. */
 	sort: ModelSort;
-	children: ReactNode;
 }
 
 // The header, the status bar, and the list's padding above and below.
@@ -101,7 +100,7 @@ export function ModelBrowserProvider({
 	services,
 	sort,
 	children,
-}: Readonly<ModelBrowserProviderProperties>): ReactNode {
+}: Readonly<PropsWithChildren<ModelBrowserProviderProperties>>): ReactNode {
 	const [browser, dispatch] = useReducer(reduceModelBrowserState, undefined, () =>
 		createModelBrowserState(catalog, sort),
 	);

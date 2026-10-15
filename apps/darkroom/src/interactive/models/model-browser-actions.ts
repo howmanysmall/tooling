@@ -2,6 +2,8 @@ import { createStatusReporter } from "$interactive/components/status-message";
 import { formatClipboardSequence } from "$interactive/keys/browser-keys";
 import { createCursorActions } from "$interactive/keys/cursor-actions";
 
+import { ModelBrowserActionType } from "./model-browser-state";
+
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { Dispatch } from "react";
 
@@ -21,11 +23,11 @@ export interface ModelActionEnvironment {
 	readonly write: (data: string) => void;
 }
 
-const OPEN_FILTER: ModelBrowserAction = { isFiltering: true, type: "filtering" };
-const CLOSE_FILTER: ModelBrowserAction = { isFiltering: false, type: "filtering" };
-const CANCEL_FILTER: ModelBrowserAction = { type: "cancel-filter" };
-const NEXT_SORT: ModelBrowserAction = { type: "next-sort" };
-const SWITCH_EXAMPLE: ModelBrowserAction = { type: "switch-example" };
+const OPEN_FILTER: ModelBrowserAction = { isFiltering: true, type: ModelBrowserActionType.Filtering };
+const CLOSE_FILTER: ModelBrowserAction = { isFiltering: false, type: ModelBrowserActionType.Filtering };
+const CANCEL_FILTER: ModelBrowserAction = { type: ModelBrowserActionType.CancelFilter };
+const NEXT_SORT: ModelBrowserAction = { type: ModelBrowserActionType.NextSort };
+const SWITCH_EXAMPLE: ModelBrowserAction = { type: ModelBrowserActionType.SwitchExample };
 
 /**
  * Builds what the model browser's keys and inputs can do.
@@ -76,10 +78,10 @@ export function createModelBrowserActions({
 			exit();
 		},
 		selectModel(id): void {
-			dispatch({ id, type: "select" });
+			dispatch({ id, type: ModelBrowserActionType.Select });
 		},
 		setFilter(text): void {
-			dispatch({ filter: text, type: "filter" });
+			dispatch({ filter: text, type: ModelBrowserActionType.Filter });
 		},
 		switchExample(): void {
 			dispatch(SWITCH_EXAMPLE);
