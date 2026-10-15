@@ -18,7 +18,6 @@ import { InterruptAction, InterruptGuard } from "./interrupt-guard";
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 
-import type { EstimateRequest } from "./cost-estimate";
 import type { StreamProgress } from "./image-stream";
 import type { ObservedPrices } from "./observed-prices";
 import type { GenerationInput, GenerationResult, PreparedGeneration } from "./run-generation";
@@ -256,24 +255,6 @@ export async function generateQuietlyAsync(
 }
 
 /**
- * Describes a prepared request the way the price tables need it.
- *
- * @param prepared - The validated request.
- * @param prepared.input - The prompt and references.
- * @param prepared.parameters - The validated settings.
- * @returns The count, size, and references being asked for.
- */
-export function toEstimateRequest({ input, parameters }: PreparedGeneration): EstimateRequest {
-	return {
-		aspectRatio: parameters.aspectRatio,
-		count: parameters.count,
-		quality: parameters.quality,
-		referenceCount: input.references.length,
-		resolution: parameters.resolution,
-	};
-}
-
-/**
  * Estimates a prepared request's cost from the cached prices.
  *
  * @param prepared - The validated request.
@@ -286,7 +267,7 @@ export async function describeCostAsync(
 		log.warn(message);
 	},
 ): Promise<string> {
-	const [{ describeEstimate, getCostEstimate }, { getModelPricingAsync }] = await Promise.all([
+	const [{ describeEstimate, getCostEstimate, toEstimateRequest }, { getModelPricingAsync }] = await Promise.all([
 		import("./cost-estimate"),
 		import("$utilities/model-pricing-utilities"),
 	]);

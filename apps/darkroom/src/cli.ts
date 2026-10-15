@@ -41,6 +41,10 @@ const command = createBaseCommand(scriptName, version, description)
 		const { modelsCommand } = await import("$commands/models-command");
 		return modelsCommand;
 	})
+	.command("mcp", async () => {
+		const { mcpCommand } = await import("$commands/mcp-command");
+		return mcpCommand;
+	})
 	.command("completions", async () => {
 		const { completionsCommand } = await import("$commands/completions-command");
 		return completionsCommand;

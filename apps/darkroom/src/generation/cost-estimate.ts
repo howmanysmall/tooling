@@ -1,3 +1,5 @@
+import type { PreparedGeneration } from "./run-generation";
+
 /** One price from a model endpoint, as OpenRouter reports it. */
 export interface PricingEntry {
 	/** What is billed: `output_image`, `input_reference`, `input_image`, …. */
@@ -20,6 +22,24 @@ export interface EstimateRequest {
 	readonly quality?: string | undefined;
 	readonly referenceCount: number;
 	readonly resolution?: string | undefined;
+}
+
+/**
+ * Describes a prepared request the way the price tables need it.
+ *
+ * @param prepared - The validated request.
+ * @param prepared.input - The prompt and references.
+ * @param prepared.parameters - The validated settings.
+ * @returns The count, size, and references being asked for.
+ */
+export function toEstimateRequest({ input, parameters }: PreparedGeneration): EstimateRequest {
+	return {
+		aspectRatio: parameters.aspectRatio,
+		count: parameters.count,
+		quality: parameters.quality,
+		referenceCount: input.references.length,
+		resolution: parameters.resolution,
+	};
 }
 
 /** What a model has actually cost per image in past runs. */

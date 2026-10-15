@@ -55,6 +55,8 @@
 		"@clack/prompts": "catalog:runtime",
 		"@inkjs/ui": "catalog:runtime",
 		"@openrouter/sdk": "catalog:ai",
+		"@tmcp/adapter-arktype": "catalog:ai",
+		"@tmcp/transport-stdio": "catalog:ai",
 		"@xterm/headless": "catalog:runtime",
 		"ansis": "catalog:runtime",
 		"arktype": "catalog:runtime",
@@ -65,6 +67,7 @@
 		"pretty-bytes": "catalog:runtime",
 		"react": "catalog:runtime",
 		"sharp": "catalog:runtime",
+		"tmcp": "catalog:ai",
 		"type-fest": "catalog:types"
 	},
 	"devDependencies": {
@@ -75,6 +78,7 @@
 		"@howmanysmall/english-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@howmanysmall/string-utilities": "workspace:*",
+		"@tmcp/transport-in-memory": "catalog:ai",
 		"@total-typescript/shoehorn": "catalog:test",
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:node-floor",

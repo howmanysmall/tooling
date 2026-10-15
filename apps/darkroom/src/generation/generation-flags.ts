@@ -23,12 +23,13 @@ export interface GenerationFlags {
 }
 
 /**
- * Picks the generation options out of the parsed flags.
+ * Picks the generation options out of the parsed flags, or any object that
+ * carries them alongside other fields.
  *
  * @param flags - The parsed flags.
  * @returns The options for validation.
  */
-export function toGenerationOptions(flags: GenerationFlags): GenerationOptions {
+export function toGenerationOptions(flags: GenerationOptions): GenerationOptions {
 	return {
 		aspectRatio: flags.aspectRatio,
 		background: flags.background,
@@ -73,9 +74,9 @@ function pickDefined(options: GenerationOptions): GenerationOptions {
  *
  * @param entry - The stored run.
  * @param entry.request - Its stored request.
- * @param flags - The flags given to `history rerun`.
+ * @param flags - The options given to `history rerun`, if any.
  * @returns The options for validation.
  */
-export function mergeRerunOptions({ request }: HistoryEntry, flags: GenerationFlags): GenerationOptions {
+export function mergeRerunOptions({ request }: HistoryEntry, flags: GenerationOptions = {}): GenerationOptions {
 	return { ...toStoredOptions(request), ...pickDefined(toGenerationOptions(flags)), output: flags.output };
 }

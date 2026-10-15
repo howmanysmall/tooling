@@ -1,7 +1,6 @@
 import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
-import { OutputFormat } from "$validators/output-format-type";
 
 import { mergeRerunOptions } from "./generation-flags";
 import { ImageType } from "./media-types";
@@ -15,7 +14,7 @@ describe("mergeRerunOptions", () => {
 	it("repeats the stored request when no flags are given", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(mergeRerunOptions(ENTRY, { format: OutputFormat.Pretty })).toStrictEqual({
+		expect(mergeRerunOptions(ENTRY)).toStrictEqual({
 			aspectRatio: "16:9",
 			background: undefined,
 			compression: undefined,
@@ -34,7 +33,6 @@ describe("mergeRerunOptions", () => {
 		const options = mergeRerunOptions(ENTRY, {
 			aspectRatio: "1:1",
 			count: 1,
-			format: OutputFormat.Pretty,
 			type: ImageType.Png,
 		});
 

@@ -2,7 +2,6 @@ import { mergeRerunOptions } from "$generation/generation-flags";
 import { InterruptGuard } from "$generation/interrupt-guard";
 import { loadStoredReferencesAsync } from "$history/stored-references";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
-import { OutputFormat } from "$validators/output-format-type";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
@@ -58,7 +57,7 @@ async function toInputAsync(request: SessionRequest, store: HistoryStore): Promi
 	return {
 		force: false,
 		modelId: entry.model,
-		options: mergeRerunOptions(entry, { format: OutputFormat.Pretty }),
+		options: mergeRerunOptions(entry),
 		parent: entry.id,
 		prompt: entry.prompt,
 		references: await loadStoredReferencesAsync(entry, store),
