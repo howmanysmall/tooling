@@ -8,10 +8,13 @@ import type { ObservedPrices } from "$generation/observed-prices";
 import type { ModelPricing } from "$utilities/model-pricing-utilities";
 
 import type { CursorMove } from "./list-cursor";
+import type { ModelExample } from "./model-examples";
 import type { StatusMessage } from "./status-message";
 
-/** The models to browse and what they cost. */
+/** The models to browse, what they cost, and what they made for you. */
 export interface ModelCatalog {
+	/** The newest image each model made, keyed by model ID. */
+	readonly examples: ReadonlyMap<string, ModelExample>;
 	readonly models: ReadonlyArray<ImageModelListItem>;
 	/** What models have cost per image in past runs. */
 	readonly observed: ObservedPrices;

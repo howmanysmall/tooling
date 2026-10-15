@@ -8,11 +8,11 @@ import type { ModelBrowserActions } from "./model-browser-context";
 import type { ModelBrowserAction } from "./model-browser-state";
 
 export interface ModelActionEnvironment {
+	/** Remembers the model to generate with once the browser has closed. */
+	readonly chooseModel: (model: ImageModelListItem) => void;
 	readonly dispatch: Dispatch<ModelBrowserAction>;
 	/** Closes the browser. */
 	readonly exit: () => void;
-	/** Remembers the model to generate with once the browser has closed. */
-	readonly onChoose: (model: ImageModelListItem) => void;
 	/** Rows of models a page holds. */
 	readonly pageSize: number;
 	readonly selected?: ImageModelListItem | undefined;
@@ -29,18 +29,18 @@ const NEXT_SORT: ModelBrowserAction = { type: "next-sort" };
  * Builds what the model browser's keys and inputs can do.
  *
  * @param environment - The reducer, the selected model, and the terminal.
+ * @param environment.chooseModel - Takes the model to generate with.
  * @param environment.dispatch - Sends actions to the reducer.
  * @param environment.exit - Closes the browser.
- * @param environment.onChoose - Takes the model to generate with.
  * @param environment.pageSize - Rows of models a page holds.
  * @param environment.selected - The model under the cursor, if any.
  * @param environment.write - Writes escape sequences to the terminal.
  * @returns The actions for the browser context.
  */
 export function createModelBrowserActions({
+	chooseModel,
 	dispatch,
 	exit,
-	onChoose,
 	pageSize,
 	selected,
 	write,
@@ -53,7 +53,7 @@ export function createModelBrowserActions({
 		chooseSelected(): void {
 			if (selected === undefined) return;
 
-			onChoose(selected);
+			chooseModel(selected);
 			exit();
 		},
 		closeFilter(): void {

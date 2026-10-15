@@ -43,26 +43,29 @@ function wantsBrowser(format?: OutputFormat): boolean {
 
 async function listModelsAsync(flags: ListFlags, search: string | undefined): Promise<void> {
 	const [
-		{ log, readObservedPricesAsync },
+		{ log, readHistoryQuietlyAsync },
 		{ getImageModelsAsync },
 		{ getModelPricingAsync },
 		{ filterModels, sortModels },
 		{ formatModelList },
+		{ getObservedPrices },
 	] = await Promise.all([
 		import("$generation/cli-runner"),
 		import("$utilities/image-model-utilities"),
 		import("$utilities/model-pricing-utilities"),
 		import("$utilities/model-filters"),
 		import("$utilities/format-model-list"),
+		import("$generation/observed-prices"),
 	]);
-	const [models, pricing, observed] = await Promise.all([
+	const [models, pricing, history] = await Promise.all([
 		getImageModelsAsync(),
 		getModelPricingAsync(true, (message) => {
 			log.warn(message);
 		}),
-		readObservedPricesAsync(),
+		readHistoryQuietlyAsync(),
 	]);
 
+	const observed = getObservedPrices(history);
 	const filter: ModelFilter = { ...flags, search };
 	const sort = isModelSort(flags.sort) ? flags.sort : ModelSort.Name;
 	const shown = sortModels(filterModels(models, filter), sort, pricing, observed);
@@ -70,7 +73,7 @@ async function listModelsAsync(flags: ListFlags, search: string | undefined): Pr
 	if (wantsBrowser(flags.format)) {
 		// React and Ink only load for the browser.
 		const { browseModelsAsync } = await import("$interactive/browse-models");
-		await browseModelsAsync({ models: shown, observed, pricing }, sort);
+		await browseModelsAsync({ history, models: shown, observed, pricing }, sort);
 		return;
 	}
 

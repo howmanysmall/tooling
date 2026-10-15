@@ -5,19 +5,19 @@ import type { ReactNode } from "react";
 
 import type { LoadingPreview } from "$preview/load-preview";
 
-export interface HistoryImagePreviewProperties {
+export interface ImagePreviewProperties {
 	preview: LoadingPreview;
 }
 
 /**
- * Draws a run's first image once it has loaded; the parent's Suspense
- * boundary shows a placeholder until then.
+ * Draws an image once it has loaded; the parent's Suspense boundary shows a
+ * placeholder until then.
  *
  * @param properties - The loading preview.
  * @param properties.preview - Resolves to the preview lines or a message.
  * @returns The image as text cells, or why there is no image.
  */
-export function HistoryImagePreview({ preview }: Readonly<HistoryImagePreviewProperties>): ReactNode {
+export function ImagePreview({ preview }: Readonly<ImagePreviewProperties>): ReactNode {
 	const loaded = use(preview.result);
 	if (loaded.kind === "message") return <Text dimColor={true}>{loaded.text}</Text>;
 

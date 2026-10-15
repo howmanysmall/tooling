@@ -1,10 +1,10 @@
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 
 import { formatUnitPrice } from "$generation/cost-estimate";
-import { getCountRange, getEnumValues, getReferenceRange } from "$generation/model-capabilities";
+import { getCountRange, getReferenceRange } from "$generation/model-capabilities";
 import { describeListPrice, formatObservedPrice } from "$generation/observed-prices";
 
-import type { ImageModelListItem } from "@openrouter/sdk/models";
+import type { CapabilityDescriptor, ImageModelListItem } from "@openrouter/sdk/models";
 
 import type { ObservedPrice, PricingEntry } from "$generation/cost-estimate";
 import type { ModelPrices } from "$generation/observed-prices";
@@ -52,6 +52,7 @@ function describeLimit(max: number): string {
 export function getModelStats(model: ImageModelListItem, prices: ModelPrices): Array<Fact> {
 	return [
 		{ label: "price", value: describeListPrice(prices) },
+		{ label: "inputs", value: model.architecture.inputModalities.join(" · ") },
 		{ label: "refs", value: describeLimit(getReferenceRange(model).max) },
 		{ label: "images", value: describeLimit(getCountRange(model).max) },
 		{ label: "streams", value: model.supportsStreaming ? "yes" : "no" },
@@ -59,25 +60,51 @@ export function getModelStats(model: ImageModelListItem, prices: ModelPrices): A
 	];
 }
 
-const PARAMETERS: ReadonlyArray<readonly [parameter: string, label: string]> = [
+// Known options in the order to show them. The stats already cover `n` and
+// `input_references`; anything else a model declares follows these.
+const OPTION_ORDER: ReadonlyArray<readonly [parameter: string, label: string]> = [
 	["aspect_ratio", "ratios"],
 	["resolution", "resolutions"],
 	["quality", "quality"],
 	["background", "background"],
 	["output_format", "formats"],
+	["output_compression", "compression"],
+	["seed", "seed"],
 ];
+const OPTION_LABELS: ReadonlyMap<string, string> = new Map(OPTION_ORDER);
+const IN_STATS: ReadonlySet<string> = new Set(["input_references", "n"]);
+
+function describeOption(descriptor: CapabilityDescriptor): string {
+	switch (descriptor.type) {
+		case "enum":
+			return descriptor.values.join("  ");
+		case "range":
+			return `${descriptor.min}–${descriptor.max}`;
+		default:
+			return "yes";
+	}
+}
+
+function getOptionRank(parameter: string): number {
+	const rank = OPTION_ORDER.findIndex(([known]) => known === parameter);
+	return rank === -1 ? OPTION_ORDER.length : rank;
+}
 
 /**
- * The choices a model offers, one line per parameter it declares.
+ * Every option a model takes, one line each: its choices, its range, or
+ * `yes` for switches like `seed`.
  *
  * @param model - The image model.
  * @returns Like `{ label: "ratios", value: "1:1  16:9  9:16" }`.
  */
-export function getModelChoices(model: ImageModelListItem): Array<Fact> {
-	return PARAMETERS.flatMap(([parameter, label]) => {
-		const values = getEnumValues(model, parameter);
-		return values === undefined || values.length === 0 ? [] : [{ label, value: values.join("  ") }];
-	});
+export function getModelOptions(model: ImageModelListItem): Array<Fact> {
+	return Object.entries(model.supportedParameters)
+		.filter(([parameter]) => !IN_STATS.has(parameter))
+		.toSorted(([first], [second]) => getOptionRank(first) - getOptionRank(second))
+		.map(([parameter, descriptor]) => ({
+			label: OPTION_LABELS.get(parameter) ?? parameter.replaceAll("_", " "),
+			value: describeOption(descriptor),
+		}));
 }
 
 const BILLABLE_LABELS: ReadonlyMap<string, string> = new Map([

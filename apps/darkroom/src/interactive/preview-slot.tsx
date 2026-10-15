@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Text } from "ink";
 
-import { HistoryImagePreview } from "./history-image-preview";
+import { ImagePreview } from "./image-preview";
 
 import type { ReactNode } from "react";
 
@@ -9,7 +9,7 @@ import type { LoadingPreview } from "$preview/load-preview";
 
 const LOADING = <Text dimColor={true}>{"Loading preview…"}</Text>;
 
-export interface HistoryPreviewSlotProperties {
+export interface PreviewSlotProperties {
 	preview: LoadingPreview;
 }
 
@@ -21,10 +21,10 @@ export interface HistoryPreviewSlotProperties {
  * @param properties.preview - Resolves to the preview lines or a message.
  * @returns The preview, or the placeholder while it loads.
  */
-export function HistoryPreviewSlot({ preview }: Readonly<HistoryPreviewSlotProperties>): ReactNode {
+export function PreviewSlot({ preview }: Readonly<PreviewSlotProperties>): ReactNode {
 	return (
 		<Suspense fallback={LOADING}>
-			<HistoryImagePreview preview={preview} />
+			<ImagePreview preview={preview} />
 		</Suspense>
 	);
 }
