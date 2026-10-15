@@ -90,7 +90,7 @@ function describeCopy(original: string, copy: string): string {
 	return `${original} ${location}`;
 }
 
-function toShowRows(
+export function toShowRows(
 	entry: HistoryEntry,
 	chain: ReadonlyArray<HistoryEntry>,
 	resolve: (stored: string) => string,
