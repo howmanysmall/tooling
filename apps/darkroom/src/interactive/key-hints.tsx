@@ -12,7 +12,7 @@ export interface KeyHintsProperties {
 }
 
 /**
- * Key bindings on one line: each key in the accent colour, its action muted.
+ * Key bindings on one line: each key in the accent color, its action muted.
  *
  * @param properties - The bindings to show.
  * @param properties.hints - Each key and what it does, in order.

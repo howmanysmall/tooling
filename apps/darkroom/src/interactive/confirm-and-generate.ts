@@ -6,7 +6,7 @@ import { describeProgress } from "$generation/image-stream";
 import { previewPrompt } from "$history/format-history";
 import { OutputFormat } from "$validators/output-format-type";
 
-import { exitIfCancelled } from "./exit-if-cancelled";
+import { exitIfCanceled } from "./exit-if-canceled";
 
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
 
@@ -51,7 +51,7 @@ export async function confirmAndGenerateAsync(prepared: PreparedGeneration): Pro
 	const cost = await runner.describeCostAsync(prepared);
 	note(summarizeRequest(prepared, cost), "Request");
 	const shouldGenerate = await confirm({ message: "Generate?" });
-	exitIfCancelled(shouldGenerate);
+	exitIfCanceled(shouldGenerate);
 	if (!shouldGenerate) {
 		outro("Nothing was sent.");
 		return;

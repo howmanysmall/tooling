@@ -1,6 +1,7 @@
 import { filterModels, ModelSort, sortModels } from "$utilities/model-filters";
 
 import { clampCursor, moveCursor } from "./list-cursor";
+import { reduceStatus } from "./status-message";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 
@@ -9,7 +10,7 @@ import type { ModelPricing } from "$utilities/model-pricing-utilities";
 
 import type { CursorMove } from "./list-cursor";
 import type { ModelExample } from "./model-examples";
-import type { StatusMessage } from "./status-message";
+import type { StatusAction, StatusMessage } from "./status-message";
 
 /** The models to browse, what they cost, and what they make. */
 export interface ModelCatalog {
@@ -38,9 +39,9 @@ export interface ModelBrowserState {
 
 export type ModelBrowserAction =
 	| CursorMove
+	| StatusAction
 	| { readonly filter: string; readonly type: "filter" }
 	| { readonly isFiltering: boolean; readonly type: "filtering" }
-	| { readonly status: StatusMessage | undefined; readonly type: "status" }
 	| { readonly type: "cancel-filter" }
 	| { readonly type: "next-sort" }
 	| { readonly type: "switch-example" };
@@ -96,7 +97,7 @@ function setFilter(state: ModelBrowserState, filter: string): ModelBrowserState 
 
 function cycleSort(state: ModelBrowserState): ModelBrowserState {
 	const selectedId = getVisibleModels(state)[state.cursor]?.id;
-	const next = { ...state, sort: NEXT_SORT.get(state.sort) ?? ModelSort.Name, status: undefined };
+	const next = { ...state, sort: NEXT_SORT.get(state.sort) ?? ModelSort.Name };
 	const models = getVisibleModels(next);
 	// Keep the same model selected in its new place.
 	const cursor = models.findIndex((model) => model.id === selectedId);
@@ -113,11 +114,7 @@ function cycleSort(state: ModelBrowserState): ModelBrowserState {
  */
 export function reduceModelBrowserState(state: ModelBrowserState, action: ModelBrowserAction): ModelBrowserState {
 	if (isCursorMove(action)) {
-		return {
-			...state,
-			cursor: moveCursor(state.cursor, action, getVisibleModels(state).length),
-			status: undefined,
-		};
+		return { ...state, cursor: moveCursor(state.cursor, action, getVisibleModels(state).length) };
 	}
 
 	switch (action.type) {
@@ -128,7 +125,7 @@ export function reduceModelBrowserState(state: ModelBrowserState, action: ModelB
 			return setFilter(state, action.filter);
 
 		case "filtering":
-			return { ...state, isFiltering: action.isFiltering, status: undefined };
+			return { ...state, isFiltering: action.isFiltering };
 
 		case "next-sort":
 			return cycleSort(state);
@@ -137,6 +134,6 @@ export function reduceModelBrowserState(state: ModelBrowserState, action: ModelB
 			return { ...state, prefersShipped: !state.prefersShipped };
 
 		default:
-			return { ...state, status: action.status };
+			return { ...state, status: reduceStatus(state.status, action) };
 	}
 }

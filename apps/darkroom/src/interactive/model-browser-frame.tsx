@@ -1,8 +1,8 @@
-import { Box } from "ink";
-
+import { BrowserShell } from "./browser-shell";
 import { useModelBrowser } from "./model-browser-context";
-import { useModelBrowserKeys } from "./use-model-browser-keys";
+import { getModelCommands } from "./model-commands";
 
+import type { Key } from "ink";
 import type { ReactNode } from "react";
 
 export interface ModelBrowserFrameProperties {
@@ -10,22 +10,33 @@ export interface ModelBrowserFrameProperties {
 }
 
 /**
- * The full-screen column that holds the model browser's parts, and owns the
- * key bindings.
+ * The model browser's frame: the shared shell with the browser's commands.
+ * While the filter is open, its input reads the typing and Esc cancels it.
  *
  * @param properties - The parts to lay out.
- * @param properties.children - The header, panes, and footer.
+ * @param properties.children - The header, panes, and status bar.
  * @returns A box the size of the terminal.
  */
 export function ModelBrowserFrame({ children }: Readonly<ModelBrowserFrameProperties>): ReactNode {
 	const {
+		actions,
 		meta: { layout },
+		state,
 	} = useModelBrowser();
-	useModelBrowserKeys();
+
+	function captureFilterKeys(_input: string, key: Key): void {
+		if (key.escape) actions.cancelFilter();
+	}
 
 	return (
-		<Box flexDirection="column" height={layout.rows} width={layout.columns}>
+		<BrowserShell
+			capture={state.isFiltering ? captureFilterKeys : undefined}
+			columns={layout.columns}
+			commands={getModelCommands(actions)}
+			rows={layout.rows}
+			status={state.status}
+		>
 			{children}
-		</Box>
+		</BrowserShell>
 	);
 }

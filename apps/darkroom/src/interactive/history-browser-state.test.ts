@@ -69,7 +69,7 @@ describe("history browser state", () => {
 		expect(getSelectedRun(state)).toBeUndefined();
 	});
 
-	it("clears the filter and returns to the list when the filter is cancelled", ({ expect }) => {
+	it("clears the filter and returns to the list when the filter is canceled", ({ expect }) => {
 		expect.assertions(2);
 
 		const state = applyActions(createBrowserState([CAT, DOG, TREE]), [
@@ -101,13 +101,16 @@ describe("history browser state", () => {
 		expect(getVisibleRuns(state)).toHaveLength(3);
 	});
 
-	it("clears the status on the next move", ({ expect }) => {
-		expect.assertions(2);
+	it("keeps a toast until it expires, but not when a newer one replaced it", ({ expect }) => {
+		expect.assertions(3);
 
-		const status = { text: "Copied", tone: "success" } as const;
-		const state = reduceBrowserState(createBrowserState([CAT, DOG]), { status, type: "status" });
+		const first = { id: 1, text: "Copied", tone: "success" } as const;
+		const second = { id: 2, text: "Opened", tone: "success" } as const;
+		const shown = reduceBrowserState(createBrowserState([CAT, DOG]), { status: first, type: "status" });
+		const replaced = reduceBrowserState(shown, { status: second, type: "status" });
 
-		expect(state.status).toBe(status);
-		expect(reduceBrowserState(state, { delta: 1, type: "move" }).status).toBeUndefined();
+		expect(reduceBrowserState(shown, { delta: 1, type: "move" }).status).toBe(first);
+		expect(reduceBrowserState(shown, { id: 1, type: "status-expired" }).status).toBeUndefined();
+		expect(reduceBrowserState(replaced, { id: 1, type: "status-expired" }).status).toBe(second);
 	});
 });

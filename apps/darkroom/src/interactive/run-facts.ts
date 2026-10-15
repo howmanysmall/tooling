@@ -62,7 +62,7 @@ function describeImages(entry: HistoryEntry): string {
 }
 
 /**
- * The headline facts of a run, shown as small labelled columns.
+ * The headline facts of a run, shown as small labeled columns.
  *
  * @param entry - A history entry to summarize.
  * @param now - The current time, for the day name.
@@ -104,7 +104,7 @@ function describeComparison(batch: ReadonlyArray<HistoryEntry>): Array<Fact> {
  * @param entry - A history entry whose files to list.
  * @param relations - Its parents and the other runs of its comparison.
  * @param resolve - Turns a stored path into an absolute one.
- * @returns One labelled line each.
+ * @returns One labeled line each.
  */
 export function getRunLinks(
 	entry: HistoryEntry,

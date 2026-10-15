@@ -1,10 +1,8 @@
-import { Box, Text } from "ink";
-
 import { useHistoryBrowser } from "./history-browser-context";
 import { HistoryRunRow } from "./history-run-row";
+import { ListPane } from "./list-pane";
 import { buildRunListItems, getVisibleItems } from "./run-list-layout";
 import { SectionHeading } from "./section-heading";
-import { theme } from "./theme";
 
 import type { ReactNode } from "react";
 
@@ -23,16 +21,12 @@ export function HistoryRunList(): ReactNode {
 	const emptyText = state.entries.length === 0 ? "No runs yet. Make one with darkroom generate." : "No runs match.";
 
 	return (
-		<Box
-			borderColor={theme.border}
-			borderStyle="round"
-			flexDirection="column"
-			flexShrink={0}
-			height={layout.listHeight + 2}
-			paddingX={1}
+		<ListPane
+			emptyText={emptyText}
+			height={layout.listHeight}
+			isEmpty={items.length === 0}
 			width={layout.listWidth}
 		>
-			{items.length === 0 ? <Text color={theme.muted}>{emptyText}</Text> : null}
 			{items.map((item) =>
 				item.kind === "day" ? (
 					<SectionHeading key={item.key} label={item.label} />
@@ -40,6 +34,6 @@ export function HistoryRunList(): ReactNode {
 					<HistoryRunRow key={item.key} entry={item.entry} />
 				),
 			)}
-		</Box>
+		</ListPane>
 	);
 }

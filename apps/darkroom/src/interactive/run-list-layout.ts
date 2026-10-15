@@ -85,11 +85,11 @@ export function getVisibleItems(
 
 	if (total <= height) return [...items];
 
-	const centred = Math.max(0, Math.min(selectedTop - Math.floor((height - RUN_LINES) / 2), total - height));
+	const centered = Math.max(0, Math.min(selectedTop - Math.floor((height - RUN_LINES) / 2), total - height));
 	// Start at an item's top, so the pane holds whole items with no blank line
 	// where half a run would have been.
 	let start = 0;
-	for (const top of tops) if (top <= centred) start = top;
+	for (const top of tops) if (top <= centered) start = top;
 	return items.filter((item, index) => {
 		const top = tops[index] ?? 0;
 		return top >= start && top + getLines(item) <= start + height;

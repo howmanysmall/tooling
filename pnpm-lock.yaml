@@ -344,6 +344,9 @@ catalogs:
     env-paths:
       specifier: 4.0.0
       version: 4.0.0
+    fzf:
+      specifier: 0.5.2
+      version: 0.5.2
     ink:
       specifier: 7.1.1
       version: 7.1.1
@@ -682,6 +685,9 @@ importers:
       env-paths:
         specifier: catalog:runtime
         version: 4.0.0
+      fzf:
+        specifier: catalog:runtime
+        version: 0.5.2
       ink:
         specifier: catalog:runtime
         version: 7.1.1(@types/react@19.3.0)(react@19.3.0)
@@ -5467,6 +5473,9 @@ packages:
 
   functional-red-black-tree@1.0.1:
     resolution: {integrity: sha512-dsKNQNdj6xA3T+QlADDA7mOSlX0qiMINjn0cgr+eGHGsbSHzTabcIogz2+p/iqP1Xs6EP/sS2SbqH+brGTbq0g==}
+
+  fzf@0.5.2:
+    resolution: {integrity: sha512-Tt4kuxLXFKHy8KT40zwsUPUkg1CrsgY25FxA2U/j/0WgEDCk3ddc/zLTCCcbSHX9FcKtLuVaDGtGE/STWC+j3Q==}
 
   generate-differences@0.1.1:
     resolution: {integrity: sha512-XZ4yI95KUy1xcB5xNOYtDwrCOkemwQcOuwlqTlLUBq0Zzvnfll1i+jHXYw0ut7NQDmJF5XPD1vSoV6Gjh0rpOw==}
@@ -11592,6 +11601,8 @@ snapshots:
 
   functional-red-black-tree@1.0.1: {}
 
+  fzf@0.5.2: {}
+
   generate-differences@0.1.1: {}
 
   gensequence@8.0.8: {}
@@ -13802,6 +13813,7 @@ time:
   eslint@10.12.0: '2026-10-02T20:08:19.213Z'
   fallow@3.33.1: '2026-10-10T06:00:59.608Z'
   fast-check@4.10.2: '2026-09-19T19:34:54.991Z'
+  fzf@0.5.2: '2023-04-25T19:26:05.874Z'
   ink-testing-library@4.0.0: '2024-05-22T10:51:25.909Z'
   ink@7.1.1: '2026-07-16T13:07:31.525Z'
   jest-extended@7.0.0: '2025-11-05T19:15:00.324Z'

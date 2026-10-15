@@ -15,13 +15,13 @@ export interface HistoryRunLinksProperties {
 const LABEL_WIDTH = 11;
 
 /**
- * Where a run's files are and which runs it relates to, one labelled line
+ * Where a run's files are and which runs it relates to, one labeled line
  * each, ending with its full ID.
  *
  * @param properties - The run and its relations.
  * @param properties.entry - The run whose files and links to show.
  * @param properties.relations - Its parents and the other runs of its comparison.
- * @returns The labelled lines.
+ * @returns The labeled lines.
  */
 export function HistoryRunLinks({ entry, relations }: Readonly<HistoryRunLinksProperties>): ReactNode {
 	const {

@@ -1,16 +1,24 @@
 /**
- * The history browser's colours. A darkroom's safelight is a warm amber-red,
- * so that is the accent; everything else stays quiet so the images stand out.
+ * The browsers' colors. A darkroom's safelight is a warm amber-red, so that
+ * is the accent; the surfaces are near-black layers so the images stand out.
  * Ink downsamples these on terminals without truecolor.
  */
 export const theme = {
 	/** The selection bar, the brand, and key caps. */
 	accent: "#ff8a5c",
-	/** Pane borders. */
+	/** The screen behind everything. */
+	background: "#0f0f11",
+	/** Rules and quiet dividers. */
 	border: "#3d3a39",
 	danger: "#f7768e",
+	/** Raised surfaces: the selected row, dialogs, and toasts. */
+	element: "#26252a",
 	/** Secondary text: metadata, labels, and hints. */
 	muted: "#8a8580",
+	/** The list and detail panes. */
+	panel: "#18171b",
 	success: "#9ece6a",
+	/** Primary text, a warm off-white. */
+	text: "#e8e4df",
 	warning: "#e0af68",
 } as const;
