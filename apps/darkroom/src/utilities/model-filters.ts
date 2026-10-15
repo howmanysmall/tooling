@@ -20,17 +20,17 @@ export interface ModelFilter {
 	readonly transparent?: boolean | undefined;
 }
 
-function matchesSearch(model: ImageModelListItem, search: string | undefined): boolean {
+function matchesSearch(model: ImageModelListItem, search?: string): boolean {
 	if (search === undefined) return true;
 	const needle = search.toLowerCase();
 	return [model.id, model.name, model.description].some((text) => text.toLowerCase().includes(needle));
 }
 
-function matchesProvider(model: ImageModelListItem, provider: string | undefined): boolean {
+function matchesProvider(model: ImageModelListItem, provider?: string): boolean {
 	return provider === undefined || model.id.toLowerCase().startsWith(`${provider.toLowerCase()}/`);
 }
 
-function acceptsValue(model: ImageModelListItem, parameter: string, value: string | undefined): boolean {
+function acceptsValue(model: ImageModelListItem, parameter: string, value?: string): boolean {
 	return value === undefined || (getEnumValues(model, parameter)?.includes(value) ?? false);
 }
 
@@ -38,21 +38,21 @@ function acceptsValue(model: ImageModelListItem, parameter: string, value: strin
  * Keeps the models that pass every filter given.
  *
  * @param models - The image models.
- * @param filter - The filters from the command line.
+ * @param modelFilter - The filters from the command line.
  * @returns The matching models, in their original order.
  */
 export function filterModels(
 	models: ReadonlyArray<ImageModelListItem>,
-	filter: ModelFilter,
+	modelFilter: ModelFilter,
 ): Array<ImageModelListItem> {
 	return models.filter(
 		(model) =>
-			matchesSearch(model, filter.search) &&
-			matchesProvider(model, filter.provider) &&
-			(filter.refs !== true || getReferenceRange(model).max > 0) &&
-			(filter.multi !== true || getCountRange(model).max > 1) &&
-			acceptsValue(model, "aspect_ratio", filter.ratio) &&
-			acceptsValue(model, "background", filter.transparent === true ? "transparent" : undefined),
+			matchesSearch(model, modelFilter.search) &&
+			matchesProvider(model, modelFilter.provider) &&
+			(modelFilter.refs !== true || getReferenceRange(model).max > 0) &&
+			(modelFilter.multi !== true || getCountRange(model).max > 1) &&
+			acceptsValue(model, "aspect_ratio", modelFilter.ratio) &&
+			acceptsValue(model, "background", modelFilter.transparent === true ? "transparent" : undefined),
 	);
 }
 
@@ -68,17 +68,17 @@ const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: "bas
  * Sorts models for `models list`.
  *
  * @param models - The filtered image models.
- * @param sort - `name`, `price` (per-image first, then other units), or
+ * @param modelSort - `name`, `price` (per-image first, then other units), or
  *   `created` (newest first).
- * @param pricing - Every model's prices.
+ * @param modelPricing - Every model's prices.
  * @returns A sorted copy.
  */
 export function sortModels(
 	models: ReadonlyArray<ImageModelListItem>,
-	sort: ModelSort,
-	pricing: ModelPricing,
+	modelSort: ModelSort,
+	modelPricing: ModelPricing,
 ): Array<ImageModelListItem> {
-	switch (sort) {
+	switch (modelSort) {
 		case ModelSort.Created:
 			return models.toSorted((first, second) => second.created - first.created);
 
@@ -87,11 +87,11 @@ export function sortModels(
 
 		case ModelSort.Price: {
 			return models.toSorted((first, second) =>
-				comparePrices(getListPrice(pricing[first.id] ?? []), getListPrice(pricing[second.id] ?? [])),
+				comparePrices(getListPrice(modelPricing[first.id] ?? []), getListPrice(modelPricing[second.id] ?? [])),
 			);
 		}
 
 		default:
-			throw new Error(`Unknown sort: ${String(sort)}`);
+			throw new Error(`Unknown sort: ${String(modelSort)}`);
 	}
 }

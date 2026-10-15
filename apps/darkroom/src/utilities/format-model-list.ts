@@ -44,6 +44,7 @@ export function formatModelList(
 	if (format === undefined && !isTerminal) return models.map((model) => model.id).join("\n");
 	const rows = models.map((model) => toRow(model, pricing));
 	const outputFormat = format ?? OutputFormat.Table;
+
 	switch (outputFormat) {
 		case OutputFormat.Json:
 		case OutputFormat.JsonMinified: {

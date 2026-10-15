@@ -1,5 +1,6 @@
 import { stdout } from "node:process";
 import ansis, { dim } from "ansis";
+import { String as EffectString } from "effect";
 
 import { OutputFormat } from "$validators/output-format-type";
 
@@ -38,7 +39,7 @@ export function wrapText(text: string, width: number): Array<string> {
 	let lineWidth = 0;
 	for (const word of text.split(WHITESPACE_PATTERN)) {
 		const wordWidth = ansis.strip(word).length;
-		if (line === "") {
+		if (line.length === 0) {
 			line = word;
 			lineWidth = wordWidth;
 		} else if (lineWidth + 1 + wordWidth > width) {
@@ -79,8 +80,5 @@ export { INDENT };
  * @returns The table with trailing spaces removed.
  */
 export function trimTrailingSpaces(table: string): string {
-	return table
-		.split("\n")
-		.map((line) => line.trimEnd())
-		.join("\n");
+	return table.split("\n").map(EffectString.trimEnd).join("\n");
 }

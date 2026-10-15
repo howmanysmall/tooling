@@ -72,7 +72,7 @@ export function readCompletionContext(
 	const words = variables[WORDS_VARIABLE] ?? "";
 	return {
 		shell: isShell(shell) ? shell : undefined,
-		words: words === "" ? [] : words.split("\n"),
+		words: words.length === 0 ? [] : words.split("\n"),
 	};
 }
 
@@ -89,8 +89,10 @@ export function getOptionValue(words: ReadonlyArray<string>, flags: ReadonlyArra
 	let value: string | undefined;
 	for (const [index, word] of words.entries()) {
 		if (flagSet.has(word)) value = words[index + 1];
+
 		for (const flag of flags) {
-			if (flag.startsWith("--") && word.startsWith(`${flag}=`)) value = word.slice(flag.length + 1);
+			if (!flag.startsWith("--") || !word.startsWith(`${flag}=`)) continue;
+			value = word.slice(flag.length + 1);
 		}
 	}
 	return value;
