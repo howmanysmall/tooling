@@ -6,6 +6,7 @@ import { unrecognized } from "@openrouter/sdk/types";
 import { NO_RETRIES } from "$constants/request-options";
 import { toApiError } from "$errors/to-api-error";
 import { createUlid } from "$history/ulid";
+import { removeControlCharacters } from "$utilities/text-utilities";
 
 import { consumeImageStreamAsync } from "./image-stream";
 import { InterruptPhase } from "./interrupt-guard";
@@ -171,16 +172,21 @@ async function checkExplicitOutputAsync(spec: OutputSpec, count: number, force: 
  * Resolves the model and validates everything that can be checked before
  * spending money.
  *
- * @param input - What to generate.
+ * @param rawInput - What to generate, as given; the prompt is cleaned here.
  * @param environment - The model list and the terminal state.
  * @returns The request to send and where the images will go.
  * @rejects A `ValidationError` for anything the model can't serve, or an
  *   explicit `-o` file that already exists.
  */
 export async function prepareGenerationAsync(
-	input: GenerationInput,
+	rawInput: GenerationInput,
 	environment: GenerationEnvironment,
 ): Promise<PreparedGeneration> {
+	// Typed prompts can carry control characters (Ctrl-A, Ctrl-E); they would
+	// reach the model, the file name, and the history.
+	const input = { ...rawInput, prompt: removeControlCharacters(rawInput.prompt).trim() };
+	if (input.prompt.length === 0) throw new ValidationError("The prompt is empty.");
+
 	const model = environment.models.find((item) => item.id === input.modelId);
 	if (model === undefined) {
 		throw new ValidationError(`Unknown model "${input.modelId}". Run \`darkroom models list\` to see the options.`);
