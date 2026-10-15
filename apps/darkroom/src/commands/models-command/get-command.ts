@@ -9,13 +9,56 @@ import { consola } from "consola";
 import { formatTimestampAsync } from "$functions/format-timestamp";
 import { getImageModelIdsAsync, imageModelIdType } from "$validators/image-model-id-type";
 import { OutputFormat, outputFormatType } from "$validators/output-format-type";
-import { TimestampFormat } from "$validators/timestamp-format-type";
+import { TimestampFormat, timestampFormatType } from "$validators/timestamp-format-type";
 
 import type { CapabilityDescriptor, ImageModelListItem } from "@openrouter/sdk/models";
 
 const scriptName = getScriptName(true);
 // Route every level to stderr so stdout only carries the requested output.
 const log = consola.create({ stdout: stderr }).withTag(scriptName);
+
+export const getCommand = createBaseCommand(scriptName, "1.1.0", "Used to acquire model information from OpenRouter.")
+	.env("OPENROUTER_API_KEY=<value:string>", "The OpenRouter API key to use for generating images.", {})
+	.type("image-model", imageModelIdType)
+	.complete("image-model", getImageModelIdsAsync)
+	.type("output-format", outputFormatType)
+	.type("timestamp-format", timestampFormatType)
+	.option("--regenerate", "Regenerate the CLI completion cache before executing the command.")
+	.option("-f, --output-format <type:output-format>", "The output format to use for the model information.", {
+		default: OutputFormat.Pretty,
+	})
+	.option(
+		"-t, --timestamp-format <format:timestamp-format>",
+		"The timestamp format to use for the model information.",
+		{
+			default: TimestampFormat.ShortWeekdayDateTime,
+		},
+	)
+	.argument("[model:image-model]", "The OpenRouter model to get information for.")
+	.action(async ({ outputFormat, regenerate = false, timestampFormat }, model) => {
+		log.info(
+			model === undefined
+				? "Getting information for all models..."
+				: `Getting information for model ${bold.magenta(model)}...`,
+		);
+		const imageModels = await import("$utilities/image-model-utilities").then(async ({ getImageModelsAsync }) =>
+			getImageModelsAsync(!regenerate),
+		);
+
+		if (model === undefined) {
+			log.info(`Found ${bold.cyan(imageModels.length)} ${toPlural(imageModels.length, "model")}.`);
+			console.log(await formatModelsAsync(imageModels, { outputFormat, timestampFormat }));
+			return;
+		}
+
+		const imageModel = imageModels.find((item) => item.id === model);
+		if (imageModel === undefined) {
+			log.fail(`Could not find model ${bold.magenta(model)}.`);
+			exit(1);
+		}
+
+		console.log(await formatModelAsync(imageModel, { outputFormat, timestampFormat }));
+	});
 
 const naturalCollator = new Intl.Collator(undefined, { numeric: true });
 const numberFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 });
@@ -94,7 +137,10 @@ function toPrettySupportedParameters(
 	);
 }
 
-async function toPrettyObjectAsync(imageModelListItem: ImageModelListItem): Promise<PrettyObject> {
+async function toPrettyObjectAsync(
+	imageModelListItem: ImageModelListItem,
+	timestampFormat = TimestampFormat.ShortWeekdayDateTime,
+): Promise<PrettyObject> {
 	return {
 		id: imageModelListItem.id,
 		name: imageModelListItem.name,
@@ -102,7 +148,7 @@ async function toPrettyObjectAsync(imageModelListItem: ImageModelListItem): Prom
 			inputModalities: toPrettyModalities(imageModelListItem.architecture.inputModalities),
 			outputModalities: toPrettyModalities(imageModelListItem.architecture.outputModalities),
 		},
-		created: await formatTimestampAsync(imageModelListItem.created, TimestampFormat.ShortWeekdayDateTime),
+		created: await formatTimestampAsync(imageModelListItem.created, timestampFormat),
 		description: toPrettyDescription(imageModelListItem.description),
 		page: toModelPageLink(imageModelListItem.id),
 		supportedParameters: toPrettySupportedParameters(imageModelListItem.supportedParameters),
@@ -192,12 +238,18 @@ function renderPrettyObject(prettyObject: PrettyObject): string {
 	return sections.join("\n\n");
 }
 
-async function formatModelPrettyAsync(imageModel: ImageModelListItem): Promise<string> {
-	return renderPrettyObject(await toPrettyObjectAsync(imageModel));
+async function formatModelPrettyAsync(
+	imageModel: ImageModelListItem,
+	timestampFormat: TimestampFormat,
+): Promise<string> {
+	return renderPrettyObject(await toPrettyObjectAsync(imageModel, timestampFormat));
 }
 
-async function formatModelTableAsync(imageModel: ImageModelListItem): Promise<string> {
-	const prettyObject = await toPrettyObjectAsync(imageModel);
+async function formatModelTableAsync(
+	imageModel: ImageModelListItem,
+	timestampFormat: TimestampFormat,
+): Promise<string> {
+	const prettyObject = await toPrettyObjectAsync(imageModel, timestampFormat);
 	const rows: Array<Row> = [
 		["id", bold.magenta(prettyObject.id)],
 		["name", prettyObject.name],
@@ -215,7 +267,15 @@ async function formatModelTableAsync(imageModel: ImageModelListItem): Promise<st
 		.toString();
 }
 
-async function formatModelAsync(imageModel: ImageModelListItem, outputFormat: OutputFormat): Promise<string> {
+interface Formats {
+	readonly outputFormat: OutputFormat;
+	readonly timestampFormat: TimestampFormat;
+}
+
+async function formatModelAsync(
+	imageModel: ImageModelListItem,
+	{ outputFormat, timestampFormat }: Formats,
+): Promise<string> {
 	switch (outputFormat) {
 		case OutputFormat.Json:
 			return JSON.stringify(imageModel, undefined, "\t");
@@ -224,10 +284,10 @@ async function formatModelAsync(imageModel: ImageModelListItem, outputFormat: Ou
 			return JSON.stringify(imageModel);
 
 		case OutputFormat.Pretty:
-			return formatModelPrettyAsync(imageModel);
+			return formatModelPrettyAsync(imageModel, timestampFormat);
 
 		case OutputFormat.Table:
-			return formatModelTableAsync(imageModel);
+			return formatModelTableAsync(imageModel, timestampFormat);
 
 		default:
 			throw new Error(`Unknown output format: ${String(outputFormat)}`);
@@ -236,7 +296,7 @@ async function formatModelAsync(imageModel: ImageModelListItem, outputFormat: Ou
 
 async function formatModelsAsync(
 	imageModels: ReadonlyArray<ImageModelListItem>,
-	outputFormat: OutputFormat,
+	{ outputFormat, timestampFormat }: Formats,
 ): Promise<string> {
 	switch (outputFormat) {
 		case OutputFormat.Json:
@@ -246,7 +306,9 @@ async function formatModelsAsync(
 			return JSON.stringify(imageModels);
 
 		case OutputFormat.Pretty: {
-			const results = await Promise.all(imageModels.map(formatModelPrettyAsync));
+			const results = await Promise.all(
+				imageModels.map(async (imageModel) => formatModelPrettyAsync(imageModel, timestampFormat)),
+			);
 			return results.join("\n\n");
 		}
 
@@ -270,38 +332,3 @@ async function formatModelsAsync(
 			throw new Error(`Unknown output format: ${String(outputFormat)}`);
 	}
 }
-
-export const getCommand = createBaseCommand(scriptName, "1.0.0", "Used to acquire model information from OpenRouter.")
-	.env("OPENROUTER_API_KEY=<value:string>", "The OpenRouter API key to use for generating images.", {})
-	.type("image-model", imageModelIdType)
-	.complete("image-model", getImageModelIdsAsync)
-	.type("output-format", outputFormatType)
-	.option("--regenerate", "Regenerate the CLI completion cache before executing the command.")
-	.option("--format <type:output-format>", "The output format to use for the model information.", {
-		default: OutputFormat.Pretty,
-	})
-	.argument("[model:image-model]", "The OpenRouter model to get information for.")
-	.action(async ({ format, regenerate = false }, model) => {
-		log.info(
-			model === undefined
-				? "Getting information for all models..."
-				: `Getting information for model ${bold.magenta(model)}...`,
-		);
-		const imageModels = await import("$utilities/image-model-utilities").then(async ({ getImageModelsAsync }) =>
-			getImageModelsAsync(!regenerate),
-		);
-
-		if (model === undefined) {
-			log.info(`Found ${bold.cyan(imageModels.length)} ${toPlural(imageModels.length, "model")}.`);
-			console.log(await formatModelsAsync(imageModels, format));
-			return;
-		}
-
-		const imageModel = imageModels.find((item) => item.id === model);
-		if (imageModel === undefined) {
-			log.fail(`Could not find model ${bold.magenta(model)}.`);
-			exit(1);
-		}
-
-		console.log(await formatModelAsync(imageModel, format));
-	});
