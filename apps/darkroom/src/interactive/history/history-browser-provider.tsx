@@ -2,7 +2,9 @@ import { useReducer } from "react";
 import { useApp, useStdout, useWindowSize } from "ink";
 
 import { getRunRelations } from "$history/resolve-run-reference";
+import { getNearbyItems } from "$interactive/components/nearby-items";
 
+import { getComparisonRuns, planBatchStrip } from "./batch-strip-layout";
 import { createBrowserActions } from "./history-browser-actions";
 import { HistoryBrowserContext } from "./history-browser-context";
 import {
@@ -105,6 +107,28 @@ function createContextValue({
 }
 
 /**
+ * Starts loading the previews of the runs around the selection, so moving
+ * through the list finds them ready instead of blank. The cache loads each
+ * once, so asking again on every render is free.
+ *
+ * @param value - The browser's runs, cursor, and previews.
+ * @param value.meta - Loads previews.
+ * @param value.state - The runs shown and the selection.
+ */
+function preloadNearby({ meta, state }: HistoryBrowserContextValue): void {
+	for (const run of getNearbyItems(state.runs, state.selectedIndex)) {
+		const { batch } = getRunRelations(state.entries, run);
+		if (batch.length === 0) {
+			meta.getPreview(run);
+			continue;
+		}
+		// A comparison shows a strip of smaller images instead.
+		const { box, shown } = planBatchStrip(getComparisonRuns(run, batch), run.id, meta.layout.previewBox);
+		for (const cell of shown) meta.getPreview(cell, box);
+	}
+}
+
+/**
  * Owns the browser's state and side effects. Every browser part reads the
  * same `{ state, actions, meta }` from it, so no part needs props.
  *
@@ -129,6 +153,7 @@ export function HistoryBrowserProvider({
 	const selected = getSelectedRun(browser);
 	const actions = createBrowserActions({ dispatch, exit, pageSize: layout.listHeight, selected, services, write });
 	const value = createContextValue({ actions, browser, layout, now, selected, services });
+	preloadNearby(value);
 
 	return <HistoryBrowserContext value={value}>{children}</HistoryBrowserContext>;
 }

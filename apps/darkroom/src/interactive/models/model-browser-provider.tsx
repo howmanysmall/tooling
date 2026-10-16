@@ -2,6 +2,7 @@ import { useReducer } from "react";
 import { useApp, useStdout, useWindowSize } from "ink";
 
 import { getModelPrices } from "$generation/observed-prices";
+import { getNearbyItems } from "$interactive/components/nearby-items";
 
 import { createModelBrowserActions } from "./model-browser-actions";
 import { ModelBrowserContext } from "./model-browser-context";
@@ -83,6 +84,21 @@ function createContextValue({ actions, browser, layout, now, services }: Context
 }
 
 /**
+ * Starts loading the examples of the models around the selection, so
+ * moving through the list finds them ready instead of blank.
+ *
+ * @param value - The browser's models, cursor, and previews.
+ * @param value.meta - Finds examples and loads previews.
+ * @param value.state - The models shown and the selection.
+ */
+function preloadNearby({ meta, state }: ModelBrowserContextValue): void {
+	for (const model of getNearbyItems(state.models, state.selectedIndex)) {
+		const example = meta.getExample(model);
+		if (example !== undefined) meta.getPreview(example);
+	}
+}
+
+/**
  * Owns the model browser's state. Every part reads the same
  * `{ state, actions, meta }` from it, so no part needs props.
  *
@@ -117,6 +133,7 @@ export function ModelBrowserProvider({
 		write,
 	});
 	const value = createContextValue({ actions, browser, layout, now, services });
+	preloadNearby(value);
 
 	return <ModelBrowserContext value={value}>{children}</ModelBrowserContext>;
 }

@@ -3,18 +3,13 @@ import { Box } from "ink";
 import { PreviewSlot } from "$interactive/components/preview-slot";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
+import { getComparisonRuns } from "./batch-strip-layout";
 import { HistoryBatchStrip } from "./history-batch-strip";
 import { useHistoryBrowser } from "./history-browser-context";
 import { getImagePath } from "./run-facts";
 import { useRunImageActions } from "./use-run-image-actions";
 
 import type { ReactNode } from "react";
-
-import type { HistoryEntry } from "$history/history-entry";
-
-function compareByModel(first: HistoryEntry, second: HistoryEntry): number {
-	return first.model.localeCompare(second.model);
-}
 
 /**
  * The top of the detail pane: the selected run's comparison side by side
@@ -41,7 +36,7 @@ export function HistoryPreviewArea(): ReactNode {
 	if (batch.length > 0) {
 		return (
 			<Box flexShrink={0} justifyContent="center">
-				<HistoryBatchStrip runs={[selected, ...batch].toSorted(compareByModel)} />
+				<HistoryBatchStrip runs={getComparisonRuns(selected, batch)} />
 			</Box>
 		);
 	}

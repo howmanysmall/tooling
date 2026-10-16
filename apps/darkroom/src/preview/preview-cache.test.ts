@@ -56,6 +56,20 @@ describe("previewCache", () => {
 		expect(countLines(preview)).toBe(10);
 	});
 
+	it("keeps a loaded preview, so a preloaded image draws without waiting", async ({ expect }) => {
+		expect.assertions(2);
+
+		const path = await createImageAsync(100, 100);
+		const cache = new PreviewCache(ImageProtocol.Blocks, () => undefined);
+		const preloaded = cache.getPreview(path, BOX);
+
+		expect(preloaded.loaded).toBeUndefined();
+
+		const preview = await preloaded.result;
+
+		expect(cache.getPreview(path, BOX).loaded).toBe(preview);
+	});
+
 	it("explains instead of failing when the image is missing", async ({ expect }) => {
 		expect.assertions(1);
 
