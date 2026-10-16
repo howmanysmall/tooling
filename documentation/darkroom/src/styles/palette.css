@@ -1,0 +1,21 @@
+:root {
+	--selenium: #7d2e68; /* focus, links */
+	--cyanotype: #1d5b8f; /* stdout, solid */
+	--sepia: #8a4a17; /* stderr, dashed */
+	--safelight: #ff8a80; /* overprint only */
+	--mint: #7fd8bd; /* overprint only */
+
+	--focus: var(--selenium);
+	--data-1: var(--cyanotype);
+	--data-2: var(--sepia);
+	--riso-a: var(--safelight);
+	--riso-b: var(--mint);
+}
+
+:root[data-theme="dark"] {
+	--selenium: #e29bcc;
+	--cyanotype: #8dbdee;
+	--sepia: #dca46e;
+	--safelight: #b8403c;
+	--mint: #1f6e5a;
+}

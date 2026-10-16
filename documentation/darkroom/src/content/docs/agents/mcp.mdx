@@ -1,0 +1,40 @@
+---
+title: The MCP server
+description: Serve darkroom's tools to Claude Code and other Model Context Protocol clients.
+---
+
+`darkroom mcp` serves darkroom's tools over stdio to Model Context Protocol clients such as Claude Code. stdout carries
+the MCP stream, and logs go to stderr.
+
+```json title=".mcp.json"
+{ "mcpServers": { "darkroom": { "command": "darkroom", "args": ["mcp"] } } }
+```
+
+Put `OPENROUTER_API_KEY` in the server's environment. `DARKROOM_MODEL` picks the model when `generate-image` names
+none. Relative paths resolve against the folder the client starts the server in.
+
+## Tools
+
+| Tool             | What it does                                                       | Paid |
+| ---------------- | ------------------------------------------------------------------ | ---- |
+| `list-models`    | Lists and filters models with their price and limits.              |      |
+| `get-model`      | Shows one model's parameters and prices.                           |      |
+| `estimate-cost`  | Validates a request for one or more models and estimates the cost. |      |
+| `generate-image` | Generates images with one model.                                   | Yes  |
+| `compare-models` | Generates one prompt with two or more models into one folder.      | Yes  |
+| `list-history`   | Lists past runs, newest first.                                     |      |
+| `show-run`       | Shows one run's settings, files, and related runs.                 |      |
+| `rerun`          | Repeats a past run, with any field overridden.                     | Yes  |
+
+## Spending limits
+
+Paid tools take an optional `maxCost` in dollars and refuse any request whose estimate exceeds it. When darkroom can't
+price a request, the tool refuses it unless the call sets `allowUnknownCost`.
+
+The calling model picks both values. The limit catches its mistakes but can't overrule it, and your client's approval
+prompt keeps the final say with you.
+
+## Results
+
+Results list the saved paths and include a small preview of each image. The stdio transport can't cancel a call. A
+generation the client cancels still runs to the end, and darkroom records it in the history.

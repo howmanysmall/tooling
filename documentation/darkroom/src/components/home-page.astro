@@ -1,0 +1,123 @@
+---
+import { EXAMPLE_PROMPT, getModelExamples } from "./model-examples";
+import FootnoteBand from "@howmanysmall/documentation-theme/components/footnote-band.astro";
+import Legend from "@howmanysmall/documentation-theme/components/legend.astro";
+import LinkRows from "@howmanysmall/documentation-theme/components/link-rows.astro";
+import ModelGallery from "./model-gallery.astro";
+import Notebook from "@howmanysmall/documentation-theme/components/notebook.astro";
+import NotebookRow from "@howmanysmall/documentation-theme/components/notebook-row.astro";
+import Readout from "@howmanysmall/documentation-theme/components/readout.astro";
+import Transcript from "@howmanysmall/documentation-theme/components/transcript.astro";
+
+/**
+ * The home page: what darkroom is, one prompt across the models, the two
+ * output streams, and where to go next.
+ */
+const FEATURED_MODELS: ReadonlySet<string> = new Set([
+	"google/gemini-3-pro-image",
+	"openai/gpt-image-2",
+	"black-forest-labs/flux-3-image",
+	"bytedance-seed/seedream-5-0-pro",
+	"krea/krea-2-large",
+	"meta/muse-image",
+	"recraft/recraft-v4.1",
+	"qwen/qwen-image-3-pro",
+]);
+
+const STREAMS = [
+	{ label: "stdout · saved paths", series: 1 },
+	{ label: "stderr · progress and cost", series: 2 },
+] as const;
+
+const SESSION = [
+	{ command: true, text: 'darkroom generate "a lighthouse at dusk" -m google/gemini-3-pro-image -n 2' },
+	{ series: 2, text: "◒ Generating 2 images · 0:14" },
+	{ series: 1, text: "./2026-10-15_a-lighthouse-at-dusk.png" },
+	{ series: 1, text: "./2026-10-15_a-lighthouse-at-dusk-2.png" },
+	{ series: 2, text: "✔ 2 images · google/gemini-3-pro-image · $0.27" },
+] as const;
+
+const NEXT = [
+	{ description: "Install darkroom, set your key, and make a first image.", href: "guide/install/", title: "Guide" },
+	{
+		description: "generate, compare, history, models, cache, and completions.",
+		href: "commands/generate/",
+		title: "Commands",
+	},
+	{
+		description: "The full-screen app: sessions, the model picker, and your history.",
+		href: "app/overview/",
+		title: "The app",
+	},
+	{ description: "Serve darkroom to Claude Code and other MCP clients.", href: "agents/mcp/", title: "Agent tools" },
+];
+
+const examples = getModelExamples();
+const featured = examples.filter(({ model }) => FEATURED_MODELS.has(model));
+const install = "npm install --global @pobammer-ts/darkroom";
+---
+
+<Notebook>
+	<div class="notebook-home">
+		<NotebookRow
+			note="An image-generation CLI for OpenRouter. Free and open source, under the MIT license."
+			title="darkroom">
+			<h1 class="notebook-display">Make images in the terminal, with any model.</h1>
+			<p class="notebook-lede">
+				Write a prompt, pick a model, and darkroom saves the image and remembers the run. Compare models side by
+				side, browse your history full screen, or hand the tools to an agent.
+			</p>
+			<pre class="notebook-install notebook-well"><code>{install}</code></pre>
+			<div class="notebook-actions">
+				<a class="primary-button" href="guide/install/">Read the guide</a>
+				<a href="models/">or browse the models</a>
+			</div>
+			<Readout
+				label="Image models, each with an example"
+				note="Every image model on OpenRouter when the examples were made, run on one prompt."
+				overprint
+				slot="readouts"
+				value={examples.length} />
+		</NotebookRow>
+
+		<NotebookRow
+			note="fig. 1 — the same prompt, run with every model by darkroom compare. Each image is one model's answer, and none of them is the right one."
+			title="One prompt">
+			<p class="notebook-caption">
+				A ramen stall at night after rain · {featured.length} of {examples.length} models
+			</p>
+			<ModelGallery eager examples={featured} />
+			<a href="models/">See all {examples.length} models</a>
+			<Readout
+				label="Prompt"
+				note="Three bowls, a black cat with one white paw, and a sign that reads KITSUNE NOODLES. Lettering and counting are where models differ most."
+				slot="readouts"
+				value={`${EXAMPLE_PROMPT.length} characters`} />
+		</NotebookRow>
+
+		<NotebookRow
+			note="fig. 2 — one run of darkroom generate. Saved paths go to stdout, so they pipe into other tools. Progress and cost go to stderr."
+			title="Two streams">
+			<Legend items={STREAMS} />
+			<Transcript label="A terminal running darkroom generate" lines={SESSION} />
+			<Fragment slot="readouts">
+				<Readout
+					label="Requests per paid run"
+					note="Sent once. darkroom never retries a request that might be charged."
+					value="1" />
+				<Readout
+					label="Automatic retries"
+					note="Free lookups retry for up to 30 seconds. Paid requests never do."
+					value="None" />
+			</Fragment>
+		</NotebookRow>
+
+		<NotebookRow title="Where next">
+			<LinkRows rows={NEXT} />
+		</NotebookRow>
+
+		<FootnoteBand label="Your key">
+			darkroom sends prompts only to OpenRouter, with your key. Your images and history stay on this computer.
+		</FootnoteBand>
+	</div>
+</Notebook>

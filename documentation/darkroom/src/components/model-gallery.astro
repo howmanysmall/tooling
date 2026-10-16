@@ -1,0 +1,67 @@
+---
+import { Image } from "astro:assets";
+
+import type { ModelExample } from "./model-examples";
+
+/**
+ * A grid of example images, each labeled with the model that made it.
+ */
+interface Props {
+	/** The examples to show, in order. */
+	readonly examples: ReadonlyArray<ModelExample>;
+	/** Whether the first images load right away, above the fold. */
+	readonly eager?: boolean;
+}
+
+const { eager = false, examples } = Astro.props;
+---
+
+<ul class="model-gallery">
+	{examples.map(({ image, model }, index) => (
+		<li class="model-gallery-item">
+			<Image
+				alt={`${model}'s image for the example prompt`}
+				class="model-gallery-image"
+				loading={eager && index < 4 ? "eager" : "lazy"}
+				format="avif"
+				src={image}
+				widths={[240, 480]}
+				sizes="(width >= 60rem) 12rem, 45vw"
+			/>
+			<span class="model-gallery-label">{model}</span>
+		</li>
+	))}
+</ul>
+
+<style>
+	.model-gallery {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+		gap: 1rem 0.75rem;
+		padding: 0;
+		margin: 0;
+		list-style: none;
+	}
+
+	.model-gallery-item {
+		display: grid;
+		gap: 0.375rem;
+		align-content: start;
+		margin: 0;
+	}
+
+	.model-gallery-image {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1;
+		object-fit: cover;
+		background: var(--marker);
+		border: 1px solid var(--rule);
+	}
+
+	.model-gallery-label {
+		font: var(--type-data);
+		color: var(--ink-3);
+		overflow-wrap: anywhere;
+	}
+</style>

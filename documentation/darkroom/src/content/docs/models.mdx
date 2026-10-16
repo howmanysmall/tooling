@@ -1,0 +1,19 @@
+---
+title: Models
+description: Every image model's answer to one prompt, made with darkroom compare.
+tableOfContents: false
+---
+
+import ModelGallery from "../../components/model-gallery.astro";
+import { EXAMPLE_PROMPT, getModelExamples } from "../../components/model-examples";
+
+export const examples = getModelExamples();
+
+These are {examples.length} image models on OpenRouter, each given the same prompt by `darkroom compare`. The
+models tab of the app shows the same images, and swaps in your own newest image from a model once you have one.
+
+<blockquote class="example-prompt">{EXAMPLE_PROMPT}</blockquote>
+
+<ModelGallery examples={examples} />
+
+To see what a model accepts and what it costs, run `darkroom models get <model>`.

@@ -1,0 +1,43 @@
+---
+title: Sessions
+description: Conversations of prompts, kept as tabs, resumed, rewound, and forked.
+---
+
+Each conversation of prompts is a session. Open sessions are tabs over the prompt box, named by their first prompt. A
+tab shows a spinner while it generates and a dot when it finishes out of sight. Open tabs come back the next time the
+app starts.
+
+| Key              | What it does                  |
+| ---------------- | ----------------------------- |
+| `ctrl+n`, `+`    | Open a new session.           |
+| `alt+↑`, `alt+↓` | Switch sessions.              |
+| `ctrl+s`         | List past sessions to resume. |
+
+Closing a tab, with its `✕` or from the palette, keeps the session in the history. When the app closes, it prints how
+to resume the session you were in.
+
+```sh title="Terminal"
+darkroom -c
+darkroom -s 01JA
+```
+
+`-c` resumes the session you used last, and `-s` resumes one by a unique prefix of its ID.
+
+## Prompt actions
+
+Clicking a prompt opens its actions:
+
+- **Rewind** goes back to before the prompt so you can edit it again.
+- **Fork** does the same in a new tab.
+- **Use again** puts the prompt back in the box.
+- **Copy** copies it.
+
+Rewinding never deletes anything. The session as it was stays in the list, and forks are marked `⑂` there.
+
+## Delete
+
+Delete, from a prompt's or an image's actions once its run is over, asks first:
+
+1. **Yes** removes the run from the session and the history, and keeps your saved images.
+2. **Yes, and delete the file** deletes those images as well.
+3. **No** keeps everything.

@@ -17,6 +17,9 @@
 			"path": "./packages/string-utilities"
 		},
 		{
+			"path": "./tools/documentation-theme"
+		},
+		{
 			"path": "./tools/lint-configurations"
 		},
 		{

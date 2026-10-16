@@ -1,0 +1,46 @@
+---
+title: Install and set up
+description: Install darkroom, give it your OpenRouter key, and check that it works.
+---
+
+darkroom is a command-line tool. It runs on [Bun](https://bun.sh) or on Node.js 22.18 or later.
+
+```sh title="Terminal"
+npm install --global @pobammer-ts/darkroom
+darkroom --version
+```
+
+## Your OpenRouter key
+
+darkroom generates images through [OpenRouter](https://openrouter.ai), so it needs an OpenRouter key. Create one on
+OpenRouter's [keys page](https://openrouter.ai/settings/keys), then set it in your shell or in a `.env` file in the
+folder you run darkroom from.
+
+```sh title=".env"
+OPENROUTER_API_KEY=sk-or-v1-…
+```
+
+Commands that never call the API work without a key. That includes `--dry-run`, which checks a request and estimates
+its cost, and every `history` command.
+
+:::tip[Set a limit]
+OpenRouter lets you cap what a key can spend. A key with a monthly limit is a good fit for trying models out.
+:::
+
+## Environment variables
+
+| Variable             | What it does                                                                                       |
+| -------------------- | -------------------------------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY` | Your OpenRouter key, `sk-or-v1-…`.                                                                 |
+| `DARKROOM_MODEL`     | The model to use when `-m` isn't given, and the one the prompt box starts with.                    |
+| `DARKROOM_PREVIEW`   | How to draw image previews: `kitty`, `blocks`, or `off`. darkroom detects the terminal by default. |
+
+## Shell completions
+
+Completions fill in model IDs, aspect ratios, and run IDs. Add one line to your shell's startup file:
+
+```sh title="~/.bashrc"
+source <(darkroom completions bash)
+```
+
+For fish and zsh, see [completions](../../commands/completions/).

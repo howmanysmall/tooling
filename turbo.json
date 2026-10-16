@@ -32,6 +32,10 @@
 			"inputs": ["$TURBO_DEFAULT$"],
 			"outputs": ["dist/**"]
 		},
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
 		"lint": {
 			"dependsOn": ["lint:oxlint", "//#lint:oxlint", "//#lint:eslint"]
 		},
