@@ -1,12 +1,11 @@
-import nodePath from "node:path";
-
-import { runBrowserTask } from "$interactive/app/run-browser-task";
+import { copyText, getImageFileCommands } from "$interactive/components/image-commands";
 import { CommandGroup } from "$interactive/keys/browser-command";
-import { BrowserKey, formatClipboardSequence } from "$interactive/keys/browser-keys";
+import { BrowserKey } from "$interactive/keys/browser-keys";
 import { isSettled } from "$interactive/session/session-actions";
 
 import { GenerateDialog } from "./generate-screen-state";
 
+import type { ImageCommandEnvironment } from "$interactive/components/image-commands";
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 import type { SessionActions } from "$interactive/session/session-context";
 import type { BaseImage, SessionTurn } from "$interactive/session/session-state";
@@ -14,30 +13,17 @@ import type { BaseImage, SessionTurn } from "$interactive/session/session-state"
 import type { OpenDialog } from "./generate-screen-state";
 
 /** What the prompt and image actions act through. */
-export interface TranscriptEnvironment {
+export interface TranscriptEnvironment extends ImageCommandEnvironment {
 	/** Asks whether to delete a turn and its images. */
 	readonly askDelete: (turn: SessionTurn) => void;
-	/** Copies an image itself to the system clipboard. */
-	readonly copyImageAsync: (path: string) => Promise<void>;
 	/** Puts text in the prompt box, replacing what was there. */
 	readonly fillPrompt: (text: string) => void;
-	/** Opens images in the system viewer. */
-	readonly openImagesAsync: (paths: ReadonlyArray<string>) => Promise<void>;
-	readonly reportError: (text: string) => void;
-	readonly reportSuccess: (text: string) => void;
 	readonly session: SessionActions;
 	/** The session's turns, to find the one that made an image. */
 	readonly turns: ReadonlyArray<SessionTurn>;
-	/** Writes escape sequences to the terminal, for copying text. */
-	readonly write: (data: string) => void;
 }
 
 const group = CommandGroup.Act;
-
-function copyText(environment: TranscriptEnvironment, text: string, what: string): void {
-	environment.write(formatClipboardSequence(text));
-	environment.reportSuccess(`Copied ${what}`);
-}
 
 function getDeleteCommand(
 	key: BrowserKey,
@@ -57,13 +43,6 @@ function getDeleteCommand(
 			title: "Delete",
 		},
 	];
-}
-
-function runTask(environment: TranscriptEnvironment, task: Promise<void>, success: string, failure: string): void {
-	runBrowserTask(task, (error) => {
-		if (error === undefined) environment.reportSuccess(success);
-		else environment.reportError(`${failure}: ${error}`);
-	});
 }
 
 function findTurn(turns: ReadonlyArray<SessionTurn>, path: string): SessionTurn | undefined {
@@ -166,7 +145,6 @@ export function getPromptCommands(turn: SessionTurn, environment: TranscriptEnvi
  */
 export function getImageCommands(image: BaseImage, environment: TranscriptEnvironment): Array<BrowserCommand> {
 	const { path } = image;
-	const name = nodePath.basename(path);
 	return [
 		{
 			key: BrowserKey.ImageEdit,
@@ -178,36 +156,7 @@ export function getImageCommands(image: BaseImage, environment: TranscriptEnviro
 			},
 			title: "Edit",
 		},
-		{
-			key: BrowserKey.ImageCopy,
-			description: "copy the picture itself",
-			group,
-			keyLabel: "",
-			run(): void {
-				runTask(environment, environment.copyImageAsync(path), `Copied ${name}`, "Couldn't copy the image");
-			},
-			title: "Copy image",
-		},
-		{
-			key: BrowserKey.ImageOpen,
-			description: "in the system viewer",
-			group,
-			keyLabel: "",
-			run(): void {
-				runTask(environment, environment.openImagesAsync([path]), `Opened ${name}`, "Couldn't open the image");
-			},
-			title: "Open",
-		},
-		{
-			key: BrowserKey.ImageCopyPath,
-			description: "where it was saved",
-			group,
-			keyLabel: "",
-			run(): void {
-				copyText(environment, path, "the path");
-			},
-			title: "Copy path",
-		},
+		...getImageFileCommands(path, environment),
 		...getDeleteCommand(BrowserKey.ImageDelete, findTurn(environment.turns, path), environment),
 	];
 }

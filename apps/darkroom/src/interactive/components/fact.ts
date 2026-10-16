@@ -1,5 +1,7 @@
 /** A labeled value in a detail pane, like a run's cost or a model's price. */
 export interface Fact {
+	/** An image's absolute path; clicking the line opens its actions. */
+	readonly imagePath?: string | undefined;
 	/** Shows the value dimmed, for details like IDs. */
 	readonly isQuiet?: boolean | undefined;
 	readonly label: string;

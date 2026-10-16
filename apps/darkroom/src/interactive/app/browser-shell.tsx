@@ -10,6 +10,7 @@ import { CommandPalette } from "$interactive/palette/command-palette";
 import { HelpDialog } from "$interactive/palette/help-dialog";
 
 import { useAppTabs } from "./app-tabs-context";
+import { ShellActionsContext } from "./shell-actions-context";
 import { getShellCommands } from "./shell-commands";
 import { getShellRoute, ShellRoute } from "./shell-route";
 
@@ -19,11 +20,19 @@ import type { ReactNode } from "react";
 import type { StatusMessage } from "$interactive/components/status-message";
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 
+import type { ShellActions } from "./shell-actions-context";
+
 const enum Overlay {
+	/** Actions for something clicked, like an image. */
+	Actions = "actions",
 	Help = "help",
 	None = "none",
 	Palette = "palette",
 }
+
+type ShellOverlay =
+	| { readonly commands: ReadonlyArray<BrowserCommand>; readonly kind: Overlay.Actions; readonly title: string }
+	| { readonly kind: Exclude<Overlay, Overlay.Actions> };
 
 export interface BrowserShellProperties {
 	/**
@@ -46,10 +55,19 @@ export interface BrowserShellProperties {
 	children: ReactNode;
 }
 
+function createShellActions(setOverlay: (overlay: ShellOverlay) => void): ShellActions {
+	return {
+		showActions(title, commands): void {
+			setOverlay({ commands, kind: Overlay.Actions, title });
+		},
+	};
+}
+
 /**
  * The frame every full-screen screen shares: the background, the toast, the
- * help and `ctrl+p` command palette, switching tabs, and the key bindings,
- * all driven by the screen's command table.
+ * help and `ctrl+p` command palette, the actions for anything clicked,
+ * switching tabs, and the key bindings, all driven by the screen's command
+ * table.
  *
  * `tab` and `ctrl+p` work even while the screen captures keys, so the
  * prompt box can't trap you; a dialog of the screen's own takes everything.
@@ -78,16 +96,18 @@ export function BrowserShell({
 	status,
 	children,
 }: Readonly<BrowserShellProperties>): ReactNode {
-	const [overlay, setOverlay] = useState(Overlay.None);
+	const [overlay, setOverlay] = useState<ShellOverlay>({ kind: Overlay.None });
 	const notice = useNotice();
 	const toast = pickNewerMessage(status, notice);
 	const tabs = useAppTabs();
 	const { exit } = useApp();
-	function showOverlay(next: Overlay): () => void {
+	function showOverlay(kind: Exclude<Overlay, Overlay.Actions>): () => void {
 		return () => {
-			setOverlay(next);
+			setOverlay({ kind });
 		};
 	}
+
+	const shellActions = createShellActions(setOverlay);
 
 	const closeOverlay = showOverlay(Overlay.None);
 	const allCommands = getShellCommands(commands, {
@@ -98,11 +118,11 @@ export function BrowserShell({
 
 	useInput(function onShellInput(input, key) {
 		const route = getShellRoute(input, key, {
-			hasDialog: overlay === Overlay.Palette || hasDialog === true,
+			hasDialog: overlay.kind === Overlay.Palette || overlay.kind === Overlay.Actions || hasDialog === true,
 			hasShiftTab: onShiftTab !== undefined,
 			hasTabs: tabs !== undefined,
 			isCapturing: capture !== undefined,
-			isHelpOpen: overlay === Overlay.Help,
+			isHelpOpen: overlay.kind === Overlay.Help,
 		});
 		const handlers: Readonly<Record<ShellRoute, () => void>> = {
 			[ShellRoute.Capture](): void {
@@ -136,12 +156,21 @@ export function BrowserShell({
 
 	return (
 		<Box backgroundColor={theme.background} flexDirection="column" height={rows} width={columns}>
-			{children}
+			<ShellActionsContext value={shellActions}>{children}</ShellActionsContext>
 			{toast === undefined ? null : <Toast status={toast} />}
-			{overlay === Overlay.Help ? (
+			{overlay.kind === Overlay.Help ? (
 				<HelpDialog columns={columns} commands={allCommands} rows={rows} onClose={closeOverlay} />
 			) : null}
-			{overlay === Overlay.Palette ? (
+			{overlay.kind === Overlay.Actions ? (
+				<CommandPalette
+					columns={columns}
+					commands={overlay.commands}
+					rows={rows}
+					title={overlay.title}
+					onClose={closeOverlay}
+				/>
+			) : null}
+			{overlay.kind === Overlay.Palette ? (
 				<CommandPalette
 					columns={columns}
 					commands={allCommands}
