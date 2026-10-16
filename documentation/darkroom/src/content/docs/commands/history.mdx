@@ -10,7 +10,7 @@ darkroom history <command>
 darkroom records each run with its prompt, settings, reference images, cost, and a copy of each image. A `<run>` is a run's
 ID, a unique prefix of it, `last` for the newest run, or `last~N` for the run N before it.
 
-## browse
+## Browse runs
 
 ```sh title="Terminal"
 darkroom history browse
@@ -19,7 +19,7 @@ darkroom history browse
 Opens the history tab of the full-screen app: open, copy, re-run, or delete runs. When stdout isn't a terminal, use
 `history list` instead.
 
-## list
+## List runs
 
 ```sh title="Terminal"
 darkroom history list --limit 5 --model google/gemini-3-pro-image
@@ -31,7 +31,7 @@ darkroom history list --limit 5 --model google/gemini-3-pro-image
 | `--model <id>`          | Only show runs that used this model.           |          |
 | `-f, --format <format>` | `pretty`, `table`, `json`, or `json-minified`. | `pretty` |
 
-## show
+## Show a run
 
 ```sh title="Terminal"
 darkroom history show last --format json
@@ -39,7 +39,7 @@ darkroom history show last --format json
 
 Shows everything recorded for a run, including the runs it was re-run from. Takes `-f, --format`.
 
-## open
+## Open a run's images
 
 ```sh title="Terminal"
 darkroom history open last
@@ -47,7 +47,7 @@ darkroom history open last
 
 Opens a run's images in the system viewer.
 
-## rerun
+## Run one again
 
 ```sh title="Terminal"
 darkroom history rerun last -n 2
@@ -57,7 +57,7 @@ darkroom history rerun 01JA -m openai/gpt-image-2 --dry-run
 Repeats a run with its stored prompt, settings, and reference images. Every [`generate`](../generate/) option
 overrides the stored value, and `-i` replaces the stored references.
 
-## prune
+## Prune old runs
 
 ```sh title="Terminal"
 darkroom history prune
@@ -73,4 +73,4 @@ their images, after asking.
 | `--keep <count>`          | Keep only the newest this many runs.                       |
 | `--max-size <size>`       | Delete the oldest runs until the history fits, like `2GB`. |
 | `-y, --yes`               | Delete without asking.                                     |
-| `--dry-run`               | List what would be deleted without deleting it.            |
+| `--dry-run`               | List the runs it would delete, and keep them.              |

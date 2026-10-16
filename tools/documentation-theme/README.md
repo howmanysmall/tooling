@@ -1,12 +1,12 @@
 # @howmanysmall/documentation-theme
 
 Anna's field-notebook design for the Starlight documentation sites in `documentation/`. Pages are paper, ink, and
-hairline rules, set in Newsreader and IBM Plex. Color appears only where there is data, plus one riso overprint on the
-number a page is about.
+hairline rules. Newsreader sets the headings and IBM Plex the rest. Only data and links get a hue, plus one riso
+overprint on the number a page is about.
 
 Figma has the design, on the `T - darkroom docs` page of the
 [anna-design file](https://www.figma.com/design/B4T0nYhSFRwiGvL9sh2BCD?node-id=130-2). Its `darkroom docs` variables
-match the CSS here, in light and dark.
+match the CSS here for both themes.
 
 ## Use it in a site
 
@@ -43,7 +43,7 @@ export default defineConfig({
 | Syntax colors | `src/syntax-themes.ts`, which follows the ink scale in `tokens.css`. |
 | The address the sites publish to | `src/site.ts`. |
 
-A color change belongs in both places. Update the matching Figma variable along with the CSS.
+A palette change belongs in both places. Update the matching Figma variable along with the CSS.
 
 ## Components
 

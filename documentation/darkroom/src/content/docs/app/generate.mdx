@@ -4,23 +4,23 @@ description: The prompt box, sending a request, and editing an image you already
 ---
 
 The generate tab is a prompt box with the model and its price beneath it. Press `enter` and darkroom shows the request
-with its estimated cost, then asks before anything is sent. A request you send is never canceled halfway.
+with its estimated cost, then asks before it sends anything. Once a request goes out, darkroom lets it finish.
 
 ## The prompt box
 
 The box edits like a shell.
 
-| Key                   | What it does                                                        |
-| --------------------- | ------------------------------------------------------------------- |
-| `enter`               | Review and send.                                                    |
-| `ctrl+j`, `alt+enter` | Add a line.                                                         |
-| `ctrl+o`              | Pick another model.                                                 |
-| `ctrl+g`              | Continue in a guided session, to add reference images and settings. |
-| `ctrl+a`, `ctrl+e`    | Go to the start or end of the line.                                 |
-| `ctrl+w`              | Delete the word before the cursor.                                  |
-| `ctrl+u`, `ctrl+k`    | Delete to the start or end of the line.                             |
+| Key                   | What it does                                                     |
+| --------------------- | ---------------------------------------------------------------- |
+| `enter`               | Review and send.                                                 |
+| `ctrl+j`, `alt+enter` | Add a line.                                                      |
+| `ctrl+o`              | Pick another model.                                              |
+| `ctrl+g`              | Continue in a guided session with reference images and settings. |
+| `ctrl+a`, `ctrl+e`    | Go to the start or end of the line.                              |
+| `ctrl+w`              | Delete the word before the cursor.                               |
+| `ctrl+u`, `ctrl+k`    | Delete to the start or end of the line.                          |
 
-## Edit and New
+## `Edit` and `New`
 
 Once a session has an image, the next prompt edits it: the newest image goes to the model as a reference, and the box
 reads `Edit ◧ <file>`. `shift+tab` switches to `New`, which starts fresh.

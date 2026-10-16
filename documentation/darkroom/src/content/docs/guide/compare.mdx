@@ -1,6 +1,6 @@
 ---
 title: Compare models
-description: Run one prompt with several models at once and see the results side by side.
+description: Run one prompt with two or more models at once and see the results side by side.
 ---
 
 `darkroom compare` sends the same prompt to several models and saves every result in one folder. Name each model with
@@ -10,8 +10,8 @@ its own `-m`:
 darkroom compare "a lighthouse at dusk" -m black-forest-labs/flux-3-image -m openai/gpt-image-2
 ```
 
-Before it spends anything, darkroom validates the request for every model, shows the estimated total, and asks. A
-model that can't take the request is named in the list, so you can drop it and try again.
+Before it spends anything, darkroom validates the request for every model, shows the estimated total, and asks. The
+list names any model that can't take the request, so you can drop it and try again.
 
 ## Scripts
 

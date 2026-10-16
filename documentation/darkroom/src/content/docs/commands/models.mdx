@@ -7,7 +7,7 @@ description: List and filter image models, or show one in full.
 darkroom models <command>
 ```
 
-## list
+## List models
 
 ```text
 darkroom models list [search] [options]
@@ -22,17 +22,17 @@ darkroom models list flux --format table
 darkroom models list --transparent | head -n 3
 ```
 
-| Option                  | What it does                                            | Default |
-| ----------------------- | ------------------------------------------------------- | ------- |
-| `--provider <name>`     | Only models from this provider, like `google`.          |         |
-| `--refs`                | Only models that accept reference images.               |         |
-| `--multi`               | Only models that can return several images per request. |         |
-| `--ratio <ratio>`       | Only models that accept this aspect ratio.              |         |
-| `--transparent`         | Only models that can make a transparent background.     |         |
-| `--sort <key>`          | `name`, `price`, or `created`.                          | `name`  |
-| `-f, --format <format>` | `pretty`, `table`, `json`, or `json-minified`.          |         |
+| Option                  | What it does                                                 | Default |
+| ----------------------- | ------------------------------------------------------------ | ------- |
+| `--provider <name>`     | Only models from this provider, like `google`.               |         |
+| `--refs`                | Only models that accept reference images.                    |         |
+| `--multi`               | Only models that can return more than one image per request. |         |
+| `--ratio <ratio>`       | Only models that accept this aspect ratio.                   |         |
+| `--transparent`         | Only models that can make a transparent background.          |         |
+| `--sort <key>`          | `name`, `price`, or `created`.                               | `name`  |
+| `-f, --format <format>` | `pretty`, `table`, `json`, or `json-minified`.               |         |
 
-## get
+## Show one model
 
 ```text
 darkroom models get [model] [options]
