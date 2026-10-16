@@ -1,23 +1,29 @@
+import nodePath from "node:path";
 import { Text } from "ink";
 
+import { getDeleteChoices, getDeletion } from "$history/delete-run";
 import { previewPrompt } from "$history/format-history";
-import { Dialog } from "$interactive/components/dialog";
+import { ChoiceDialog } from "$interactive/components/choice-dialog";
 import { theme } from "$interactive/components/theme";
 
 import { useHistoryBrowser } from "./history-browser-context";
 
 import type { ReactNode } from "react";
 
-import type { KeyHint } from "$interactive/components/key-hints";
+import type { HistoryEntry } from "$history/history-entry";
 
-const HINTS: ReadonlyArray<KeyHint> = [
-	["y", "delete"],
-	["any other key", "keep it"],
-];
+// A few lines of the prompt at most; it wraps rather than being cut.
+const MAX_PROMPT_LENGTH = 240;
+
+function getSavedPaths(entry: HistoryEntry | undefined): Array<string> {
+	return entry?.images.flatMap(({ output }) => (output === "-" ? [] : [output])) ?? [];
+}
 
 /**
- * Asks whether to delete the selected run, naming it by its prompt. A
- * click outside keeps it.
+ * Asks whether to delete the selected run, naming it by its prompt and
+ * listing the images it saved. Yes deletes it from darkroom and keeps the
+ * images; the second answer deletes them too; No, Esc, or a click outside
+ * keeps everything.
  *
  * @returns The question as a dialog.
  */
@@ -27,23 +33,29 @@ export function HistoryDeleteDialog(): ReactNode {
 		meta: { layout },
 		state: { selected },
 	} = useHistoryBrowser();
-	const name = selected === undefined ? "this run" : `“${previewPrompt(selected.prompt, 80)}”`;
+	const paths = getSavedPaths(selected);
+	const count = paths.length;
+	const choices = getDeleteChoices(count);
 
-	function keepRun(): void {
-		answerDelete("n");
+	function handleChoose(index: number): void {
+		answerDelete(getDeletion(count, index));
 	}
 
 	return (
-		<Dialog
+		<ChoiceDialog
+			choices={choices}
 			columns={layout.columns}
-			hints={HINTS}
 			rows={layout.rows}
-			title="Delete run"
-			width={60}
-			onDismiss={keepRun}
+			title="Delete this run?"
+			width={72}
+			onChoose={handleChoose}
 		>
-			<Text>{name}</Text>
-			<Text color={theme.warning}>{"Its stored images are deleted too. Your own copies stay."}</Text>
-		</Dialog>
+			<Text>
+				{selected === undefined ? "This run" : `“${previewPrompt(selected.prompt, MAX_PROMPT_LENGTH)}”`}
+			</Text>
+			{paths.map((path) => (
+				<Text key={path} color={theme.muted}>{`  ${nodePath.basename(path)}`}</Text>
+			))}
+		</ChoiceDialog>
 	);
 }

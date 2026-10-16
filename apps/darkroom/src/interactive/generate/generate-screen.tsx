@@ -30,7 +30,7 @@ import type { Dispatch, ReactNode } from "react";
 import type { SessionSummary } from "$history/session-list";
 import type { KeyHint } from "$interactive/components/key-hints";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
-import type { SessionState } from "$interactive/session/session-state";
+import type { SessionState, SessionTurn } from "$interactive/session/session-state";
 import type { TranscriptActions } from "$interactive/session/transcript-actions-context";
 import type { CellBox } from "$preview/cell-fit";
 import type { LoadingPreview } from "$preview/load-preview";
@@ -157,6 +157,10 @@ export function GenerateScreen({
 		dispatch(CLOSE_DIALOG);
 	}
 
+	function askDelete(turn: SessionTurn): void {
+		dispatch({ dialog: { kind: GenerateDialog.Delete, turn }, type: "dialog" });
+	}
+
 	function fillPrompt(text: string): void {
 		dispatch(CLEAR_PROMPT);
 		dispatch({ action: { text, type: "insert" }, type: "edit" });
@@ -271,6 +275,7 @@ export function GenerateScreen({
 				recentIds={recentIds}
 				rows={rows}
 				sessions={sessions}
+				onAskDelete={askDelete}
 				onChooseModel={onChooseModel}
 				onClose={closeDialog}
 				onFillPrompt={fillPrompt}

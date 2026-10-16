@@ -73,6 +73,7 @@ export type SessionAction =
 	| { readonly id: number; readonly model: string; readonly prompt: string; readonly type: "turn-added" }
 	| { readonly id: number; readonly pending: PendingRequest; readonly type: "prepared" }
 	| { readonly id: number; readonly progress: StreamProgress; readonly type: "turn-progress" }
+	| { readonly id: number; readonly type: "turn-removed" }
 	| { readonly id: number; readonly type: "turn-warned"; readonly warning: string }
 	| { readonly image: BaseImage; readonly type: "choose-base" }
 	| { readonly mode: PromptMode; readonly type: "set-mode" }
@@ -151,6 +152,18 @@ function dismissPending(state: SessionState): SessionState {
 	return { ...state, pending: undefined, turns: state.turns.filter((turn) => turn.id !== id) };
 }
 
+function isFromTurn(image: BaseImage | undefined, turn: SessionTurn | undefined): boolean {
+	return image !== undefined && turn?.result?.images.some((saved) => saved.path === image.path) === true;
+}
+
+function removeTurn(state: SessionState, id: number): SessionState {
+	const turns = state.turns.filter((turn) => turn.id !== id);
+	const removed = state.turns.find((turn) => turn.id === id);
+	// An image that's gone can't be edited; the newest one left takes over.
+	const base = isFromTurn(state.base, removed) ? findNewestImage(turns) : state.base;
+	return { ...state, base, pending: state.pending?.id === id ? undefined : state.pending, turns };
+}
+
 function settleTurn(state: SessionState, id: number, settled: Partial<SessionTurn>): SessionState {
 	return updateTurn(state, id, (turn) => ({ ...turn, ...settled }));
 }
@@ -200,6 +213,9 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 
 		case "turn-progress":
 			return settleTurn(state, action.id, { progress: action.progress });
+
+		case "turn-removed":
+			return removeTurn(state, action.id);
 
 		case "turn-started": {
 			const started = settleTurn(state, action.id, { phase: TurnPhase.Running, startedAt: action.at });

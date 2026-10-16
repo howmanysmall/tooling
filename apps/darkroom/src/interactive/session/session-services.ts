@@ -2,6 +2,7 @@ import { mergeRerunOptions } from "$generation/generation-flags";
 import { InterruptGuard } from "$generation/interrupt-guard";
 import { getReferenceRange } from "$generation/model-capabilities";
 import { loadReferenceAsync } from "$generation/references";
+import { deleteRunAsync } from "$history/delete-run";
 import { addToForkAsync } from "$history/history-store";
 import { loadStoredReferencesAsync } from "$history/stored-references";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
@@ -12,6 +13,7 @@ import type { ImageModelListItem } from "@openrouter/sdk/models";
 
 import type { StreamProgress } from "$generation/image-stream";
 import type { GenerationInput, GenerationResult, PreparedGeneration } from "$generation/run-generation";
+import type { RunDeletion } from "$history/delete-run";
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 
@@ -50,6 +52,15 @@ export interface SettledRun {
  * until its images are saved, even after the app closes.
  */
 export interface SessionServices {
+	/**
+	 * Deletes a run for good: its line in the history and the copies stored
+	 * with it, and with {@link RunDeletion.Files}, the images it saved where
+	 * you asked.
+	 *
+	 * @param result - The run, as it finished.
+	 * @param deletion - Whether your saved images go too.
+	 */
+	readonly deleteRunAsync: (result: GenerationResult, deletion: RunDeletion) => Promise<void>;
 	/**
 	 * Records a fork on the runs it keeps, so it can be resumed with them.
 	 *
@@ -128,6 +139,14 @@ export function createSessionServices(store: HistoryStore): SessionServices {
 	const running = new Set<Promise<SettledRun>>();
 
 	return {
+		async deleteRunAsync({ id, images }, deletion): Promise<void> {
+			await deleteRunAsync(
+				store,
+				id,
+				images.flatMap(({ path }) => path ?? []),
+				deletion,
+			);
+		},
 		async forkAsync(runs, fork): Promise<void> {
 			// A line that can't be read is kept out, as everywhere in the app.
 			await addToForkAsync(store, new Set(runs), fork, () => undefined);

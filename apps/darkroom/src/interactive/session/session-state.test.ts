@@ -74,6 +74,24 @@ describe("reduceSession", () => {
 	});
 });
 
+describe("turn-removed", () => {
+	it("drops the turn, and edits the newest image left when its image was the base", ({ expect }) => {
+		expect.assertions(2);
+
+		const older = { ...RESULT, images: [{ mediaType: "image/png", path: "/work/older.png" }] };
+		const state = applyActions([
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a dog", type: "turn-added" },
+			{ id: 1, at: 1, result: older, type: "turn-done" },
+			{ id: 2, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
+			{ id: 2, at: 2, result: RESULT, type: "turn-done" },
+			{ id: 2, type: "turn-removed" },
+		]);
+
+		expect(state.turns.map(({ id }) => id)).toStrictEqual([1]);
+		expect(state.base?.path).toBe("/work/older.png");
+	});
+});
+
 describe("getEditBase", () => {
 	it("edits the newest image, or the one you chose, until you switch to starting fresh", ({ expect }) => {
 		expect.assertions(4);

@@ -5,7 +5,9 @@ import { TurnPhase } from "$interactive/session/session-state";
 
 import { getImageCommands, getPromptCommands } from "./transcript-commands";
 
+import type { GenerationResult } from "$generation/run-generation";
 import type { SessionActions } from "$interactive/session/session-context";
+import type { SessionTurn } from "$interactive/session/session-state";
 
 import type { TranscriptEnvironment } from "./transcript-commands";
 
@@ -30,6 +32,9 @@ function record(): Recorded {
 	};
 	const session = fromPartial<SessionActions>(actions);
 	const environment: TranscriptEnvironment = {
+		askDelete(turn): void {
+			events.push(`delete? ${turn.id}`);
+		},
 		copyImageAsync: async () => undefined,
 		fillPrompt(text): void {
 			events.push(`fill ${text}`);
@@ -42,6 +47,7 @@ function record(): Recorded {
 			events.push(`success ${text}`);
 		},
 		session,
+		turns: [MADE],
 		write(data): void {
 			events.push(`write ${data}`);
 		},
@@ -51,6 +57,11 @@ function record(): Recorded {
 
 const TURN = { id: 4, model: "m", phase: TurnPhase.Done, prompt: "a cat", requested: 1, warnings: [] };
 const IMAGE = { mediaType: "image/png", path: "/work/cat.png" };
+const MADE: SessionTurn = {
+	...TURN,
+	id: 5,
+	result: fromPartial<GenerationResult>({ id: "RUN", images: [IMAGE] }),
+};
 
 describe("getPromptCommands", () => {
 	it("rewinds or forks to before the prompt and puts it back in the box", ({ expect }) => {
@@ -62,6 +73,21 @@ describe("getPromptCommands", () => {
 		fork?.run();
 
 		expect(events).toStrictEqual(["rewind 4", "fill a cat", "fork 4", "fill a cat"]);
+	});
+});
+
+describe("delete", () => {
+	it("asks about the turn that made a clicked image, and not while one runs", ({ expect }) => {
+		expect.assertions(2);
+
+		const { environment, events } = record();
+		getImageCommands(IMAGE, environment)
+			.find((command) => command.title === "Delete")
+			?.run();
+		const running = getPromptCommands({ ...TURN, phase: TurnPhase.Running }, environment);
+
+		expect(events).toStrictEqual(["delete? 5"]);
+		expect(running.map((command) => command.title)).not.toContain("Delete");
 	});
 });
 

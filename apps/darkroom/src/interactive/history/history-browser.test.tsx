@@ -4,12 +4,14 @@ import nodePath from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, it } from "vitest";
 
+import { deleteRunAsync } from "$history/delete-run";
 import { createEntry } from "$history/history-fixture";
-import { appendAsync, createHistoryStore, deleteAsync, readAllAsync, resolve } from "$history/history-store";
+import { appendAsync, createHistoryStore, readAllAsync, resolve } from "$history/history-store";
 import { renderScreen } from "$interactive/app/test-screen";
 
 import { HistoryBrowserScreen } from "./history-browser-screen.tsx";
 
+import type { RunDeletion } from "$history/delete-run";
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 import type { LoadingPreview } from "$preview/load-preview";
@@ -40,7 +42,7 @@ const COMPARISON: ReadonlyArray<HistoryEntry> = [
 const CTRL_P = "\u0010";
 const HELP_DIALOG = /Keys[\s\S]*y +Copy run ID[\s\S]*ctrl\+p +Command palette/u;
 const PALETTE_MATCH = /Commands[\s\S]*Re-run +r/u;
-const DELETE_DIALOG = /Delete run[\s\S]*“a cat in a hat”[\s\S]*y delete/u;
+const DELETE_DIALOG = /Delete this run\?[\s\S]*“a cat in a hat”[\s\S]*1\. Yes[\s\S]*3\. No/u;
 const COMPARED_ROW = /compared +01M4YVAA · zeta-model/u;
 // Ordered by model, with the selected run marked; a comparison opens on
 // its first model.
@@ -70,8 +72,8 @@ interface Harness {
 
 function createServices(store: HistoryStore, opened: Array<string>, reruns: Array<string>): BrowserServices {
 	return {
-		async deleteRunAsync(entry: HistoryEntry): Promise<void> {
-			await deleteAsync(store, new Set([entry.id]), () => undefined);
+		async deleteRunAsync(entry: HistoryEntry, deletion: RunDeletion): Promise<void> {
+			await deleteRunAsync(store, entry.id, [], deletion);
 		},
 		getPreview: () => undefined,
 		async openRunAsync(entry: HistoryEntry): Promise<void> {
@@ -206,7 +208,7 @@ describe("history browser", () => {
 		expect(browser.frame()).toContain("  3 runs ·");
 	});
 
-	it("keeps the run when the delete question is answered with n", async ({ expect }) => {
+	it("keeps the run when the delete question is dismissed", async ({ expect }) => {
 		expect.assertions(2);
 
 		const browser = await renderBrowserAsync();
@@ -214,7 +216,7 @@ describe("history browser", () => {
 
 		expect(browser.frame()).toMatch(DELETE_DIALOG);
 
-		await browser.pressAsync("n");
+		await browser.pressAsync(ESCAPE);
 
 		await expect(readIdsAsync(browser.store)).resolves.toStrictEqual([OLDEST.id, MIDDLE.id, NEWEST.id]);
 	});
@@ -224,7 +226,7 @@ describe("history browser", () => {
 		expect.assertions(2);
 
 		const browser = await renderBrowserAsync();
-		await browser.pressAsync(DOWN, "d", "y");
+		await browser.pressAsync(DOWN, "d", "1");
 
 		// The delete rewrites the history file under its lock before the list
 		// updates.
