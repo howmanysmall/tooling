@@ -15,6 +15,11 @@ export type Preview =
  * gets a new one.
  */
 export interface LoadingPreview {
+	/**
+	 * The preview once it has loaded. A preloaded image shows at once from
+	 * this, where reading the promise would suspend for a frame first.
+	 */
+	readonly loaded?: Preview | undefined;
 	readonly result: Promise<Preview>;
 }
 

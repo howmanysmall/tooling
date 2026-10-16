@@ -5,6 +5,27 @@ import { loadPreviewAsync } from "./load-preview";
 import type { CellBox } from "./cell-fit";
 import type { LoadingPreview, Preview } from "./load-preview";
 
+/** A loading preview whose result is filled in once it settles. */
+interface SettlingPreview {
+	loaded: Preview | undefined;
+	result: Promise<Preview>;
+}
+
+/**
+ * Wraps a loading preview so it remembers its result once it settles.
+ *
+ * @param loading - The preview being loaded.
+ * @returns The preview, whose `loaded` is set when it is ready.
+ */
+function trackLoaded(loading: Promise<Preview>): LoadingPreview {
+	const preview: SettlingPreview = { loaded: undefined, result: loading };
+	preview.result = loading.then((loaded) => {
+		preview.loaded = loaded;
+		return loaded;
+	});
+	return preview;
+}
+
 /**
  * Loads each preview once per size, so React can suspend on the same promise
  * across renders, and remembers the images sent to the terminal so they can
@@ -39,7 +60,7 @@ export class PreviewCache {
 		const cached = this.previews.get(key);
 		if (cached !== undefined) return cached;
 
-		const preview = { result: this.loadAsync(path, box) };
+		const preview = trackLoaded(this.loadAsync(path, box));
 		this.previews.set(key, preview);
 		return preview;
 	}

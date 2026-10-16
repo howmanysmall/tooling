@@ -18,7 +18,8 @@ export interface ImagePreviewProperties {
  * @returns The image as text cells, or why there is no image.
  */
 export function ImagePreview({ preview }: Readonly<ImagePreviewProperties>): ReactNode {
-	const loaded = use(preview.result);
+	// Once loaded, it draws at once; only an image still loading suspends.
+	const loaded = preview.loaded ?? use(preview.result);
 	if (loaded.kind === "message") return <Text dimColor={true}>{loaded.text}</Text>;
 
 	return (
