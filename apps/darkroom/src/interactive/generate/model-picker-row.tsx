@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 
-import { HighlightedText } from "$interactive/components/highlighted-text";
+import { getHighlightRuns } from "$interactive/components/highlight-runs";
+import { MarqueeText } from "$interactive/components/marquee-text";
 import { getDialogRowBackground } from "$interactive/components/row-background";
 import { theme } from "$interactive/components/theme";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
@@ -52,6 +53,7 @@ export function ModelPickerRow({
 }: Readonly<ModelPickerRowProperties>): ReactNode {
 	const { attachNode, isHovered } = useMouseTarget(`picker:${match.model.id}`, { onClick: onChoose });
 	const muted = isSelected ? theme.background : theme.muted;
+	const titleRuns = getHighlightRuns(match.model.name, match.positions, isSelected);
 
 	return (
 		<Box
@@ -63,9 +65,7 @@ export function ModelPickerRow({
 			<Box flexShrink={0} width={2}>
 				<Text color={isSelected ? theme.background : theme.accent}>{getMark(isCurrent, match.isRecent)}</Text>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} overflow="hidden">
-				<HighlightedText isSelected={isSelected} positions={match.positions} text={match.model.name} />
-			</Box>
+			<MarqueeText isScrolling={isSelected || isHovered} runs={titleRuns} />
 			<Box flexShrink={0}>
 				<Text color={muted}>{abilities}</Text>
 			</Box>

@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 
-import { HighlightedText } from "$interactive/components/highlighted-text";
+import { getHighlightRuns } from "$interactive/components/highlight-runs";
+import { MarqueeText } from "$interactive/components/marquee-text";
 import { getDialogRowBackground } from "$interactive/components/row-background";
 import { theme } from "$interactive/components/theme";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
@@ -31,21 +32,19 @@ export interface PaletteRowProperties {
 export function PaletteRow({ isSelected, match, onChoose }: Readonly<PaletteRowProperties>): ReactNode {
 	const { command, positions } = match;
 	const { attachNode, isHovered } = useMouseTarget(`palette:${command.key}`, { onClick: onChoose });
+	const muted = isSelected ? theme.background : theme.muted;
+	const runs = getHighlightRuns(command.title, positions, isSelected);
+	if (command.description !== undefined) runs.push({ color: muted, text: `  ${command.description}` });
 
 	return (
 		<Box
 			ref={attachNode}
 			backgroundColor={getDialogRowBackground(isSelected, isHovered)}
-			justifyContent="space-between"
+			columnGap={2}
 			paddingX={1}
 		>
-			<Text wrap="truncate-end">
-				<HighlightedText isSelected={isSelected} positions={positions} text={command.title} />
-				{command.description === undefined ? null : (
-					<Text color={isSelected ? theme.background : theme.muted}>{`  ${command.description}`}</Text>
-				)}
-			</Text>
-			<Text color={isSelected ? theme.background : theme.muted}>{command.keyLabel}</Text>
+			<MarqueeText isScrolling={isSelected || isHovered} runs={runs} />
+			<Text color={muted}>{command.keyLabel}</Text>
 		</Box>
 	);
 }

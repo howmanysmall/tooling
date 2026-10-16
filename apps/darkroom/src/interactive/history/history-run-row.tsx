@@ -2,6 +2,7 @@ import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import { Box, Text } from "ink";
 
 import { previewPrompt } from "$history/format-history";
+import { MarqueeText } from "$interactive/components/marquee-text";
 import { getRowBackground } from "$interactive/components/row-background";
 import { theme } from "$interactive/components/theme";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
@@ -12,9 +13,19 @@ import { describeRunLine } from "./run-facts";
 import type { ReactNode } from "react";
 
 import type { HistoryEntry } from "$history/history-entry";
+import type { StyledRun } from "$interactive/components/marquee";
 
-// Longer than any pane is wide; the row cuts the rest.
-const MAX_PROMPT_LENGTH = 400;
+function getPromptRuns(entry: HistoryEntry, isSelected: boolean): Array<StyledRun> {
+	return [{ color: theme.text, isBold: isSelected, text: previewPrompt(entry.prompt, Number.POSITIVE_INFINITY) }];
+}
+
+function getFactRuns(entry: HistoryEntry, batchSize: number | undefined): Array<StyledRun> {
+	const runs: Array<StyledRun> = [{ color: theme.muted, text: describeRunLine(entry) }];
+	if (batchSize !== undefined) {
+		runs.push({ color: theme.accent, text: `  ◫ ${batchSize} ${toPlural(batchSize, "model")}` });
+	}
+	return runs;
+}
 
 export interface HistoryRunRowProperties {
 	entry: HistoryEntry;
@@ -43,6 +54,9 @@ export function HistoryRunRow({ entry }: Readonly<HistoryRunRowProperties>): Rea
 	const isSelected = entry.id === selected?.id;
 	const bar = isSelected ? "▌ " : "  ";
 	const batchSize = entry.batch === undefined ? undefined : batchSizes.get(entry.batch);
+	const isScrolling = isSelected || isHovered;
+	const promptRuns = getPromptRuns(entry, isSelected);
+	const factRuns = getFactRuns(entry, batchSize);
 
 	return (
 		<Box
@@ -51,17 +65,14 @@ export function HistoryRunRow({ entry }: Readonly<HistoryRunRowProperties>): Rea
 			flexDirection="column"
 			flexShrink={0}
 		>
-			<Text wrap="truncate-end">
+			<Box>
 				<Text color={theme.accent}>{bar}</Text>
-				<Text bold={isSelected}>{previewPrompt(entry.prompt, MAX_PROMPT_LENGTH)}</Text>
-			</Text>
-			<Text wrap="truncate-end">
+				<MarqueeText isScrolling={isScrolling} runs={promptRuns} />
+			</Box>
+			<Box>
 				<Text color={theme.accent}>{bar}</Text>
-				<Text color={theme.muted}>{describeRunLine(entry)}</Text>
-				{batchSize === undefined ? null : (
-					<Text color={theme.accent}>{`  ◫ ${batchSize} ${toPlural(batchSize, "model")}`}</Text>
-				)}
-			</Text>
+				<MarqueeText isScrolling={isScrolling} runs={factRuns} />
+			</Box>
 		</Box>
 	);
 }

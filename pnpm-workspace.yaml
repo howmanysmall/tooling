@@ -146,6 +146,7 @@ catalogs:
     consola: 3.4.2
     effect: 4.0.4
     env-paths: 4.0.0
+    fast-string-width: 3.0.2
     fzf: 0.5.2
     ink: 7.1.1
     pretty-bytes: 7.2.0

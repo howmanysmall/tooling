@@ -62,6 +62,7 @@
 		"arktype": "catalog:runtime",
 		"consola": "catalog:runtime",
 		"env-paths": "catalog:runtime",
+		"fast-string-width": "catalog:runtime",
 		"fzf": "catalog:runtime",
 		"ink": "catalog:runtime",
 		"pretty-bytes": "catalog:runtime",
