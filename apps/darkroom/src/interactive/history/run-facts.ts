@@ -96,6 +96,18 @@ function describeComparison(batch: ReadonlyArray<HistoryEntry>): Array<Fact> {
 }
 
 /**
+ * Says where an image of a run is: where it was saved for you, or its
+ * stored copy when it went to stdout.
+ *
+ * @param image - One of the run's images.
+ * @param resolve - Turns a stored path into an absolute one.
+ * @returns The image's absolute path.
+ */
+export function getImagePath(image: HistoryEntry["images"][number], resolve: (stored: string) => string): string {
+	return image.output === "-" ? resolve(image.stored) : image.output;
+}
+
+/**
  * Where a run's files are and how it relates to other runs. The history's
  * own copies are left out unless the image went to stdout, since then the
  * copy is the only file.
@@ -110,10 +122,10 @@ export function getRunLinks(
 	relations: RunRelations,
 	resolve: (stored: string) => string,
 ): Array<Fact> {
-	const links: Array<Fact> = entry.images.map((image) => ({
-		label: "file",
-		value: shortenHomePath(image.output === "-" ? resolve(image.stored) : image.output),
-	}));
+	const links: Array<Fact> = entry.images.map((image) => {
+		const path = getImagePath(image, resolve);
+		return { imagePath: path, label: "file", value: shortenHomePath(path) };
+	});
 
 	for (const reference of entry.references) {
 		links.push({ label: "reference", value: shortenHomePath(reference.source) });

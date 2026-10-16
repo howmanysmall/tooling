@@ -60,7 +60,7 @@ describe("getRunLinks", () => {
 		const other = createEntry("01M4YVBBBBBBBBBBBBBBBBBBBB", { model: "recraft/recraft-v4.1-flash" });
 
 		expect(getRunLinks(ENTRY, { batch: [other], parents: [] }, (stored) => `/data/${stored}`)).toStrictEqual([
-			{ label: "file", value: "~/art/cat_1.png" },
+			{ imagePath: nodePath.join(homedir(), "art", "cat_1.png"), label: "file", value: "~/art/cat_1.png" },
 			{ label: "compared", value: "01M4YVBB · recraft-v4.1-flash" },
 			{ isQuiet: true, label: "id", value: ENTRY.id },
 		]);
@@ -85,6 +85,7 @@ describe("getRunLinks", () => {
 		const piped = { ...ENTRY, images: [{ output: "-", stored: "images/x/1.png" }] };
 
 		expect(getRunLinks(piped, { batch: [], parents: [] }, (stored) => `/data/${stored}`)[0]).toStrictEqual({
+			imagePath: "/data/images/x/1.png",
 			label: "file",
 			value: "/data/images/x/1.png",
 		});

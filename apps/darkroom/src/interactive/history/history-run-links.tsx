@@ -2,6 +2,7 @@ import { FactLines } from "$interactive/components/fact-lines";
 
 import { useHistoryBrowser } from "./history-browser-context";
 import { getRunLinks } from "./run-facts";
+import { useRunImageActions } from "./use-run-image-actions";
 
 import type { ReactNode } from "react";
 
@@ -17,7 +18,7 @@ const LABEL_WIDTH = 11;
 
 /**
  * Where a run's files are and which runs it relates to, one labeled line
- * each, ending with its full ID.
+ * each, ending with its full ID. Clicking a file opens its actions.
  *
  * @param properties - The run and its relations.
  * @param properties.entry - The run whose files and links to show.
@@ -28,8 +29,14 @@ export function HistoryRunLinks({ entry, relations }: Readonly<HistoryRunLinksPr
 	const {
 		meta: { resolve },
 	} = useHistoryBrowser();
+	const showImage = useRunImageActions();
 
 	return (
-		<FactLines facts={getRunLinks(entry, relations, resolve)} labelWidth={LABEL_WIDTH} overflow="truncate-middle" />
+		<FactLines
+			facts={getRunLinks(entry, relations, resolve)}
+			labelWidth={LABEL_WIDTH}
+			overflow="truncate-middle"
+			onOpenImage={showImage}
+		/>
 	);
 }
