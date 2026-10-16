@@ -45,12 +45,12 @@ Commands that print results take `-f, --format`:
 
 ## Exit codes
 
-| Code  | Means                                                                                    |
-| ----- | ---------------------------------------------------------------------------------------- |
-| `0`   | It worked. A run that got fewer images than it asked for still exits 0, with a warning.  |
-| `1`   | It failed, such as an API error, a failed write, or a model in a comparison that failed. |
-| `2`   | The command line was wrong: an unknown option, or a request the model can't take.        |
-| `3`   | darkroom isn't set up, such as a missing or malformed `OPENROUTER_API_KEY`.              |
-| `130` | You pressed `ctrl+c`.                                                                    |
+| Code  | Means                                                                                               |
+| ----- | --------------------------------------------------------------------------------------------------- |
+| `0`   | It worked. A run that got fewer images than it asked for still exits 0, with a warning.             |
+| `1`   | Something went wrong, such as an API error, a write error, or a model in a comparison that errored. |
+| `2`   | The command line was wrong: an unknown option, or a request the model can't take.                   |
+| `3`   | darkroom isn't set up, such as a missing or malformed `OPENROUTER_API_KEY`.                         |
+| `130` | You pressed `ctrl+c`.                                                                               |
 
 Set `DEBUG=1` to print the stack trace with an error.

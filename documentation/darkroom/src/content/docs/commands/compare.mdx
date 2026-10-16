@@ -1,6 +1,6 @@
 ---
 title: compare
-description: Generate one prompt with several models into one folder.
+description: Generate one prompt with two or more models into one folder.
 ---
 
 ```text
@@ -17,7 +17,7 @@ darkroom compare "a cat" -m a/one -m b/two -n 2 --yes --format json | jq '.resul
 
 ## Options
 
-`compare` takes the same image options as [`generate`](../generate/), with these differences:
+`compare` takes the same image options as [`generate`][generate]. These ones differ:
 
 | Option                 | What it does                                                                              | Default |
 | ---------------------- | ----------------------------------------------------------------------------------------- | ------- |
@@ -30,8 +30,10 @@ darkroom compare "a cat" -m a/one -m b/two -n 2 --yes --format json | jq '.resul
 
 ## Results
 
-darkroom makes one folder under `-o`, named by the date and the start of the prompt, and saves every model's images in
-it. The models run in parallel. A model that fails doesn't stop the others: its error is listed with the results,
-the other images are saved, and the exit code is 1.
+darkroom makes one folder under `-o` and saves every model's images in it. The folder's name is the date, then the
+start of the prompt. The models run in parallel. A model that fails doesn't stop the others. darkroom saves the
+other images and lists the error with the results. The exit code is 1.
 
 The history keeps one run per model and groups them. The history tab shows a comparison as one row.
+
+[generate]: ../generate/

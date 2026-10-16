@@ -18,11 +18,11 @@ darkroom generate "the same fox, at night" -i fox.png -a 16:9
 
 ## The prompt
 
-darkroom reads the prompt from the first of these that is given:
+darkroom takes the prompt from the first of these you pass:
 
 1. The `prompt` argument. `-` reads it from stdin.
 2. `--prompt-file`.
-3. When neither is given and stdin is a terminal, darkroom asks for it.
+3. When you pass neither and stdin is a terminal, darkroom asks for it.
 
 ## Options
 
@@ -30,7 +30,7 @@ darkroom reads the prompt from the first of these that is given:
 | ---------------------------- | ------------------------------------------------------------------------------- | ---------------- |
 | `--prompt-file <path>`       | Read the prompt from a file.                                                    |                  |
 | `-m, --model <id>`           | The model to use.                                                               | `DARKROOM_MODEL` |
-| `-i, --image <source>`       | A reference image path or URL. Repeat it for several.                           |                  |
+| `-i, --image <source>`       | A reference image path or URL. Repeat it for each image.                        |                  |
 | `-a, --aspect-ratio <ratio>` | The aspect ratio, such as `16:9` or `auto`.                                     |                  |
 | `-r, --resolution <tier>`    | `512`, `768`, `1K`, `1.5K`, `2K`, or `4K`.                                      |                  |
 | `-q, --quality <level>`      | `auto`, `low`, `medium`, `high`, `xhigh`, or `max`.                             |                  |
@@ -59,11 +59,11 @@ keeps a copy of each in the history. A rerun sends the same pictures.
 
 ## Output paths
 
-| `-o`       | Where the images go                                                  |
-| ---------- | -------------------------------------------------------------------- |
-| Not given  | The current folder, named by the date and the start of the prompt.   |
-| `renders/` | That folder, with the same names.                                    |
-| `fox.png`  | That file. With `-n 2` or more: `fox_1.png`, `fox_2.png`, and so on. |
-| `-`        | stdout, as raw bytes. Only one image, and never to a terminal.       |
+| `-o`       | Where the images go                                                      |
+| ---------- | ------------------------------------------------------------------------ |
+| Not given  | The current folder. Each name is the date, then the start of the prompt. |
+| `renders/` | That folder, with the same names.                                        |
+| `fox.png`  | That file. With `-n 2` or more: `fox_1.png`, `fox_2.png`, and so on.     |
+| `-`        | stdout, as raw bytes. Only one image, and never to a terminal.           |
 
 darkroom never overwrites a file unless `--force` allows it for an explicit `-o` file. A taken name gets a number.
