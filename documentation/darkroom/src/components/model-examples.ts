@@ -1,4 +1,5 @@
-import examples from "../../../../apps/darkroom/examples/examples.json";
+import nodePath from "node:path";
+import examples from "@pobammer-ts/darkroom/examples/examples.json";
 
 import type { ImageMetadata } from "astro";
 
@@ -12,10 +13,12 @@ export interface ModelExample {
 	readonly provider: string;
 }
 
-const IMAGES = import.meta.glob<ImageMetadata>("../../../../apps/darkroom/examples/*.avif", {
-	eager: true,
-	import: "default",
-});
+/** Each example image by its file name. */
+const IMAGES = new Map(
+	Object.entries(
+		import.meta.glob<ImageMetadata>("$darkroom-examples/*.avif", { eager: true, import: "default" }),
+	).map(([path, image]) => [nodePath.basename(path), image]),
+);
 
 /** The prompt every example was made from, with `darkroom compare`. */
 export const EXAMPLE_PROMPT = examples.prompt;
@@ -28,7 +31,7 @@ export const EXAMPLE_PROMPT = examples.prompt;
 export function getModelExamples(): Array<ModelExample> {
 	const found: Array<ModelExample> = [];
 	for (const [model, file] of Object.entries(examples.models)) {
-		const image = IMAGES[`../../../../apps/darkroom/examples/${file}`];
+		const image = IMAGES.get(file);
 		if (image === undefined) continue;
 
 		const [provider = model] = model.split("/", 1);

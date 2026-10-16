@@ -1,9 +1,21 @@
+import { createRequire } from "node:module";
+import nodePath from "node:path";
 import starlight from "@astrojs/starlight";
 import { createDocumentationTheme } from "@howmanysmall/documentation-theme";
 import { getDocumentationSite } from "@howmanysmall/documentation-theme/site";
 import { defineConfig } from "astro/config";
 
 const { base, site } = getDocumentationSite("darkroom");
+
+/**
+ * The darkroom package's example images, found through the package so the
+ * site never reaches into another workspace folder. `import.meta.glob` can't
+ * take a package name, so it reads them through this alias.
+ */
+const examplesDirectory = nodePath.join(
+	nodePath.dirname(createRequire(import.meta.url).resolve("@pobammer-ts/darkroom/package.json")),
+	"examples",
+);
 
 export default defineConfig({
 	base,
@@ -65,4 +77,7 @@ export default defineConfig({
 		}),
 	],
 	site,
+	vite: {
+		resolve: { alias: { "$darkroom-examples": examplesDirectory } },
+	},
 });
