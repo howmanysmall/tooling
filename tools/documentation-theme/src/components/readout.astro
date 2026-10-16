@@ -1,0 +1,26 @@
+---
+import Overprint from "./overprint.astro";
+
+/**
+ * A label over a value, with an optional note. Set `overprint` on the one
+ * number a page is about; never on more than one.
+ */
+interface Props {
+	/** What the value measures, in sentence case. */
+	readonly label: string;
+	/** What the value means, or how it was counted. */
+	readonly note?: string;
+	/** Prints the value with the riso overprint. */
+	readonly overprint?: boolean;
+	/** The value. */
+	readonly value: number | string;
+}
+
+const { label, note, overprint = false, value } = Astro.props;
+---
+
+<div class="readout">
+	<span class="readout-label">{label}</span>
+	{overprint ? <Overprint value={value} /> : <span class="readout-value">{value}</span>}
+	{note === undefined ? null : <p class="readout-note">{note}</p>}
+</div>

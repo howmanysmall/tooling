@@ -738,6 +738,21 @@ export async function getOxlintAsync({
 			rules: { "import/unambiguous": "off" },
 		},
 		{
+			// The preset lints Astro frontmatter as plain JavaScript, so it
+			// misses the TypeScript settings above. Restore them here.
+			name: "project/astro",
+			files: ["**/*.astro"],
+			globals: { Astro: "readonly" },
+			rules: {
+				// Frontmatter that only reads props has nothing to export.
+				"import/unambiguous": "off",
+				"no-magic-numbers": "off",
+				"no-undefined": "off",
+				"one-var": "off",
+				"typescript/array-type": ["error", { default: "generic" }],
+			},
+		},
+		{
 			name: "project/disable-stupid-rule",
 			files: [CONFIGURATION_FILES, TURBO_GENERATOR_FILES],
 			rules: { "sonar/file-name-differ-from-class": "off" },

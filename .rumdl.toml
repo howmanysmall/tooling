@@ -61,3 +61,7 @@ respect-gitignore = true
 # [MD044]
 # names = ["rumdl", "Markdown", "GitHub"]  # Proper names that should be capitalized correctly
 # code-blocks = false  # Check code blocks for proper names (default: false, skips code blocks)
+
+# Starlight links pages by their route, like `../generate/`, not by file.
+[per-file-ignores]
+"documentation/**/*.mdx" = ["MD057"]

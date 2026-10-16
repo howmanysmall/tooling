@@ -1,0 +1,28 @@
+---
+title: Compare models
+description: Run one prompt with several models at once and see the results side by side.
+---
+
+`darkroom compare` sends the same prompt to several models and saves every result in one folder. Name each model with
+its own `-m`:
+
+```sh title="Terminal"
+darkroom compare "a lighthouse at dusk" -m black-forest-labs/flux-3-image -m openai/gpt-image-2
+```
+
+Before it spends anything, darkroom validates the request for every model, shows the estimated total, and asks. A
+model that can't take the request is named in the list, so you can drop it and try again.
+
+## Scripts
+
+When stdin isn't a terminal, darkroom can't ask, so `compare` needs `--yes`. With `--format json`, it prints one
+object with every result:
+
+```sh title="Terminal"
+darkroom compare "a cat" -m google/gemini-3-pro-image -m openai/gpt-image-2 --yes --format json | jq '.results[].model'
+```
+
+## In the history
+
+A comparison is one row in the history, and `←` and `→` step through its models. The images sit side by side in the
+preview, so you can see every model's answer at once.

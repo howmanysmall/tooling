@@ -1,0 +1,16 @@
+---
+/**
+ * The footnote band: a label in the margin column, then one line.
+ */
+interface Props {
+	/** The margin label. */
+	readonly label: string;
+}
+
+const { label } = Astro.props;
+---
+
+<aside class="footnote-band">
+	<span class="footnote-band-label">{label}</span>
+	<div><slot /></div>
+</aside>

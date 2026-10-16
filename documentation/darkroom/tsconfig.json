@@ -1,0 +1,9 @@
+{
+	"extends": ["../../tsconfig.base.json", "astro/tsconfigs/strictest"],
+	"compilerOptions": {
+		"declarationDir": null,
+		"emitDeclarationOnly": false
+	},
+	"include": [".astro/types.d.ts", "astro.config.ts", "src/**/*"],
+	"exclude": ["dist", "node_modules"]
+}

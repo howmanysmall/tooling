@@ -1,0 +1,76 @@
+/*
+ * Anna's field-notebook design: paper, ink, and hairline rules, with color
+ * only where there is data. These tokens are the same on every site. A site's
+ * own colors (focus, data, and the two riso inks) live in its palette file,
+ * which loads right after this one.
+ */
+
+:root {
+	--paper: #fafaf9;
+	--well: #ffffff;
+	--ink: #1a1c20;
+	--ink-2: #555a63;
+	--ink-3: #6b7079;
+	--rule: #e2e1dc;
+	--marker: #ecebe6;
+	--footnote: #f2f2f0;
+	--overprint-blend: multiply;
+
+	/* A palette that defines nothing still reads: ink stands in. */
+	--focus: var(--ink);
+	--data-1: var(--ink);
+	--data-2: var(--ink-2);
+	--data-3: var(--ink-3);
+	--riso-a: var(--marker);
+	--riso-b: var(--marker);
+
+	--font-sans: "IBM Plex Sans Variable", "IBM Plex Sans", system-ui, sans-serif;
+	--font-serif: "Newsreader Variable", "Newsreader", Georgia, serif;
+	--font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+
+	/* Size / line height pairs, from the type table. */
+	--type-display: 400 3.25rem / 3.625rem var(--font-serif);
+	--type-heading: 400 1.875rem / 2.25rem var(--font-serif);
+	--type-margin-head: italic 400 1.5rem / 1.875rem var(--font-serif);
+	--type-caption: 400 1.1875rem / 1.75rem var(--font-serif);
+	--type-body: 400 0.9375rem / 1.5rem var(--font-sans);
+	--type-fig-note: 400 0.8125rem / 1.25rem var(--font-sans);
+	--type-label: 500 0.8125rem / 1rem var(--font-sans);
+	--type-readout: 400 1.625rem / 2rem var(--font-mono);
+	--type-data: 400 0.75rem / 1rem var(--font-mono);
+	--overprint-size: 6rem;
+
+	/* The section row: margin note, figure, readouts. */
+	--gutter: 4.5rem;
+	--margin-column: 13.75rem;
+	--readout-column: 17.25rem;
+	--row-gap: 2.5rem;
+
+	--ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+	--hover-duration: 150ms;
+
+	color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+	--paper: #111315;
+	--well: #171a1d;
+	--ink: #eeeeec;
+	--ink-2: #a9adb4;
+	--ink-3: #8c9199;
+	--rule: #2c3035;
+	--marker: #26292d;
+	--footnote: #16181b;
+	/* Multiply vanishes on a dark ground. */
+	--overprint-blend: screen;
+
+	color-scheme: dark;
+}
+
+@media (width < 50rem) {
+	:root {
+		--gutter: 1rem;
+		--overprint-size: 5rem;
+		--type-display: 400 2.5rem / 2.875rem var(--font-serif);
+	}
+}

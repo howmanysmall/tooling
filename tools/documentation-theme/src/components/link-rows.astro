@@ -1,0 +1,32 @@
+---
+/** One place to go next. */
+interface LinkRow {
+	/** What is there. */
+	readonly description: string;
+	/** Where it is. */
+	readonly href: string;
+	/** Its name. */
+	readonly title: string;
+}
+
+/**
+ * A list of places to go next, one per hairline row.
+ */
+interface Props {
+	/** The rows, in reading order. */
+	readonly rows: ReadonlyArray<LinkRow>;
+}
+
+const { rows } = Astro.props;
+---
+
+<ul class="link-rows">
+	{rows.map(({ description, href, title }) => (
+		<li class="link-row">
+			<a href={href}>
+				<span class="link-row-title">{title}</span>
+				<span class="link-row-description">{description}</span>
+			</a>
+		</li>
+	))}
+</ul>

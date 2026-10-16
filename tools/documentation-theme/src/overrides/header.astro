@@ -1,0 +1,97 @@
+---
+import Search from "@astrojs/starlight/components/Search.astro";
+import SiteTitle from "@astrojs/starlight/components/SiteTitle.astro";
+import SocialIcons from "@astrojs/starlight/components/SocialIcons.astro";
+import ThemeSelect from "@astrojs/starlight/components/ThemeSelect.astro";
+
+import { getSectionLinks } from "./section-links";
+
+/**
+ * The header band: the wordmark, one link per sidebar section, then search,
+ * the social links, and the theme on the right.
+ */
+const sections = getSectionLinks(Astro.locals.starlightRoute.sidebar);
+---
+
+<div class="header">
+	<div class="title-wrapper">
+		<SiteTitle />
+	</div>
+	<nav aria-label="Sections" class="section-nav">
+		{sections.map(({ href, isCurrent, label }) => (
+			<a aria-current={isCurrent ? "true" : undefined} href={href}>
+				{label}
+			</a>
+		))}
+	</nav>
+	<div class="right-group">
+		<Search />
+		<div class="social-icons">
+			<SocialIcons />
+		</div>
+		<ThemeSelect />
+	</div>
+</div>
+
+<style>
+	.header {
+		display: flex;
+		gap: 3.5rem;
+		align-items: center;
+		height: 100%;
+	}
+
+	.title-wrapper {
+		flex-shrink: 0;
+	}
+
+	.section-nav {
+		display: none;
+		gap: 1.75rem;
+	}
+
+	.section-nav a {
+		padding-block: 0.25rem;
+		font: var(--type-body);
+		color: var(--ink-2);
+		text-decoration: none;
+	}
+
+	.section-nav a:hover {
+		color: var(--ink);
+	}
+
+	.section-nav a[aria-current] {
+		color: var(--ink);
+		border-bottom: 1px solid var(--ink);
+	}
+
+	.right-group {
+		display: flex;
+		gap: 1.25rem;
+		align-items: center;
+		margin-inline-start: auto;
+	}
+
+	.social-icons {
+		display: none;
+	}
+
+	@media (width >= 72rem) {
+		.section-nav {
+			display: flex;
+		}
+	}
+
+	@media (width >= 50rem) {
+		.social-icons {
+			display: flex;
+		}
+	}
+
+	@media (width < 50rem) {
+		.right-group :global(starlight-theme-select) {
+			display: none;
+		}
+	}
+</style>

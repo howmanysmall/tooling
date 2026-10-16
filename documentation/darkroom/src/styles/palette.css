@@ -1,0 +1,31 @@
+/*
+ * darkroom's palette: prints, toners, and the safelight. This file is the only
+ * place the site chooses a color. Change a value here, and in the "darkroom
+ * docs" variables of the anna-design Figma file, to keep the two together.
+ *
+ * The docs show one kind of data, what a command writes, so stdout and stderr
+ * each get a toner and a line style. Focus is selenium. The overprint prints
+ * in safelight red and mint, on the model count on the home page only.
+ */
+
+:root {
+	--selenium: #7d2e68; /* focus, links */
+	--cyanotype: #1d5b8f; /* stdout, solid */
+	--sepia: #8a4a17; /* stderr, dashed */
+	--safelight: #ff8a80; /* overprint only */
+	--mint: #7fd8bd; /* overprint only */
+
+	--focus: var(--selenium);
+	--data-1: var(--cyanotype);
+	--data-2: var(--sepia);
+	--riso-a: var(--safelight);
+	--riso-b: var(--mint);
+}
+
+:root[data-theme="dark"] {
+	--selenium: #e29bcc;
+	--cyanotype: #8dbdee;
+	--sepia: #dca46e;
+	--safelight: #b8403c;
+	--mint: #1f6e5a;
+}

@@ -1,0 +1,76 @@
+---
+title: history
+description: List, show, open, re-run, and prune past runs.
+---
+
+```text
+darkroom history <command>
+```
+
+darkroom records each run with its prompt, settings, reference images, cost, and a copy of each image. A `<run>` is a run's
+ID, a unique prefix of it, `last` for the newest run, or `last~N` for the run N before it.
+
+## browse
+
+```sh title="Terminal"
+darkroom history browse
+```
+
+Opens the history tab of the full-screen app: open, copy, re-run, or delete runs. When stdout isn't a terminal, use
+`history list` instead.
+
+## list
+
+```sh title="Terminal"
+darkroom history list --limit 5 --model google/gemini-3-pro-image
+```
+
+| Option                  | What it does                                   | Default  |
+| ----------------------- | ---------------------------------------------- | -------- |
+| `--limit <count>`       | How many runs to show.                         | `20`     |
+| `--model <id>`          | Only show runs that used this model.           |          |
+| `-f, --format <format>` | `pretty`, `table`, `json`, or `json-minified`. | `pretty` |
+
+## show
+
+```sh title="Terminal"
+darkroom history show last --format json
+```
+
+Shows everything recorded for a run, including the runs it was re-run from. Takes `-f, --format`.
+
+## open
+
+```sh title="Terminal"
+darkroom history open last
+```
+
+Opens a run's images in the system viewer.
+
+## rerun
+
+```sh title="Terminal"
+darkroom history rerun last -n 2
+darkroom history rerun 01JA -m openai/gpt-image-2 --dry-run
+```
+
+Repeats a run with its stored prompt, settings, and reference images. Every [`generate`](../generate/) option
+overrides the stored value, and `-i` replaces the stored references.
+
+## prune
+
+```sh title="Terminal"
+darkroom history prune
+darkroom history prune --older-than 30d --keep 100 --dry-run
+```
+
+With no options, reports how much space the history takes. With options, deletes the runs that match any of them and
+their images, after asking.
+
+| Option                    | What it does                                               |
+| ------------------------- | ---------------------------------------------------------- |
+| `--older-than <duration>` | Delete runs older than this, like `30d` or `12h`.          |
+| `--keep <count>`          | Keep only the newest this many runs.                       |
+| `--max-size <size>`       | Delete the oldest runs until the history fits, like `2GB`. |
+| `-y, --yes`               | Delete without asking.                                     |
+| `--dry-run`               | List what would be deleted without deleting it.            |
