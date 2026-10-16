@@ -1,5 +1,6 @@
 import { createContext, use } from "react";
 
+import type { RunDeletion } from "$history/delete-run";
 import type { HistoryEntry } from "$history/history-entry";
 import type { RunRelations } from "$history/resolve-run-reference";
 import type { StatusMessage } from "$interactive/components/status-message";
@@ -31,8 +32,8 @@ export interface HistoryBrowserState {
 }
 
 export interface HistoryBrowserActions {
-	/** Answers the delete question: `y` deletes, anything else keeps. */
-	readonly answerDelete: (answer: string) => void;
+	/** Answers the delete question; `undefined` keeps the run. */
+	readonly answerDelete: (deletion: RunDeletion | undefined) => void;
 	readonly askDelete: () => void;
 	readonly cancelFilter: () => void;
 	readonly closeFilter: () => void;

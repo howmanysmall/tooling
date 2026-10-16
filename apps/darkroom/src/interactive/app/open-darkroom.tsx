@@ -2,7 +2,8 @@ import { stderr, stdin, stdout } from "node:process";
 import { render } from "ink";
 
 import { commandName } from "$constants";
-import { deleteAsync, readAllAsync, resolve } from "$history/history-store";
+import { deleteRunAsync } from "$history/delete-run";
+import { readAllAsync, resolve } from "$history/history-store";
 import { listSessions } from "$history/session-list";
 import { createUlid } from "$history/ulid";
 import { NoticeContext } from "$interactive/components/notice-store";
@@ -66,11 +67,9 @@ function createGuidedRequest(): GuidedRequest {
 
 function createHistoryServices(store: HistoryStore, previews: PreviewCache | undefined): HistoryServices {
 	return {
-		async deleteRunAsync(entry): Promise<void> {
-			const { log } = await import("$generation/cli-runner");
-			await deleteAsync(store, new Set([entry.id]), (message) => {
-				log.warn(message);
-			});
+		async deleteRunAsync(entry, deletion): Promise<void> {
+			const outputs = entry.images.map(({ output }) => output);
+			await deleteRunAsync(store, entry.id, outputs, deletion);
 		},
 		getPreview: (path, box) => previews?.getPreview(path, box),
 		async openRunAsync(entry): Promise<void> {

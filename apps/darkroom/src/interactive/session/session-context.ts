@@ -1,5 +1,6 @@
 import { createContext, use } from "react";
 
+import type { RunDeletion } from "$history/delete-run";
 import type { SessionSummary } from "$history/session-list";
 
 import type { SessionRequest } from "./session-services";
@@ -26,6 +27,15 @@ export interface SessionActions {
 	readonly fork: (turnId: number) => void;
 	/** Opens a new session, or shows the empty one already open. */
 	readonly newSession: () => void;
+	/**
+	 * Takes a finished or failed turn out of the session on screen. A turn
+	 * that made images deletes its run from the history for good, with its
+	 * saved images too when asked.
+	 *
+	 * @param turnId - The turn to delete.
+	 * @param deletion - Whether its saved images go too.
+	 */
+	readonly remove: (turnId: number, deletion: RunDeletion) => void;
 	/** Shows a past session, opening its tab with its turns. */
 	readonly resume: (session: SessionSummary) => void;
 	/**

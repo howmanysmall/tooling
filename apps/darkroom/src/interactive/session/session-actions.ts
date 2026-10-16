@@ -1,9 +1,11 @@
 import { createUlid } from "$history/ulid";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 
-import { createSession, PromptMode } from "./session-state";
+import { createSession, PromptMode, TurnPhase } from "./session-state";
 import { getActiveSession } from "./session-tabs";
 
+import type { GenerationResult } from "$generation/run-generation";
+import type { RunDeletion } from "$history/delete-run";
 import type { SessionSummary } from "$history/session-list";
 
 import type { RestoredTurn } from "./restore-turns";
@@ -23,6 +25,17 @@ export interface SessionEnvironment {
 }
 
 let nextTurnId = 0;
+
+/**
+ * Says whether a turn is over, so it can be deleted. One still being
+ * priced, confirmed, or generated stays: its request may be charged.
+ *
+ * @param turn - The turn to check.
+ * @returns Whether it finished or failed.
+ */
+export function isSettled(turn: SessionTurn): boolean {
+	return turn.phase === TurnPhase.Done || turn.phase === TurnPhase.Failed;
+}
 
 function takeTurnId(): number {
 	nextTurnId += 1;
@@ -101,6 +114,11 @@ export function createSessionActions({
 		onRunSaved();
 	}
 
+	async function deleteRunAsync(result: GenerationResult, deletion: RunDeletion): Promise<void> {
+		await services.deleteRunAsync(result, deletion);
+		onRunSaved();
+	}
+
 	async function resumeAsync({ id, runs }: SessionSummary): Promise<void> {
 		const restored = await services.restoreAsync(runs);
 		dispatch({ session: createSession(id, numberTurns(restored)), type: "open" });
@@ -148,6 +166,16 @@ export function createSessionActions({
 		},
 		newSession(): void {
 			dispatch({ session: createSession(createUlid()), type: "open" });
+		},
+		remove(turnId, deletion): void {
+			const turn = active.turns.find(({ id }) => id === turnId);
+			if (turn === undefined || !isSettled(turn)) return;
+
+			dispatchTo(active.id, { id: turnId, type: "turn-removed" });
+			if (turn.result === undefined) return;
+			runBrowserTask(deleteRunAsync(turn.result, deletion), (failure) => {
+				if (failure !== undefined) reportError(`Couldn't delete the run: ${failure}`);
+			});
 		},
 		resume(session): void {
 			if (tabs.sessions.some((open) => open.id === session.id)) dispatch({ id: session.id, type: "select" });

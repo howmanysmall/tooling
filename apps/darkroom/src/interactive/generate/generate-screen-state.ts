@@ -9,6 +9,8 @@ import type { EditorAction, PromptEditor } from "./prompt-editor-state";
 
 /** A dialog over the generate screen. */
 export const enum GenerateDialog {
+	/** Whether to delete a turn and its images. */
+	Delete = "delete",
 	/** What to do with an image you clicked. */
 	Image = "image",
 	Model = "model",
@@ -20,6 +22,7 @@ export const enum GenerateDialog {
 /** The dialog open over the generate screen, with what it is about. */
 export type OpenDialog =
 	| { readonly image: BaseImage; readonly kind: GenerateDialog.Image }
+	| { readonly kind: GenerateDialog.Delete; readonly turn: SessionTurn }
 	| { readonly kind: GenerateDialog.Model }
 	| { readonly kind: GenerateDialog.Prompt; readonly turn: SessionTurn }
 	| { readonly kind: GenerateDialog.Sessions };

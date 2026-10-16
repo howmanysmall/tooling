@@ -15,9 +15,9 @@ export interface HistoryBrowserFrameProperties {
 }
 
 /**
- * Picks who reads the keys: the delete question takes the next key as its
- * answer, and while filtering the input reads the typing, so only Esc is
- * left for the browser.
+ * Picks who reads the keys: the delete question reads its own, and while
+ * filtering the input reads the typing, so only Esc is left for the
+ * browser.
  *
  * @param mode - What the browser is doing.
  * @param actions - The browser's actions.
@@ -27,11 +27,8 @@ function getCapture(
 	mode: BrowserMode,
 	actions: HistoryBrowserActions,
 ): ((input: string, key: Key) => void) | undefined {
-	if (mode === BrowserMode.ConfirmDelete) {
-		return (input) => {
-			actions.answerDelete(input);
-		};
-	}
+	// The question reads its own keys; the browser's wait until it's answered.
+	if (mode === BrowserMode.ConfirmDelete) return () => undefined;
 
 	if (mode !== BrowserMode.Filter) return undefined;
 

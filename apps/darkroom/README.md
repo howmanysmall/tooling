@@ -43,10 +43,12 @@ while its row is chosen or under the pointer, so you can read all of it.
   `✕` or from the palette, keeps the session in the history. Open tabs come back the next time the app starts.
   Clicking a prompt opens its actions: rewind to before it and edit it again, fork, which does the same in a new tab,
   use it again, or copy it. Rewinding never deletes anything: the session as it was stays in the list, and forks are marked
-  `⑂` there. When the app closes, it prints how to resume the session on screen.
+  `⑂` there. Delete, from a prompt's or an image's actions once its run is over, asks first. Answering yes removes the
+  run from the session and the history but keeps your saved images. The second answer deletes those as well.
+  When the app closes, it prints how to resume the session on screen.
   `darkroom -c` resumes the session you used last, and `darkroom -s <id>` resumes one by a prefix of its ID.
 - **history**: every past run with its image, prompt, settings, and cost. Enter opens the images, `r` re-runs, `y`
-  copies the ID, `d` deletes, and `/` filters. A comparison is one row, and `←` and `→` step through its models.
+  copies the ID, `d` deletes with the same question, and `/` filters. A comparison is one row, and `←` and `→` step through its models.
 - **models**: every image model with its price, the options it takes, and an example image: your newest one from that
   model, or the one included with darkroom (`e` switches). `s` sorts, `/` filters, and Enter takes the model to the
   prompt box.

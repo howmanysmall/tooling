@@ -1,24 +1,18 @@
-import { useStdout } from "ink";
-
-import { openFilesAsync } from "$history/open-files";
-import { CommandPalette } from "$interactive/palette/command-palette";
-import { useSession } from "$interactive/session/session-context";
 import { SessionListDialog } from "$interactive/session/session-list-dialog";
-import { copyImageAsync } from "$utilities/copy-image";
 
 import { GenerateDialog } from "./generate-screen-state";
 import { ModelPickerDialog } from "./model-picker-dialog";
 import { SessionConfirm } from "./session-confirm";
-import { getTranscriptDialog } from "./transcript-commands";
+import { TranscriptDialogs } from "./transcript-dialogs";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { ReactNode } from "react";
 
 import type { SessionSummary } from "$history/session-list";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
+import type { SessionTurn } from "$interactive/session/session-state";
 
 import type { OpenDialog } from "./generate-screen-state";
-import type { TranscriptEnvironment } from "./transcript-commands";
 
 export interface GenerateDialogsProperties {
 	catalog: ModelCatalog;
@@ -30,6 +24,8 @@ export interface GenerateDialogsProperties {
 	/** Whether the next prompt edits an image, so only models that edit fit. */
 	isEditing: boolean;
 	now: Date;
+	/** Asks whether to delete a turn and its images. */
+	onAskDelete: (turn: SessionTurn) => void;
 	/** Takes a model picked in the picker. */
 	onChooseModel: (model: ImageModelListItem) => void;
 	/** Closes the screen's dialog. */
@@ -49,9 +45,9 @@ export interface GenerateDialogsProperties {
 
 /**
  * The dialogs over the generate screen: the model picker, the session
- * list, or the actions for a prompt or image you clicked when the screen
- * opens one, and the confirmation whenever the session on screen has a
- * priced request waiting.
+ * list, the actions for a prompt or image you clicked, or whether to delete
+ * one, when the screen opens one, and the confirmation whenever the session
+ * on screen has a priced request waiting.
  *
  * @param properties - What each dialog needs.
  * @param properties.catalog - The models and what they cost.
@@ -60,6 +56,7 @@ export interface GenerateDialogsProperties {
  * @param properties.dialog - The dialog the screen opened.
  * @param properties.isEditing - Whether the next prompt edits an image.
  * @param properties.now - When the app opened.
+ * @param properties.onAskDelete - Asks whether to delete a turn.
  * @param properties.onChooseModel - Takes a picked model.
  * @param properties.onClose - Closes the screen's dialog.
  * @param properties.onFillPrompt - Puts text in the prompt box.
@@ -77,6 +74,7 @@ export function GenerateDialogs({
 	dialog,
 	isEditing,
 	now,
+	onAskDelete,
 	onChooseModel,
 	onClose,
 	onFillPrompt,
@@ -86,30 +84,18 @@ export function GenerateDialogs({
 	rows,
 	sessions,
 }: Readonly<GenerateDialogsProperties>): ReactNode {
-	const session = useSession();
-	const { write } = useStdout();
-	const transcript: TranscriptEnvironment = {
-		copyImageAsync,
-		fillPrompt: onFillPrompt,
-		openImagesAsync: openFilesAsync,
-		reportError: onReportError,
-		reportSuccess: onReportSuccess,
-		session: session.actions,
-		write,
-	};
-	const actions = getTranscriptDialog(dialog, transcript);
-
 	return (
 		<>
-			{actions === undefined ? null : (
-				<CommandPalette
-					columns={columns}
-					commands={actions.commands}
-					rows={rows}
-					title={actions.title}
-					onClose={onClose}
-				/>
-			)}
+			<TranscriptDialogs
+				columns={columns}
+				dialog={dialog}
+				rows={rows}
+				onAskDelete={onAskDelete}
+				onClose={onClose}
+				onFillPrompt={onFillPrompt}
+				onReportError={onReportError}
+				onReportSuccess={onReportSuccess}
+			/>
 			{dialog?.kind === GenerateDialog.Model ? (
 				<ModelPickerDialog
 					catalog={catalog}

@@ -70,6 +70,7 @@ function createFakeSession(): FakeSession {
 		saved,
 		sent,
 		services: {
+			deleteRunAsync: async () => undefined,
 			forkAsync: async () => undefined,
 			getRunningCount: () => 0,
 			async prepareAsync(request): Promise<PendingRequest> {

@@ -59,14 +59,14 @@ export function createBrowserActions({
 
 	return {
 		...createCursorActions(dispatch, pageSize),
-		answerDelete(answer): void {
-			if (answer !== "y" || selected === undefined) {
+		answerDelete(deletion): void {
+			if (deletion === undefined || selected === undefined) {
 				dispatch(BACK_TO_LIST);
 				return;
 			}
 
 			const { id } = selected;
-			runBrowserTask(services.deleteRunAsync(selected), (failure) => {
+			runBrowserTask(services.deleteRunAsync(selected, deletion), (failure) => {
 				if (failure === undefined) dispatch({ id, type: BrowserActionType.Removed });
 				else reportError(`Could not delete: ${failure}`);
 			});
