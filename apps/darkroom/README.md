@@ -21,7 +21,8 @@ prompt box `1`, `2`, and `3` jump to one. `ctrl+p` opens a command palette on ev
 
 Clicking a tab, a list row, or a palette entry chooses it, and the wheel scrolls the list under the pointer. A click
 outside a dialog closes it. Since the app takes the mouse, it selects text itself: drag across the screen, and darkroom
-lights up the cells and copies the text through OSC 52 when you let go.
+lights up the cells and copies the text through OSC 52 when you let go. Text cut off in a list or a tab scrolls
+while its row is chosen or under the pointer, so you can read all of it.
 
 - **generate**: a prompt box with the model and its price beneath it. Enter shows the request with its estimated cost
   and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`

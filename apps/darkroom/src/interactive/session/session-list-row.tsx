@@ -2,7 +2,8 @@ import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import { Box, Text } from "ink";
 
 import { formatCost } from "$generation/format-result";
-import { HighlightedText } from "$interactive/components/highlighted-text";
+import { getHighlightRuns } from "$interactive/components/highlight-runs";
+import { MarqueeText } from "$interactive/components/marquee-text";
 import { getDialogRowBackground } from "$interactive/components/row-background";
 import { theme } from "$interactive/components/theme";
 import { describeMadeAt } from "$interactive/history/run-facts";
@@ -54,6 +55,7 @@ export function SessionListRow({
 	const { attachNode, isHovered } = useMouseTarget(`sessions:${session.id}`, { onClick: onChoose });
 	const count = session.runs.length;
 	const facts = `${count} ${toPlural(count, "run")} · ${formatCost(session.cost)} · ${describeMadeAt(session.updated, now)}`;
+	const titleRuns = getHighlightRuns(session.title, match.positions, isSelected);
 
 	return (
 		<Box
@@ -65,9 +67,7 @@ export function SessionListRow({
 			<Box flexShrink={0} width={3}>
 				<Text color={isSelected ? theme.background : theme.accent}>{getMarks(isOpen, session)}</Text>
 			</Box>
-			<Box flexGrow={1} flexShrink={1} overflow="hidden">
-				<HighlightedText isSelected={isSelected} positions={match.positions} text={session.title} />
-			</Box>
+			<MarqueeText isScrolling={isSelected || isHovered} runs={titleRuns} />
 			<Box flexShrink={0}>
 				<Text color={isSelected ? theme.background : theme.muted}>{facts}</Text>
 			</Box>

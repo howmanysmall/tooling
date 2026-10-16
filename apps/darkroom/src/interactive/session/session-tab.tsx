@@ -1,5 +1,6 @@
 import { Box, Text } from "ink";
 
+import { MarqueeText } from "$interactive/components/marquee-text";
 import { theme } from "$interactive/components/theme";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
@@ -7,6 +8,8 @@ import { getSessionTitle } from "./session-state";
 import { SessionTabMark } from "./session-tab-mark";
 
 import type { ReactNode } from "react";
+
+import type { StyledRun } from "$interactive/components/marquee";
 
 import type { SessionState } from "./session-state";
 import type { TabStatus } from "./session-tabs";
@@ -29,10 +32,16 @@ function getBackground(isActive: boolean, isHovered: boolean): string {
 	return isHovered ? theme.hover : theme.panel;
 }
 
+function getTitleRuns(session: SessionState, isActive: boolean, isHovered: boolean): Array<StyledRun> {
+	const color = isActive || isHovered ? theme.text : theme.muted;
+	return [{ color, isBold: isActive, text: getSessionTitle(session) }];
+}
+
 /**
  * One open session: its mark, then its first prompt cut to fit, raised
- * and bright while it is on screen. A `✕` appears while the pointer is over
- * the tab; clicking it closes the tab, and clicking elsewhere shows it.
+ * and bright while it is on screen. Under the pointer, a cut prompt
+ * scrolls so all of it can be read, and a `✕` appears; clicking it closes
+ * the tab, and clicking elsewhere shows it.
  *
  * @param properties - The session and its place in the strip.
  * @param properties.isActive - Whether the session is on screen.
@@ -60,6 +69,7 @@ export function SessionTab({
 		onClick: onClose,
 	});
 	const isHovered = isTabHovered || isCloseHovered;
+	const titleRuns = getTitleRuns(session, isActive, isHovered);
 
 	return (
 		<Box
@@ -73,11 +83,7 @@ export function SessionTab({
 			<Box flexShrink={0} width={1}>
 				<SessionTabMark position={position} status={status} />
 			</Box>
-			<Box flexGrow={1} flexShrink={1} overflow="hidden">
-				<Text bold={isActive} color={isActive || isHovered ? theme.text : theme.muted} wrap="truncate-end">
-					{getSessionTitle(session)}
-				</Text>
-			</Box>
+			<MarqueeText isScrolling={isHovered} runs={titleRuns} />
 			<Box ref={attachClose} flexShrink={0} width={1}>
 				<Text color={isCloseHovered ? theme.danger : theme.muted}>{isHovered ? "✕" : " "}</Text>
 			</Box>
