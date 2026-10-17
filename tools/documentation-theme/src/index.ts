@@ -44,7 +44,7 @@ export function createDocumentationTheme({ palette }: DocumentationThemeOptions)
 							codeFontFamily: "var(--font-mono)",
 							codeFontSize: "0.8125rem",
 							frames: {
-								editorActiveTabIndicatorTopColor: "var(--ink)",
+								editorActiveTabIndicatorTopColor: "var(--rule)",
 								frameBoxShadowCssValue: "none",
 								inlineButtonBorder: RULE,
 								terminalBackground: WELL,

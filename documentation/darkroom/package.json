@@ -7,6 +7,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "astro build",
+		"check:links": "node scripts/check-links.ts",
 		"dev": "astro dev",
 		"lint:oxlint": "pnpm --workspace-root run lint:package documentation/darkroom",
 		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent documentation/darkroom",
@@ -26,6 +27,7 @@
 	"devDependencies": {
 		"@astrojs/check": "catalog:documentation",
 		"@pobammer-ts/darkroom": "workspace:*",
+		"@types/node": "catalog:types",
 		"@types/react": "catalog:types",
 		"@types/react-dom": "catalog:types",
 		"typescript": "catalog:tooling"

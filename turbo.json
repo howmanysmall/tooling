@@ -3,7 +3,7 @@
 	"agentGuidance": false,
 	"concurrency": "50%",
 	"globalDependencies": ["tsconfig.base.json"],
-	"globalPassThroughEnv": ["CI", "FORCE_COLOR", "GITHUB_ACTIONS", "NODE_OPTIONS", "TURBO_HASH"],
+	"globalPassThroughEnv": ["BASE_URL", "CI", "FORCE_COLOR", "GITHUB_ACTIONS", "NODE_OPTIONS", "TURBO_HASH"],
 	"tasks": {
 		"//#lint:eslint": {
 			"cache": false
@@ -31,6 +31,9 @@
 			"dependsOn": ["^build", "transit"],
 			"inputs": ["$TURBO_DEFAULT$"],
 			"outputs": ["dist/**"]
+		},
+		"check:links": {
+			"dependsOn": ["build"]
 		},
 		"dev": {
 			"cache": false,
