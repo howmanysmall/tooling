@@ -40,7 +40,7 @@ export default defineConfig({
 | Section rows, readouts, legends, and the footnote band | `src/styles/notebook.css`, with the components in `src/components/`. |
 | The fonts | `src/styles/fonts.css`. |
 | The header and footer | `src/overrides/`. |
-| Syntax colors | `src/syntax-themes.ts`, which follows the ink scale in `tokens.css`. |
+| Syntax colors | `src/syntax-themes.ts`, which follows the ink scale in `tokens.css`, plus gold flags and pink values in shells. |
 | The address the sites publish to | `src/site.ts`. |
 
 A palette change belongs in both places. Update the matching Figma variable along with the CSS.

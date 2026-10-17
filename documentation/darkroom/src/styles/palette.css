@@ -6,6 +6,13 @@
  * The docs show one kind of data, what a command writes, so stdout and stderr
  * each get a toner and a line style. Focus is selenium. The overprint prints
  * in safelight red and mint, on the model count on the home page only.
+ *
+ * Terminal blocks add two hues outside this stylesheet: gold flags and pink
+ * values. Shiki bakes static hexes into the HTML, so they cannot read these
+ * variables; their values live in the theme's `src/syntax-themes.ts` and are
+ * recorded here to keep the palette whole. Changing one means changing the
+ * other, and the matching Figma variable. Light gold #7a5c00, dark #e5c07b.
+ * Light pink #a61e69, dark #f06595.
  */
 
 :root {
