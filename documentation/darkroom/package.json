@@ -20,7 +20,7 @@
 		"@astrojs/starlight": "catalog:documentation",
 		"@howmanysmall/documentation-theme": "workspace:*",
 		"astro": "catalog:documentation",
-		"react": "catalog:documentation",
+		"react": "catalog:runtime",
 		"react-dom": "catalog:documentation",
 		"sharp": "catalog:runtime"
 	},

@@ -240,9 +240,6 @@ catalogs:
     astro:
       specifier: 7.3.8
       version: 7.3.8
-    react:
-      specifier: 19.3.1
-      version: 19.3.1
     react-dom:
       specifier: 19.3.1
       version: 19.3.1
@@ -401,8 +398,8 @@ catalogs:
       specifier: 7.2.0
       version: 7.2.0
     react:
-      specifier: 19.3.0
-      version: 19.3.0
+      specifier: 19.3.1
+      version: 19.3.1
     sharp:
       specifier: 0.34.5
       version: 0.34.5
@@ -716,7 +713,7 @@ importers:
         version: 1.8.1
       '@inkjs/ui':
         specifier: catalog:runtime
-        version: 2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
       '@openrouter/sdk':
         specifier: catalog:ai
         version: 1.4.25
@@ -749,13 +746,13 @@ importers:
         version: 0.5.2
       ink:
         specifier: catalog:runtime
-        version: 7.1.1(@types/react@19.3.0)(react@19.3.0)
+        version: 7.1.1(@types/react@19.3.0)(react@19.3.1)
       pretty-bytes:
         specifier: catalog:runtime
         version: 7.2.0
       react:
         specifier: catalog:runtime
-        version: 19.3.0
+        version: 19.3.1
       sharp:
         specifier: catalog:runtime
         version: 0.34.5
@@ -830,7 +827,7 @@ importers:
         specifier: catalog:documentation
         version: 7.3.8(@arethetypeswrong/core@0.18.5)(@types/node@26.6.5)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1)
       react:
-        specifier: catalog:documentation
+        specifier: catalog:runtime
         version: 19.3.1
       react-dom:
         specifier: catalog:documentation
@@ -7953,10 +7950,6 @@ packages:
     peerDependencies:
       react: ^19.2.0
 
-  react@19.3.0:
-    resolution: {integrity: sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==}
-    engines: {node: '>=0.10.0'}
-
   react@19.3.1:
     resolution: {integrity: sha512-QNhWdt7nrgVWWQG58QuGsAR3jv3Hbe4mb4vz7w2csnHavciZJgda1CPNaldF6eVxv90ud3jUXpKlHL69gO38yw==}
     engines: {node: '>=0.10.0'}
@@ -10749,14 +10742,14 @@ snapshots:
   '@img/sharp-win32-x64@0.35.5':
     optional: true
 
-  '@inkjs/ui@2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@inkjs/ui@2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)':
     dependencies:
       chalk: 5.6.2
       cli-spinners: 3.4.0
       deepmerge: 4.3.1
       figures: 6.1.0
-      ink: 7.1.1(@types/react@19.3.0)(react@19.3.0)
-      react: 19.3.0
+      ink: 7.1.1(@types/react@19.3.0)(react@19.3.1)
+      react: 19.3.1
 
   '@inquirer/ansi@1.0.2': {}
 
@@ -14807,7 +14800,7 @@ snapshots:
 
   ini@6.0.0: {}
 
-  ink@7.1.1(@types/react@19.3.0)(react@19.3.0):
+  ink@7.1.1(@types/react@19.3.0)(react@19.3.1):
     dependencies:
       '@alcalzone/ansi-tokenize': 0.3.1
       ansi-escapes: 7.3.0
@@ -14822,8 +14815,8 @@ snapshots:
       indent-string: 5.0.0
       is-in-ci: 2.0.0
       patch-console: 2.0.0
-      react: 19.3.0
-      react-reconciler: 0.33.0(react@19.3.0)
+      react: 19.3.1
+      react-reconciler: 0.33.0(react@19.3.1)
       scheduler: 0.27.0
       signal-exit: 3.0.7
       slice-ansi: 9.0.1
@@ -16245,12 +16238,10 @@ snapshots:
 
   react-is@19.3.0: {}
 
-  react-reconciler@0.33.0(react@19.3.0):
+  react-reconciler@0.33.0(react@19.3.1):
     dependencies:
-      react: 19.3.0
+      react: 19.3.1
       scheduler: 0.27.0
-
-  react@19.3.0: {}
 
   react@19.3.1: {}
 
@@ -17874,7 +17865,6 @@ time:
   pretty-bytes@7.2.0: '2026-09-26T11:14:48.764Z'
   publint@0.3.25: '2026-10-01T18:03:33.533Z'
   react-dom@19.3.1: '2026-10-14T16:49:10.081Z'
-  react@19.3.0: '2026-09-09T17:21:30.071Z'
   react@19.3.1: '2026-10-14T16:47:15.290Z'
   rolldown@1.2.14: '2026-10-14T10:47:22.477Z'
   sfw@2.0.6: '2026-05-22T16:42:22.828Z'
