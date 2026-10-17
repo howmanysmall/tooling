@@ -262,6 +262,37 @@ h1#_top {
 	white-space: nowrap;
 }
 
+/* Tabs: a row of labels sitting on a hairline, not a row of pills. */
+
+[role="tablist"] {
+	border-bottom: 1px solid var(--rule);
+}
+
+.tab > [role="tab"] {
+	padding: 0.5rem 0.875rem;
+	margin-bottom: -1px;
+	font: var(--type-label);
+	color: var(--ink-3);
+	background: transparent;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.tab > [role="tab"]:hover {
+	color: var(--ink);
+}
+
+.tab [role="tab"][aria-selected="true"] {
+	color: var(--ink);
+	border-bottom-color: var(--focus);
+}
+
+.tablist-wrapper ~ [role="tabpanel"] {
+	margin-top: 1rem;
+}
+
 /* Asides read as margin notes on the footnote band. */
 
 .starlight-aside {
