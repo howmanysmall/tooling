@@ -6,6 +6,7 @@ import LinkRows from "@howmanysmall/documentation-theme/components/link-rows.ast
 import ModelGallery from "./model-gallery.astro";
 import Notebook from "@howmanysmall/documentation-theme/components/notebook.astro";
 import NotebookRow from "@howmanysmall/documentation-theme/components/notebook-row.astro";
+import { PREFERRED_PACKAGE_MANAGER } from "./package-managers";
 import Readout from "@howmanysmall/documentation-theme/components/readout.astro";
 import Transcript from "@howmanysmall/documentation-theme/components/transcript.astro";
 
@@ -54,7 +55,7 @@ const NEXT = [
 
 const examples = getModelExamples();
 const featured = examples.filter(({ model }) => FEATURED_MODELS.has(model));
-const install = "npm install --global @pobammer-ts/darkroom";
+const { install } = PREFERRED_PACKAGE_MANAGER;
 ---
 
 <Notebook>

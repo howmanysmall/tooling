@@ -10,7 +10,7 @@ interface Props {
 	/** The examples to show, in order. */
 	readonly examples: ReadonlyArray<ModelExample>;
 	/** Whether the first images load right away, above the fold. */
-	readonly eager?: boolean;
+	readonly eager?: boolean | undefined;
 }
 
 const { eager = false, examples } = Astro.props;

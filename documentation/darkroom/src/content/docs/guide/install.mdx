@@ -3,10 +3,20 @@ title: Install and set up
 description: Install darkroom, give it your OpenRouter key, and check that it works.
 ---
 
+import PackageManagerTabs from "$components/package-manager-tabs.astro";
+
 darkroom is a command-line tool. It runs on [Bun](https://bun.sh) or on Node.js 22.18 or later.
 
+Install it globally, so the `darkroom` command is on your `PATH`:
+
+<PackageManagerTabs />
+
+`yarn global add` only works on Yarn 1. Yarn 2 dropped global installs; add the package to a
+[global folder](https://yarnpkg.com/cli/global) instead, or use one of the other managers.
+
+Then check it:
+
 ```sh title="Terminal"
-npm install --global @pobammer-ts/darkroom
 darkroom --version
 ```
 
