@@ -63,17 +63,11 @@ const SKIPPED_PREFIXES: ReadonlyArray<string> = [
  * @returns The HTML file paths.
  */
 function listHtmlFiles(directory: string): Array<string> {
-	const found: Array<string> = [];
-	const children = readdirSync(directory, { withFileTypes: true });
-	for (const entry of children) {
+	return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
 		const path = nodePath.join(directory, entry.name);
-		if (entry.isDirectory()) {
-			for (const file of listHtmlFiles(path)) found.push(file);
-		} else if (entry.name.endsWith(".html")) {
-			found.push(path);
-		}
-	}
-	return found;
+		if (entry.isDirectory()) return listHtmlFiles(path);
+		return entry.name.endsWith(".html") ? [path] : [];
+	});
 }
 
 /**
@@ -124,23 +118,60 @@ function isFile(path: string): boolean {
 function resolveReference(reference: string, pageFile: string, root: string, base: string): ResolveResult {
 	const { path } = splitReference(reference);
 	if (path.length === 0) return { file: pageFile };
+	if (path.startsWith("/")) return resolveAbsoluteReference(path, root, base);
+	return resolveRelativeReference(path, pageFile, root);
+}
 
-	let relative: string;
-	if (path.startsWith("/")) {
-		if (path !== base && !path.startsWith(`${base}/`)) return { error: `leaves the site base ${base}` };
-		relative = path.slice(base.length).replace(LEADING_SLASHES_PATTERN, "");
-	} else {
-		const pageDirectory = nodePath.posix.dirname(toPosixPath(pageFile));
-		const rootPosix = toPosixPath(root);
-		relative = nodePath.posix.relative(rootPosix, nodePath.posix.resolve(pageDirectory, path));
-		if (relative.startsWith("..")) return { error: "escapes the site root" };
+/**
+ * Resolves an absolute reference, which must stay under the site base.
+ *
+ * @param path - The URL path, starting with a slash.
+ * @param root - The built site directory.
+ * @param base - The path the site is served under.
+ * @returns The resolved file, or why it leaves the site.
+ */
+function resolveAbsoluteReference(path: string, root: string, base: string): ResolveResult {
+	if (path !== base && !path.startsWith(`${base}/`)) {
+		return { error: `leaves the site base ${base}` };
 	}
+	return toIndexFile(root, path.slice(base.length).replace(LEADING_SLASHES_PATTERN, ""));
+}
 
+/**
+ * Resolves a relative reference, which must stay under the site root.
+ *
+ * @param path - The URL path, relative to the page.
+ * @param pageFile - The HTML file containing it.
+ * @param root - The built site directory.
+ * @returns The resolved file, or why it leaves the site.
+ */
+function resolveRelativeReference(path: string, pageFile: string, root: string): ResolveResult {
+	const pageDirectory = nodePath.posix.dirname(toPosixPath(pageFile));
+	const rootPosix = toPosixPath(root);
+	const relative = nodePath.posix.relative(rootPosix, nodePath.posix.resolve(pageDirectory, path));
+
+	if (relative.startsWith("..")) {
+		return { error: "escapes the site root" };
+	}
+	return toIndexFile(root, relative);
+}
+
+/**
+ * Turns a path under the site root into its file, using a directory's index
+ * page when the path names a directory.
+ *
+ * @param root - The built site directory.
+ * @param relative - The path under the site root.
+ * @returns The resolved file.
+ */
+function toIndexFile(root: string, relative: string): ResolvedFile {
 	const file = nodePath.join(root, decodePath(relative));
 	try {
-		if (statSync(file).isDirectory()) return { file: nodePath.join(file, "index.html") };
+		if (statSync(file).isDirectory()) {
+			return { file: nodePath.join(file, "index.html") };
+		}
 	} catch {
-		return { file };
+		// A missing target is reported by the caller.
 	}
 	return { file };
 }
@@ -211,26 +242,63 @@ function checkPage(
 	const dead: Array<DeadLink> = [];
 	const html = readFileSync(pageFile, "utf8");
 	for (const match of html.matchAll(REFERENCE_PATTERN)) {
-		const reference = match.groups?.reference ?? "";
+		const reference = getReference(match);
 		if (!isCheckable(reference)) continue;
 
-		const { fragment } = splitReference(reference);
-		const resolved = resolveReference(reference, pageFile, root, base);
-		if ("error" in resolved) {
-			dead.push({ page: pageFile, reason: resolved.error, reference });
-			continue;
-		}
-
-		if (!isFile(resolved.file)) {
-			dead.push({ page: pageFile, reason: "target is missing", reference });
-			continue;
-		}
-
-		if (fragment.length > 0 && !readIds(resolved.file, idsByFile).includes(decodePath(fragment))) {
-			dead.push({ page: pageFile, reason: "fragment is missing", reference });
-		}
+		const reason = findDeadReason(reference, pageFile, root, base, idsByFile);
+		if (reason !== undefined) dead.push({ page: pageFile, reason, reference });
 	}
 	return dead;
+}
+
+/**
+ * Reads the reference from a regular expression match.
+ *
+ * @param match - A `REFERENCE_PATTERN` match.
+ * @returns The raw `href` or `src` value.
+ */
+function getReference(match: RegExpMatchArray): string {
+	return match.groups?.reference ?? "";
+}
+
+/**
+ * Finds why a checkable reference is dead.
+ *
+ * @param reference - The raw `href` or `src` value.
+ * @param pageFile - The HTML file containing it.
+ * @param root - The built site directory.
+ * @param base - The path the site is served under.
+ * @param idsByFile - The id cache.
+ * @returns Why the reference is dead, or undefined when it resolves.
+ */
+function findDeadReason(
+	reference: string,
+	pageFile: string,
+	root: string,
+	base: string,
+	idsByFile: Map<string, Array<string>>,
+): string | undefined {
+	const resolved = resolveReference(reference, pageFile, root, base);
+	if ("error" in resolved) return resolved.error;
+	if (!isFile(resolved.file)) return "target is missing";
+	return findFragmentProblem(resolved.file, splitReference(reference).fragment, idsByFile);
+}
+
+/**
+ * Finds why a fragment is missing from its target page.
+ *
+ * @param file - The resolved target file.
+ * @param fragment - The fragment to look for.
+ * @param idsByFile - The id cache.
+ * @returns Why the fragment is missing, or undefined when it exists.
+ */
+function findFragmentProblem(
+	file: string,
+	fragment: string,
+	idsByFile: Map<string, Array<string>>,
+): string | undefined {
+	if (fragment.length === 0) return undefined;
+	return readIds(file, idsByFile).includes(decodePath(fragment)) ? undefined : "fragment is missing";
 }
 
 /**
@@ -256,11 +324,8 @@ function checkLinks(root: string, base: string): CheckResult {
  */
 function countCheckable(pageFile: string): number {
 	const html = readFileSync(pageFile, "utf8");
-	let count = 0;
-	for (const match of html.matchAll(REFERENCE_PATTERN)) {
-		if (isCheckable(match.groups?.reference ?? "")) count += 1;
-	}
-	return count;
+	const references = Array.from(html.matchAll(REFERENCE_PATTERN), (match) => match.groups?.reference ?? "");
+	return references.filter(isCheckable).length;
 }
 
 const commandLineArguments = argv.slice(2);
