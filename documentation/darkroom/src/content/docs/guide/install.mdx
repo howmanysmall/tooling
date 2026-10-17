@@ -4,6 +4,7 @@ description: Install darkroom, give it your OpenRouter key, and check that it wo
 ---
 
 import PackageManagerTabs from "$components/package-manager-tabs.astro";
+import ShellTabs from "$components/shell-tabs.astro";
 
 darkroom is a command-line tool. It runs on [Bun](https://bun.sh) or on Node.js 22.18 or later.
 
@@ -47,10 +48,12 @@ OpenRouter lets you cap what a key can spend. A key with a monthly limit is a go
 
 ## Shell completions
 
-Completions fill in model IDs, aspect ratios, and run IDs. Add one line to your shell's startup file:
+Completions fill in commands, options, model IDs, parameter values, and run IDs. Option values follow the model:
+with `-m` on the command line, `-a`, `-r`, and `-q` complete only what that model accepts. In fish, run IDs come
+with their date, model, and prompt.
 
-```sh title="~/.bashrc"
-source <(darkroom completions bash)
-```
+Add one line to your shell's startup file:
 
-For fish and zsh, see [completions](../../commands/completions/).
+<ShellTabs />
+
+Open a new shell, or source the file again, for changes to take effect.

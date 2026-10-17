@@ -845,6 +845,9 @@ importers:
       '@pobammer-ts/darkroom':
         specifier: workspace:*
         version: link:../../apps/darkroom
+      '@types/node':
+        specifier: catalog:types
+        version: 26.6.5
       '@types/react':
         specifier: catalog:types
         version: 19.3.0

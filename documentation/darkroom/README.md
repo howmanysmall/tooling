@@ -19,6 +19,7 @@ Run these from this directory, or from the repository root with
 | --- | --- |
 | `dev` | Serves the site with live reload. |
 | `build` | Builds the site into `dist/`. |
+| `check:links` | Checks every built page for dead internal links. |
 | `preview` | Serves the built site. |
 | `type-check` | Checks the Astro files with `astro check`. |
 

@@ -38,19 +38,33 @@ const SESSION = [
 	{ series: 2, text: "✔ 2 images · google/gemini-3-pro-image · $0.27" },
 ] as const;
 
+/**
+ * The site root, with a trailing slash. Absolute links built from it work no
+ * matter which URL the page was opened under.
+ */
+const siteRoot = import.meta.env.BASE_URL;
+
 const NEXT = [
-	{ description: "Install darkroom, set your key, and make a first image.", href: "guide/install/", title: "Guide" },
+	{
+		description: "Install darkroom, set your key, and make a first image.",
+		href: `${siteRoot}/guide/install/`,
+		title: "Guide",
+	},
 	{
 		description: "generate, compare, history, models, cache, and completions.",
-		href: "commands/generate/",
+		href: `${siteRoot}/commands/generate/`,
 		title: "Commands",
 	},
 	{
 		description: "The full-screen app: sessions, the model picker, and your history.",
-		href: "app/overview/",
+		href: `${siteRoot}/app/overview/`,
 		title: "The app",
 	},
-	{ description: "Serve darkroom to Claude Code and other MCP clients.", href: "agents/mcp/", title: "Agent tools" },
+	{
+		description: "Serve darkroom to Claude Code and other MCP clients.",
+		href: `${siteRoot}/agents/mcp/`,
+		title: "Agent tools",
+	},
 ];
 
 const examples = getModelExamples();
@@ -70,8 +84,8 @@ const { install } = PREFERRED_PACKAGE_MANAGER;
 			</p>
 			<pre class="notebook-install notebook-well"><code>{install}</code></pre>
 			<div class="notebook-actions">
-				<a class="primary-button" href="guide/install/">Read the guide</a>
-				<a href="models/">or browse the models</a>
+				<a class="primary-button" href={`${siteRoot}/guide/install/`}>Read the guide</a>
+				<a href={`${siteRoot}/models/`}>or browse the models</a>
 			</div>
 			<Readout
 				label="Image models, each with an example"
@@ -88,7 +102,7 @@ const { install } = PREFERRED_PACKAGE_MANAGER;
 				A ramen stall at night after rain · {featured.length} of {examples.length} models
 			</p>
 			<ModelGallery eager examples={featured} />
-			<a href="models/">See all {examples.length} models</a>
+			<a href={`${siteRoot}/models/`}>See all {examples.length} models</a>
 			<Readout
 				label="Prompt"
 				note="Three bowls, a black cat with one white paw, and a sign that reads KITSUNE NOODLES. Lettering and counting are where models differ most."

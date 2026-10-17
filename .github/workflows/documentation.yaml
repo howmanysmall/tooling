@@ -47,6 +47,9 @@ jobs:
       - name: Build the sites
         run: node --run turbo -- run build --filter=./documentation/*
 
+      - name: Check for dead links
+        run: node --run turbo -- run check:links --filter=./documentation/*
+
       - name: Gather the sites
         run: node --run documentation -- assemble --output _site
 
