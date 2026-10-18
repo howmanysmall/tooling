@@ -1,0 +1,28 @@
+---
+/** One series in a legend. */
+interface LegendItem {
+	/** What the series shows. */
+	readonly label: string;
+	/** Which `--data-N` color and line style draws it. */
+	readonly series: 1 | 2 | 3;
+}
+
+/**
+ * An inline legend that sits above a figure. Each series has its own color
+ * and line style, so none is told apart by color alone.
+ */
+interface Props {
+	/** The series, in the order the figure draws them. */
+	readonly items: ReadonlyArray<LegendItem>;
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="legend">
+	{items.map(({ label, series }) => (
+		<li class="legend-item" data-series={series}>
+			{label}
+		</li>
+	))}
+</ul>

@@ -1,0 +1,14 @@
+---
+/**
+ * A numeral with two misregistered riso copies behind it, in the palette's
+ * `--riso-a` and `--riso-b` inks. The numeral itself is never tinted.
+ */
+interface Props {
+	/** The numeral. */
+	readonly value: number | string;
+}
+
+const value = String(Astro.props.value);
+---
+
+<span class="overprint" data-has-zero={value.includes("0") ? "" : undefined} data-value={value}>{value}</span>

@@ -1,0 +1,49 @@
+---
+title: Tabs and keys
+description: The full-screen app, its three tabs, and the keys that work everywhere.
+---
+
+Run `darkroom` with no arguments to open the full-screen app. It has three tabs: **generate**, **history**, and
+**models**. `darkroom history browse` and `darkroom models list` open the app on their tab.
+
+The app takes the mouse. Clicking a tab, a list row, or a palette entry chooses it, and the wheel scrolls the list under
+the pointer. Clicking any image, or the path of one, opens its actions, such as copying the picture itself. Text cut
+off in a row scrolls while you choose the row or point at it, so you can read the whole line.
+
+Since the app takes the mouse, it selects text itself: drag across the screen, and darkroom lights up the cells and
+copies the text when you let go.
+
+## Keys everywhere
+
+| Key           | What it does                               |
+| ------------- | ------------------------------------------ |
+| `tab`         | Cycle the tabs.                            |
+| `1`, `2`, `3` | Jump to a tab, outside the prompt box.     |
+| `ctrl+p`      | Open the command palette.                  |
+| `?`           | List every key.                            |
+| `ctrl+c`      | Clear the prompt, or quit when it's empty. |
+
+## History tab
+
+Every past run with its image, prompt, settings, and cost.
+
+| Key      | What it does                        |
+| -------- | ----------------------------------- |
+| `enter`  | Open the run's images.              |
+| `r`      | Re-run it.                          |
+| `y`      | Copy its ID.                        |
+| `d`      | Delete it, after asking.            |
+| `/`      | Filter.                             |
+| `←`, `→` | Step through a comparison's models. |
+
+## Models tab
+
+Every image model with its price, the options it takes, and an example image: your newest image from that model, or
+the one included with darkroom.
+
+| Key     | What it does                                |
+| ------- | ------------------------------------------- |
+| `e`     | Switch between your example and darkroom's. |
+| `s`     | Change the sort.                            |
+| `/`     | Filter.                                     |
+| `enter` | Take the model to the prompt box.           |

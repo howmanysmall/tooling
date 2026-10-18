@@ -4,6 +4,8 @@
 # output
 out
 dist
+_site
+.astro
 *.tgz
 
 # code coverage

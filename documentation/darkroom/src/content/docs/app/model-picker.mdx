@@ -1,0 +1,21 @@
+---
+title: The model picker
+description: Search models, sort them, and filter by what they can do.
+---
+
+`ctrl+o` opens the model picker. It searches names the way fzf does and shows what each model can do beside its price.
+
+`tab` cycles the order between recent, price, name, and newest. Each chip narrows the list to one ability: editing,
+more than one image per request, or transparent backgrounds.
+
+## Search terms
+
+| Term           | Finds                                               |
+| -------------- | --------------------------------------------------- |
+| `@google`      | Models from one provider.                           |
+| `$0.02`        | Models at or under that price per image.            |
+| `+edits`       | Models that take reference images.                  |
+| `+several`     | Models that return more than one image per request. |
+| `+transparent` | Models that make a transparent background.          |
+
+Terms combine with plain text, so `flux +edits $0.05` finds the Flux models that edit for five cents or less.

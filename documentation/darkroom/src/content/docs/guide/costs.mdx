@@ -1,0 +1,28 @@
+---
+title: Costs and paid requests
+description: How darkroom estimates a cost before you spend it, and why it never sends a paid request twice.
+---
+
+Every image costs money on OpenRouter, so darkroom takes care with each request.
+
+## Estimates
+
+Before a request goes out, darkroom estimates its cost from the model's published prices. Some models charge by the
+token and have no fixed price per image. For those, darkroom uses what the model has cost you before. With nothing to
+go on, it says the cost is unknown instead of guessing.
+
+The prompt box shows the price of the model you chose. The confirmation shows the estimate for the whole request.
+
+## Sent once
+
+darkroom sends a paid request once and never retries it. A retry after the provider made the image would charge you
+twice. If the connection drops after the request went out, the provider may still charge you. darkroom says so and
+points you to [OpenRouter's activity page](https://openrouter.ai/activity) before you try again.
+
+Free lookups, such as the model list, do retry, for up to 30 seconds.
+
+## Paid images are safe
+
+darkroom copies each image into the history before anything else can fail. Your own copy might not save, because the
+disk is full or the folder doesn't allow writing. The history copy is still there, and the error names it. If you press
+`ctrl+c` while darkroom saves an image, it finishes saving first.

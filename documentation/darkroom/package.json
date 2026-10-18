@@ -1,0 +1,35 @@
+{
+	"name": "@howmanysmall/darkroom-documentation",
+	"version": "0.0.0",
+	"private": true,
+	"description": "The darkroom documentation site.",
+	"license": "UNLICENSED",
+	"type": "module",
+	"scripts": {
+		"build": "astro build",
+		"check:links": "node scripts/check-links.ts",
+		"dev": "astro dev",
+		"lint:oxlint": "pnpm --workspace-root run lint:package documentation/darkroom",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent documentation/darkroom",
+		"preview": "astro preview",
+		"type-check": "astro check",
+		"type-check:agent": "astro check --minimumSeverity warning"
+	},
+	"dependencies": {
+		"@astrojs/react": "catalog:documentation",
+		"@astrojs/starlight": "catalog:documentation",
+		"@howmanysmall/documentation-theme": "workspace:*",
+		"astro": "catalog:documentation",
+		"react": "catalog:runtime",
+		"react-dom": "catalog:documentation",
+		"sharp": "catalog:runtime"
+	},
+	"devDependencies": {
+		"@astrojs/check": "catalog:documentation",
+		"@pobammer-ts/darkroom": "workspace:*",
+		"@types/node": "catalog:types",
+		"@types/react": "catalog:types",
+		"@types/react-dom": "catalog:types",
+		"typescript": "catalog:tooling"
+	}
+}

@@ -1,0 +1,32 @@
+---
+/** One line of a terminal session. */
+interface TranscriptLine {
+	/** Marks the line as typed rather than printed. */
+	readonly command?: boolean;
+	/** Which `--data-N` series the line belongs to, if any. */
+	readonly series?: 1 | 2 | 3;
+	/** The line as it appears. */
+	readonly text: string;
+}
+
+/**
+ * A terminal session drawn as a figure, with each printed line marked by the
+ * series it belongs to.
+ */
+interface Props {
+	/** What the session shows, for screen readers. */
+	readonly label: string;
+	/** The lines, in order. */
+	readonly lines: ReadonlyArray<TranscriptLine>;
+}
+
+const { label, lines } = Astro.props;
+---
+
+<ol aria-label={label} class="transcript notebook-well">
+	{lines.map(({ command = false, series, text }) => (
+		<li class="transcript-line" data-command={command ? "" : undefined} data-series={series}>
+			{text}
+		</li>
+	))}
+</ol>

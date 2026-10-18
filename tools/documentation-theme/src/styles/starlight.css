@@ -1,0 +1,399 @@
+/*
+ * Starlight, mapped onto the notebook. Starlight's own styles sit in cascade
+ * layers, so these unlayered rules win without raising specificity.
+ */
+
+:root,
+:root[data-theme="dark"] {
+	--sl-font: var(--font-sans);
+	--sl-font-mono: var(--font-mono);
+	--sl-text-body: 0.9375rem;
+	--sl-text-body-sm: 0.8125rem;
+	--sl-line-height: 1.6;
+	--sl-line-height-headings: 1.2;
+	--sl-content-width: 45rem;
+	--sl-sidebar-width: calc(var(--margin-column) + var(--gutter) + var(--row-gap));
+	--sl-nav-height: 4.25rem;
+	--sl-nav-pad-x: var(--gutter);
+	--sl-color-bg: var(--paper);
+	--sl-color-bg-nav: var(--paper);
+	--sl-color-bg-sidebar: var(--paper);
+	--sl-color-bg-inline-code: transparent;
+	--sl-color-hairline-light: var(--rule);
+	--sl-color-hairline: var(--rule);
+	--sl-color-hairline-shade: var(--rule);
+	--sl-color-text: var(--ink);
+	--sl-color-text-accent: var(--focus);
+	--sl-color-text-invert: var(--paper);
+	--sl-color-accent-low: var(--marker);
+	--sl-color-accent: var(--focus);
+	--sl-color-accent-high: var(--focus);
+	--sl-color-white: var(--ink);
+	--sl-color-gray-1: var(--ink);
+	--sl-color-gray-2: var(--ink-2);
+	--sl-color-gray-3: var(--ink-3);
+	--sl-color-gray-4: var(--ink-3);
+	--sl-color-gray-5: var(--rule);
+	--sl-color-gray-6: var(--marker);
+	--sl-color-gray-7: var(--footnote);
+	--sl-color-black: var(--paper);
+	--sl-color-backdrop-overlay: color-mix(in srgb, var(--paper) 80%, transparent);
+	--sl-shadow-sm: none;
+	--sl-shadow-md: none;
+	--sl-shadow-lg: none;
+	--sl-color-asides-text-accent: var(--ink);
+	--sl-color-asides-border: var(--rule);
+}
+
+@media (width < 50rem) {
+	:root {
+		--sl-nav-height: 3.5rem;
+	}
+}
+
+/* Page. */
+
+body {
+	font-feature-settings: "kern";
+	-webkit-font-smoothing: antialiased;
+	color: var(--ink);
+	background: var(--paper);
+}
+
+::selection {
+	background-color: color-mix(in srgb, var(--focus) 22%, transparent);
+}
+
+:focus-visible {
+	outline: 2px solid var(--focus);
+	outline-offset: 2px;
+}
+
+a {
+	color: var(--focus);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.2em;
+}
+
+/* Header band. */
+
+.header {
+	gap: 1.75rem;
+}
+
+.site-title {
+	font: var(--type-margin-head);
+	font-size: 1.625rem;
+	color: var(--ink);
+}
+
+site-search button[data-open-modal] {
+	font: var(--type-fig-note);
+	color: var(--ink-3);
+	background: transparent;
+	border: 1px solid var(--rule);
+	border-radius: 0;
+}
+
+site-search button[data-open-modal] kbd {
+	font-family: var(--font-mono);
+	background: transparent;
+	border-radius: 0;
+}
+
+starlight-theme-select select,
+starlight-lang-select select {
+	font: var(--type-label);
+	color: var(--ink-2);
+	border: 1px solid var(--rule);
+	border-radius: 0;
+}
+
+starlight-theme-select label {
+	color: var(--ink-2);
+}
+
+/* On this page: the readouts column. */
+
+starlight-toc nav h2,
+mobile-starlight-toc nav h2 {
+	font: var(--type-label);
+	color: var(--ink);
+}
+
+starlight-toc a {
+	font: var(--type-fig-note);
+	color: var(--ink-2);
+}
+
+starlight-toc a[aria-current="true"] {
+	color: var(--focus);
+}
+
+/* Sidebar: a margin column, not a menu of pills. */
+
+.sidebar-pane {
+	border-inline-end: 1px solid var(--rule);
+}
+
+.sidebar-content {
+	gap: 1.375rem;
+	padding: 2.5rem var(--row-gap) 2.5rem var(--gutter);
+}
+
+.sidebar-content summary .caret {
+	display: none;
+}
+
+.sidebar-content summary {
+	padding: 0;
+}
+
+.sidebar-content .group-label .large {
+	font: var(--type-margin-head);
+	font-size: 1.0625rem;
+	line-height: 1.5rem;
+	color: var(--ink);
+}
+
+.sidebar-content ul ul {
+	padding-inline-start: 0;
+	margin-inline-start: 0;
+	margin-top: 0.5rem;
+	border-inline-start: 0;
+}
+
+.sidebar-content ul ul li {
+	padding-inline-start: 0;
+	margin-inline-start: 0;
+	border-inline-start: 0;
+}
+
+.sidebar-content a {
+	padding: 0.125rem 0 0.125rem 0.625rem;
+	font: var(--type-fig-note);
+	color: var(--ink-2);
+	border-inline-start: 1px solid var(--rule);
+	border-radius: 0;
+}
+
+.sidebar-content a:hover {
+	color: var(--ink);
+}
+
+.sidebar-content a[aria-current="page"] {
+	font-weight: 500;
+	color: var(--ink);
+	background: transparent;
+	border-inline-start: 2px solid var(--ink);
+}
+
+.sidebar-content a code {
+	font-size: 0.8125rem;
+	background: none;
+}
+
+/* Type: Newsreader writes, IBM Plex measures. */
+
+h1#_top {
+	font: var(--type-display);
+	letter-spacing: -0.01em;
+}
+
+.sl-markdown-content :is(h2, h3, h4):not(:where(.not-content *)) {
+	font-family: var(--font-serif);
+	font-weight: 400;
+	letter-spacing: -0.005em;
+}
+
+.sl-markdown-content h2:not(:where(.not-content *)) {
+	font: var(--type-heading);
+}
+
+.sl-markdown-content h3:not(:where(.not-content *)) {
+	font: var(--type-margin-head);
+}
+
+.sl-markdown-content h4:not(:where(.not-content *)) {
+	font: var(--type-label);
+}
+
+.sl-markdown-content :not(pre) > code {
+	padding: 0;
+	font-size: 0.875em;
+	color: var(--ink);
+	background: none;
+	border-radius: 0;
+}
+
+.sl-markdown-content a code {
+	color: inherit;
+}
+
+/* Tables: hairlines only. */
+
+.sl-markdown-content table {
+	display: table;
+	width: 100%;
+	font: var(--type-fig-note);
+	border-collapse: collapse;
+}
+
+.sl-markdown-content :is(th, td) {
+	padding: 0.625rem 1.5rem 0.625rem 0;
+	vertical-align: top;
+	text-align: start;
+	background: transparent;
+	border: 0;
+	border-bottom: 1px solid var(--rule);
+}
+
+.sl-markdown-content th {
+	font: var(--type-label);
+	color: var(--ink);
+	border-top: 1px solid var(--rule);
+}
+
+.sl-markdown-content td {
+	color: var(--ink-2);
+}
+
+.sl-markdown-content td:first-child code {
+	white-space: nowrap;
+}
+
+/* Tabs: a row of labels sitting on a hairline, not a row of pills. */
+
+[role="tablist"] {
+	border-bottom: 1px solid var(--rule);
+}
+
+.tab > [role="tab"] {
+	padding: 0.5rem 0.875rem;
+	margin-bottom: -1px;
+	font: var(--type-label);
+	color: var(--ink-3);
+	background: transparent;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.tab > [role="tab"]:hover {
+	color: var(--ink);
+}
+
+.tab [role="tab"][aria-selected="true"] {
+	color: var(--ink);
+	border-bottom-color: var(--focus);
+}
+
+.tablist-wrapper ~ [role="tabpanel"] {
+	margin-top: 1rem;
+}
+
+/* Asides read as margin notes on the footnote band. */
+
+.starlight-aside {
+	display: grid;
+	grid-template-columns: 6rem minmax(0, 1fr);
+	gap: 1.25rem;
+	padding: 1rem;
+	font: var(--type-fig-note);
+	color: var(--ink-2);
+	background: var(--footnote);
+	border: 0;
+}
+
+.starlight-aside__title {
+	margin: 0;
+	font: var(--type-margin-head);
+	font-size: 1.0625rem;
+	line-height: 1.5rem;
+	color: var(--ink);
+}
+
+.starlight-aside__icon {
+	display: none;
+}
+
+.starlight-aside__content {
+	margin: 0;
+}
+
+/* Links between pages. */
+
+.pagination-links a {
+	padding: 1rem 0;
+	font: var(--type-fig-note);
+	color: var(--ink-2);
+	border: 0;
+	border-top: 1px solid var(--rule);
+	border-radius: 0;
+	box-shadow: none;
+}
+
+.pagination-links a .link-title {
+	font: var(--type-caption);
+	color: var(--ink);
+}
+
+.pagination-links svg {
+	display: none;
+}
+
+/* Buttons and cards keep square corners. */
+
+.sl-link-button {
+	font: var(--type-label);
+	border-radius: 0;
+}
+
+.sl-link-button.primary {
+	color: var(--paper);
+	background: var(--ink);
+	border-color: var(--ink);
+}
+
+.card,
+.sl-link-card {
+	border-radius: 0;
+	box-shadow: none;
+}
+
+/* Expressive Code: square, framed in the rule. */
+
+.expressive-code .frame {
+	box-shadow: none;
+}
+
+.expressive-code figcaption.header {
+	justify-content: flex-start;
+	padding-inline: 1rem;
+}
+
+.expressive-code figcaption .title {
+	font: var(--type-data);
+	color: var(--ink-3);
+}
+
+.expressive-code .copy button {
+	border-radius: 0;
+}
+
+/* A notebook home page draws its own title, as the hero row's display line. */
+
+body:has(.notebook-home) {
+	--sl-content-width: 100%;
+	--sl-content-pad-x: var(--gutter);
+}
+
+body:has(.notebook-home) .content-panel:has(h1#_top) {
+	display: none;
+}
+
+body:has(.notebook-home) .content-panel {
+	padding-block: 0;
+	border-top: 0;
+}

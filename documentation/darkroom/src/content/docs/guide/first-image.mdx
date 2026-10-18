@@ -1,0 +1,45 @@
+---
+title: Your first image
+description: Generate an image from a prompt, pick a model, and find the saved file.
+---
+
+Pass a prompt and a model to `darkroom generate`:
+
+```sh title="Terminal"
+darkroom generate "a red fox in snow" -m google/gemini-2.5-flash-image
+```
+
+darkroom prints the saved file's path when it finishes, and a line with the model and the cost:
+
+```text title="Output"
+./2026-10-15_a-red-fox-in-snow.png
+✔ 1 image · google/gemini-2.5-flash-image · $0.04
+```
+
+The file goes in the current folder. Its name is the date, then the start of the prompt. If a file already has that
+name, darkroom adds a number instead of overwriting it.
+
+## Pick a model
+
+`darkroom models list` lists every image model with its price. On a terminal it opens the full-screen models tab, with
+an example image from each model. To skip `-m` every time, set a default:
+
+```sh title="Terminal"
+export DARKROOM_MODEL=google/gemini-2.5-flash-image
+```
+
+## Check before you spend
+
+`--dry-run` validates the request against the model and prints what it would send with its estimated cost, without
+sending anything:
+
+```sh title="Terminal"
+darkroom generate "a red fox in snow" --aspect-ratio 21:9 --dry-run
+```
+
+If the model doesn't accept an option, darkroom says so before any request goes out.
+
+## Use the app instead
+
+Run `darkroom` with no arguments to open the full-screen app. It has a prompt box with the model and its price under
+it, and it asks before sending anything. See [the app](/tooling/darkroom/app/overview/).
