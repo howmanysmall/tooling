@@ -6,6 +6,6 @@
 		"tsBuildInfoFile": null,
 		"declarationDir": null
 	},
-	"include": ["src/**/*.ts"],
-	"exclude": ["src/**/*.bench.ts", "src/**/*.fuzz.ts", "src/**/*.test.ts", "src/property-runs.ts", "node_modules"]
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["src/**/*.bench.ts", "src/**/*.fuzz.ts", "src/**/*.test.ts", "src/**/*.test.tsx", "node_modules"]
 }

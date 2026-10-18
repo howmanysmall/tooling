@@ -6,7 +6,8 @@ import { argv } from "node:process";
 import { isMaybeString } from "@howmanysmall/arktype-utilities";
 import { Ansis } from "ansis";
 import { regex, type } from "arktype";
-import { defineMacro } from "unplugin-macros";
+
+import { defineMacro } from "./define-macro.ts";
 
 import type { MacroContext } from "unplugin-macros";
 
@@ -212,7 +213,7 @@ function renderCodeLine(codeLines: Array<string>, line: string, rendered: Array<
 	rendered.push(renderCodeBlock(codeLines));
 
 	const remainder = line.slice(closingFenceIndex + marker.length);
-	if (remainder !== "") rendered.push(renderLine(remainder));
+	if (remainder.length > 0) rendered.push(renderLine(remainder));
 
 	return undefined;
 }

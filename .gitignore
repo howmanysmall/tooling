@@ -14,6 +14,8 @@ coverage
 .vitiate/corpus/
 .swc/
 
+.opencode/goals/
+
 # logs
 logs
 *.log
@@ -41,6 +43,10 @@ hk.local.pkl
 
 # idea
 .idea
+
+*.webp
+*.png
+*.jpg
 
 # vale: styles are synced from `Packages` in .vale.ini; only the project vocabulary is committed
 .vale/styles/*
@@ -130,3 +136,7 @@ hk.local.pkl
 .claude/skills/wayfinder
 .claude/skills/wizard
 .claude/skills/writing-for-agents
+.agents/skills/unix-cli/
+.agents/skills/vercel-composition-patterns/
+.agents/skills/vercel-react-best-practices/
+.agents/skills/vercel-react-view-transitions/

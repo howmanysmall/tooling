@@ -11,6 +11,12 @@
 			"path": "./packages/cli-utilities"
 		},
 		{
+			"path": "./packages/english-utilities"
+		},
+		{
+			"path": "./packages/string-utilities"
+		},
+		{
 			"path": "./tools/lint-configurations"
 		},
 		{

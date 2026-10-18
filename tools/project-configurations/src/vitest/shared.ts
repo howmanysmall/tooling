@@ -1,4 +1,5 @@
 import { availableParallelism } from "node:os";
+import { env } from "node:process";
 import { fileURLToPath } from "node:url";
 import { defineConfig, mergeConfig } from "vitest/config";
 
@@ -25,7 +26,7 @@ export const sharedConfiguration = defineConfig({
 
 /**
  * The Vitest project for one workspace package, whose tests are the
- * `*.test.ts` files beside its source in `src`.
+ * `*.test.ts` and `*.test.tsx` files beside its source in `src`.
  *
  * @param name - Project name, matching the package name without its scope.
  * @returns The package's Vitest configuration.
@@ -34,7 +35,11 @@ export function createPackageConfiguration(name: string): ViteUserConfig {
 	return mergeConfig(sharedConfiguration, {
 		test: {
 			name,
-			include: ["src/**/*.test.ts"],
+			include: ["src/**/*.test.{ts,tsx}"],
+			// turbo streams every package into one terminal, where the live
+			// summary rewrites lines that belong to other packages.
+			// biome-ignore lint/style/noProcessEnv: shut up?
+			reporters: env.TURBO_HASH === undefined ? ["default"] : [["default", { summary: false }]],
 			testTimeout: 5_000,
 		},
 	});

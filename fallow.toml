@@ -1,8 +1,10 @@
 entry = [
 	"apps/*/src/cli.ts",
 	"apps/*/src/index.ts",
+	"apps/*/scripts/*.ts",
 	"apps/*/src/**/*.fuzz.ts",
 	"apps/*/*.config.ts",
+	"apps/*/vitest.setup.ts",
 	"apps/*/src/**/*.bench.ts",
 	"packages/*/src/cli.ts",
 	"packages/*/src/index.ts",
@@ -13,7 +15,8 @@ entry = [
 	".config/*.ts",
 	"tools/project-configurations/src/vitest/setup.ts",
 	"packages/*/src/**/*.bench.ts",
-	"turbo/generators/*.ts"
+	"turbo/generators/*.ts",
+	"**/cliffy-internal-types.ts",
 ]
 ignorePatterns = [".claude/**", "!.config/**"]
 ignoreDependencies = [
@@ -88,6 +91,7 @@ minLines = 5
 minTokens = 50
 threshold = 0.5
 ignoreDefaults = true
+ignore = ["packages/string-utilities/src/casing-utilities.ts"]
 
 [audit]
 gate = "new-only"

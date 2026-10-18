@@ -3,19 +3,45 @@
 	"compilerOptions": {
 		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
+		"jsx": "react-jsx",
 		"paths": {
-			"$constants": ["./src/constants.ts"]
+			"$compare/*": ["./src/compare/*"],
+			"$commands/*": ["./src/commands/*"],
+			"$constants": ["./src/constants/constants.ts"],
+			"$constants/*": ["./src/constants/*"],
+			"$environment": ["./src/environment.ts"],
+			"$errors/*": ["./src/errors/*"],
+			"$functions/*": ["./src/functions/*"],
+			"$generation/*": ["./src/generation/*"],
+			"$history/*": ["./src/history/*"],
+			"$interactive/*": ["./src/interactive/*"],
+			"$mcp/*": ["./src/mcp/*"],
+			"$polyfills/*": ["./src/polyfills/*"],
+			"$preview/*": ["./src/preview/*"],
+			"$types/*": ["./src/types/*"],
+			"$utilities/*": ["./src/utilities/*"],
+			"$validators/*": ["./src/validators/*"],
+			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
 		"types": ["node"]
 	},
 	"references": [
 		{
-			"path": "../../tools/project-configurations"
+			"path": "../../packages/arktype-utilities"
 		},
 		{
 			"path": "../../packages/cli-utilities"
+		},
+		{
+			"path": "../../packages/english-utilities"
+		},
+		{
+			"path": "../../packages/string-utilities"
+		},
+		{
+			"path": "../../tools/project-configurations"
 		}
 	],
-	"include": ["src/**/*.ts", "./package.json", "*.config.ts"],
+	"include": ["src/**/*.ts", "src/**/*.tsx", "scripts/**/*.ts", "./package.json", "*.config.ts"],
 	"exclude": ["node_modules"]
 }
