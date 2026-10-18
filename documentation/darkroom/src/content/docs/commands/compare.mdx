@@ -1,0 +1,39 @@
+---
+title: compare
+description: Generate one prompt with two or more models into one folder.
+---
+
+```text
+darkroom compare [prompt] -m <id> -m <id> [options]
+```
+
+Generates the same prompt with two or more models at once, into one folder. darkroom shows the estimated total first
+and asks before spending.
+
+```sh title="Terminal"
+darkroom compare "a lighthouse at dusk" -m recraft/recraft-v4.1-flash -m openai/gpt-image-1
+darkroom compare "a cat" -m a/one -m b/two -n 2 --yes --format json | jq '.results[].model'
+```
+
+## Options
+
+`compare` takes the same image options as [`generate`][generate]. These ones differ:
+
+| Option                 | What it does                                                                              | Default |
+| ---------------------- | ----------------------------------------------------------------------------------------- | ------- |
+| `-m, --model <id>`     | A model to compare. Repeat it for each model, at least twice.                             |         |
+| `-i, --image <source>` | A reference image path or URL, sent to every model. Repeatable.                           |         |
+| `-n, --count <count>`  | Images per model, from 1 to 10.                                                           | `1`     |
+| `-o, --output <dir>`   | Where the comparison folder goes.                                                         | `.`     |
+| `-y, --yes`            | Spend without asking. Required when stdin isn't a terminal.                               |         |
+| `--dry-run`            | Validate every model and print each request with its estimated cost, without sending any. |         |
+
+## Results
+
+darkroom makes one folder under `-o` and saves every model's images in it. The folder's name is the date, then the
+start of the prompt. The models run in parallel. A model that fails doesn't stop the others. darkroom saves the
+other images and lists the error with the results. The exit code is 1.
+
+The history keeps one run per model and groups them. The history tab shows a comparison as one row.
+
+[generate]: ../generate/

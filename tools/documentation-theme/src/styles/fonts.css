@@ -1,0 +1,10 @@
+/*
+ * Newsreader is the person writing; IBM Plex is the instrument. The fonts load
+ * from this package, so a site doesn't need them as its own dependencies.
+ */
+
+@import "@fontsource-variable/ibm-plex-sans";
+@import "@fontsource-variable/newsreader/opsz.css";
+@import "@fontsource-variable/newsreader/opsz-italic.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";

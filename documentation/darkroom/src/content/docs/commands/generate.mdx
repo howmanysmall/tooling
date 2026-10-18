@@ -1,0 +1,69 @@
+---
+title: generate
+description: Generate images from a prompt with one model.
+---
+
+```text
+darkroom generate [prompt] [options]
+```
+
+Generates images with one model. Saved paths go to stdout, one per line, and progress and cost go to stderr, so the
+command composes with other tools.
+
+```sh title="Terminal"
+darkroom generate "a red fox in snow" -m google/gemini-2.5-flash-image
+darkroom generate - --dry-run < prompt.txt
+darkroom generate "the same fox, at night" -i fox.png -a 16:9
+```
+
+## The prompt
+
+darkroom takes the prompt from the first of these you pass:
+
+1. The `prompt` argument. `-` reads it from stdin.
+2. `--prompt-file`.
+3. When you pass neither and stdin is a terminal, darkroom asks for it.
+
+## Options
+
+| Option                       | What it does                                                                    | Default          |
+| ---------------------------- | ------------------------------------------------------------------------------- | ---------------- |
+| `--prompt-file <path>`       | Read the prompt from a file.                                                    |                  |
+| `-m, --model <id>`           | The model to use.                                                               | `DARKROOM_MODEL` |
+| `-i, --image <source>`       | A reference image path or URL. Repeat it for each image.                        |                  |
+| `-a, --aspect-ratio <ratio>` | The aspect ratio, such as `16:9` or `auto`.                                     |                  |
+| `-r, --resolution <tier>`    | `512`, `768`, `1K`, `1.5K`, `2K`, or `4K`.                                      |                  |
+| `-q, --quality <level>`      | `auto`, `low`, `medium`, `high`, `xhigh`, or `max`.                             |                  |
+| `-n, --count <count>`        | How many images to request, from 1 to 10.                                       | `1`              |
+| `-o, --output <path>`        | A file, a folder ending in `/`, or `-` for stdout.                              | `.`              |
+| `-t, --type <format>`        | `jpeg`, `png`, `svg`, or `webp`. Inferred from `-o` when it has an extension.   |                  |
+| `--background <mode>`        | `auto`, `transparent`, or `opaque`.                                             |                  |
+| `--compression <level>`      | `jpeg` or `webp` compression, from 0 to 100.                                    |                  |
+| `--seed <seed>`              | A seed, for models that support one.                                            |                  |
+| `-f, --format <format>`      | How to print the result: `pretty`, `table`, `json`, or `json-minified`.         | `pretty`         |
+| `--force`                    | Allow overwriting an explicit `-o` file.                                        |                  |
+| `--dry-run`                  | Validate the request and print it, with its estimated cost, without sending it. |                  |
+
+## Checked against the model
+
+Before anything goes out, darkroom checks the request against what the model declares. That covers the number of
+reference images and of results, and the aspect ratios, resolutions, and qualities it accepts. A request the model
+can't take fails with exit code 2 and says which option to change.
+
+Completions follow the model too. With `-m` on the command line, `-a` completes only that model's aspect ratios.
+
+## Reference images
+
+`-i` takes a path or a URL. darkroom downloads URLs before the request, checks that every reference is an image, and
+keeps a copy of each in the history. A rerun sends the same pictures.
+
+## Output paths
+
+| `-o`       | Where the images go                                                      |
+| ---------- | ------------------------------------------------------------------------ |
+| Not given  | The current folder. Each name is the date, then the start of the prompt. |
+| `renders/` | That folder, with the same names.                                        |
+| `fox.png`  | That file. With `-n 2` or more: `fox_1.png`, `fox_2.png`, and so on.     |
+| `-`        | stdout, as raw bytes. Only one image, and never to a terminal.           |
+
+darkroom never overwrites a file unless `--force` allows it for an explicit `-o` file. A taken name gets a number.

@@ -563,6 +563,21 @@
 			"includes": ["**/*.{jsonc,json}", "!**/package.json", "!**/tsconfig*.json"]
 		},
 
+		// Astro templates write HTML, so `class` is right and React's rules don't apply.
+		{
+			"includes": ["**/*.astro"],
+			"linter": {
+				"domains": {
+					"react": "none"
+				},
+				"rules": {
+					"suspicious": {
+						"noUnknownAttribute": "off"
+					}
+				}
+			}
+		},
+
 		{
 			"includes": ["**/*.svg"],
 			"linter": {

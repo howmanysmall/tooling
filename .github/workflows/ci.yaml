@@ -16,6 +16,7 @@ on:
       - .vale.ini
       - "apps/**"
       - biome.jsonc
+      - "documentation/**"
       - hk.pkl
       - mise.lock
       - mise.toml

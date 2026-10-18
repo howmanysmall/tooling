@@ -1,0 +1,56 @@
+---
+title: Output and exit codes
+description: What darkroom writes to stdout and stderr, and what its exit codes mean.
+---
+
+import Legend from "@howmanysmall/documentation-theme/components/legend.astro";
+import Transcript from "@howmanysmall/documentation-theme/components/transcript.astro";
+
+## Two streams
+
+darkroom writes what you asked for to stdout and everything else to stderr. Paths, IDs, and JSON go to stdout.
+Progress, warnings, costs, and errors go to stderr. A pipe gets only the data:
+
+<Legend
+	items={[
+		{ label: "stdout · saved paths", series: 1 },
+		{ label: "stderr · progress and cost", series: 2 },
+	]}
+/>
+<Transcript
+	label="A terminal running darkroom generate"
+	lines={[
+		{ command: true, text: 'darkroom generate "a lighthouse at dusk" -n 2' },
+		{ series: 2, text: "◒ Generating 2 images · 0:14" },
+		{ series: 1, text: "./2026-10-15_a-lighthouse-at-dusk.png" },
+		{ series: 1, text: "./2026-10-15_a-lighthouse-at-dusk-2.png" },
+		{ series: 2, text: "✔ 2 images · google/gemini-3-pro-image · $0.27" },
+	]}
+/>
+
+```sh title="Terminal"
+darkroom generate "a lighthouse at dusk" | xargs open
+```
+
+## Formats
+
+Commands that print results take `-f, --format`:
+
+| Format          | What it prints            |
+| --------------- | ------------------------- |
+| `pretty`        | Lines for people to read. |
+| `table`         | A table.                  |
+| `json`          | Indented JSON.            |
+| `json-minified` | JSON on one line.         |
+
+## Exit codes
+
+| Code  | Means                                                                                               |
+| ----- | --------------------------------------------------------------------------------------------------- |
+| `0`   | It worked. A run that got fewer images than it asked for still exits 0, with a warning.             |
+| `1`   | Something went wrong, such as an API error, a write error, or a model in a comparison that errored. |
+| `2`   | The command line was wrong: an unknown option, or a request the model can't take.                   |
+| `3`   | darkroom isn't set up, such as a missing or malformed `OPENROUTER_API_KEY`.                         |
+| `130` | You pressed `ctrl+c`.                                                                               |
+
+Set `DEBUG=1` to print the stack trace with an error.

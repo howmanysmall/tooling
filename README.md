@@ -7,9 +7,10 @@ Command-line tools by howmanysmall, in one pnpm monorepo.
 | Directory | What lives there |
 | --- | --- |
 | `apps/<tool>/` | One published command-line tool per directory, such as `apps/darkroom/`. Each has its own version, changelog, and npm package. |
+| `documentation/<tool>/` | The tool's documentation site, built with Astro and Starlight. |
 | `packages/` | Private libraries the tools share. They're bundled into each tool at build time. |
-| `tools/` | Lint, test, and build configuration shared by every workspace project. |
-| `scripts/` | Repository scripts: releasing and `tsconfig` reference syncing. |
+| `tools/` | Lint, test, and build configuration shared by every workspace project, and the documentation theme. |
+| `scripts/` | Repository scripts: releasing, publishing the documentation, and `tsconfig` reference syncing. |
 | `turbo/generators/` | Templates for new tools and libraries. |
 
 The tools run on Bun or Node. Code uses Node APIs only, so it behaves the same on both, and pnpm
@@ -50,6 +51,26 @@ The tag starts `.github/workflows/release.yaml`, which:
 4. Commits the changelog to `main`.
 5. Publishes the package to npm with provenance.
 6. Creates the GitHub release.
+7. Publishes the documentation sites from the tag.
+
+## Documentation
+
+Each site in `documentation/` uses `@howmanysmall/documentation-theme` from `tools/`. The theme has the layout, the
+type, and the components. Each site adds its pages and a palette file with its colors.
+
+The sites publish together, each under its own path on docs.howmanysmall.com. A repository gets one GitHub Pages
+deployment, and every site goes out in it.
+
+```sh
+node --run documentation:dev                     # every site, with live reload
+node --run documentation -- list                 # the sites and their addresses
+node --run documentation -- publish              # pick a ref, confirm, and follow the deploy
+node --run documentation -- publish --ref main --yes
+```
+
+`publish` runs `.github/workflows/documentation.yaml` on GitHub. It asks which branch or tag to build and confirms
+before the deploy starts. The first time, it also offers to turn on GitHub Pages. `--dry-run` shows what it would
+publish.
 
 ## Tasks
 

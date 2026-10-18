@@ -1,0 +1,41 @@
+{
+	"name": "@howmanysmall/documentation-theme",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Anna's field-notebook design for the Starlight documentation sites.",
+	"license": "UNLICENSED",
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./components/*": "./src/components/*",
+		"./overrides/*": "./src/overrides/*",
+		"./package.json": "./package.json",
+		"./site": "./src/site.ts",
+		"./styles/*": "./src/styles/*"
+	},
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package tools/documentation-theme",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent tools/documentation-theme",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsc --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"dependencies": {
+		"@fontsource-variable/ibm-plex-sans": "catalog:documentation",
+		"@fontsource-variable/newsreader": "catalog:documentation",
+		"@fontsource/ibm-plex-mono": "catalog:documentation"
+	},
+	"devDependencies": {
+		"@astrojs/starlight": "catalog:documentation",
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@types/node": "catalog:types",
+		"astro": "catalog:documentation",
+		"typescript": "catalog:tooling",
+		"vitest": "catalog:test"
+	},
+	"peerDependencies": {
+		"@astrojs/starlight": "*",
+		"astro": "*"
+	}
+}

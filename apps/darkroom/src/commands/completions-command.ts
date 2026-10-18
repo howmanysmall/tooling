@@ -22,6 +22,9 @@ function createShellCommand(shell: Shell, sourceHint: string): Command {
  * Cliffy's completions command, with scripts that also tell darkroom what is
  * already on the command line. That lets `-a` offer only the chosen model's
  * aspect ratios.
+ *
+ * The setup lines below are the source of truth for the Shell completions
+ * section of `documentation/darkroom/src/content/docs/guide/install.mdx`.
  */
 export const completionsCommand = new CompletionsCommand();
 completionsCommand.command("bash", createShellCommand(Shell.Bash, "source <(darkroom completions bash)"), {

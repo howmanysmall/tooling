@@ -1,0 +1,78 @@
+name: Documentation
+
+# Builds every site under documentation/ and deploys them together to GitHub
+# Pages, since a repository has one Pages deployment. A release runs this from
+# its tag; `node --run documentation -- publish` runs it by hand.
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Branch, tag, or commit to build
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag, or commit to build
+        required: true
+        default: main
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (full history, for last-updated dates)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ inputs.ref }}
+
+      - name: Setup toolchain
+        uses: $/.github/actions/setup
+
+      - name: Install dependencies
+        uses: $/.github/actions/install
+
+      - name: Build the sites
+        run: node --run turbo -- run build --filter=./documentation/*
+
+      - name: Check for dead links
+        run: node --run turbo -- run check:links --filter=./documentation/*
+
+      - name: Gather the sites
+        run: node --run documentation -- assemble --output _site
+
+      - name: Configure Pages
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Upload the sites
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+    timeout-minutes: 20
+
+  deploy:
+    permissions:
+      id-token: write # Proves the deployment came from this workflow
+      pages: write # For deploying to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+    timeout-minutes: 10
