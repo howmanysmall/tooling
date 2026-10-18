@@ -1,0 +1,30 @@
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
+
+import { formatCost } from "$generation/format-result";
+
+import type { SessionTurn } from "./session-state";
+
+function formatSeconds(turn: SessionTurn): string | undefined {
+	if (turn.startedAt === undefined || turn.finishedAt === undefined) return undefined;
+	return `${((turn.finishedAt - turn.startedAt) / 1000).toFixed(1)}s`;
+}
+
+/**
+ * The line under a finished turn: the model, how long it took, what it
+ * cost, and how many images came back when that isn't what was asked for.
+ *
+ * @param turn - A finished or failed turn.
+ * @param modelName - The turn's model, by name.
+ * @returns Like `Nano Banana 2.1 · 14.2s · $0.039`.
+ */
+export function summarizeTurn(turn: SessionTurn, modelName: string): string {
+	const parts = [modelName, formatSeconds(turn)];
+	const { result } = turn;
+	if (result !== undefined) {
+		parts.push(formatCost(result.cost));
+		if (result.returned !== result.requested) {
+			parts.push(`${result.returned} of ${result.requested} ${toPlural(result.requested, "image")}`);
+		}
+	}
+	return parts.filter((part) => part !== undefined).join(" · ");
+}

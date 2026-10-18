@@ -12,6 +12,7 @@
 	"sideEffects": false,
 	"type": "module",
 	"exports": {
+		"./cli-error": "./src/cli-error.ts",
 		"./cliffy-highlight": "./src/cliffy-highlight.ts",
 		"./create-base-command": "./src/create-base-command.ts",
 		"./get-script-name": "./src/get-script-name.ts",
@@ -33,7 +34,7 @@
 	"devDependencies": {
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
-		"@types/node": "catalog:types",
+		"@types/node": "catalog:node-floor",
 		"@vitiate/core": "catalog:test",
 		"fast-check": "catalog:test",
 		"tsdown": "catalog:build",

@@ -100,7 +100,14 @@
 				}
 			],
 			"hard_tabs": true,
-			"language_servers": ["discord_presence", "!knip", "astro-language-server", "biome", "..."]
+			"language_servers": [
+				"!knip",
+				"!tailwind-css-language-server",
+				"astro-language-server",
+				"biome",
+				"discord_presence",
+				"..."
+			]
 		},
 		"CSS": {
 			"code_actions_on_format": {
@@ -117,7 +124,15 @@
 				}
 			],
 			"hard_tabs": true,
-			"language_servers": ["discord_presence", "!knip", "eslint", "biome", "oxfmt", "..."],
+			"language_servers": [
+				"!knip",
+				"!tailwind-css-language-server",
+				"biome",
+				"discord_presence",
+				"eslint",
+				"oxfmt",
+				"..."
+			],
 			"prettier": { "allowed": false },
 			"tab_size": 4
 		},
@@ -131,15 +146,15 @@
 			"language_servers": [
 				"!knip",
 				"biome",
+				"codebook",
 				"dependi",
 				"deputy",
+				"discord_presence",
 				"eslint",
+				"harper-ls",
 				"json-language-server",
 				"package-version-server",
-				"wakatime",
-				"codebook",
-				"harper-ls",
-				"discord_presence"
+				"wakatime"
 			],
 			"tab_size": 4
 		},
@@ -151,44 +166,43 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
-				"discord_presence",
 				"!knip",
 				"biome",
+				"codebook",
 				"dependi",
 				"deputy",
+				"discord_presence",
 				"eslint",
+				"harper-ls",
 				"json-language-server",
 				"package-version-server",
-				"wakatime",
-				"codebook",
-				"harper-ls",
-				"discord_presence"
+				"wakatime"
 			],
 			"tab_size": 4
 		},
 		"JavaScript": {
 			"language_servers": [
-				"discord_presence",
 				"!deno",
 				"!knip",
 				"!vtsls",
 				"!effect-tsgo",
 				"!graphql",
 				"!typescript-language-server",
+				"!tailwind-css-language-server",
 				"..."
 			]
 		},
 		"MDX": {
 			"format_on_save": "on",
 			"language_servers": [
+				"!tailwind-css-language-server",
+				"codebook",
 				"discord_presence",
+				"harper-ls",
 				"oxfmt",
 				"rumdl",
-				"wakatime",
-				"codebook",
-				"harper-ls",
-				"discord_presence",
 				"vale",
+				"wakatime",
 				"..."
 			],
 			"prettier": { "allowed": false }
@@ -217,15 +231,7 @@
 				}
 			},
 			"hard_tabs": true,
-			"language_servers": [
-				"discord_presence",
-				"!knip",
-				"pkl",
-				"wakatime",
-				"codebook",
-				"harper-ls",
-				"discord_presence"
-			],
+			"language_servers": ["!knip", "pkl", "wakatime", "codebook", "harper-ls", "discord_presence"],
 			"tab_size": 4
 		},
 		"Shell Script": {
@@ -238,13 +244,12 @@
 			},
 			"hard_tabs": true,
 			"language_servers": [
-				"discord_presence",
 				"!knip",
 				"bash-language-server",
-				"wakatime",
 				"codebook",
-				"harper-ls",
 				"discord_presence",
+				"harper-ls",
+				"wakatime",
 				"..."
 			],
 			"tab_size": 4
@@ -253,8 +258,8 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
-				"discord_presence",
 				"!knip",
+				"discord_presence",
 				"dependi",
 				"deputy",
 				"eslint",
@@ -262,8 +267,7 @@
 				"tombi",
 				"wakatime",
 				"codebook",
-				"harper-ls",
-				"discord_presence"
+				"harper-ls"
 			],
 			"tab_size": 4
 		},
@@ -277,13 +281,13 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
-				"discord_presence",
 				"!deno",
 				"!knip",
 				"!vtsls",
 				"!effect-tsgo",
 				"!graphql",
 				"!typescript-language-server",
+				"!tailwind-css-language-server",
 				"..."
 			],
 			"prettier": { "allowed": false },
@@ -299,13 +303,13 @@
 			"format_on_save": "on",
 			"hard_tabs": true,
 			"language_servers": [
-				"discord_presence",
 				"!deno",
 				"!knip",
 				"!vtsls",
 				"!effect-tsgo",
 				"!graphql",
 				"!typescript-language-server",
+				"!tailwind-css-language-server",
 				"..."
 			],
 			"prettier": { "allowed": false },
@@ -315,8 +319,8 @@
 			"format_on_save": "on",
 			"hard_tabs": false,
 			"language_servers": [
-				"discord_presence",
 				"!knip",
+				"discord_presence",
 				"dependi",
 				"eslint",
 				"json-language-server",

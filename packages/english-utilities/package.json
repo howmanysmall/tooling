@@ -1,0 +1,39 @@
+{
+	"name": "@howmanysmall/english-utilities",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Utilities relating to the English language.",
+	"license": "MIT",
+	"author": {
+		"name": "HowManySmall",
+		"email": "contact@howmanysmall.com",
+		"url": "https://howmanysmall.com"
+	},
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		"./format-array-as-english-list": "./src/format-array-as-english-list.ts",
+		"./get-indefinite-article": "./src/get-indefinite-article.ts",
+		"./package.json": "./package.json",
+		"./to-plural": "./src/to-plural.ts"
+	},
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package packages/english-utilities",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent packages/english-utilities",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsc --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"dependencies": {
+		"type-fest": "catalog:types"
+	},
+	"devDependencies": {
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@types/node": "catalog:node-floor",
+		"vitest": "catalog:test"
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	}
+}

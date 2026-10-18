@@ -1,7 +1,24 @@
 {
 	"name": "@pobammer-ts/darkroom",
-	"version": "0.0.0",
-	"description": "A command-line tool.",
+	"version": "0.0.1",
+	"description": "A CLI for slopping together images with AI.",
+	"keywords": [
+		"tools",
+		"cli",
+		"image-processing",
+		"artificial-intelligence",
+		"ai",
+		"generative-ai",
+		"image-manipulation",
+		"automation",
+		"typescript",
+		"openrouter",
+		"workflow"
+	],
+	"bugs": {
+		"email": "anna@howmanysmall.com",
+		"url": "https://github.com/howmanysmall/tooling/issues"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/howmanysmall/tooling.git",
@@ -15,18 +32,12 @@
 	},
 	"sideEffects": false,
 	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/index.d.ts",
-			"default": "./dist/index.js"
-		},
-		"./package.json": "./package.json"
-	},
 	"bin": {
 		"darkroom": "./dist/cli.js"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"examples"
 	],
 	"scripts": {
 		"build": "tsdown",
@@ -39,15 +50,52 @@
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"dependencies": {
-		"@cliffy/command": "catalog:runtime"
+		"@arkenv/core": "catalog:runtime",
+		"@clack/core": "catalog:runtime",
+		"@clack/prompts": "catalog:runtime",
+		"@inkjs/ui": "catalog:runtime",
+		"@openrouter/sdk": "catalog:ai",
+		"@tmcp/adapter-arktype": "catalog:ai",
+		"@tmcp/transport-stdio": "catalog:ai",
+		"@xterm/headless": "catalog:runtime",
+		"ansis": "catalog:runtime",
+		"arktype": "catalog:runtime",
+		"consola": "catalog:runtime",
+		"env-paths": "catalog:runtime",
+		"fast-string-width": "catalog:runtime",
+		"fzf": "catalog:runtime",
+		"ink": "catalog:runtime",
+		"pretty-bytes": "catalog:runtime",
+		"react": "catalog:runtime",
+		"sharp": "catalog:runtime",
+		"tmcp": "catalog:ai",
+		"type-fest": "catalog:types"
 	},
 	"devDependencies": {
+		"@cliffy/command": "catalog:runtime",
+		"@cliffy/table": "catalog:runtime",
+		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/english-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
-		"@types/node": "catalog:types",
+		"@howmanysmall/string-utilities": "workspace:*",
+		"@tmcp/transport-in-memory": "catalog:ai",
+		"@total-typescript/shoehorn": "catalog:test",
+		"@total-typescript/ts-reset": "catalog:types",
+		"@types/node": "catalog:node-floor",
+		"@types/react": "catalog:types",
+		"effect": "catalog:runtime",
+		"temporal-polyfill": "catalog:polyfills",
 		"tsdown": "catalog:build",
-		"unplugin-macros": "catalog:build",
 		"vitest": "catalog:test"
+	},
+	"peerDependencies": {
+		"temporal-polyfill": "catalog:polyfills"
+	},
+	"peerDependenciesMeta": {
+		"temporal-polyfill": {
+			"optional": true
+		}
 	},
 	"engines": {
 		"node": ">=22.18.0"

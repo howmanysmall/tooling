@@ -13,6 +13,56 @@ const CONFIGURATION_FILES = `**/*.config.${GLOB_SRC_EXT}`;
 const SCRIPT_FILES = `scripts/${GLOB_SRC}`;
 const TURBO_GENERATOR_FILES = `turbo/generators/${GLOB_SRC}`;
 
+const MANUAL_BANNED = "Manual React memoization is banned. Let React Compiler derive it.";
+
+const REACT_COMPILER_RESTRICTED_SYNTAX = [
+	{
+		message: MANUAL_BANNED,
+		selector: "ImportDeclaration[source.value='react'] > ImportSpecifier[imported.name='memo']",
+	},
+	{
+		message: MANUAL_BANNED,
+		selector: "ImportDeclaration[source.value='react'] > ImportSpecifier[imported.name='useCallback']",
+	},
+	{
+		message: MANUAL_BANNED,
+		selector: "ImportDeclaration[source.value='react'] > ImportSpecifier[imported.name='useMemo']",
+	},
+	{
+		message: MANUAL_BANNED,
+		selector: "CallExpression[callee.object.name='React'][callee.property.name='memo']",
+	},
+	{
+		message: MANUAL_BANNED,
+		selector: "CallExpression[callee.object.name='React'][callee.property.name='useCallback']",
+	},
+	{
+		message: MANUAL_BANNED,
+		selector: "CallExpression[callee.object.name='React'][callee.property.name='useMemo']",
+	},
+	{
+		message: "Function defaults are not stabilized by React Compiler. Hoist the function instead.",
+		selector:
+			":matches(FunctionDeclaration, FunctionExpression)[id.name=/^(?:[A-Z]|use[A-Z])/] > ObjectPattern.params > Property > AssignmentPattern > :matches(ArrowFunctionExpression, FunctionExpression).right",
+	},
+	{
+		message: "Function defaults are not stabilized by React Compiler. Hoist the function instead.",
+		selector:
+			"VariableDeclarator[id.name=/^(?:[A-Z]|use[A-Z])/] > :matches(ArrowFunctionExpression, FunctionExpression).init > ObjectPattern.params > Property > AssignmentPattern > :matches(ArrowFunctionExpression, FunctionExpression).right",
+	},
+] as const;
+
+const REACT_EFFECT_RESTRICTED_SYNTAX = [
+	{
+		message: "useEffect is banned. Use the `no-use-effect` skill for more information.",
+		selector: "CallExpression[callee.name='useEffect']",
+	},
+	{
+		message: "useLayoutEffect is banned. Use the `no-use-effect` skill for more information.",
+		selector: "CallExpression[callee.name='useLayoutEffect']",
+	},
+] as const;
+
 interface ConfigurationOptions {
 	readonly argv?: ReadonlyArray<string> | undefined;
 	readonly rootDirectory: string;
@@ -72,7 +122,7 @@ export async function getOxlintAsync({
 			},
 			react: {
 				reactCompiler: true,
-				version: "19.2.8",
+				version: "19.3.0",
 			},
 			roblox: false,
 			rules: {
@@ -141,6 +191,7 @@ export async function getOxlintAsync({
 							"@total-typescript/ts-reset",
 							"$configure-arktype",
 							"$polyfill",
+							"$polyfills/*",
 							"@dotenvx/dotenvx",
 							"@dotenvx/dotenvx/config",
 						],
@@ -171,7 +222,7 @@ export async function getOxlintAsync({
 				"jsdoc/check-tag-names": [
 					"error",
 					{
-						definedTags: ["expected-unused", "rejects"],
+						definedTags: ["expected-unused", "rejects", "__NO_SIDE_EFFECTS__"],
 						jsxTags: false,
 						typed: false,
 					},
@@ -192,6 +243,11 @@ export async function getOxlintAsync({
 				"no-magic-numbers": "off",
 				"no-nested-ternary": "off",
 				"no-plusplus": "off",
+				"no-restricted-syntax": [
+					"error",
+					...REACT_COMPILER_RESTRICTED_SYNTAX,
+					...REACT_EFFECT_RESTRICTED_SYNTAX,
+				],
 				"no-ternary": "off",
 				"no-undefined": "off",
 				"no-underscore-dangle": "off",
@@ -320,6 +376,7 @@ export async function getOxlintAsync({
 				"small-rules/no-pass-data-to-parent": ["error", { environment: "standard" }],
 				"small-rules/no-pass-live-state-to-parent": ["error", { environment: "standard" }],
 				"small-rules/no-print": "off",
+				"small-rules/no-reduce-accumulator-copy": "error",
 				"small-rules/no-redundant-aspect-ratio-constraint": "off",
 				"small-rules/no-reflect-apply": "error",
 				"small-rules/no-reflect-get": "error",
@@ -343,6 +400,7 @@ export async function getOxlintAsync({
 				"small-rules/no-use-memo-simple-expression": "error",
 				"small-rules/no-useless-constants": "error",
 				"small-rules/no-useless-default": "off",
+				"small-rules/no-useless-empty-string-comparison": ["error", { allowAutofix: true }],
 				"small-rules/no-useless-use-effect": ["error", { environment: "standard" }],
 				"small-rules/no-useless-use-memo": ["error", { environment: "standard" }],
 				"small-rules/no-useless-use-spring": "off",
@@ -370,7 +428,7 @@ export async function getOxlintAsync({
 				"small-rules/prefer-single-world-query-in-jecs": "off",
 				"small-rules/prefer-ternary-conditional-rendering": "error",
 				"small-rules/prefer-udim2-shorthand": "off",
-				"small-rules/prefer-use-reducer": "off",
+				"small-rules/prefer-use-reducer": "error",
 				"small-rules/prevent-abbreviations": [
 					"error",
 					{
@@ -401,7 +459,7 @@ export async function getOxlintAsync({
 				"small-rules/react-hooks-strict-return": "error",
 				"small-rules/require-async-suffix": "error",
 				"small-rules/require-module-level-instantiation": "off",
-				"small-rules/require-named-effect-functions": "off",
+				"small-rules/require-named-effect-functions": "error",
 				"small-rules/require-paired-calls": "error",
 				"small-rules/require-react-component-keys": "off",
 				"small-rules/require-react-display-names": ["error", { environment: "standard" }],
@@ -494,9 +552,10 @@ export async function getOxlintAsync({
 				jsdoc: {
 					tagNamePreference: {
 						"expected-unused": "expected-unused",
+						jsxImportSource: "jsxImportSource",
 					},
 				},
-				react: { version: "19.2.8" },
+				react: { version: "19.3.0" },
 				"small-rules": { tsgolintVersion: "7.0.2002" },
 				vitest: { typecheck: true },
 			},
@@ -538,6 +597,7 @@ export async function getOxlintAsync({
 			rules: {
 				...reactDoctorRules,
 				// STOP DUPLICATING NATIVE RULES!!!
+				"react-doctor/exhaustive-deps": "off",
 				"react-doctor/forbid-component-props": "off",
 				"react-doctor/jsx-boolean-value": "off",
 				"react-doctor/jsx-curly-brace-presence": "off",

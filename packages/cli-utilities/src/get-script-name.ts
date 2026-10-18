@@ -1,6 +1,7 @@
 import nodePath from "node:path";
 import { argv } from "node:process";
-import { defineMacro } from "unplugin-macros";
+
+import { defineMacro } from "./define-macro.ts";
 
 import type { MacroContext } from "unplugin-macros";
 

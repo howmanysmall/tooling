@@ -20,7 +20,7 @@ export async function getEslintAsync(tsconfigPath: string): Promise<LintConfigur
 			e18e: {
 				modernization: true,
 				moduleReplacements: true,
-				nodeMajor: 24,
+				nodeMajor: 22,
 				overrides: {
 					"e18e/ban-dependencies": ["error", BANNED_DEPENDENCIES],
 				},
@@ -45,6 +45,10 @@ export async function getEslintAsync(tsconfigPath: string): Promise<LintConfigur
 			oxlint: true,
 			oxlintWarnDeadRules: true,
 			pnpm: true,
+			react: {
+				compilationMode: "all",
+				version: "19.3.0",
+			},
 			roblox: false,
 			rules: {
 				"sonar/no-redundant-optional": "off",
