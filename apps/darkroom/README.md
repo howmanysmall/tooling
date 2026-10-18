@@ -3,6 +3,8 @@
 Generate images with any image model on [OpenRouter](https://openrouter.ai), compare models side by side, and keep every
 run in a browsable history.
 
+The full guide is at <https://docs.howmanysmall.com/tooling/darkroom/>.
+
 ## Setup
 
 Set `OPENROUTER_API_KEY`, in the environment or in a `.env` file. Commands that never call the API, such as

@@ -1,0 +1,26 @@
+---
+import { Code, TabItem, Tabs } from "@astrojs/starlight/components";
+
+/**
+ * One shell's setup line. The commands mirror the source hints in
+ * `apps/darkroom/src/commands/completions-command.ts`; change them there too.
+ */
+const SHELLS = [
+	{ file: "~/.bashrc", label: "bash", lang: "bash", setup: "source <(darkroom completions bash)" },
+	{ file: "~/.zshrc", label: "zsh", lang: "zsh", setup: "source <(darkroom completions zsh)" },
+	{
+		file: "~/.config/fish/config.fish",
+		label: "fish",
+		lang: "fish",
+		setup: "source (darkroom completions fish | psub)",
+	},
+] as const;
+---
+
+<Tabs syncKey="shell">
+	{SHELLS.map(({ file, label, lang, setup }) => (
+		<TabItem label={label}>
+			<Code code={setup} lang={lang} title={file} />
+		</TabItem>
+	))}
+</Tabs>

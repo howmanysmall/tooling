@@ -23,3 +23,4 @@
 (?i)\btsgo\b
 (?i)\bstdio\b
 (?i)\bJSON-RPC\b
+(?i)\bOpenRouter\b

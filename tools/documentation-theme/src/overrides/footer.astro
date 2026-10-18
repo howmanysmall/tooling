@@ -1,0 +1,58 @@
+---
+import EditLink from "@astrojs/starlight/components/EditLink.astro";
+import LastUpdated from "@astrojs/starlight/components/LastUpdated.astro";
+import Pagination from "@astrojs/starlight/components/Pagination.astro";
+
+/**
+ * The foot of a page: the links to the pages before and after it, then the
+ * footnote band with the edit link and when the page last changed.
+ */
+const { editUrl, lastUpdated } = Astro.locals.starlightRoute;
+const hasFootnote = editUrl !== undefined || lastUpdated !== undefined;
+const label = "Edit";
+---
+
+<footer class="page-footer">
+	<Pagination />
+	{hasFootnote ? (
+		<div class="footnote-band">
+			<span class="footnote-band-label">{label}</span>
+			<div class="page-footer-meta">
+				<EditLink />
+				<LastUpdated />
+			</div>
+		</div>
+	) : null}
+</footer>
+
+<style>
+	.page-footer {
+		display: grid;
+		gap: 0;
+		margin-top: 3rem;
+	}
+
+	.page-footer-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem 1.5rem;
+		align-items: baseline;
+	}
+
+	.page-footer-meta :global(a) {
+		padding: 0;
+		font: inherit;
+		color: var(--focus);
+		text-decoration: underline;
+	}
+
+	.page-footer-meta :global(svg) {
+		display: none;
+	}
+
+	.page-footer-meta :global(p) {
+		margin: 0;
+		font: inherit;
+		color: var(--ink-2);
+	}
+</style>
