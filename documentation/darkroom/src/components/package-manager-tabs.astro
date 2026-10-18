@@ -1,0 +1,18 @@
+---
+import { Code, TabItem, Tabs } from "@astrojs/starlight/components";
+
+import { PACKAGE_MANAGERS } from "./package-managers";
+
+/**
+ * The install command, once per package manager. The tabs share a key, so a
+ * reader who picks bun here picks bun on the next page too.
+ */
+---
+
+<Tabs syncKey="package-manager">
+	{PACKAGE_MANAGERS.map(({ install, label }) => (
+		<TabItem label={label}>
+			<Code code={install} lang="bash" />
+		</TabItem>
+	))}
+</Tabs>

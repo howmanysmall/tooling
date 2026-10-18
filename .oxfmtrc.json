@@ -8,6 +8,7 @@
 	"htmlWhitespaceSensitivity": "css",
 	"ignorePatterns": [
 		"**/*-lock.json",
+		"**/*.astro",
 		"**/*.hbs",
 		"**/*.js",
 		"**/*.{md,toml,js,yaml,yml,toml}",

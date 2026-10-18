@@ -1,0 +1,40 @@
+---
+title: Keep and revisit runs
+description: darkroom keeps each run with its prompt, settings, references, and cost. Find one, open it, or run it again.
+---
+
+darkroom records everything about each run, from the prompt to the cost. It also keeps a copy of each
+image. Your own copies can move or vanish, and the history still has the images.
+
+## Find a run
+
+```sh title="Terminal"
+darkroom history list --limit 10
+darkroom history show last
+darkroom history browse
+```
+
+A run ID accepts a unique prefix of the ID, `last` for the newest run, or `last~N` for the run N before it.
+`history browse` opens the history tab of the full-screen app, with the image beside each run.
+
+## Run it again
+
+`history rerun` repeats a run with its stored prompt, settings, and reference images. Any `generate` flag overrides
+the stored value, so you can change one thing and keep the rest:
+
+```sh title="Terminal"
+darkroom history rerun last -m openai/gpt-image-2
+```
+
+The new run records which run it came from, and `history show` lists the chain.
+
+## Make room
+
+`history prune` with no flags reports how much space the history takes. Add a rule to delete old runs:
+
+```sh title="Terminal"
+darkroom history prune --older-than 30d --dry-run
+darkroom history prune --max-size 2GB
+```
+
+darkroom lists what it would delete and asks first. `--yes` skips the question.

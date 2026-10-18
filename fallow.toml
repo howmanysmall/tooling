@@ -5,6 +5,9 @@ entry = [
 	"apps/*/src/**/*.fuzz.ts",
 	"apps/*/*.config.ts",
 	"apps/*/vitest.setup.ts",
+	"documentation/*/*.config.ts",
+	"documentation/*/src/content.config.ts",
+	"documentation/*/src/styles/*.css",
 	"apps/*/src/**/*.bench.ts",
 	"packages/*/src/cli.ts",
 	"packages/*/src/index.ts",
@@ -48,6 +51,8 @@ ignoreDependencies = [
 	"fast-check",
 	"oxlint-plugin-react-doctor",
 	"publint",
+	# Astro loads sharp itself to optimize images.
+	"sharp",
 	"typescript7",
 ]
 ignoreExportsUsedInFile = true

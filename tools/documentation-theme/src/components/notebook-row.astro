@@ -1,0 +1,33 @@
+---
+/**
+ * One section of a notebook page: a margin note that names the figure and says
+ * how to read it, the figure itself, and an optional column of readouts.
+ */
+interface Props {
+	/** The anchor for the row's heading. */
+	readonly id?: string;
+	/** How to read the figure, starting "fig. N —" when there is one. */
+	readonly note?: string;
+	/** The margin head. */
+	readonly title: string;
+}
+
+const { id, note, title } = Astro.props;
+const headingId = id ?? title.toLowerCase().replaceAll(/[^a-z\d]+/gu, "-");
+const hasReadouts = Astro.slots.has("readouts");
+---
+
+<section aria-labelledby={headingId} class="notebook-row">
+	<div class="notebook-margin">
+		<h2 class="notebook-margin-head" id={headingId}>{title}</h2>
+		{note === undefined ? null : <p class="notebook-fig-note">{note}</p>}
+	</div>
+	<div class="notebook-figure">
+		<slot />
+	</div>
+	{hasReadouts ? (
+		<div class="notebook-readouts">
+			<slot name="readouts" />
+		</div>
+	) : null}
+</section>

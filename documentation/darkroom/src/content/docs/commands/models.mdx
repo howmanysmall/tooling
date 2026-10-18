@@ -1,0 +1,47 @@
+---
+title: models
+description: List and filter image models, or show one in full.
+---
+
+```text
+darkroom models <command>
+```
+
+## List models
+
+```text
+darkroom models list [search] [options]
+```
+
+Lists every image model with its price and limits. On a terminal it opens the models tab of the full-screen app. When
+piped, it prints one model ID per line, so it feeds other commands.
+
+```sh title="Terminal"
+darkroom models list --refs --sort price
+darkroom models list flux --format table
+darkroom models list --transparent | head -n 3
+```
+
+| Option                  | What it does                                                 | Default |
+| ----------------------- | ------------------------------------------------------------ | ------- |
+| `--provider <name>`     | Only models from this provider, like `google`.               |         |
+| `--refs`                | Only models that accept reference images.                    |         |
+| `--multi`               | Only models that can return more than one image per request. |         |
+| `--ratio <ratio>`       | Only models that accept this aspect ratio.                   |         |
+| `--transparent`         | Only models that can make a transparent background.          |         |
+| `--sort <key>`          | `name`, `price`, or `created`.                               | `name`  |
+| `-f, --format <format>` | `pretty`, `table`, `json`, or `json-minified`.               |         |
+
+## Show one model
+
+```text
+darkroom models get [model] [options]
+```
+
+Shows one model in full: each parameter with the values it accepts, and the prices.
+
+| Option                            | What it does                                          | Default                   |
+| --------------------------------- | ----------------------------------------------------- | ------------------------- |
+| `-f, --format <format>`           | `pretty`, `table`, `json`, or `json-minified`.        | `pretty`                  |
+| `-t, --timestamp-format <format>` | How to print dates, such as `iso-date` or `relative`. | `short-weekday-date-time` |
+| `--regenerate`                    | Refresh the completion cache first.                   |                           |

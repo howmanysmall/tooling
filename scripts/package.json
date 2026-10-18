@@ -7,9 +7,11 @@
 		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent scripts"
 	},
 	"dependencies": {
+		"@clack/prompts": "catalog:runtime",
 		"@cliffy/command": "catalog:runtime",
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/documentation-theme": "workspace:*",
 		"@howmanysmall/lint-configurations": "workspace:*",
 		"arktype": "catalog:runtime",
 		"bumpp": "catalog:tooling",
