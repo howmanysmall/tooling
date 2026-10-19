@@ -80,5 +80,6 @@ export { INDENT };
  * @returns The table with trailing spaces removed.
  */
 export function trimTrailingSpaces(table: string): string {
+	// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 	return table.split("\n").map(EffectString.trimEnd).join("\n");
 }

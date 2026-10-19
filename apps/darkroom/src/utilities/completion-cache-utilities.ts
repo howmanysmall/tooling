@@ -42,6 +42,7 @@ function getParameterLines(imageModel: ImageModelListItem): Array<string> {
 function createCompletions(imageModels: ReadonlyArray<ImageModelListItem>): Record<CompletionKind, Array<string>> {
 	return {
 		[CompletionKind.ImageModelIds]: imageModels.map(({ id }) => id),
+		// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 		[CompletionKind.ModelParameters]: imageModels.flatMap(getParameterLines),
 	};
 }

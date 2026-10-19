@@ -325,6 +325,7 @@ function checkLinks(root: string, base: string): CheckResult {
 function countCheckable(pageFile: string): number {
 	const html = readFileSync(pageFile, "utf8");
 	const references = Array.from(html.matchAll(REFERENCE_PATTERN), (match) => match.groups?.reference ?? "");
+	// oxlint-disable-next-line unicorn/no-array-callback-reference -- `isCheckable` is a predicate.
 	return references.filter(isCheckable).length;
 }
 
