@@ -9,6 +9,14 @@ const isFuzzRun = env.VITIATE_FUZZ === "1" || env.VITIATE_OPTIMIZE === "1" || en
 // Each package's own config resolves its `$` path aliases.
 const testConfiguration = defineConfig({
 	test: {
+		// Coverage is root-only in projects mode. test:istanbul overrides the
+		// provider, reporter, and directory for fallow.
+		coverage: {
+			exclude: ["**/*.{test,fuzz,bench}.{ts,tsx}"],
+			include: ["{apps,packages,tools}/*/src/**/*.{ts,tsx}"],
+			provider: "v8",
+			reporter: ["text", "html", "lcov"],
+		},
 		projects: ["apps/*/vitest.config.ts", "packages/*/vitest.config.ts", "tools/*/vitest.config.ts"],
 	},
 });

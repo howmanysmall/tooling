@@ -82,7 +82,7 @@ export function ModelPickerDialog({
 		if (key.tab) dispatchView({ delta: key.shift ? -1 : 1, type: "cycle-sort" });
 	});
 
-	function pick(match: ModelMatch | undefined): void {
+	function pick(match?: ModelMatch): void {
 		if (match === undefined) return;
 		onPick(match.model);
 		onClose();

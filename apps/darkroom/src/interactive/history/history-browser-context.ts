@@ -33,7 +33,7 @@ export interface HistoryBrowserState {
 
 export interface HistoryBrowserActions {
 	/** Answers the delete question; `undefined` keeps the run. */
-	readonly answerDelete: (deletion: RunDeletion | undefined) => void;
+	readonly answerDelete: (deletion?: RunDeletion) => void;
 	readonly askDelete: () => void;
 	readonly cancelFilter: () => void;
 	readonly closeFilter: () => void;

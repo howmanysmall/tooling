@@ -80,6 +80,7 @@ function formatNumber(value: number): string {
 	return cyan(numberFormatter.format(value));
 }
 function formatList(values: ReadonlyArray<string>): string {
+	// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 	return values.map(green).join(`${dim(",")} `);
 }
 

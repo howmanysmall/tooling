@@ -115,7 +115,7 @@ export function placeRuns(runs: ReadonlyArray<StyledRun>): Array<PlacedRun> {
 	});
 }
 
-function findRun(runs: ReadonlyArray<PlacedRun>, source: number | undefined): PlacedRun | undefined {
+function findRun(runs: ReadonlyArray<PlacedRun>, source?: number): PlacedRun | undefined {
 	if (source === undefined) return undefined;
 	return runs.findLast((run) => run.start <= source);
 }

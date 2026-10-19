@@ -58,14 +58,18 @@ export function formatHistoryList(entries: ReadonlyArray<HistoryEntry>, outputFo
 			return formatJson(entries, outputFormat);
 
 		case OutputFormat.Pretty:
+			// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 			return trimTrailingSpaces(new Table().body(entries.map(toListRow)).padding(2).toString());
 
 		case OutputFormat.Table: {
-			return new Table()
-				.header(["ID", "Date", "Model", "Cost", "Prompt"])
-				.body(entries.map(toListRow))
-				.border()
-				.toString();
+			return (
+				new Table()
+					.header(["ID", "Date", "Model", "Cost", "Prompt"])
+					// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
+					.body(entries.map(toListRow))
+					.border()
+					.toString()
+			);
 		}
 
 		default:

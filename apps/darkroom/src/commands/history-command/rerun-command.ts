@@ -26,7 +26,7 @@ const scriptName = getScriptName(true);
 async function loadReferencesAsync(
 	entry: HistoryEntry,
 	store: HistoryStore,
-	sources: ReadonlyArray<string> | undefined,
+	sources?: ReadonlyArray<string>,
 ): Promise<Array<ReferenceImage>> {
 	const { loadReferenceAsync } = await import("$generation/references");
 	if (sources !== undefined) return Promise.all(sources.map(async (source) => loadReferenceAsync(source)));

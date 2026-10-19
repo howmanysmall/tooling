@@ -79,7 +79,7 @@ export type SessionAction =
 	| { readonly mode: PromptMode; readonly type: "set-mode" }
 	| { readonly type: "dismiss" };
 
-function getFirstImage(result: GenerationResult | undefined): BaseImage | undefined {
+function getFirstImage(result?: GenerationResult): BaseImage | undefined {
 	const image = result?.images.find((saved) => saved.path !== undefined);
 	return image?.path === undefined ? undefined : { mediaType: image.mediaType, path: image.path };
 }
@@ -152,7 +152,7 @@ function dismissPending(state: SessionState): SessionState {
 	return { ...state, pending: undefined, turns: state.turns.filter((turn) => turn.id !== id) };
 }
 
-function isFromTurn(image: BaseImage | undefined, turn: SessionTurn | undefined): boolean {
+function isFromTurn(image?: BaseImage, turn?: SessionTurn): boolean {
 	return image !== undefined && turn?.result?.images.some((saved) => saved.path === image.path) === true;
 }
 

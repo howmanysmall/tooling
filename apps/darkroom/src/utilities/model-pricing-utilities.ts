@@ -72,7 +72,7 @@ export async function fetchModelPricingAsync(
 	const entries: Array<readonly [string, Array<EndpointPricing>]> = [];
 	for (let start = 0; start < modelIds.length; start += BATCH_SIZE) {
 		const batch = modelIds.slice(start, start + BATCH_SIZE);
-		// oxlint-disable-next-line no-await-in-loop -- batches keep at most BATCH_SIZE requests in flight
+		// oxlint-disable-next-line no-await-in-loop, unicorn/no-array-callback-reference -- batches keep at most BATCH_SIZE requests in flight, single parameter function
 		const fetched = await Promise.all(batch.map(fetchOneAsync));
 		for (const entry of fetched) entries.push(entry);
 	}

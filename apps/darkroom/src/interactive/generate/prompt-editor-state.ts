@@ -95,7 +95,7 @@ function moveLine(text: string, index: number, delta: number): number {
 }
 
 function cleanInsert(text: string): string {
-	return text.replace(LINE_BREAKS, "\n").replace(CONTROL_CHARACTERS, "");
+	return text.replaceAll(LINE_BREAKS, "\n").replaceAll(CONTROL_CHARACTERS, "");
 }
 
 function splice({ text }: PromptEditor, from: number, to: number, insert = ""): PromptEditor {
@@ -107,20 +107,28 @@ function getCursorTarget({ cursor, text }: PromptEditor, action: EditorAction): 
 	switch (action.type) {
 		case "down":
 			return moveLine(text, cursor, 1);
+
 		case "left":
 			return getPreviousBoundary(text, cursor);
+
 		case "line-end":
 			return getLineEnd(text, cursor);
+
 		case "line-start":
 			return getLineStart(text, cursor);
+
 		case "right":
 			return getNextBoundary(text, cursor);
+
 		case "up":
 			return moveLine(text, cursor, -1);
+
 		case "word-left":
 			return getWordStart(text, cursor);
+
 		case "word-right":
 			return getWordEnd(text, cursor);
+
 		default:
 			return undefined;
 	}
@@ -139,18 +147,25 @@ export function reducePromptEditor(editor: PromptEditor, action: EditorAction): 
 	switch (action.type) {
 		case "clear":
 			return EMPTY_EDITOR;
+
 		case "delete-backward":
 			return splice(editor, getPreviousBoundary(text, cursor), cursor);
+
 		case "delete-forward":
 			return splice(editor, cursor, getNextBoundary(text, cursor));
+
 		case "delete-to-end":
 			return splice(editor, cursor, getLineEnd(text, cursor));
+
 		case "delete-to-start":
 			return splice(editor, getLineStart(text, cursor), cursor);
+
 		case "delete-word":
 			return splice(editor, getWordStart(text, cursor), cursor);
+
 		case "insert":
 			return splice(editor, cursor, cursor, cleanInsert(action.text));
+
 		default:
 			return { cursor: getCursorTarget(editor, action) ?? cursor, text };
 	}
@@ -186,7 +201,9 @@ export function splitAtCursor({ cursor, text }: PromptEditor): CursorSplit {
 	const end = getNextBoundary(text, cursor);
 	const at = text.slice(cursor, end);
 	// oxlint-disable-next-line unicorn-js/prefer-simple-condition-first -- not "simpler". slower.
-	if (at.length === 0 || at === "\n") return { after: text.slice(cursor), at: " ", before };
+	if (at.length === 0 || at === "\n") {
+		return { after: text.slice(cursor), at: " ", before };
+	}
 
 	return { after: text.slice(end), at, before };
 }
@@ -222,11 +239,19 @@ const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
  * @returns The edit, or `undefined` when the key is typing or unused.
  */
 function getSpecialAction(key: Key): EditorAction | undefined {
-	if (key.backspace) return key.meta ? DELETE_WORD : { type: "delete-backward" };
+	if (key.backspace) {
+		return key.meta ? DELETE_WORD : { type: "delete-backward" };
+	}
 
 	const isWordStep = key.meta || key.ctrl;
-	if (key.leftArrow) return isWordStep ? WORD_LEFT : { type: "left" };
-	if (key.rightArrow) return isWordStep ? WORD_RIGHT : { type: "right" };
+	if (key.leftArrow) {
+		return isWordStep ? WORD_LEFT : { type: "left" };
+	}
+
+	if (key.rightArrow) {
+		return isWordStep ? WORD_RIGHT : { type: "right" };
+	}
+
 	return SPECIAL_ACTIONS.find(([name]) => key[name] === true)?.[1];
 }
 
@@ -241,7 +266,9 @@ function getSpecialAction(key: Key): EditorAction | undefined {
  * @returns The edit, or `undefined` for keys the box doesn't use.
  */
 export function getEditorAction(input: string, key: Key): EditorAction | undefined {
-	if (key.return) return key.meta || key.shift ? NEW_LINE : undefined;
+	if (key.return) {
+		return key.meta || key.shift ? NEW_LINE : undefined;
+	}
 	return getSpecialAction(key) ?? getModifiedAction(input, key);
 }
 

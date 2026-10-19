@@ -106,7 +106,8 @@ export function getModelMatches(
 	// The ID follows the name, so positions past the name are in the ID and
 	// aren't highlighted.
 	const finder = new Fzf(models, { selector: (model): string => `${model.name} ${model.id}` });
-	// Fzf's find returns every match, never undefined.
+
+	// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 	const ranked: ReadonlyArray<FzfResultItem<ImageModelListItem>> = finder.find(trimmed);
 	return ranked.map(({ item, positions }) => ({
 		isRecent: recent.has(item.id),
