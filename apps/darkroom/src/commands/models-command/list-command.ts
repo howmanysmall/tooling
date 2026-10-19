@@ -42,7 +42,7 @@ function wantsBrowser(format?: OutputFormat): boolean {
 	return format === undefined && stdin.isTTY && stdout.isTTY;
 }
 
-async function listModelsAsync(flags: ListFlags, search: string | undefined): Promise<void> {
+async function listModelsAsync(flags: ListFlags, search?: string): Promise<void> {
 	const [
 		{ log, readHistoryQuietlyAsync },
 		{ getImageModelsAsync },
