@@ -30,10 +30,18 @@
 		"email": "contact@howmanysmall.com",
 		"url": "https://howmanysmall.com"
 	},
+	"maintainers": [
+		{
+			"name": "HowManySmall",
+			"email": "contact@howmanysmall.com",
+			"url": "https://howmanysmall.com"
+		}
+	],
 	"sideEffects": false,
 	"type": "module",
 	"bin": {
-		"darkroom": "./dist/cli.js"
+		"darkroom": "./dist/darkroom.js",
+		"darkroom-bun": "./dist/darkroom-bun.js"
 	},
 	"files": [
 		"dist",
