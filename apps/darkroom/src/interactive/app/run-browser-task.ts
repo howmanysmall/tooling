@@ -1,4 +1,4 @@
-async function settleAsync(task: Promise<void>, onSettled: (failure: string | undefined) => void): Promise<void> {
+async function settleAsync(task: Promise<void>, onSettled: (failure?: string) => void): Promise<void> {
 	try {
 		await task;
 		onSettled(undefined);
@@ -16,7 +16,7 @@ async function settleAsync(task: Promise<void>, onSettled: (failure: string | un
  * @param onSettled - Called once with the failure's message, or `undefined`
  *   when the action succeeded.
  */
-export function runBrowserTask(task: Promise<void>, onSettled: (failure: string | undefined) => void): void {
+export function runBrowserTask(task: Promise<void>, onSettled: (failure?: string) => void): void {
 	// oxlint-disable-next-line eslint/no-void -- settleAsync never rejects, and key handlers can't await
 	void settleAsync(task, onSettled);
 }

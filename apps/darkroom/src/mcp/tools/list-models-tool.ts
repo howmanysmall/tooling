@@ -1,12 +1,11 @@
 import { getCountRange, getEnumValues, getReferenceRange } from "$generation/model-capabilities";
 import { describeListPrice, getModelPrices } from "$generation/observed-prices";
+import { listModelsInput } from "$mcp/schemas";
+import { runToolAsync, toJsonResult } from "$mcp/to-tool-result";
 import { filterModels, sortModels } from "$utilities/model-filters";
 
-import { listModelsInput } from "../schemas";
-import { runToolAsync, toJsonResult } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerListModelsTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(

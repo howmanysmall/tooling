@@ -19,7 +19,7 @@ function getPromptRuns(entry: HistoryEntry, isSelected: boolean): Array<StyledRu
 	return [{ color: theme.text, isBold: isSelected, text: previewPrompt(entry.prompt, Number.POSITIVE_INFINITY) }];
 }
 
-function getFactRuns(entry: HistoryEntry, batchSize: number | undefined): Array<StyledRun> {
+function getFactRuns(entry: HistoryEntry, batchSize?: number): Array<StyledRun> {
 	const runs: Array<StyledRun> = [{ color: theme.muted, text: describeRunLine(entry) }];
 	if (batchSize !== undefined) {
 		runs.push({ color: theme.accent, text: `  ◫ ${batchSize} ${toPlural(batchSize, "model")}` });
