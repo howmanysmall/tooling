@@ -90,8 +90,8 @@ catalogs:
     unplugin-macros: 0.23.3
     unrun: 0.3.1
   commitlint:
-    "@commitlint/cli": 21.2.3
-    "@commitlint/config-conventional": 21.2.3
+    "@commitlint/cli": 21.2.4
+    "@commitlint/config-conventional": 21.2.4
     "@commitlint/types": 21.2.3
   dev:
     empathic: 2.1.0
@@ -109,10 +109,10 @@ catalogs:
     "@biomejs/biome": 2.5.15
     "@e18e/eslint-plugin": 0.8.1
     "@isentinel/eslint-config": 6.1.0
-    "@pobammer-ts/small-rules": 3.4.0
+    "@pobammer-ts/small-rules": 3.6.0
     "@stylistic/eslint-plugin": 5.10.0
     "@vitest/eslint-plugin": 1.6.27
-    eslint: 10.12.0
+    eslint: 10.13.0
     eslint-plugin-antfu: 3.2.3
     eslint-plugin-better-max-params: 1.0.0
     eslint-plugin-comment-length: 2.3.1
@@ -120,27 +120,27 @@ catalogs:
     eslint-plugin-eslint-plugin: 7.6.2
     eslint-plugin-flawless: 1.14.1
     eslint-plugin-jest-extended: 3.0.1
-    eslint-plugin-jsdoc: 65.3.4
-    eslint-plugin-n: 18.4.1
+    eslint-plugin-jsdoc: 65.3.12
+    eslint-plugin-n: 18.5.0
     eslint-plugin-oxfmt: 0.28.0
     eslint-plugin-perfectionist: 5.12.1
     eslint-plugin-pnpm: 1.9.1
-    eslint-plugin-react-jsx: 5.26.7
-    eslint-plugin-react-naming-convention: 5.26.7
-    eslint-plugin-react-x: 5.26.7
+    eslint-plugin-react-jsx: 5.28.1
+    eslint-plugin-react-naming-convention: 5.28.1
+    eslint-plugin-react-x: 5.28.1
     eslint-plugin-roblox-ts: 1.4.1
     eslint-plugin-sonarjs: 4.2.2
     eslint-plugin-unicorn: 78.0.0
     eslint-plugin-unused-imports: 4.4.1
-    fallow: 3.33.1
-    oxfmt: 0.73.0
-    oxlint: 1.88.0
+    fallow: 3.34.1
+    oxfmt: 0.74.0
+    oxlint: 1.89.0
     oxlint-plugin-react-doctor: 0.9.18
     oxlint-tsgolint: 7.0.2004
   # Published packages declare `engines.node >=22.18.0`, so they typecheck
   # against that floor instead of the Node 26 that mise runs.
   node-floor:
-    "@types/node": ~22.18.0
+    "@types/node": ~26.6.5
   polyfills:
     temporal-polyfill: 1.0.6
   runtime:
@@ -155,7 +155,7 @@ catalogs:
     arktype: 2.2.8
     confbox: 0.3.1
     consola: 3.4.2
-    effect: 4.0.4
+    effect: 4.0.5
     env-paths: 4.0.0
     fast-string-width: 3.0.2
     fzf: 0.5.2
@@ -168,23 +168,24 @@ catalogs:
     "@stryker-mutator/core": 10.0.0
     "@stryker-mutator/vitest-runner": 10.0.0
     "@total-typescript/shoehorn": 0.1.2
-    "@vitest/coverage-istanbul": 5.0.4
+    "@vitest/coverage-istanbul": 5.0.5
+    "@vitest/coverage-v8": 5.0.5
     "@vitiate/core": 0.3.1
     fast-check: 4.10.2
     jest-extended: 7.0.0
-    vitest: 5.0.4
+    vitest: 5.0.5
     vitiate: 0.3.1
   tooling:
     "@isentinel/hooks": 1.7.0
-    "@mdx-js/language-server": 0.6.3
+    "@mdx-js/language-server": 0.6.4
     "@pobammer-ts/lsp-mux": 3.2.0
-    "@turbo/gen": 2.11.8
+    "@turbo/gen": 2.11.9
     bumpp: 12.3.0
     jiti: 2.7.0
     pncat: 0.13.4
     sfw: 2.0.6
-    skills: 1.7.2
-    turbo: 2.11.8
+    skills: 1.7.4
+    turbo: 2.11.9
     typescript: npm:@typescript/typescript6@^6.0.2
     typescript7: npm:typescript@^7.0.2
     vite: npm:@voidzero-dev/vite-plus-core@1.2.0

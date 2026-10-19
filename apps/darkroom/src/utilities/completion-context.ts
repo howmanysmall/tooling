@@ -19,7 +19,7 @@ export const enum Shell {
 /** How each shell exposes the words typed so far, joined by newlines. */
 const WORDS_EXPRESSIONS: Readonly<Record<Shell, string>> = {
 	[Shell.Bash]: ['"$(printf', String.raw`'%s\n'`, '"${COMP_WORDS[@]}")"'].join(" "),
-	[Shell.Fish]: "(string join \\n -- (commandline -opc) | string collect)",
+	[Shell.Fish]: String.raw`(string join \n -- (commandline -opc) | string collect)`,
 	[Shell.Zsh]: '"${(pj:\\n:)words}"',
 };
 

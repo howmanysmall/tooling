@@ -27,12 +27,16 @@ export function SessionTabMark({ position, status }: Readonly<SessionTabMarkProp
 	switch (status) {
 		case TabStatus.Busy:
 			return <BusyMark />;
+
 		case TabStatus.Failed:
 			return <Text color={theme.danger}>{"✖"}</Text>;
+
 		case TabStatus.Unread:
 			return <Text color={theme.accent}>{"●"}</Text>;
+
 		case TabStatus.Waiting:
 			return <Text color={theme.warning}>{"?"}</Text>;
+
 		default:
 			return <Text color={theme.border}>{String(position)}</Text>;
 	}

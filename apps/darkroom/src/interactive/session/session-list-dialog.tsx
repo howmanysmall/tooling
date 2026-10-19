@@ -60,7 +60,7 @@ export function SessionListDialog({
 	const list = useSearchList((query) => getSessionMatches(sessions, query), visibleRows, onClose);
 	const openIds = new Set(tabs.sessions.map((session) => session.id));
 
-	function resume(match: SessionMatch | undefined): void {
+	function resume(match?: SessionMatch): void {
 		if (match === undefined) return;
 		actions.resume(match.session);
 		onClose();

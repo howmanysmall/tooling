@@ -58,10 +58,7 @@ export function useNotice(): StatusMessage | undefined {
  * @param notice - The app-wide notice.
  * @returns The newer one; both count from the same sequence.
  */
-export function pickNewerMessage(
-	status: StatusMessage | undefined,
-	notice: StatusMessage | undefined,
-): StatusMessage | undefined {
+export function pickNewerMessage(status?: StatusMessage, notice?: StatusMessage): StatusMessage | undefined {
 	if (status === undefined) return notice;
 	if (notice === undefined) return status;
 	return notice.id > status.id ? notice : status;

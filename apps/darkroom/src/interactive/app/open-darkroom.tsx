@@ -65,7 +65,7 @@ function createGuidedRequest(): GuidedRequest {
 	};
 }
 
-function createHistoryServices(store: HistoryStore, previews: PreviewCache | undefined): HistoryServices {
+function createHistoryServices(store: HistoryStore, previews?: PreviewCache): HistoryServices {
 	return {
 		async deleteRunAsync(entry, deletion): Promise<void> {
 			const outputs = entry.images.map(({ output }) => output);

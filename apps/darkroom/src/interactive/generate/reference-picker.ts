@@ -137,13 +137,13 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 		return [...header, ...rows.map((row) => `${bar}  ${row}`), ...footer].join("\n");
 	}
 
-	private goTo(directory: string | undefined): void {
+	private goTo(directory?: string): void {
 		if (directory === undefined) return;
 		this.picker = enterDirectory(this.picker, directory, readDirectory(directory));
 		this._clearUserInput();
 	}
 
-	private handleAction(action: string | undefined): void {
+	private handleAction(action?: string): void {
 		switch (action) {
 			case "down": {
 				this.picker = moveCursor(this.picker, 1);

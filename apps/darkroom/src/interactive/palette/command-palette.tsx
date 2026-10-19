@@ -58,7 +58,7 @@ export function CommandPalette({
 	const offered = commands.filter((command) => command.group === CommandGroup.Act);
 	const list = useSearchList((query) => getPaletteMatches(offered, query), VISIBLE_ROWS, onClose);
 
-	function run(match: PaletteMatch | undefined): void {
+	function run(match?: PaletteMatch): void {
 		onClose();
 		match?.command.run();
 	}

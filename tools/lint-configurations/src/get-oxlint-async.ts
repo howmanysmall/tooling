@@ -179,7 +179,7 @@ export async function getOxlintAsync({
 				"import/max-dependencies": "off",
 				"import/no-default-export": "off",
 				"import/no-named-export": "off",
-				"import/no-relative-parent-imports": "off",
+				"import/no-relative-parent-imports": "error",
 				"import/no-unassigned-import": [
 					"error",
 					{
@@ -422,6 +422,7 @@ export async function getOxlintAsync({
 				"small-rules/prefer-modding-inspect": "off",
 				"small-rules/prefer-module-scope-constants": "off",
 				"small-rules/prefer-native-collection-copy": "off",
+				"small-rules/prefer-optional-parameter": "error",
 				"small-rules/prefer-padding-components": "off",
 				"small-rules/prefer-pascal-case-enums": "error",
 				"small-rules/prefer-sequence-overloads": "off",
@@ -536,7 +537,7 @@ export async function getOxlintAsync({
 				"unicorn-js/no-unreadable-new-expression": "off",
 				"unicorn-js/prefer-global-number-constants": "off",
 				"unicorn/catch-error-name": ["warn", { name: "error" }],
-				"unicorn/no-array-callback-reference": "off",
+				"unicorn/no-array-callback-reference": "error",
 				"unicorn/no-new-array": "error",
 				"unicorn/no-process-exit": "off",
 				// shit rule that breaks everything:

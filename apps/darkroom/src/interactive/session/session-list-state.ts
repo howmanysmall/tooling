@@ -26,7 +26,7 @@ export function getSessionMatches(sessions: ReadonlyArray<SessionSummary>, query
 	if (trimmed.length === 0) return sessions.map((session) => ({ positions: NO_POSITIONS, session }));
 
 	const finder = new Fzf(sessions, { selector: (session): string => session.title });
-	// Fzf's find returns every match, never undefined.
+	// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 	const ranked: ReadonlyArray<FzfResultItem<SessionSummary>> = finder.find(trimmed);
 	return ranked.map(({ item, positions }) => ({ positions, session: item }));
 }

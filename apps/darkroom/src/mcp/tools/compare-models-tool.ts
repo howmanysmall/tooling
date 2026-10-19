@@ -4,15 +4,14 @@ import { executeCompareAsync } from "$compare/execute-compare";
 import { planCompareAsync } from "$compare/plan-compare";
 import { toGenerationOptions } from "$generation/generation-flags";
 import { InterruptGuard } from "$generation/interrupt-guard";
+import { checkBudget } from "$mcp/cost-gate";
+import { loadReferencesAsync } from "$mcp/generation-input";
+import { prepareAsync } from "$mcp/mcp-dependencies";
+import { compareModelsInput } from "$mcp/schemas";
+import { runToolAsync, toCompareResultAsync } from "$mcp/to-tool-result";
 
-import { checkBudget } from "../cost-gate";
-import { loadReferencesAsync } from "../generation-input";
-import { prepareAsync } from "../mcp-dependencies";
-import { compareModelsInput } from "../schemas";
-import { runToolAsync, toCompareResultAsync } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerCompareModelsTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(

@@ -95,7 +95,7 @@ function parseCommandParts(parts: ReadonlyArray<string>): number | undefined {
 	return binaryIndex;
 }
 
-function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex: number | undefined): string {
+function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?: number): string {
 	const inlineCode = Array.from<string>({ length: parts.length });
 	let size = 0;
 	let index = 0;

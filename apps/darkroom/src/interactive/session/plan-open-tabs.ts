@@ -24,7 +24,7 @@ export interface TabPlan {
 export function planOpenTabs(
 	sessions: ReadonlyArray<SessionSummary>,
 	open: ReadonlyArray<string>,
-	resume: string | undefined,
+	resume?: string,
 ): TabPlan {
 	const isNew = resume === undefined || (resume === "last" && sessions.length === 0);
 	const target = isNew ? undefined : resolveSessionReference(sessions, resume);

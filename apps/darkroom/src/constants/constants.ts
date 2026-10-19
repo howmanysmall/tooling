@@ -1,4 +1,4 @@
-import packageJson from "../../package.json" with { type: "json" };
+import packageJson from "$package" with { type: "json" };
 
 export const description = packageJson.description satisfies string;
 export const name = packageJson.name satisfies string;

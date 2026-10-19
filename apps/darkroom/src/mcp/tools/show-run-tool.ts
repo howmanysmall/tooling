@@ -1,11 +1,10 @@
 import { readAllAsync, resolve } from "$history/history-store";
 import { getRunRelations, resolveRunReference } from "$history/resolve-run-reference";
+import { showRunInput } from "$mcp/schemas";
+import { runToolAsync, toJsonResult } from "$mcp/to-tool-result";
 
-import { showRunInput } from "../schemas";
-import { runToolAsync, toJsonResult } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerShowRunTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(
