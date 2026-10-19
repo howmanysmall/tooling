@@ -114,7 +114,7 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 		return hits;
 	}
 
-	function hover(hit: Hit<Node> | undefined): void {
+	function hover(hit?: Hit<Node>): void {
 		if (hit?.id === hoveredId) return;
 		hoveredId = hit?.id;
 		hit?.target.onHover?.();

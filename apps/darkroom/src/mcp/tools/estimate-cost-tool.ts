@@ -2,14 +2,13 @@ import { collectPrepared, describeTotalCost } from "$compare/compare-plan";
 import { getEstimatesAsync } from "$compare/plan-compare";
 import { describeRequest } from "$generation/format-result";
 import { toGenerationOptions } from "$generation/generation-flags";
+import { loadReferencesAsync } from "$mcp/generation-input";
+import { prepareAsync } from "$mcp/mcp-dependencies";
+import { estimateCostInput } from "$mcp/schemas";
+import { runToolAsync, toJsonResult } from "$mcp/to-tool-result";
 
-import { loadReferencesAsync } from "../generation-input";
-import { prepareAsync } from "../mcp-dependencies";
-import { estimateCostInput } from "../schemas";
-import { runToolAsync, toJsonResult } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerEstimateCostTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(

@@ -15,7 +15,7 @@ import type { HistoryEntry } from "$history/history-entry";
 // A few lines of the prompt at most; it wraps rather than being cut.
 const MAX_PROMPT_LENGTH = 240;
 
-function getSavedPaths(entry: HistoryEntry | undefined): Array<string> {
+function getSavedPaths(entry?: HistoryEntry): ReadonlyArray<string> {
 	return entry?.images.flatMap(({ output }) => (output === "-" ? [] : [output])) ?? [];
 }
 

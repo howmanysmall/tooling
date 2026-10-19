@@ -1,12 +1,11 @@
 import { tool } from "tmcp/utils";
 
 import { getModelPrices } from "$generation/observed-prices";
+import { getModelInput } from "$mcp/schemas";
+import { runToolAsync, toJsonResult } from "$mcp/to-tool-result";
 
-import { getModelInput } from "../schemas";
-import { runToolAsync, toJsonResult } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerGetModelTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(

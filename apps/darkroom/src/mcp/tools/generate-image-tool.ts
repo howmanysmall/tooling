@@ -1,14 +1,13 @@
 import { tool } from "tmcp/utils";
 
 import { toGenerationOptions } from "$generation/generation-flags";
+import { loadReferencesAsync } from "$mcp/generation-input";
+import { runPaidGenerationAsync } from "$mcp/paid-generation";
+import { generateImageInput } from "$mcp/schemas";
+import { runToolAsync } from "$mcp/to-tool-result";
 
-import { loadReferencesAsync } from "../generation-input";
-import { runPaidGenerationAsync } from "../paid-generation";
-import { generateImageInput } from "../schemas";
-import { runToolAsync } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerGenerateImageTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(

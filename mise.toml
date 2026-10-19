@@ -22,12 +22,12 @@ bun = "1.4.3"
 communique = "latest"
 direnv = "latest"
 git-cliff = "latest"
-hk = "2.6.0"
+hk = { version = "2.7.0", workflow = "release.yml" }
 ni = "latest"
 node = "26"
 pinact = "latest"
 pkl = "latest"
-pnpm = "12.13.0"
+pnpm = "12.14.0"
 rumdl = "latest"
 shellcheck = "latest"
 shfmt = "latest"
@@ -54,6 +54,10 @@ git commit --signoff --message "${usage_message?}" --no-verify
 description = "Runs fallow to audit the project."
 depends = ["test:istanbul"]
 run = "fallow audit --quiet --gate-marker hk"
+
+[tasks."test:coverage"]
+description = "Generate a V8 coverage report with Vitest."
+run = "node --run test:coverage"
 
 [tasks."test:istanbul"]
 description = "Generate a coverage report with Vitest and Istanbul."
