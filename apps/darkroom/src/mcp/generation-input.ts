@@ -12,7 +12,7 @@ import type { McpDependencies } from "./mcp-dependencies";
  */
 export async function loadReferencesAsync(
 	dependencies: McpDependencies,
-	sources: ReadonlyArray<string> | undefined,
+	sources?: ReadonlyArray<string>,
 ): Promise<Array<ReferenceImage>> {
 	return Promise.all((sources ?? []).map(async (source) => dependencies.loadReferenceAsync(source)));
 }

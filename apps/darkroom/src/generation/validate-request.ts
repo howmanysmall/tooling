@@ -59,7 +59,7 @@ function formatValues(values: ReadonlyArray<string>): string {
 	);
 }
 
-function checkEnum(model: ImageModelListItem, parameter: string, flag: string, value: string | undefined): void {
+function checkEnum(model: ImageModelListItem, parameter: string, flag: string, value?: string): void {
 	if (value === undefined) return;
 
 	const values = getEnumValues(model, parameter);
@@ -106,7 +106,7 @@ function checkReferences(model: ImageModelListItem, referenceCount: number): voi
  * @param type - The `--type` value.
  * @returns The encoding, or `undefined` to let the model choose.
  */
-function resolveOutputFormat(output: string | undefined, type: ImageType | undefined): ImageType | undefined {
+function resolveOutputFormat(output?: string, type?: ImageType): ImageType | undefined {
 	if (output === undefined || output === "-" || output.endsWith("/")) return type;
 	if (nodePath.extname(output).length === 0) return type;
 
@@ -130,7 +130,7 @@ function checkStdout(options: GenerationOptions, count: number, stdoutIsTty: boo
 	}
 }
 
-function checkCompression(model: ImageModelListItem, compression: number | undefined): void {
+function checkCompression(model: ImageModelListItem, compression?: number): void {
 	if (compression === undefined) return;
 	const range = getRange(model, "output_compression") ?? { max: 100, min: 0 };
 	if (!Number.isInteger(compression) || compression < range.min || compression > range.max) {

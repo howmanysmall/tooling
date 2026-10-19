@@ -44,7 +44,7 @@ function getBackground(cell: IBufferCell): string {
  * @param highlight - `0xRRGGBB` to draw it on, or `undefined` for its own.
  * @returns An SGR sequence that starts from a reset.
  */
-export function describeCellStyle(cell: IBufferCell, highlight: number | undefined): string {
+export function describeCellStyle(cell: IBufferCell, highlight?: number): string {
 	const codes = ["0"];
 	if (cell.isBold() !== 0) codes.push("1");
 	if (cell.isDim() !== 0) codes.push("2");
