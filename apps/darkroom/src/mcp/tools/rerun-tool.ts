@@ -2,14 +2,13 @@ import { mergeRerunOptions } from "$generation/generation-flags";
 import { readAllAsync } from "$history/history-store";
 import { resolveRunReference } from "$history/resolve-run-reference";
 import { loadStoredReferencesAsync } from "$history/stored-references";
+import { loadReferencesAsync } from "$mcp/generation-input";
+import { runPaidGenerationAsync } from "$mcp/paid-generation";
+import { rerunInput } from "$mcp/schemas";
+import { runToolAsync } from "$mcp/to-tool-result";
 
-import { loadReferencesAsync } from "../generation-input";
-import { runPaidGenerationAsync } from "../paid-generation";
-import { rerunInput } from "../schemas";
-import { runToolAsync } from "../to-tool-result";
-
-import type { DarkroomServer } from "../darkroom-server";
-import type { McpDependencies } from "../mcp-dependencies";
+import type { DarkroomServer } from "$mcp/darkroom-server";
+import type { McpDependencies } from "$mcp/mcp-dependencies";
 
 export function registerRerunTool(server: DarkroomServer, dependencies: McpDependencies): void {
 	server.tool(
