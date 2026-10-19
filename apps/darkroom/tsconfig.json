@@ -21,7 +21,8 @@
 			"$types/*": ["./src/types/*"],
 			"$utilities/*": ["./src/utilities/*"],
 			"$validators/*": ["./src/validators/*"],
-			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
+			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"],
+			"$package": ["./package.json"]
 		},
 		"types": ["node"]
 	},
