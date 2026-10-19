@@ -15,6 +15,7 @@
 		"build": "turbo run build",
 		"commitlint": "commitlint",
 		"darkroom": "darkroom",
+		"darkroom-bun": "darkroom-bun",
 		"documentation": "node scripts/documentation.ts",
 		"documentation:dev": "turbo run dev --filter=./documentation/*",
 		"fallow": "fallow",

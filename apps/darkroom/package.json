@@ -40,7 +40,8 @@
 	"sideEffects": false,
 	"type": "module",
 	"bin": {
-		"darkroom": "./dist/cli.js"
+		"darkroom": "./dist/darkroom.js",
+		"darkroom-bun": "./dist/darkroom-bun.js"
 	},
 	"files": [
 		"dist",
