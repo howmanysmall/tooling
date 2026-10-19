@@ -55,6 +55,10 @@ description = "Runs fallow to audit the project."
 depends = ["test:istanbul"]
 run = "fallow audit --quiet --gate-marker hk"
 
+[tasks."test:coverage"]
+description = "Generate a V8 coverage report with Vitest."
+run = "node --run test:coverage"
+
 [tasks."test:istanbul"]
 description = "Generate a coverage report with Vitest and Istanbul."
 sources = [
