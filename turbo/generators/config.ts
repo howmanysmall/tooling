@@ -15,13 +15,11 @@ const isGeneratorAnswers = type({
 	name: "string",
 	"+": "ignore",
 	description: "string",
-	"runtime?": "'bun' | 'node'",
 	scope: "string",
 	"turbo?": { "paths?": { "root?": "unknown" } },
 });
 
 type GeneratorAnswers = typeof isGeneratorAnswers.infer;
-type Runtime = NonNullable<GeneratorAnswers["runtime"]>;
 
 /** Libraries live in `packages/`; runnable CLIs live in `apps/`. */
 type WorkspaceDirectory = "apps" | "packages";
@@ -106,14 +104,6 @@ function stringifyJson(value: string): string {
 	return JSON.stringify(value);
 }
 
-function renderShebang(runtime: Runtime): string {
-	return runtime === "bun" ? "#!/usr/bin/env bun" : "#!/usr/bin/env node";
-}
-
-function renderRuntimeName(runtime: Runtime): string {
-	return runtime === "bun" ? "Bun" : "Node";
-}
-
 const isRootManifest = type({ "+": "ignore", repository: { "+": "ignore", url: "string" } });
 
 /**
@@ -131,16 +121,8 @@ function renderRepositoryUrl(): string {
 /** The two CLI shapes differ only in their manifest, build, and README. */
 type CliKind = "cli" | "configurable-cli";
 
-const CLI_PROMPTS: Array<PlopTypes.PromptQuestion> = [
-	...createPrompts("apps", "@pobammer-ts"),
-	{
-		name: "runtime",
-		choices: ["bun", "node"],
-		default: "bun",
-		message: "Which runtime runs the built CLI? Either way, the code only uses Node APIs.",
-		type: "list",
-	},
-];
+// Every CLI ships a Node bin and a `-bun` bin, so there is no runtime to pick.
+const CLI_PROMPTS = createPrompts("apps", "@pobammer-ts");
 
 function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
 	return [
@@ -165,9 +147,7 @@ function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
  */
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
 	plop.setHelper("json", stringifyJson);
-	plop.setHelper("shebang", renderShebang);
 	plop.setHelper("repositoryUrl", renderRepositoryUrl);
-	plop.setHelper("runtimeName", renderRuntimeName);
 	plop.setGenerator("package", {
 		actions: [
 			createEnsureDirectoryAvailable("packages"),
