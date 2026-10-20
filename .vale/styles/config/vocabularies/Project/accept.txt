@@ -21,6 +21,7 @@
 (?i)\boxlint\b
 (?i)\boxfmt\b
 (?i)\btsgo\b
+(?i)\btsrs\b
 (?i)\bstdio\b
 (?i)\bJSON-RPC\b
 (?i)\bOpenRouter\b
