@@ -92,6 +92,33 @@ function createSyncTsconfigReferencesAsync(directory: WorkspaceDirectory): PlopT
 	};
 }
 
+/**
+ * `cleanupUnusedCatalogs` prunes catalog entries nothing depends on, so a
+ * dependency only the generated package uses cannot wait in the catalog.
+ * `pnpm add` writes the catalog entry and the `catalog:` specifier together.
+ *
+ * @param catalog - The catalog to save the dependency to.
+ * @param dependency - The dependency, pinned like `c12@4.0.0-rc.2`.
+ * @returns The action that adds `dependency` to the generated package.
+ */
+function createAddCatalogDependencyAsync(catalog: string, dependency: string): PlopTypes.CustomActionFunction {
+	return async function addCatalogDependencyAsync(answers) {
+		const validAnswers = isGeneratorAnswers.assert(answers);
+		const packageName = `${validAnswers.scope}/${validAnswers.name}`;
+		const options = { nodeOptions: { cwd: readRoot(validAnswers) }, throwOnError: true };
+		await exec(
+			"pnpm",
+			["--filter", packageName, "add", dependency, `--save-catalog-name=${catalog}`, "--save-exact"],
+			options,
+		);
+		// A filtered add only relinks this package, which leaves workspace
+		// packages with mismatched peer copies (two `tsdown` types) until a
+		// full install.
+		await exec("pnpm", ["install"], options);
+		return `Added ${dependency} to ${packageName} through the ${catalog} catalog.`;
+	};
+}
+
 function createAddAction(directory: WorkspaceDirectory, template: string, target: string): PlopTypes.AddActionConfig {
 	return {
 		path: `${directory}/{{kebabCase name}}/${target}`,
@@ -133,7 +160,7 @@ function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
 		createAddAction("apps", "cli/tsconfig", "tsconfig.json"),
 		createAddAction("apps", "cli/tsconfig-lib", "tsconfig.lib.json"),
 		createAddAction("apps", "cli/vitest-config", "vitest.config.ts"),
-		createAddAction("apps", "cli/src-cli", "src/cli.ts"),
+		createAddAction("apps", `${kind}/src-cli`, "src/cli.ts"),
 		createAddAction("apps", "cli/src-constants", "src/constants.ts"),
 		createAddAction("apps", "cli/src-constants-test", "src/constants.test.ts"),
 		createAddAction("apps", "cli/src-types-cliffy-internal-types", "src/types/cliffy-internal-types.ts"),
@@ -175,6 +202,9 @@ export default function generator(plop: PlopTypes.NodePlopAPI): void {
 			...createCliActions("configurable-cli"),
 			createAddAction("apps", "configurable-cli/src-index", "src/index.ts"),
 			createAddAction("apps", "configurable-cli/src-index-test", "src/index.test.ts"),
+			createAddAction("apps", "configurable-cli/src-configuration", "src/configuration.ts"),
+			createAddAction("apps", "configurable-cli/src-configuration-test", "src/configuration.test.ts"),
+			createAddCatalogDependencyAsync("runtime", "c12@4.0.0-rc.2"),
 			createSyncTsconfigReferencesAsync("apps"),
 		],
 		description: "A CLI in apps/ that also exports defineConfiguration for configuration files.",

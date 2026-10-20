@@ -13,9 +13,14 @@ bundle, and the code only uses Node APIs.
 
 ## Configuration
 
+[c12](https://github.com/unjs/c12) loads `{{kebabCase name}}.config.{ts,mts,js,mjs,json,...}` or
+`.{{kebabCase name}}rc` from the working directory. `--config <file>` loads that file instead, and
+fails if it does not exist. Invalid settings exit with code 3.
+
 Configuration files import `defineConfiguration` for types:
 
 ```ts
+// {{kebabCase name}}.config.ts
 import { defineConfiguration } from "{{scope}}/{{kebabCase name}}";
 
 export default defineConfiguration({
