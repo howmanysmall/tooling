@@ -21,4 +21,4 @@ Run these from this directory, or from the repository root with
 | --- | --- |
 | `lint` | Lints this package with the repository's oxlint, ESLint, and Biome configuration. |
 | `test` | Runs the Vitest suite. |
-| `type-check` | Type-checks this package and its references with `tsc --build`. |
+| `type-check` | Type-checks this package and its references with `tsrs --build`. |
