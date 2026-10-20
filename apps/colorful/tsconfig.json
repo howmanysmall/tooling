@@ -4,7 +4,8 @@
 		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tmp/colorful.tsbuildinfo",
 		"paths": {
-			"$constants": ["./src/constants.ts"]
+			"$constants": ["./src/constants.ts"],
+			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
 		"types": ["node"]
 	},
