@@ -1,4 +1,4 @@
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { describe, it } from "vitest";
@@ -24,6 +24,36 @@ describe("loadConfigurationAsync", () => {
 
 		await expect(loadConfigurationAsync({ cwd: root })).resolves.toMatchObject({
 			configuration: { verbose: true },
+		});
+	});
+
+	// Catches running the tool from a project's subfolder and silently
+	// ignoring the project's configuration.
+	it("finds the configuration file in a parent directory", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "{{kebabCase name}}.config.ts"), "export default { verbose: true };\n");
+		const subfolder = nodePath.join(root, "src", "deep");
+		mkdirSync(subfolder, { recursive: true });
+
+		await expect(loadConfigurationAsync({ cwd: subfolder })).resolves.toMatchObject({
+			configuration: { verbose: true },
+		});
+	});
+
+	// Catches a workspace-level file overriding a package's own configuration.
+	it("prefers the nearest configuration file", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "{{kebabCase name}}.config.ts"), "export default { verbose: true };\n");
+		const nested = nodePath.join(root, "nested");
+		mkdirSync(nested);
+		writeFileSync(nodePath.join(nested, "{{kebabCase name}}.config.ts"), "export default { verbose: false };\n");
+
+		await expect(loadConfigurationAsync({ cwd: nested })).resolves.toMatchObject({
+			configuration: { verbose: false },
 		});
 	});
 

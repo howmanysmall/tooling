@@ -10,6 +10,8 @@ import type { PlopTypes } from "@turbo/gen";
 const PACKAGE_JSON = "package.json";
 const PACKAGE_NAME_REGEXP = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
 const SCOPE_REGEXP = /^@[a-z0-9][a-z0-9-]*$/u;
+const GIT_PREFIX_REGEXP = /^git\+/u;
+const GIT_SUFFIX_REGEXP = /\.git$/u;
 
 const isGeneratorAnswers = type({
 	name: "string",
@@ -145,6 +147,16 @@ function renderRepositoryUrl(): string {
 	return isRootManifest.assert(manifest).repository.url;
 }
 
+/**
+ * Turns `git+https://github.com/<owner>/<repo>.git` into the repository's
+ * issues page, for `bugs.url`.
+ *
+ * @returns The issues URL of the root manifest's repository.
+ */
+function renderIssuesUrl(): string {
+	return `${renderRepositoryUrl().replace(GIT_PREFIX_REGEXP, "").replace(GIT_SUFFIX_REGEXP, "")}/issues`;
+}
+
 /** The two CLI shapes differ only in their manifest, build, and README. */
 type CliKind = "cli" | "configurable-cli";
 
@@ -163,6 +175,7 @@ function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
 		createAddAction("apps", `${kind}/src-cli`, "src/cli.ts"),
 		createAddAction("apps", "cli/src-constants", "src/constants.ts"),
 		createAddAction("apps", "cli/src-constants-test", "src/constants.test.ts"),
+		createAddAction("apps", "cli/src-reset", "src/reset.d.ts"),
 		createAddAction("apps", "cli/src-types-cliffy-internal-types", "src/types/cliffy-internal-types.ts"),
 	];
 }
@@ -175,6 +188,7 @@ function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
  */
 export default function generator(plop: PlopTypes.NodePlopAPI): void {
 	plop.setHelper("json", stringifyJson);
+	plop.setHelper("issuesUrl", renderIssuesUrl);
 	plop.setHelper("repositoryUrl", renderRepositoryUrl);
 	plop.setGenerator("package", {
 		actions: [

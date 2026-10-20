@@ -2,6 +2,15 @@
 	"name": "{{scope}}/{{kebabCase name}}",
 	"version": "0.0.0",
 	"description": {{{json description}}},
+	"keywords": [
+		"tools",
+		"cli",
+		"typescript"
+	],
+	"bugs": {
+		"email": "contact@howmanysmall.com",
+		"url": "{{issuesUrl}}"
+	},
 	"repository": {
 		"type": "git",
 		"url": "{{repositoryUrl}}",
@@ -13,6 +22,13 @@
 		"email": "contact@howmanysmall.com",
 		"url": "https://howmanysmall.com"
 	},
+	"maintainers": [
+		{
+			"name": "HowManySmall",
+			"email": "contact@howmanysmall.com",
+			"url": "https://howmanysmall.com"
+		}
+	],
 	"sideEffects": false,
 	"type": "module",
 	"bin": {
@@ -32,13 +48,12 @@
 		"type-check": "tsrs --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
-	"dependencies": {
-		"@cliffy/command": "catalog:runtime"
-	},
 	"devDependencies": {
+		"@cliffy/command": "catalog:runtime",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
-		"@types/node": "catalog:types",
+		"@total-typescript/ts-reset": "catalog:types",
+		"@types/node": "catalog:node-floor",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",
 		"vitest": "catalog:test"
