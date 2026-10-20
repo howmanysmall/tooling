@@ -1,9 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { describe, it } from "vitest";
 
 import { name } from "./constants";
 
 describe("package metadata", () => {
-	it("exposes the published package name", () => {
+	it("exposes the published package name", ({ expect }) => {
 		expect.assertions(1);
 
 		expect(name).toBe("{{scope}}/{{kebabCase name}}");
