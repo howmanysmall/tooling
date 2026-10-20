@@ -1,0 +1,52 @@
+{
+	"name": "@pobammer-ts/colorful",
+	"version": "0.0.0",
+	"description": "A color-focused CLI.",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/howmanysmall/tooling.git",
+		"directory": "apps/colorful"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "HowManySmall",
+		"email": "contact@howmanysmall.com",
+		"url": "https://howmanysmall.com"
+	},
+	"sideEffects": false,
+	"type": "module",
+	"bin": {
+		"colorful": "./dist/colorful.js",
+		"colorful-bun": "./dist/colorful-bun.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"lint:oxlint": "pnpm --workspace-root run lint:package apps/colorful",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent apps/colorful",
+		"prepublishOnly": "turbo run build --filter=@pobammer-ts/colorful",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsc --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"dependencies": {
+		"@cliffy/command": "catalog:runtime"
+	},
+	"devDependencies": {
+		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@types/node": "catalog:types",
+		"tsdown": "catalog:build",
+		"unplugin-macros": "catalog:build",
+		"vitest": "catalog:test"
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
