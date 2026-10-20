@@ -1,0 +1,61 @@
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import nodePath from "node:path";
+import { describe, it } from "vitest";
+
+import { loadConfigurationAsync } from "./configuration";
+
+import type { TestContext } from "vitest";
+
+function createProject(onTestFinished: TestContext["onTestFinished"]): string {
+	const root = mkdtempSync(nodePath.join(tmpdir(), "{{kebabCase name}}-configuration-"));
+	onTestFinished(() => {
+		rmSync(root, { force: true, recursive: true });
+	});
+	return root;
+}
+
+describe("loadConfigurationAsync", () => {
+	it("loads a TypeScript configuration file from the working directory", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "{{kebabCase name}}.config.ts"), "export default { verbose: true };\n");
+
+		await expect(loadConfigurationAsync({ cwd: root })).resolves.toMatchObject({
+			configuration: { verbose: true },
+		});
+	});
+
+	it("runs with an empty configuration when there is no file", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+
+		await expect(loadConfigurationAsync({ cwd: root })).resolves.toStrictEqual({
+			configFile: undefined,
+			configuration: {},
+		});
+	});
+
+	// Catches a typo in `--config` silently running with defaults.
+	it("rejects a --config file that does not exist", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+
+		await expect(loadConfigurationAsync({ configFile: "missing.config.ts", cwd: root })).rejects.toMatchObject({
+			exitCode: 3,
+		});
+	});
+
+	// Catches a misspelled value being ignored instead of reported.
+	it("rejects a configuration with a wrongly typed setting", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "{{kebabCase name}}.config.ts"), 'export default { verbose: "yes" };\n');
+
+		await expect(loadConfigurationAsync({ cwd: root })).rejects.toMatchObject({ exitCode: 3 });
+	});
+});
