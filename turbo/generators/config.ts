@@ -136,6 +136,7 @@ function createCliActions(kind: CliKind): Array<PlopTypes.ActionType> {
 		createAddAction("apps", "cli/src-cli", "src/cli.ts"),
 		createAddAction("apps", "cli/src-constants", "src/constants.ts"),
 		createAddAction("apps", "cli/src-constants-test", "src/constants.test.ts"),
+		createAddAction("apps", "cli/src-types-cliffy-internal-types", "src/types/cliffy-internal-types.ts"),
 	];
 }
 
