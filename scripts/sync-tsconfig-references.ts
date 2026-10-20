@@ -15,7 +15,7 @@ import { consola } from "consola";
 const scriptName = getScriptName(true);
 const log = consola.withTag(scriptName);
 
-// `tsc --build` skips a project it cannot reach through `references`, and the
+// `tsrs --build` skips a project it cannot reach through `references`, and the
 // import still resolves through the root `node_modules`, so a missing
 // reference is silent. References come from the `workspace:` entries in each
 // package.json instead of being maintained by hand.

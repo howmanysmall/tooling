@@ -17,7 +17,7 @@
 	"scripts": {
 		"lint:oxlint": "pnpm --workspace-root run lint:package tools/project-configurations",
 		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent tools/project-configurations",
-		"type-check": "tsc --build",
+		"type-check": "tsrs --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"dependencies": {
@@ -33,7 +33,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "catalog:types",
-		"typescript": "catalog:tooling",
-		"typescript7": "catalog:tooling"
+		"tsrs": "catalog:tooling",
+		"typescript": "catalog:tooling"
 	}
 }
