@@ -5,6 +5,7 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/colorful.tsbuildinfo",
 		"paths": {
 			"$constants": ["./src/constants.ts"],
+			"$commands/*": ["./src/commands/*"],
 			"$package": ["./package.json"],
 			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
