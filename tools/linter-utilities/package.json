@@ -12,7 +12,7 @@
 	"scripts": {
 		"lint:oxlint": "pnpm --workspace-root run lint:package tools/linter-utilities",
 		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent tools/linter-utilities",
-		"type-check": "tsc --build",
+		"type-check": "tsrs --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"dependencies": {

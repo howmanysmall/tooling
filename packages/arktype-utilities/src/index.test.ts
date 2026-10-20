@@ -374,7 +374,7 @@ describe("dictionary validators", () => {
 	});
 });
 
-// Type-only assertions, so `tsc --build` is what enforces these.
+// Type-only assertions, so `tsrs --build` is what enforces these.
 describe("exported types", () => {
 	it("infers the record shapes tools read off the validators", () => {
 		// oxlint-disable-next-line small-rules/no-unsafe-dictionary-type -- the shape this package exports

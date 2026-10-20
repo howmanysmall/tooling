@@ -14,7 +14,7 @@
 		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent packages/arktype-utilities",
 		"test": "vitest run",
 		"test:agent": "node --run test -- --reporter agent",
-		"type-check": "tsc --build",
+		"type-check": "tsrs --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"dependencies": {

@@ -4,7 +4,7 @@ const configuration = {
 	cleanTempDir: true,
 	concurrency: "50%",
 	// Stryker defaults this to `true`, which prepends `// @ts-nocheck` to every
-	// source file and shifts every line number by one. Nothing runs `tsc` in the
+	// source file and shifts every line number by one. Nothing runs `tsrs` in the
 	// sandbox anyway, see `vitest.mutation.config.ts`, which disables
 	// typechecking.
 	disableTypeChecks: false,
