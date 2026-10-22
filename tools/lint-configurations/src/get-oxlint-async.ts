@@ -595,9 +595,10 @@ export async function getOxlintAsync({
 			name: "project/react-doctor",
 			files: [GLOB_SRC],
 			jsPlugins: [{ name: "react-doctor", specifier: "oxlint-plugin-react-doctor" }],
+			// STOP DUPLICATING NATIVE RULES!!!
 			rules: {
 				...reactDoctorRules,
-				// STOP DUPLICATING NATIVE RULES!!!
+				"react-doctor/async-await-in-loop": "off",
 				"react-doctor/exhaustive-deps": "off",
 				"react-doctor/forbid-component-props": "off",
 				"react-doctor/jsx-boolean-value": "off",

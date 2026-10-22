@@ -63,7 +63,7 @@ export const generateImageInput = type({
 	...generationFields,
 	"force?": force,
 	"images?": references,
-	"model?": text.describe("a model ID; defaults to DARKROOM_MODEL"),
+	"model?": text.describe("a model ID, only when the user asked for a specific model; leave it out otherwise"),
 	"output?": outputPath,
 	prompt,
 });

@@ -243,7 +243,7 @@ export async function saveRunAsync(run: RunToSave, dependencies: SaveDependencie
 	for (const [index, image] of decoded.entries()) {
 		const storedPath =
 			stored === undefined ? undefined : resolvePathSafely(dependencies.history, stored.images[index] ?? "");
-		// oxlint-disable-next-line no-await-in-loop, react-doctor/async-await-in-loop -- sequential writes keep numbering predictable
+		// oxlint-disable-next-line no-await-in-loop -- sequential writes keep numbering predictable
 		const { failure, saved } = await saveOneAsync(context, run, image, index + 1, storedPath);
 		images.push(saved);
 		if (failure !== undefined) failures.push(failure);
