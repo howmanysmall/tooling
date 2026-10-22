@@ -7,7 +7,7 @@ import { InMemoryTransport } from "@tmcp/transport-in-memory";
 import { type } from "arktype";
 import sharp from "sharp";
 
-import { MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
+import { createModel, MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 import { createEntry } from "$history/history-fixture";
 import { appendAsync, createHistoryStore } from "$history/history-store";
 
@@ -28,9 +28,19 @@ import type { McpDependencies } from "./mcp-dependencies";
 
 // 2026-10-14T12:00:00 in local time, so the date part of names is stable.
 const NOW = new Date(2026, 9, 14, 12);
-/** The price of test/multi: $0.04 an image. */
-const PRICING = {
-	[MULTI_MODEL.id]: [{ pricing: [{ billable: "output_image", costUsd: 0.04, unit: "image" }], provider: "test" }],
+/** Costs $0.50 an image, over what darkroom spends on a model it picks. */
+const PRICEY_MODEL = createModel("test/pricey", { aspect_ratio: { type: "enum", values: ["1:1"] } });
+/** Has no published price. */
+const UNPRICED_MODEL = createModel("test/unpriced", { aspect_ratio: { type: "enum", values: ["1:1"] } });
+
+function createPerImagePricing(costUsd: number): ModelPricing[string] {
+	return [{ pricing: [{ billable: "output_image", costUsd, unit: "image" }], provider: "test" }];
+}
+
+const PRICING: ModelPricing = {
+	[MULTI_MODEL.id]: createPerImagePricing(0.04),
+	[PRICEY_MODEL.id]: createPerImagePricing(0.5),
+	[SINGLE_MODEL.id]: createPerImagePricing(0.02),
 };
 
 type ToolArguments = Readonly<Record<string, boolean | number | string>>;
@@ -190,6 +200,40 @@ describe("darkroom MCP server", () => {
 		await callAsync("generate-image", { prompt: "a lighthouse" });
 
 		expect(getSentModels(sent)).toStrictEqual([SINGLE_MODEL.id]);
+	});
+
+	// Catches a caller who named no model being billed a premium price.
+	it("never picks a model priced over the ceiling", async ({ expect }) => {
+		expect.assertions(1);
+
+		const { callAsync, sent } = await createHarnessAsync({ models: [PRICEY_MODEL, MULTI_MODEL] });
+		await callAsync("generate-image", { prompt: "a lighthouse" });
+
+		expect(getSentModels(sent)).toStrictEqual([MULTI_MODEL.id]);
+	});
+
+	// Catches a caller who named no model being billed an unknown amount.
+	it("sends nothing when only unpriced models fit", async ({ expect }) => {
+		expect.assertions(2);
+
+		const { callAsync, sent } = await createHarnessAsync({ models: [UNPRICED_MODEL] });
+		const result = await callAsync("generate-image", { prompt: "a lighthouse" });
+
+		expect(result.isError).toBe(true);
+		expect(sent).toHaveLength(0);
+	});
+
+	// Catches DARKROOM_MODEL slipping past the ceiling a picked model is held to.
+	it("skips a pricey DARKROOM_MODEL when the call names no model", async ({ expect }) => {
+		expect.assertions(1);
+
+		const { callAsync, sent } = await createHarnessAsync({
+			defaultModel: PRICEY_MODEL.id,
+			models: [PRICEY_MODEL, MULTI_MODEL],
+		});
+		await callAsync("generate-image", { prompt: "a lighthouse" });
+
+		expect(getSentModels(sent)).toStrictEqual([MULTI_MODEL.id]);
 	});
 
 	// Catches one provider's quota error ending a call another model could serve.
