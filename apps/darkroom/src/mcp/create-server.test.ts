@@ -2,11 +2,12 @@ import { access, mkdtemp, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import nodePath from "node:path";
 import { describe, it } from "vitest";
+import { OpenRouterError } from "@openrouter/sdk/models/errors";
 import { InMemoryTransport } from "@tmcp/transport-in-memory";
 import { type } from "arktype";
 import sharp from "sharp";
 
-import { MULTI_MODEL } from "$generation/model-fixture";
+import { MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
 import { createEntry } from "$history/history-fixture";
 import { appendAsync, createHistoryStore } from "$history/history-store";
 
@@ -53,7 +54,27 @@ async function createPngBase64Async(): Promise<string> {
 	return png.toString("base64");
 }
 
-async function createHarnessAsync(defaultModel?: string): Promise<Harness> {
+interface HarnessOptions {
+	readonly defaultModel?: string | undefined;
+	readonly models?: ReadonlyArray<ImageModelListItem> | undefined;
+	/** Models whose provider answers 429, which bills nothing. */
+	readonly rateLimited?: ReadonlyArray<string> | undefined;
+}
+
+function createRateLimitError(): OpenRouterError {
+	const body = JSON.stringify({ error: { message: "You exceeded your current quota." } });
+	return new OpenRouterError("Rate limited", {
+		body,
+		request: new Request("https://openrouter.ai/api/v1/images"),
+		response: new Response(body, { status: 429 }),
+	});
+}
+
+async function createHarnessAsync({
+	defaultModel,
+	models = [MULTI_MODEL],
+	rateLimited = [],
+}: HarnessOptions = {}): Promise<Harness> {
 	const cwd = await mkdtemp(nodePath.join(tmpdir(), "darkroom-mcp-"));
 	const historyRoot = await mkdtemp(nodePath.join(tmpdir(), "darkroom-mcp-history-"));
 	const history = createHistoryStore(historyRoot);
@@ -67,6 +88,7 @@ async function createHarnessAsync(defaultModel?: string): Promise<Harness> {
 			return {
 				// oxlint-disable-next-line small-rules/require-async-suffix -- implements the SDK method name
 				async generate(request): Promise<CreateImagesResponse> {
+					if (rateLimited.includes(request.imageGenerationRequest.model)) throw createRateLimitError();
 					sent.push(request);
 					return {
 						created: 0,
@@ -85,7 +107,7 @@ async function createHarnessAsync(defaultModel?: string): Promise<Harness> {
 			};
 		},
 		async getModelsAsync(): Promise<ReadonlyArray<ImageModelListItem>> {
-			return [MULTI_MODEL];
+			return models;
 		},
 		async getObservedPricesAsync(): Promise<ObservedPrices> {
 			return new Map();
@@ -122,17 +144,23 @@ async function createHarnessAsync(defaultModel?: string): Promise<Harness> {
 }
 
 function readJson<Schema extends Type>(result: CallToolResult<undefined>, schema: Schema): Schema["infer"] {
-	const [first] = result.content ?? [];
-	if (first?.type !== "text") throw new Error("Expected the result to start with JSON text.");
-	return schema.assert(JSON.parse(first.text));
+	const json = result.content?.findLast((item) => item.type === "text");
+	if (json?.type !== "text") {
+		throw new Error("Expected the result to have JSON text.");
+	}
+	return schema.assert(JSON.parse(json.text));
+}
+
+function getSentModels(sent: ReadonlyArray<CreateImagesRequest>): Array<string> {
+	return sent.map(({ imageGenerationRequest }) => imageGenerationRequest.model);
 }
 
 describe("darkroom MCP server", () => {
 	// Catches a schema that can't become JSON Schema, hiding every tool.
-	it("lists generate-image with prompt as its one required input when a default model is set", async ({ expect }) => {
+	it("lists generate-image with prompt as its one required input", async ({ expect }) => {
 		expect.assertions(1);
 
-		const { session } = await createHarnessAsync(MULTI_MODEL.id);
+		const { session } = await createHarnessAsync();
 		const { tools } = await session.listTools();
 
 		expect(tools.find((item) => item.name === "generate-image")?.inputSchema).toMatchObject({
@@ -140,27 +168,74 @@ describe("darkroom MCP server", () => {
 		});
 	});
 
-	// Catches callers leaving out a model that the call then fails without.
-	it("requires model for generate-image when no default model is set", async ({ expect }) => {
-		expect.assertions(1);
+	// Catches a call with only a prompt failing for want of a model.
+	it("generates from only a prompt, with no default model set", async ({ expect }) => {
+		expect.assertions(2);
 
-		const { session } = await createHarnessAsync();
-		const { tools } = await session.listTools();
-		const required = type("string[]").assert(
-			tools.find((item) => item.name === "generate-image")?.inputSchema.required,
-		);
+		const { callAsync, sent } = await createHarnessAsync();
+		const result = await callAsync("generate-image", { prompt: "a lighthouse" });
 
-		expect(required.toSorted()).toStrictEqual(["model", "prompt"]);
+		expect(result.isError).not.toBe(true);
+		expect(getSentModels(sent)).toStrictEqual([MULTI_MODEL.id]);
 	});
 
 	// Catches the default model being ignored when a call leaves model out.
-	it("generates with the default model when model is left out", async ({ expect }) => {
+	it("prefers DARKROOM_MODEL when model is left out", async ({ expect }) => {
 		expect.assertions(1);
 
-		const { callAsync, sent } = await createHarnessAsync(MULTI_MODEL.id);
-		await callAsync("generate-image", { maxCost: 0.1, prompt: "a lighthouse" });
+		const { callAsync, sent } = await createHarnessAsync({
+			defaultModel: SINGLE_MODEL.id,
+			models: [MULTI_MODEL, SINGLE_MODEL],
+		});
+		await callAsync("generate-image", { prompt: "a lighthouse" });
 
-		expect(sent.map(({ imageGenerationRequest }) => imageGenerationRequest.model)).toStrictEqual([MULTI_MODEL.id]);
+		expect(getSentModels(sent)).toStrictEqual([SINGLE_MODEL.id]);
+	});
+
+	// Catches one provider's quota error ending a call another model could serve.
+	it("moves to another model when the picked one is rate limited", async ({ expect }) => {
+		expect.assertions(2);
+
+		const { callAsync, sent } = await createHarnessAsync({
+			defaultModel: SINGLE_MODEL.id,
+			models: [MULTI_MODEL, SINGLE_MODEL],
+			rateLimited: [SINGLE_MODEL.id],
+		});
+		const result = await callAsync("generate-image", { prompt: "a lighthouse" });
+
+		expect(result.isError).not.toBe(true);
+		expect(getSentModels(sent)).toStrictEqual([MULTI_MODEL.id]);
+	});
+
+	// Catches a model the caller named being swapped for another.
+	it("doesn't move away from a model the caller named", async ({ expect }) => {
+		expect.assertions(2);
+
+		const { callAsync, sent } = await createHarnessAsync({
+			models: [MULTI_MODEL, SINGLE_MODEL],
+			rateLimited: [SINGLE_MODEL.id],
+		});
+		const result = await callAsync("generate-image", { model: SINGLE_MODEL.id, prompt: "a lighthouse" });
+
+		expect(result.isError).toBe(true);
+		expect(sent).toHaveLength(0);
+	});
+
+	// Catches a provider rejecting a parameter its model never declared.
+	it("leaves out options the model doesn't take", async ({ expect }) => {
+		expect.assertions(2);
+
+		const { callAsync, sent } = await createHarnessAsync({ models: [SINGLE_MODEL] });
+		const result = await callAsync("generate-image", {
+			model: SINGLE_MODEL.id,
+			prompt: "a lighthouse",
+			type: "png",
+		});
+
+		expect(result.isError).not.toBe(true);
+		expect(sent.map(({ imageGenerationRequest }) => imageGenerationRequest.outputFormat)).toStrictEqual([
+			undefined,
+		]);
 	});
 
 	// Catches money being spent past the caller's limit.
