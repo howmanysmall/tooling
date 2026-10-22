@@ -718,9 +718,6 @@ importers:
       '@clack/prompts':
         specifier: catalog:runtime
         version: 1.8.1
-      '@inkjs/ui':
-        specifier: catalog:runtime
-        version: 2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
       '@openrouter/sdk':
         specifier: catalog:ai
         version: 1.4.25
@@ -791,6 +788,9 @@ importers:
       '@howmanysmall/string-utilities':
         specifier: workspace:*
         version: link:../../packages/string-utilities
+      '@inkjs/ui':
+        specifier: catalog:runtime
+        version: 2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
       '@tmcp/transport-in-memory':
         specifier: catalog:ai
         version: 0.1.0(tmcp@1.20.0(typescript@6.0.3))
