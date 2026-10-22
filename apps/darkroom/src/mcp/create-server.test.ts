@@ -223,17 +223,17 @@ describe("darkroom MCP server", () => {
 		expect(sent).toHaveLength(0);
 	});
 
-	// Catches DARKROOM_MODEL slipping past the ceiling a picked model is held to.
-	it("skips a pricey DARKROOM_MODEL when the call names no model", async ({ expect }) => {
+	// Catches the user's own default being swapped out because it's token-priced.
+	it("uses DARKROOM_MODEL even when its price is unknown", async ({ expect }) => {
 		expect.assertions(1);
 
 		const { callAsync, sent } = await createHarnessAsync({
-			defaultModel: PRICEY_MODEL.id,
-			models: [PRICEY_MODEL, MULTI_MODEL],
+			defaultModel: UNPRICED_MODEL.id,
+			models: [UNPRICED_MODEL, MULTI_MODEL],
 		});
 		await callAsync("generate-image", { prompt: "a lighthouse" });
 
-		expect(getSentModels(sent)).toStrictEqual([MULTI_MODEL.id]);
+		expect(getSentModels(sent)).toStrictEqual([UNPRICED_MODEL.id]);
 	});
 
 	// Catches one provider's quota error ending a call another model could serve.

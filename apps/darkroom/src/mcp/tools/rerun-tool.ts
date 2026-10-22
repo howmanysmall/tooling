@@ -35,13 +35,12 @@ export function registerRerunTool(server: DarkroomServer, dependencies: McpDepen
 					dependencies,
 					{
 						force: input.force === true,
-						modelId: input.model ?? entry.model,
 						options: mergeRerunOptions(entry, input),
 						parent: entry.id,
 						prompt: entry.prompt,
 						references,
 					},
-					input,
+					[{ budget: input, isPicked: false, modelId: input.model ?? entry.model }],
 				);
 			}),
 	);
