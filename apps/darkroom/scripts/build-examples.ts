@@ -52,7 +52,7 @@ let total = 0;
 const byModel = [...examples].toSorted(([first], [second]) => first.localeCompare(second));
 for (const [model, example] of byModel) {
 	const file = toExampleFileName(model);
-	// oxlint-disable-next-line no-await-in-loop, react-doctor/async-await-in-loop -- one image at a time keeps memory flat
+	// oxlint-disable-next-line no-await-in-loop -- one image at a time keeps memory flat
 	const { size } = await sharp(example.path)
 		.resize(LONG_EDGE, LONG_EDGE, { fit: "inside" })
 		.avif({ effort: 6, quality: QUALITY })
