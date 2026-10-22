@@ -15,8 +15,11 @@ import type { ModelPricing } from "$utilities/model-pricing-utilities";
 export interface McpDependencies {
 	/** Where relative paths resolve: where the client started darkroom. */
 	readonly cwd: string;
-	/** The model to use when a call names none: `DARKROOM_MODEL`. */
-	readonly getDefaultModelAsync: () => Promise<string | undefined>;
+	/**
+	 * The model to use when a call names none: `DARKROOM_MODEL`, read at
+	 * startup so the tool schemas can say whether `model` is required.
+	 */
+	readonly defaultModel: string | undefined;
 	readonly getImagesClientAsync: () => Promise<ImagesClient>;
 	readonly getModelsAsync: () => Promise<ReadonlyArray<ImageModelListItem>>;
 	readonly getObservedPricesAsync: () => Promise<ObservedPrices>;
@@ -89,6 +92,23 @@ export async function createPreviewAsync(path: string): Promise<Preview | undefi
 }
 
 /**
+ * Reads `DARKROOM_MODEL`. A malformed environment shouldn't stop the server
+ * from starting, since the free tools work without it, so this treats one as
+ * having no default; a paid call still reports the problem.
+ *
+ * @returns The default model, if one is set.
+ */
+async function readDefaultModelAsync(): Promise<string | undefined> {
+	const { getEnvironmentAsync } = await import("$functions/get-environment-async");
+	try {
+		const { DARKROOM_MODEL } = await getEnvironmentAsync();
+		return DARKROOM_MODEL;
+	} catch {
+		return undefined;
+	}
+}
+
+/**
  * Wires the tools to OpenRouter, the caches, and the history on disk.
  *
  * @param cwd - The directory relative output paths resolve against.
@@ -109,11 +129,7 @@ export async function createDefaultDependenciesAsync(cwd: string): Promise<McpDe
 
 	return {
 		cwd,
-		async getDefaultModelAsync(): Promise<string | undefined> {
-			const { getEnvironmentAsync } = await import("$functions/get-environment-async");
-			const { DARKROOM_MODEL } = await getEnvironmentAsync();
-			return DARKROOM_MODEL;
-		},
+		defaultModel: await readDefaultModelAsync(),
 		async getImagesClientAsync(): Promise<ImagesClient> {
 			const { getOpenRouterAsync } = await import("$functions/get-openrouter-async");
 			const openrouter = await getOpenRouterAsync();
