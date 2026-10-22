@@ -5,7 +5,7 @@ import { describe, it } from "vitest";
 
 import { chooseOutputDirectoryAsync } from "./output-directory";
 
-describe(chooseOutputDirectoryAsync, () => {
+describe("chooseOutputDirectoryAsync", () => {
 	// Catches Claude Code's images leaving the project they were made for.
 	it("keeps a writable working directory", async ({ expect }) => {
 		expect.assertions(1);
