@@ -42,9 +42,8 @@ export interface ModelPriceList {
 }
 
 /**
- * Picks the models to try, in order, when a call names none: the server's
- * default, then the preferred models, then the cheapest other models. Every
- * model but the default must serve the request and cost at most
+ * Picks models for a call that names none: the preferred models, then the
+ * cheapest others. Each must serve the request and cost at most
  * `MAX_PICKED_PRICE` per image.
  *
  * @param models - Every image model.
@@ -52,14 +51,12 @@ export interface ModelPriceList {
  * @param prices - Published prices, and what past runs cost.
  * @param prices.observed - What each model cost per image in past runs.
  * @param prices.pricing - Each model's published prices.
- * @param defaultModel - `DARKROOM_MODEL`, if set.
- * @returns Up to `MAX_ATTEMPTS` model IDs.
+ * @returns Up to `MAX_ATTEMPTS` model IDs, best first.
  */
 export function chooseModels(
 	models: ReadonlyArray<ImageModelListItem>,
 	request: ModelRequest,
 	{ observed, pricing }: ModelPriceList,
-	defaultModel?: string,
 ): Array<string> {
 	const priced = filterModels(models, {
 		multi: (request.count ?? 1) > 1,
@@ -73,9 +70,7 @@ export function chooseModels(
 	const affordable = new Set(priced.map(({ id }) => id));
 	const preferred = PREFERRED_MODELS.filter((id) => affordable.has(id));
 	const cheapest = priced.toSorted((first, second) => first.price - second.price).map(({ id }) => id);
-	const isDefaultKnown = defaultModel !== undefined && models.some((model) => model.id === defaultModel);
-	const ordered = [...(isDefaultKnown ? [defaultModel] : []), ...preferred, ...cheapest];
-	return [...new Set(ordered)].slice(0, MAX_ATTEMPTS);
+	return [...new Set([...preferred, ...cheapest])].slice(0, MAX_ATTEMPTS);
 }
 
 /** Each option, the wire parameter it sets, and its name in tool inputs. */

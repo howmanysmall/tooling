@@ -1,6 +1,6 @@
 import { toGenerationOptions } from "$generation/generation-flags";
 import { loadReferencesAsync } from "$mcp/generation-input";
-import { chooseModels, MAX_PICKED_PRICE } from "$mcp/model-choice";
+import { chooseModels, MAX_ATTEMPTS, MAX_PICKED_PRICE } from "$mcp/model-choice";
 import { runPaidGenerationAsync } from "$mcp/paid-generation";
 import { generateImageInput } from "$mcp/schemas";
 import { runToolAsync } from "$mcp/to-tool-result";
@@ -23,8 +23,13 @@ export function registerGenerateImageTool(server: DarkroomServer, dependencies: 
 				const references = await loadReferencesAsync(dependencies, input.images);
 				const options = toGenerationOptions(input);
 				const generation = { force: input.force === true, options, prompt: input.prompt, references };
+				// A model the user chose, here or as DARKROOM_MODEL,
+				// runs under the caller's budget alone.
+				const chosen = input.model ?? dependencies.defaultModel;
+				const chosenAttempts =
+					chosen === undefined ? [] : [{ budget: input, isPicked: false, modelId: chosen }];
 				if (input.model !== undefined) {
-					return runPaidGenerationAsync(server, dependencies, { ...generation, modelId: input.model }, input);
+					return runPaidGenerationAsync(server, dependencies, generation, chosenAttempts);
 				}
 
 				const [models, pricing, observed] = await Promise.all([
@@ -32,28 +37,28 @@ export function registerGenerateImageTool(server: DarkroomServer, dependencies: 
 					dependencies.getPricingAsync(),
 					dependencies.getObservedPricesAsync(),
 				]);
-				const [first, ...fallbackModels] = chooseModels(
+				// List prices can be the cheapest variant, so cap
+				// the estimate for this request's settings too.
+				const pickedBudget = {
+					allowUnknownCost: input.allowUnknownCost,
+					maxCost: input.maxCost ?? MAX_PICKED_PRICE * (input.count ?? 1),
+				};
+				const picked = chooseModels(
 					models,
 					{ ...options, referenceCount: references.length },
 					{ observed, pricing },
-					dependencies.defaultModel,
-				);
-				if (first === undefined) {
+				).filter((modelId) => modelId !== chosen);
+				const attempts = [
+					...chosenAttempts,
+					...picked.map((modelId) => ({ budget: pickedBudget, isPicked: true, modelId })),
+				].slice(0, MAX_ATTEMPTS);
+				if (attempts.length === 0) {
 					throw new Error(
 						`No model priced at $${MAX_PICKED_PRICE} or less per image can serve this request. Drop some options, or pass a model the user chose.`,
 					);
 				}
 
-				// List prices can be the cheapest variant, so cap
-				// the estimate for this request's settings too.
-				const budget = {
-					allowUnknownCost: input.allowUnknownCost,
-					maxCost: input.maxCost ?? MAX_PICKED_PRICE * (input.count ?? 1),
-				};
-				return runPaidGenerationAsync(server, dependencies, { ...generation, modelId: first }, budget, {
-					fallbackModels,
-					isPicked: true,
-				});
+				return runPaidGenerationAsync(server, dependencies, generation, attempts);
 			}),
 	);
 }
