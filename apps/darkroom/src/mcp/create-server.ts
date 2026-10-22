@@ -15,13 +15,8 @@ import { registerShowRunTool } from "./tools/show-run-tool";
 import type { DarkroomServer } from "./darkroom-server";
 import type { McpDependencies } from "./mcp-dependencies";
 
-function createInstructions(defaultModel?: string): string {
-	const model =
-		defaultModel === undefined
-			? "No default model is set, so every generate-image call must pass model: pick one with list-models (sort price shows the cheapest) before generating."
-			: `The default model is ${defaultModel}; generate-image uses it when model is left out.`;
-	return `darkroom generates images with OpenRouter's image models. ${model} generate-image, compare-models, and rerun cost money: check prices with estimate-cost first and pass maxCost. Images are saved to disk and recorded in a history that list-history and show-run read.`;
-}
+const INSTRUCTIONS =
+	"darkroom makes images with OpenRouter's image models. To make one, call generate-image with just a prompt: darkroom picks the model, saves the image, and attaches it to the result, where the user can see it. Don't call list-models or estimate-cost first, and only pass model or other options when the user asks for them. Each image costs money, usually a few cents. compare-models runs one prompt on several models, and list-history, show-run, and rerun work with past runs.";
 
 /**
  * Builds the MCP server with every darkroom tool registered.
@@ -36,7 +31,7 @@ export function createDarkroomServer(dependencies: McpDependencies): DarkroomSer
 		{
 			adapter: new ArktypeJsonSchemaAdapter(),
 			capabilities: { tools: {} },
-			instructions: createInstructions(dependencies.defaultModel),
+			instructions: INSTRUCTIONS,
 		},
 	);
 

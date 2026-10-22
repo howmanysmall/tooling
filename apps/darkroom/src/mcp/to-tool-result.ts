@@ -1,3 +1,4 @@
+import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 import { tool } from "tmcp/utils";
 
 import { CHARGE_NOTE } from "$errors/to-api-error";
@@ -80,24 +81,35 @@ async function getPreviewsAsync(
 	);
 }
 
+function describeOutcome(run: RunSummary): string {
+	const cost = run.cost === undefined ? "" : ` for $${run.cost.toFixed(3)}`;
+	const paths = run.images.map(({ path }) => path).join(", ");
+	return `${run.model} made ${run.images.length} ${toPlural(run.images.length, "image")}${cost}, saved to ${paths}. The images are attached below, so the user can already see them in this result; there is no need to open the files.`;
+}
+
 /**
- * Describes a finished run: its paths, cost, and problems as JSON, followed
- * by a preview of each image.
+ * Describes a finished run: a sentence saying what was made and where it
+ * went, its details as JSON, then a preview of each image.
+ *
+ * An image saved somewhere other than asked is still a success: it exists,
+ * and the problems say where it went.
  *
  * @param result - The run.
- * @param warnings - Validation warnings that didn't block the request.
+ * @param warnings - Notes that didn't block the request.
  * @param dependencies - Makes the previews.
- * @returns The tool result; an error result when the run is incomplete.
+ * @returns The tool result; an error result when no image was saved.
  */
 export async function toGenerationResultAsync(
 	result: GenerationResult,
 	warnings: ReadonlyArray<string>,
 	dependencies: McpDependencies,
 ): Promise<ToolResult> {
-	const summary = toJsonResult({ ...describeRun(result), warnings });
+	const run = describeRun(result);
+	const outcome = run.images.length === 0 ? "No image came back." : describeOutcome(run);
+	const summary = toJsonResult({ ...run, warnings });
 	const previews = await getPreviewsAsync([result], dependencies);
-	const mixed = tool.mix([summary, ...previews]);
-	return describeProblems(result).length === 0 ? mixed : { ...mixed, isError: true };
+	const mixed = tool.mix([tool.text(outcome), summary, ...previews]);
+	return run.images.length === 0 ? { ...mixed, isError: true } : mixed;
 }
 
 /**
