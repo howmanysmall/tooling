@@ -58,15 +58,37 @@ export const estimateCostInput = type({
 	prompt,
 });
 
-export const generateImageInput = type({
+const generateImageFields = {
 	...budgetFields,
 	...generationFields,
 	"force?": force,
 	"images?": references,
-	"model?": text.describe("a model ID; defaults to DARKROOM_MODEL"),
 	"output?": outputPath,
 	prompt,
-});
+} as const;
+
+const optionalModelInput = type({ ...generateImageFields, "model?": text });
+
+/**
+ * Builds the `generate-image` input. Without a default model, `model` is
+ * required: an optional field that fails when left out is one callers skip.
+ *
+ * @param defaultModel - `DARKROOM_MODEL`, if the server has one.
+ * @returns The schema, which names the default when there is one.
+ */
+export function createGenerateImageInput(defaultModel?: string): typeof optionalModelInput {
+	if (defaultModel !== undefined) {
+		return type({
+			...generateImageFields,
+			"model?": text.describe(`a model ID; leave it out to use ${defaultModel}`),
+		});
+	}
+
+	return type({
+		...generateImageFields,
+		model: text.describe("an image model ID, like google/gemini-3-pro-image (list-models shows them all)"),
+	});
+}
 
 export const compareModelsInput = type({
 	...budgetFields,

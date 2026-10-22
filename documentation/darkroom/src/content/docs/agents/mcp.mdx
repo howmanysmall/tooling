@@ -10,8 +10,12 @@ the MCP stream, and logs go to stderr.
 { "mcpServers": { "darkroom": { "command": "darkroom", "args": ["mcp"] } } }
 ```
 
-Put `OPENROUTER_API_KEY` in the server's environment. `DARKROOM_MODEL` picks the model when `generate-image` names
-none. Relative paths resolve against the folder the client starts the server in.
+Put `OPENROUTER_API_KEY` in the server's environment. Relative paths resolve against the folder the client starts the
+server in.
+
+The server reads `DARKROOM_MODEL` when it starts. With it set, `generate-image` uses that model when a call names none,
+and the tool says so. Without it, `generate-image` requires `model`, and the server tells the client to pick one with
+`list-models` before generating.
 
 ## Tools
 

@@ -53,7 +53,7 @@ async function createPngBase64Async(): Promise<string> {
 	return png.toString("base64");
 }
 
-async function createHarnessAsync(): Promise<Harness> {
+async function createHarnessAsync(defaultModel?: string): Promise<Harness> {
 	const cwd = await mkdtemp(nodePath.join(tmpdir(), "darkroom-mcp-"));
 	const historyRoot = await mkdtemp(nodePath.join(tmpdir(), "darkroom-mcp-history-"));
 	const history = createHistoryStore(historyRoot);
@@ -62,9 +62,7 @@ async function createHarnessAsync(): Promise<Harness> {
 
 	const dependencies: McpDependencies = {
 		cwd,
-		async getDefaultModelAsync(): Promise<string | undefined> {
-			return undefined;
-		},
+		defaultModel,
 		async getImagesClientAsync(): Promise<ImagesClient> {
 			return {
 				// oxlint-disable-next-line small-rules/require-async-suffix -- implements the SDK method name
@@ -131,15 +129,38 @@ function readJson<Schema extends Type>(result: CallToolResult<undefined>, schema
 
 describe("darkroom MCP server", () => {
 	// Catches a schema that can't become JSON Schema, hiding every tool.
-	it("lists generate-image with prompt as its one required input", async ({ expect }) => {
+	it("lists generate-image with prompt as its one required input when a default model is set", async ({ expect }) => {
 		expect.assertions(1);
 
-		const { session } = await createHarnessAsync();
+		const { session } = await createHarnessAsync(MULTI_MODEL.id);
 		const { tools } = await session.listTools();
 
 		expect(tools.find((item) => item.name === "generate-image")?.inputSchema).toMatchObject({
 			required: ["prompt"],
 		});
+	});
+
+	// Catches callers leaving out a model that the call then fails without.
+	it("requires model for generate-image when no default model is set", async ({ expect }) => {
+		expect.assertions(1);
+
+		const { session } = await createHarnessAsync();
+		const { tools } = await session.listTools();
+		const required = type("string[]").assert(
+			tools.find((item) => item.name === "generate-image")?.inputSchema.required,
+		);
+
+		expect(required.toSorted()).toStrictEqual(["model", "prompt"]);
+	});
+
+	// Catches the default model being ignored when a call leaves model out.
+	it("generates with the default model when model is left out", async ({ expect }) => {
+		expect.assertions(1);
+
+		const { callAsync, sent } = await createHarnessAsync(MULTI_MODEL.id);
+		await callAsync("generate-image", { maxCost: 0.1, prompt: "a lighthouse" });
+
+		expect(sent.map(({ imageGenerationRequest }) => imageGenerationRequest.model)).toStrictEqual([MULTI_MODEL.id]);
 	});
 
 	// Catches money being spent past the caller's limit.
