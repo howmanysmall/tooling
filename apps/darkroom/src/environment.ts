@@ -1,5 +1,6 @@
 import { env } from "node:process";
 import { arkenv, type } from "@arkenv/core";
+import { isMaybeNonEmptyString, isUndefined } from "@howmanysmall/arktype-utilities";
 
 /**
  * Environment variable schema for server-side or runtime-only validation.
@@ -10,10 +11,10 @@ import { arkenv, type } from "@arkenv/core";
  */
 export const environment = arkenv(
 	{
-		"DARKROOM_MODEL?": "string > 0",
-		"DARKROOM_PREVIEW?": "'blocks' | 'kitty' | 'off'",
+		"DARKROOM_MODEL?": isMaybeNonEmptyString,
+		"DARKROOM_PREVIEW?": "'blocks' | 'kitty' | 'off' | undefined",
 		NODE_ENV: "'development' | 'production' | 'test' = 'development'",
-		"OPENROUTER_API_KEY?": type(/^sk-or-v1-[a-zA-Z0-9]{64}$/u),
+		"OPENROUTER_API_KEY?": type(/^sk-or-v1-[a-zA-Z0-9]{64}$/u).or(isUndefined),
 	},
 	{
 		emptyAsUndefined: true,
