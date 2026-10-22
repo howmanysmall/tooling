@@ -1,6 +1,5 @@
 import { ValidationError } from "@cliffy/command";
 import { OpenRouterError } from "@openrouter/sdk/models/errors";
-import { tool } from "tmcp/utils";
 
 import { getEstimatesAsync } from "$compare/plan-compare";
 import { ApiError } from "$errors/api-error";
@@ -66,9 +65,8 @@ async function attemptAsync(
 	const prepared = await prepareAsync(dependencies, input, isPicked);
 	const [estimate] = await getEstimatesAsync([prepared], dependencies);
 	const check = checkBudget([estimate?.estimate], budget);
-	if (!check.isAllowed) {
-		return tool.error(check.reason);
-	}
+	// Thrown, not returned, so a fallback model gets a chance: nothing was sent.
+	if (!check.isAllowed) throw new ValidationError(check.reason);
 
 	const result = await executeGenerationAsync(prepared, {
 		client: await dependencies.getImagesClientAsync(),
@@ -104,9 +102,9 @@ async function attemptAsync(
  * @param options.fallbackModels - Models to try when an earlier one refuses
  *   without billing.
  * @param options.isPicked - Whether darkroom chose the models.
- * @returns The run, or a tool error saying why nothing was sent.
- * @rejects An `Error` naming the model that failed and any skipped before
- *   it.
+ * @returns The finished run: its paths, cost, and previews.
+ * @rejects An `Error` naming the model that failed or was over budget, and
+ *   any skipped before it.
  */
 export async function runPaidGenerationAsync(
 	server: DarkroomServer,
