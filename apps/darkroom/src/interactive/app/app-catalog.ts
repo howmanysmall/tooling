@@ -32,6 +32,7 @@ async function loadModelSourceAsync(history: ReadonlyArray<HistoryEntry>): Promi
 		// without prices shows a dash instead.
 		getModelPricingAsync(true, () => undefined),
 	]);
+
 	return { models, observed: getObservedPrices(history), pricing };
 }
 

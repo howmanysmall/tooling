@@ -85,6 +85,7 @@ async function attemptAsync(
 		warn: dependencies.warn,
 		writeStdoutAsync: rejectStdoutAsync,
 	});
+
 	return toGenerationResultAsync(result, [...skipped, ...prepared.warnings], dependencies);
 }
 
@@ -127,6 +128,7 @@ export async function runPaidGenerationAsync(
 				const tried = skipped.length === 0 ? "" : ` Earlier attempts: ${skipped.join(" ")}`;
 				throw new Error(`${modelId} failed: ${superError.message}${tried}`, { cause: error });
 			}
+
 			skipped.push(`Skipped ${modelId} (${superError.message}); nothing was charged.`);
 		}
 	}

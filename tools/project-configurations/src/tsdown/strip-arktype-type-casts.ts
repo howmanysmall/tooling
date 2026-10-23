@@ -60,6 +60,7 @@ type Pattern = ESTree.BindingPattern | ESTree.BindingRestElement | ESTree.ParamP
 
 function* getPatternNames(pattern: null | Pattern): Generator<string> {
 	if (pattern === null) return;
+
 	switch (pattern.type) {
 		case "ArrayPattern": {
 			for (const element of pattern.elements) yield* getPatternNames(element);
@@ -80,6 +81,7 @@ function* getPatternNames(pattern: null | Pattern): Generator<string> {
 			for (const property of pattern.properties) {
 				yield* getPatternNames(property.type === "RestElement" ? property : property.value);
 			}
+
 			break;
 		}
 
@@ -132,6 +134,7 @@ function countDeclarations(program: ESTree.Program): ReadonlyMap<string, number>
 	 */
 	function addFunction(node: ESTree.ArrowFunctionExpression | ESTree.Function): void {
 		if (node.type !== "ArrowFunctionExpression") add(node.id?.name);
+
 		for (const parameter of node.params) addPattern(parameter);
 	}
 
@@ -191,6 +194,7 @@ function unwrapExpression(expression: ESTree.Expression): ESTree.Expression {
 	) {
 		current = current.expression;
 	}
+
 	return current;
 }
 
@@ -242,6 +246,7 @@ function getTypeFunctionNames(program: ESTree.Program, isUnshadowed: (name: stri
 			if (isTypeFunctionImport(specifier) && isUnshadowed(specifier.local.name)) names.add(specifier.local.name);
 		}
 	}
+
 	return names;
 }
 
@@ -250,14 +255,18 @@ function getTopLevelConstDeclarators(program: ESTree.Program): Array<ESTree.Vari
 	for (const topLevelStatement of program.body) {
 		const statement =
 			topLevelStatement.type === "ExportNamedDeclaration" ? topLevelStatement.declaration : topLevelStatement;
+
 		if (statement?.type !== "VariableDeclaration" || statement.kind !== "const") continue;
+
 		for (const declarator of statement.declarations) declarators.push(declarator);
 	}
+
 	return declarators;
 }
 
 function getArktypeBindings(program: ESTree.Program): ArktypeBindings {
 	const declarationCounts = countDeclarations(program);
+
 	function isUnshadowed(name: string): boolean {
 		return declarationCounts.get(name) === 1;
 	}
@@ -266,6 +275,7 @@ function getArktypeBindings(program: ESTree.Program): ArktypeBindings {
 		typeFunctions: getTypeFunctionNames(program, isUnshadowed),
 		typeValues: new Set(),
 	};
+
 	if (bindings.typeFunctions.size === 0) return bindings;
 
 	// Read in source order, so a `Type` built from an earlier one is
@@ -299,10 +309,12 @@ function getStrippableReceiver(call: ESTree.CallExpression, bindings: ArktypeBin
 
 	const methodName = getStaticMemberName(callee);
 	if (methodName === undefined || !IDENTITY_METHODS.has(methodName)) return undefined;
+
 	const hasIdentityArguments =
 		methodName === "brand"
 			? call.arguments.length === 1 && isBrandName(call.arguments[0])
 			: call.arguments.length === 0;
+
 	if (!hasIdentityArguments) return undefined;
 
 	return isTypeExpression(callee.object, bindings) ? callee.object : undefined;

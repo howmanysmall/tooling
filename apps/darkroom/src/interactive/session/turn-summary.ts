@@ -22,9 +22,11 @@ export function summarizeTurn(turn: SessionTurn, modelName: string): string {
 	const { result } = turn;
 	if (result !== undefined) {
 		parts.push(formatCost(result.cost));
+
 		if (result.returned !== result.requested) {
 			parts.push(`${result.returned} of ${result.requested} ${toPlural(result.requested, "image")}`);
 		}
 	}
+
 	return parts.filter((part) => part !== undefined).join(" · ");
 }

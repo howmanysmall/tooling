@@ -89,7 +89,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 	}
 
 	// oxlint-disable eslint/class-methods-use-this -- overrides a Prompt hook that has no use for this
-	// biome-ignore lint/nursery/useThisInClassMethods: overrides a Prompt hook that has no use for this.
+	// biome-ignore lint/style/useThisInClassMethods: overrides a Prompt hook that has no use for this.
 	protected override _isActionKey(_character: string | undefined, key: Key): boolean {
 		// Keep Space and Tab out of the filter text.
 		return key.name === "space" || key.name === "tab";
@@ -134,6 +134,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 						rowPadding: header.length + footer.length,
 						style: (entry, isActive) => drawEntry(entry, isActive, this.picker.selected),
 					});
+
 		return [...header, ...rows.map((row) => `${bar}  ${row}`), ...footer].join("\n");
 	}
 
@@ -177,9 +178,11 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 
 	private handleKey(key: Key): void {
 		if (key.name === "tab") this.goTo(getOpenTarget(this.picker));
+
 		if (key.name === "backspace" && this.filterBeforeKey.length === 0) {
 			this.goTo(nodePath.dirname(this.picker.directory));
 		}
+
 		this.filterBeforeKey = this.userInput;
 	}
 

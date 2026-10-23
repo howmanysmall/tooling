@@ -101,6 +101,7 @@ function findNewestImage(turns: ReadonlyArray<SessionTurn>): BaseImage | undefin
 		const image = getFirstImage(turn.result);
 		if (image !== undefined) return image;
 	}
+
 	return undefined;
 }
 
@@ -144,6 +145,7 @@ function confirmTurn(state: SessionState, id: number, pending: PendingRequest): 
 		requested: parameters.count,
 		warnings,
 	}));
+
 	return { ...next, pending: { ...pending, id } };
 }
 
@@ -200,6 +202,7 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 				phase: TurnPhase.Done,
 				result: action.result,
 			});
+
 			return { ...done, base: getFirstImage(action.result) ?? state.base };
 		}
 

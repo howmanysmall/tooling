@@ -36,6 +36,7 @@ interface PickerCatalog {
 function getNameWidth(models: ReadonlyArray<ImageModelListItem>): number {
 	let width = 0;
 	for (const { name } of models) width = Math.max(width, name.length);
+
 	return width;
 }
 
@@ -55,6 +56,7 @@ async function loadCatalogAsync(): Promise<PickerCatalog> {
 		readObservedPricesAsync(),
 		getEnvironmentAsync(),
 	]);
+
 	return { models, observed, preferred: DARKROOM_MODEL, pricing };
 }
 
@@ -73,6 +75,7 @@ async function askModelAsync(): Promise<ImageModelListItem> {
 			value: model.id,
 		})),
 	});
+
 	exitIfCanceled(id);
 	const model = models.find((item) => item.id === id);
 	if (model === undefined) throw new Error(`Unknown model ${id}.`);
@@ -88,7 +91,9 @@ async function askOncePromptAsync(editor?: string): Promise<string | undefined> 
 				{ label: `Open in ${editor}`, value: true },
 			],
 		});
+
 		exitIfCanceled(useEditor);
+
 		if (useEditor) return editInEditorAsync(editor);
 	}
 
@@ -96,6 +101,7 @@ async function askOncePromptAsync(editor?: string): Promise<string | undefined> 
 		message: "Prompt",
 		validate: (value) => ((value ?? "").trim().length === 0 ? "Write a prompt." : undefined),
 	});
+
 	exitIfCanceled(typed);
 	return typed;
 }
@@ -139,6 +145,7 @@ async function askChoiceAsync(
 async function askCountAsync(model: ImageModelListItem): Promise<number> {
 	const { max, min } = getCountRange(model);
 	if (max <= 1) return 1;
+
 	const answer = await text({
 		initialValue: String(min),
 		message: `How many images? (${min}–${max})`,
@@ -147,6 +154,7 @@ async function askCountAsync(model: ImageModelListItem): Promise<number> {
 			return Number.isInteger(count) && count >= min && count <= max ? undefined : `Enter ${min} to ${max}.`;
 		},
 	});
+
 	exitIfCanceled(answer);
 	return Number(answer);
 }
@@ -208,5 +216,6 @@ export async function runInteractiveSessionAsync({ model: chosen, prompt: writte
 		prompt,
 		references,
 	});
+
 	await confirmAndGenerateAsync(prepared);
 }

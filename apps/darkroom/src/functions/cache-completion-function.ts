@@ -50,6 +50,7 @@ export function cacheCompletionFunction<TReturns>(
 		} catch {
 			// A cache that can't be written only costs speed.
 		}
+
 		return value;
 	};
 }

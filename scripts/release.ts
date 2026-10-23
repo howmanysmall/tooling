@@ -57,6 +57,7 @@ async function ensureUnreleasedAsync(changelogPath: string, packageName: string)
 	const updated = content.includes(header)
 		? content.replace(header, () => `${header}\n\n## [Unreleased]`)
 		: `${header}\n\n## [Unreleased]\n\n${content}`;
+
 	await writeFile(changelogPath, updated, "utf8");
 	log.info(`Inserted ## [Unreleased] into ${nodePath.relative(cwd(), changelogPath)}`);
 }
@@ -117,6 +118,7 @@ const command = createBaseCommand(scriptName, "1.0.0", "Releases one tool from a
 			files: ["package.json"],
 			tag: `${tool}@%s`,
 		};
+
 		if (yes) overrides.confirm = false;
 		if (release !== undefined) overrides.release = release;
 

@@ -44,9 +44,11 @@ function summarizeGroup(entries: ReadonlyArray<SidebarEntry>): GroupSummary {
 	for (const entry of entries) {
 		const found: GroupSummary =
 			entry.type === "link" ? { href: entry.href, isCurrent: entry.isCurrent } : summarizeGroup(entry.entries);
+
 		href ??= found.href;
 		isCurrent ||= found.isCurrent;
 	}
+
 	return { href, isCurrent };
 }
 
@@ -68,5 +70,6 @@ export function getSectionLinks(sidebar: ReadonlyArray<SidebarEntry>): Array<Sec
 		const { href, isCurrent } = summarizeGroup(entry.entries);
 		if (href !== undefined) links.push({ href, isCurrent, label: entry.label });
 	}
+
 	return links;
 }

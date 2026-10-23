@@ -62,6 +62,7 @@ export function describeExampleCaption(example: ModelExample, now: Date, canSwit
 		isYours && example.created !== undefined
 			? ["your latest", prompt, describeMadeAt(example.created, now)]
 			: ["example", prompt];
+
 	if (canSwitch) parts.push(isYours ? "e for the example" : "e for yours");
 
 	return parts.join(" · ");
@@ -175,6 +176,7 @@ export function getPriceLines({ endpoints, observed }: ModelPrices): Array<Fact>
 			value: describePrice(entry),
 		})),
 	);
+
 	if (observed !== undefined) lines.push({ label: "your runs", value: describeObserved(observed) });
 
 	return lines;

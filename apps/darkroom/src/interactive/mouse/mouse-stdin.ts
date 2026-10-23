@@ -48,7 +48,9 @@ export function createMouseStdin(
 		const split = splitMouseInput(pending + decoder.write(chunk));
 		const { events, text } = split;
 		({ pending } = split);
+
 		if (text.length > 0) keyboard.write(text);
+
 		for (const event of events) onPointer(event);
 	}
 

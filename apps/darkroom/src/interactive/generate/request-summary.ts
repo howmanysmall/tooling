@@ -26,6 +26,7 @@ export function summarizeRequest({ input, model, parameters }: PreparedGeneratio
 		["references", input.references.length === 0 ? undefined : input.references.length],
 		["cost", cost],
 	];
+
 	return rows
 		.flatMap(([label, value]) => (value === undefined ? [] : [`${label.padEnd(LABEL_WIDTH)}${value}`]))
 		.join("\n");

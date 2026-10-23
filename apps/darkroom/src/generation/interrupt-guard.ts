@@ -38,10 +38,12 @@ export class InterruptGuard {
 	 */
 	public interrupt(): InterruptAction {
 		this.interruptCount += 1;
+
 		if (this.phase === InterruptPhase.Requesting) {
 			this.controller.abort();
 			return InterruptAction.Abort;
 		}
+
 		if (this.phase === InterruptPhase.Saving && this.interruptCount === 1) return InterruptAction.Defer;
 		return InterruptAction.Exit;
 	}

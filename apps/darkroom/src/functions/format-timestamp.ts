@@ -47,6 +47,7 @@ function getDateFormatters(timeZoneId: string): DateFormatters {
 			weekday: "short",
 		}),
 	};
+
 	formatterCache.set(timeZoneId, formatters);
 	return formatters;
 }

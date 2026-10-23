@@ -84,6 +84,7 @@ function createFakeSession(): FakeSession {
 					},
 					{ cwd: "/tmp", isDirectoryAsync: async () => false, models: [MULTI_MODEL], stdoutIsTty: false },
 				);
+
 				return { cost: "$0.04", prepared };
 			},
 			restoreAsync: async () => [],
@@ -129,9 +130,11 @@ describe("generate screen", () => {
 				/>
 			</SessionProvider>,
 		);
+
 		function write(data: string): void {
 			instance.stdin.write(data);
 		}
+
 		await delay(20);
 		await typeAsync(write, "a red fox", ENTER);
 

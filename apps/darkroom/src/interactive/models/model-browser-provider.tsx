@@ -27,10 +27,13 @@ export interface ModelBrowserProviderProperties {
 
 // The header, the status bar, and the list's padding above and below.
 const CHROME_ROWS = 4;
+
 // The gap between the panes, then the detail pane's padding on each side.
 const DETAIL_CHROME_COLUMNS = 1 + 6;
+
 // The share of the width the model list gets; the details get the rest.
 const LIST_SHARE = 0.45;
+
 // The share of the detail pane an example image may fill.
 const PREVIEW_SHARE = 0.4;
 

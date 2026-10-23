@@ -67,8 +67,10 @@ const STATUS_HINTS: ReadonlyArray<KeyHint> = [
 	["ctrl+n", "new session"],
 	["ctrl+s", "sessions"],
 ];
+
 // The widest the prompt box gets on the home screen, so lines stay readable.
 const MAX_HOME_WIDTH = 84;
+
 // The header, the tabs, the prompt box with its model line, its hints, and
 // the status bar.
 const SESSION_CHROME_ROWS = 1 + 1 + 6 + 1 + 1;

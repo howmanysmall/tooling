@@ -36,12 +36,16 @@ export interface HistoryBrowserProviderProperties {
 
 // The header, the status bar, and the list's padding above and below.
 const CHROME_ROWS = 4;
+
 // The gap between the panes, then the detail pane's padding on each side.
 const DETAIL_CHROME_COLUMNS = 1 + 6;
+
 // The detail pane's padding, above and below.
 const DETAIL_CHROME_ROWS = 2;
+
 // The share of the width the run list gets; the image gets the rest.
 const LIST_SHARE = 0.42;
+
 // The share of the detail pane the image may fill.
 const PREVIEW_SHARE = 0.6;
 
@@ -122,6 +126,7 @@ function preloadNearby({ meta, state }: HistoryBrowserContextValue): void {
 			meta.getPreview(run);
 			continue;
 		}
+
 		// A comparison shows a strip of smaller images instead.
 		const { box, shown } = planBatchStrip(getComparisonRuns(run, batch), run.id, meta.layout.previewBox);
 		for (const cell of shown) meta.getPreview(cell, box);

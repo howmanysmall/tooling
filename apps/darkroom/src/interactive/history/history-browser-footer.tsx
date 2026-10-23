@@ -15,6 +15,7 @@ import type { HistoryEntry } from "$history/history-entry";
 function getTotalCost(runs: ReadonlyArray<HistoryEntry>): number {
 	let total = 0;
 	for (const { cost } of runs) total += cost ?? 0;
+
 	return total;
 }
 

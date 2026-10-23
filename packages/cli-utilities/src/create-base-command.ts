@@ -90,6 +90,7 @@ export function createBaseCommand(
 		});
 
 	if (version !== undefined) baseCommand.version(version);
+
 	if (options?.showHelpWithoutArguments === true) {
 		baseCommand.action(() => {
 			throw new ShowHelpError("No command specified.");

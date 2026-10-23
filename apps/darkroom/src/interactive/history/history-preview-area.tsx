@@ -30,6 +30,7 @@ export function HistoryPreviewArea(): ReactNode {
 			if (first !== undefined) showImage(getImagePath(first, meta.resolve));
 		},
 	});
+
 	if (selected === undefined) return null;
 
 	const batch = relations?.batch ?? [];

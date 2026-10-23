@@ -57,6 +57,7 @@ export function buildRunListItems(runs: ReadonlyArray<HistoryEntry>, now: Date):
 		previousDay = day;
 		items.push({ key: entry.id, entry, index, kind: "run" });
 	}
+
 	return items;
 }
 
@@ -79,6 +80,7 @@ export function getVisibleItems(
 	let selectedTop = 0;
 	for (const item of items) {
 		tops.push(total);
+
 		if (item.kind === "run" && item.index === selectedIndex) selectedTop = total;
 		total += getLines(item);
 	}
@@ -90,6 +92,7 @@ export function getVisibleItems(
 	// where half a run would have been.
 	let start = 0;
 	for (const top of tops) if (top <= centered) start = top;
+
 	return items.filter((item, index) => {
 		const top = tops[index] ?? 0;
 		return top >= start && top + getLines(item) <= start + height;

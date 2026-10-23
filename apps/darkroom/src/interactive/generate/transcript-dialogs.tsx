@@ -84,7 +84,9 @@ export function TranscriptDialogs({
 			/>
 		);
 	}
+
 	if (actions === undefined) return null;
+
 	return (
 		<CommandPalette
 			columns={columns}

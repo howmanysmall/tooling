@@ -120,5 +120,6 @@ export function fitOptions(model: ImageModelListItem, options: GenerationOptions
 		leftOut.push([option, undefined]);
 		warnings.push(`${model.id} doesn't support ${option} ${String(value)}, so it was left out.`);
 	}
+
 	return { options: { ...options, ...Object.fromEntries(leftOut) }, warnings };
 }

@@ -32,6 +32,7 @@ const HINTS: ReadonlyArray<KeyHint> = [
 	["↑↓", "choose"],
 	["⏎", "run"],
 ];
+
 // Rows of commands shown at once.
 const VISIBLE_ROWS = 10;
 

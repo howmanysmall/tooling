@@ -38,6 +38,7 @@ export function parseDuration(value: string): number {
 	if (match === null || unit === undefined) {
 		throw new ValidationError(`"${value}" is not a duration. Use a number and s, m, h, d, or w, like 30d.`);
 	}
+
 	return Number(match.groups?.amount) * unit;
 }
 
@@ -55,6 +56,7 @@ export function parseSize(value: string): number {
 	if (match === null || unit === undefined) {
 		throw new ValidationError(`"${value}" is not a size. Use a number and B, KB, MB, GB, or TB, like 2GB.`);
 	}
+
 	return Number(match.groups?.amount) * unit;
 }
 

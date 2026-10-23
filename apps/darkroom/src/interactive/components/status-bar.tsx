@@ -24,6 +24,7 @@ function getHints(commands: ReadonlyArray<BrowserCommand>): Array<KeyHint> {
 	const featured = commands.flatMap((command) =>
 		command.isFeatured === true ? [[command.keyLabel, command.title.toLowerCase()] as const] : [],
 	);
+
 	return [...featured, HELP_HINT];
 }
 

@@ -15,6 +15,7 @@ const IMAGES_DIRECTORY = "images";
 const LOCK_FILE = "history.lock";
 const LOCK_RETRY_MS = 50;
 const LOCK_TIMEOUT_MS = 10_000;
+
 /** A lock older than this was left by a crashed process. */
 const STALE_LOCK_MS = 60_000;
 
@@ -71,6 +72,7 @@ export async function appendAsync(historyStore: HistoryStore, historyEntry: Hist
 		appendFile(historyFile, `${JSON.stringify(historyEntry)}\n`, "utf8"),
 	);
 }
+
 /**
  * Reads every valid entry, oldest first. A line that fails validation is
  * skipped with a warning, so one bad line can't hide the rest.
@@ -101,8 +103,10 @@ export async function readAllAsync(
 		if (entry === undefined) warn(`Skipping line ${index + 1} of ${historyFile}: it is not a valid run.`);
 		else entries.push(entry);
 	}
+
 	return entries;
 }
+
 /**
  * Deletes runs' entries and their image folders.
  *
@@ -124,6 +128,7 @@ export async function deleteAsync(
 		await writeFileAtomicAsync(historyFile, lines);
 		return entries.length - kept.length;
 	});
+
 	await Promise.all(
 		Array.from(ids, async (id) => rm(getRunDirectory(historyStore, id), { force: true, recursive: true })),
 	);
@@ -152,6 +157,7 @@ export async function addToForkAsync(
 			const updated = ids.has(entry.id) ? { ...entry, forks: [...(entry.forks ?? []), fork] } : entry;
 			return `${JSON.stringify(updated)}\n`;
 		});
+
 		await writeFileAtomicAsync(historyFile, lines.join(""));
 	});
 }
@@ -208,8 +214,10 @@ async function tryLockAsync(root: string): Promise<boolean> {
 	if (stats !== undefined && Date.now() - stats.mtimeMs > STALE_LOCK_MS) {
 		await rm(lockFile, { force: true });
 	}
+
 	return false;
 }
+
 async function acquireLockAsync(root: string): Promise<void> {
 	await mkdir(root, { recursive: true });
 	const deadline = Date.now() + LOCK_TIMEOUT_MS;
@@ -219,12 +227,15 @@ async function acquireLockAsync(root: string): Promise<void> {
 		// oxlint-disable-next-line no-await-in-loop -- see above
 		await sleep(LOCK_RETRY_MS);
 	}
+
 	throw new Error(
 		`Timed out waiting for ${nodePath.join(root, LOCK_FILE)}. Delete it if no other darkroom is running.`,
 	);
 }
+
 async function runLockedAsync<Result>(root: string, callback: () => Promise<Result>): Promise<Result> {
 	await acquireLockAsync(root);
+
 	try {
 		return await callback();
 	} finally {
@@ -251,5 +262,6 @@ async function getDirectorySizeAsync(directory: string): Promise<number> {
 
 	let reduction = 0;
 	for (const { size } of stats) reduction += size;
+
 	return reduction;
 }

@@ -90,6 +90,7 @@ export interface HistoryBrowserContextValue {
 }
 
 export const HistoryBrowserContext = createContext<HistoryBrowserContextValue | undefined>(undefined);
+
 HistoryBrowserContext.displayName = "HistoryBrowserContext";
 
 /**

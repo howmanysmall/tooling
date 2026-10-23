@@ -22,6 +22,7 @@ const command = createBaseCommand(scriptName, version, description)
 		if (!stdin.isTTY || !stdout.isTTY) {
 			throw new ValidationError("Interactive mode needs a terminal. Use a command such as `darkroom generate`.");
 		}
+
 		const { openDarkroomAsync } = await import("$interactive/app/open-darkroom");
 		await openDarkroomAsync({ resume: options.continue === true ? "last" : options.session, tab: AppTab.Generate });
 	})

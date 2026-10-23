@@ -16,6 +16,7 @@ function splitChunks(data: string): Array<string> {
 	for (let offset = 0; offset < data.length; offset += CHUNK_LENGTH) {
 		chunks.push(data.slice(offset, offset + CHUNK_LENGTH));
 	}
+
 	return chunks;
 }
 
@@ -38,6 +39,7 @@ export function formatKittyTransmit(id: number, png: Uint8Array, cells: CellBox)
 				index === 0
 					? `a=T,f=100,t=d,U=1,q=2,i=${id},c=${cells.columns},r=${cells.rows},m=${more}`
 					: `m=${more}`;
+
 			return formatCommand(control, chunk);
 		})
 		.join("");
@@ -63,8 +65,10 @@ export function formatKittyPlaceholders(id: number, cells: CellBox): Array<strin
 		for (let column = 0; column < cells.columns; column += 1) {
 			line += `${PLACEHOLDER}${getDiacritic(row)}${getDiacritic(column)}`;
 		}
+
 		lines.push(`${line}${ESC}[39m`);
 	}
+
 	return lines;
 }
 

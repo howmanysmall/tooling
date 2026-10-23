@@ -51,6 +51,7 @@ function describeSize({ request }: HistoryEntry): string {
 	const parts = [request.aspectRatio, request.resolution, request.quality].filter(
 		(part): part is string => part !== undefined,
 	);
+
 	return parts.length === 0 ? "default" : parts.join(" · ");
 }
 

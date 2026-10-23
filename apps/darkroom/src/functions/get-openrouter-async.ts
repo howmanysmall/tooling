@@ -13,11 +13,13 @@ export async function getOpenRouterAsync(): Promise<OpenRouter> {
 			const environment = await import("$functions/get-environment-async").then(async ({ getEnvironmentAsync }) =>
 				getEnvironmentAsync(),
 			);
+
 			if (environment.OPENROUTER_API_KEY === undefined) {
 				throw new ConfigurationError(
 					"OPENROUTER_API_KEY is not set. Add it to your environment or a .env file; for the MCP server, add it to the env of darkroom's entry in your client's config.",
 				);
 			}
+
 			return environment.OPENROUTER_API_KEY;
 		},
 		appTitle: name,

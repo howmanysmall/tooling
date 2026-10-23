@@ -37,6 +37,7 @@ const SHOW_KEYS: Readonly<Record<AppTab, BrowserKey>> = {
 function getTabCommands(tabs: AppTabs, isTyping: boolean): Array<BrowserCommand> {
 	const shown = APP_TABS.flatMap((tab, index): Array<BrowserCommand> => {
 		if (tab === tabs.active) return [];
+
 		return [
 			{
 				key: SHOW_KEYS[tab],
@@ -49,6 +50,7 @@ function getTabCommands(tabs: AppTabs, isTyping: boolean): Array<BrowserCommand>
 			},
 		];
 	});
+
 	return [
 		...shown,
 		{
