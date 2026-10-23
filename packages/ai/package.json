@@ -12,7 +12,9 @@
 	"sideEffects": false,
 	"type": "module",
 	"exports": {
-		"./clients": "./src/ai-clients.ts",
+		"./ai-environment": "./src/ai-environment.ts",
+		"./get-ai-environment-async": "./src/get-ai-environment-async.ts",
+		"./get-openrouter-async": "./src/get-openrouter-async.ts",
 		"./package.json": "./package.json"
 	},
 	"scripts": {

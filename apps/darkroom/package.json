@@ -81,9 +81,11 @@
 	"devDependencies": {
 		"@cliffy/command": "catalog:runtime",
 		"@cliffy/table": "catalog:runtime",
+		"@howmanysmall/ai": "workspace:*",
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/english-utilities": "workspace:*",
+		"@howmanysmall/environment": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@howmanysmall/string-utilities": "workspace:*",
 		"@inkjs/ui": "catalog:runtime",

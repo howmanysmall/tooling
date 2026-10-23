@@ -25,6 +25,8 @@
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"devDependencies": {
+		"@arkenv/core": "catalog:runtime",
+		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@types/node": "catalog:node-floor",
