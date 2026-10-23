@@ -27,6 +27,7 @@ export function toOpenTabs({ activeId, sessions }: SessionTabs): OpenTabs {
 	for (const session of sessions) {
 		if (session.turns.some((turn) => turn.phase === TurnPhase.Done)) open.push(session.id);
 	}
+
 	return open.includes(activeId) ? { active: activeId, open } : { open };
 }
 
@@ -58,6 +59,7 @@ export function createSessionStore(initial: SessionTabs, saveAsync: (tabs: OpenT
 		dispatch(action): void {
 			tabs = reduceSessionTabs(tabs, action);
 			save();
+
 			for (const listener of listeners) listener();
 		},
 		flushAsync: async () => saving,

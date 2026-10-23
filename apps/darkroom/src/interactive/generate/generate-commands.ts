@@ -111,8 +111,10 @@ export function getBoxHints(basis: PromptBasis): Array<KeyHint> {
 		["ctrl+j", "new line"],
 		["ctrl+o", basis === PromptBasis.CantEdit ? "a model that edits" : "model"],
 	];
+
 	if (basis === PromptBasis.Fresh) hints.push(["shift+tab", "edit"]);
 	else if (basis !== PromptBasis.Nothing) hints.push(["shift+tab", "start fresh"]);
+
 	return hints;
 }
 

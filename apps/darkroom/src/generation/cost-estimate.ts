@@ -112,10 +112,12 @@ function pickOutputPrice(pricing: ReadonlyArray<PricingEntry>, request: Estimate
 		resolution,
 		quality,
 	];
+
 	for (const variant of wanted) {
 		const match = outputs.find((entry) => variant !== undefined && entry.variant?.toLowerCase() === variant);
 		if (match !== undefined) return match;
 	}
+
 	return outputs.find((entry) => entry.variant === undefined);
 }
 
@@ -143,10 +145,12 @@ function getReferenceCost(pricing: ReadonlyArray<PricingEntry>, referenceCount: 
 
 	for (const entry of pricing) {
 		if (!REFERENCE_BILLABLES.has(entry.billable) || entry.variant !== undefined) continue;
+
 		if (entry.unit === "image") usd += entry.costUsd * referenceCount;
 		else if (entry.unit === "request") usd += entry.costUsd;
 		else isApproximate = true;
 	}
+
 	return { isApproximate, usd };
 }
 
@@ -187,6 +191,7 @@ export function getCostEstimate(
 		const estimate = getEndpointEstimate(endpoint, request);
 		if (estimate !== undefined && (cheapest === undefined || estimate.usd < cheapest.usd)) cheapest = estimate;
 	}
+
 	if (cheapest !== undefined || observed === undefined) return cheapest;
 
 	return { isApproximate: true, provider: PAST_RUNS, usd: observed.usdPerImage * request.count };
@@ -214,6 +219,7 @@ export function formatUnitPrice(entry: PricingEntry): string {
 	if (entry.unit === "token") {
 		return `${priceFormatter.format(entry.costUsd * 1e6)}/M tok`;
 	}
+
 	return `${priceFormatter.format(entry.costUsd)}/${UNIT_LABELS.get(entry.unit) ?? entry.unit}`;
 }
 

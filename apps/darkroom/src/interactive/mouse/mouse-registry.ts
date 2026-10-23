@@ -72,6 +72,7 @@ function pickHit<Node>(
 		if (hit.target.layer !== topLayer || !hasHandler(hit.target)) continue;
 		if (best === undefined || hit.area < best.area) best = hit;
 	}
+
 	return best;
 }
 
@@ -111,6 +112,7 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 				hits.push({ id, area: rect.width * rect.height, target });
 			}
 		}
+
 		return hits;
 	}
 
@@ -118,6 +120,7 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 		if (hit?.id === hoveredId) return;
 		hoveredId = hit?.id;
 		hit?.target.onHover?.();
+
 		for (const listener of listeners) listener();
 	}
 
@@ -138,23 +141,28 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 		dispatch(event): void {
 			const hits = findHits(event);
 			hover(pickHit(hits, isAny));
+
 			switch (event.action) {
 				case MouseAction.Press: {
 					pressedId = pickHit(hits, hasClick)?.id;
 					break;
 				}
+
 				case MouseAction.Release: {
 					release(hits);
 					break;
 				}
+
 				case MouseAction.WheelDown: {
 					scroll(hits, 1);
 					break;
 				}
+
 				case MouseAction.WheelUp: {
 					scroll(hits, -1);
 					break;
 				}
+
 				default: {
 					// A move or a drag only changes the hover.
 				}

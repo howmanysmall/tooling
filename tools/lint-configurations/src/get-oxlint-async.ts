@@ -89,6 +89,7 @@ export async function getOxlintAsync({
 			if (key.includes("nextjs-") || key.includes("preact-") || key.includes("jsx-no-new-")) {
 				return [key, "off" as const];
 			}
+
 			return [key, value];
 		}),
 	);

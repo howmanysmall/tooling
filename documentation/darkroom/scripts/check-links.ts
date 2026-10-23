@@ -134,6 +134,7 @@ function resolveAbsoluteReference(path: string, root: string, base: string): Res
 	if (path !== base && !path.startsWith(`${base}/`)) {
 		return { error: `leaves the site base ${base}` };
 	}
+
 	return toIndexFile(root, path.slice(base.length).replace(LEADING_SLASHES_PATTERN, ""));
 }
 
@@ -153,6 +154,7 @@ function resolveRelativeReference(path: string, pageFile: string, root: string):
 	if (relative.startsWith("..")) {
 		return { error: "escapes the site root" };
 	}
+
 	return toIndexFile(root, relative);
 }
 
@@ -173,6 +175,7 @@ function toIndexFile(root: string, relative: string): ResolvedFile {
 	} catch {
 		// A missing target is reported by the caller.
 	}
+
 	return { file };
 }
 
@@ -248,6 +251,7 @@ function checkPage(
 		const reason = findDeadReason(reference, pageFile, root, base, idsByFile);
 		if (reason !== undefined) dead.push({ page: pageFile, reason, reference });
 	}
+
 	return dead;
 }
 
@@ -333,6 +337,7 @@ const commandLineArguments = argv.slice(2);
 const positionals: Array<string> = [];
 let base = "/tooling/darkroom";
 const entries = commandLineArguments.entries();
+
 for (const [index, commandLineArgument] of entries) {
 	if (commandLineArgument === "--base") {
 		base = commandLineArguments[index + 1] ?? base;
@@ -340,9 +345,11 @@ for (const [index, commandLineArgument] of entries) {
 		positionals.push(commandLineArgument);
 	}
 }
+
 const [directory = "dist"] = positionals;
 
 const { checked, dead, pages } = checkLinks(directory, base);
+
 for (const { page, reason, reference } of dead) {
 	stdout.write(`${toPosixPath(page)}: ${reference} (${reason})\n`);
 }

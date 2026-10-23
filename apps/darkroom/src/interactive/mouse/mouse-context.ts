@@ -13,10 +13,12 @@ export type InkMouseRegistry = MouseRegistry<DOMElement>;
  * mouse.
  */
 export const MouseRegistryContext = createContext<InkMouseRegistry | undefined>(undefined);
+
 MouseRegistryContext.displayName = "MouseRegistryContext";
 
 /** Raised by dialogs, so the screen behind them doesn't react. */
 export const MouseLayerContext = createContext(0);
+
 MouseLayerContext.displayName = "MouseLayerContext";
 
 /**
@@ -40,6 +42,7 @@ export function measureElement(node: DOMElement): CellRect | undefined {
 		left += current.yogaNode?.getComputedLeft() ?? 0;
 		top += current.yogaNode?.getComputedTop() ?? 0;
 	}
+
 	return { height, left, top, width };
 }
 

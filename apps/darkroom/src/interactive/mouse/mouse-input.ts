@@ -32,6 +32,7 @@ export interface SplitInput {
 // or m (release).
 // oxlint-disable-next-line no-control-regex -- the reports start with ESC
 const REPORT = /\u001B\[<(?<code>\d+);(?<column>\d+);(?<row>\d+)(?<final>[Mm])/gu;
+
 // oxlint-disable-next-line no-control-regex -- the reports start with ESC
 const PARTIAL_REPORT = /\u001B\[<[\d;]*$/u;
 
@@ -85,5 +86,6 @@ export function splitMouseInput(chunk: string): SplitInput {
 		const event = toPointerEvent(groups);
 		if (event !== undefined) events.push(event);
 	}
+
 	return { events, pending: partial?.[0] ?? "", text: complete.replaceAll(REPORT, "") };
 }

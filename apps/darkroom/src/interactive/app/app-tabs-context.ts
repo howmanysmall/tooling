@@ -12,6 +12,7 @@ export interface AppTabs {
 
 /** Set by the app; a screen rendered on its own has no tabs. */
 export const AppTabsContext = createContext<AppTabs | undefined>(undefined);
+
 AppTabsContext.displayName = "AppTabsContext";
 
 /**

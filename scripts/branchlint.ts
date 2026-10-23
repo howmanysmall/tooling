@@ -110,13 +110,16 @@ const command = createBaseCommand(
 			if (branchNames.length > 0) {
 				for (const branchName of names) log.success(`"${branchName}" is a valid branch name`);
 			}
+
 			return;
 		}
 
 		for (const { branchName, problems } of failures) {
 			log.fail(`branch name "${branchName}" is invalid`);
+
 			for (const problem of problems) log.fail(`  - ${problem}`);
 		}
+
 		log.fail(`${failures.length} invalid branch name(s); rename with "git branch -m <old-name> <new-name>"`);
 		exit(1);
 	});

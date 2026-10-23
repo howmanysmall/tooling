@@ -17,6 +17,7 @@ export const enum CellKind {
 
 // Box drawing and block elements: borders, half-block images, the logo.
 const GRAPHIC = /^[\u2500-\u259F]+$/u;
+
 // Kitty's image placeholder, followed by the diacritics for its row and column.
 const KITTY_PLACEHOLDER = "\u{10EEEE}";
 
@@ -60,6 +61,7 @@ export function findTextRuns(
 			index = runEnd;
 		} else index += 1;
 	}
+
 	return runs;
 }
 
@@ -78,6 +80,7 @@ function getKinds(start: number, end: number, getKind: (column: number) => CellK
 		const kind = getKind(column);
 		kinds.push(kind === CellKind.Continuation ? (kinds.at(-1) ?? CellKind.Blank) : kind);
 	}
+
 	return kinds;
 }
 
@@ -95,5 +98,6 @@ function isWordGap(kinds: ReadonlyArray<CellKind>, index: number): boolean {
 function findRunEnd(kinds: ReadonlyArray<CellKind>, from: number): number {
 	let end = from + 1;
 	while (kinds[end] === CellKind.Text || isWordGap(kinds, end)) end += 1;
+
 	return end;
 }

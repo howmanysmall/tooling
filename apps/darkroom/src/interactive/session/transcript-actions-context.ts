@@ -12,6 +12,7 @@ export interface TranscriptActions {
 
 /** Set by the generate screen; a transcript shown on its own does nothing. */
 export const TranscriptActionsContext = createContext<TranscriptActions | undefined>(undefined);
+
 TranscriptActionsContext.displayName = "TranscriptActionsContext";
 
 /**

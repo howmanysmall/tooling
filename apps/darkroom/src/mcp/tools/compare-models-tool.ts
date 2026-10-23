@@ -48,6 +48,7 @@ export function registerCompareModelsTool(server: DarkroomServer, dependencies: 
 					plan.estimates.map(({ estimate }) => estimate),
 					input,
 				);
+
 				if (!check.isAllowed) return tool.error(check.reason);
 
 				let finished = 0;
@@ -64,6 +65,7 @@ export function registerCompareModelsTool(server: DarkroomServer, dependencies: 
 						warn: dependencies.warn,
 					},
 				);
+
 				return toCompareResultAsync(plan.batch, plan.directory, outcomes, dependencies);
 			}),
 	);

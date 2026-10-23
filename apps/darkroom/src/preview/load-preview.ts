@@ -76,6 +76,7 @@ export async function loadPreviewAsync(
 			.removeAlpha()
 			.raw()
 			.toBuffer();
+
 		return { kind: "image", lines: formatHalfBlocks(pixels, cells.columns, cells.rows * 2) };
 	} catch (error) {
 		return { kind: "message", text: `No preview: ${error instanceof Error ? error.message : String(error)}` };

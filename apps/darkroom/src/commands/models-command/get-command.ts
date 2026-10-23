@@ -24,6 +24,7 @@ import type { CapabilityDescriptor, ImageModelListItem } from "@openrouter/sdk/m
 import type { Row } from "$utilities/output-format-utilities";
 
 const scriptName = getScriptName(true);
+
 // Route every level to stderr so stdout only carries the requested output.
 const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
@@ -51,6 +52,7 @@ export const getCommand = createBaseCommand(scriptName, "1.1.0", "Used to acquir
 				? "Getting information for all models..."
 				: `Getting information for model ${bold.magenta(model)}...`,
 		);
+
 		const imageModels = await import("$utilities/image-model-utilities").then(async ({ getImageModelsAsync }) =>
 			getImageModelsAsync(!regenerate),
 		);
@@ -76,9 +78,11 @@ const numberFormatter = new Intl.NumberFormat(undefined, { maximumFractionDigits
 function compareNatural(self: string, other: string): number {
 	return naturalCollator.compare(self, other);
 }
+
 function formatNumber(value: number): string {
 	return cyan(numberFormatter.format(value));
 }
+
 function formatList(values: ReadonlyArray<string>): string {
 	// oxlint-disable-next-line unicorn/no-array-callback-reference -- single parameter function
 	return values.map(green).join(`${dim(",")} `);
@@ -114,6 +118,7 @@ function toPrettyModalities(modalities: ReadonlyArray<string>): string {
 
 const TRUNCATION_MARKER = "...";
 const TRAILING_PUNCTUATION_PATTERN = /[,;:]$/u;
+
 function toPrettyDescription(description: string): string {
 	const trimmed = description.trim();
 	if (!trimmed.endsWith(TRUNCATION_MARKER)) return trimmed;
@@ -262,6 +267,7 @@ async function formatModelsAsync(
 			const results = await Promise.all(
 				imageModels.map(async (imageModel) => formatModelPrettyAsync(imageModel, timestampFormat)),
 			);
+
 			return results.join("\n\n");
 		}
 
@@ -278,6 +284,7 @@ async function formatModelsAsync(
 					];
 				}),
 			);
+
 			return new Table().header(["ID", "Name", "Input", "Output", "Created"]).body(body).border().toString();
 		}
 
