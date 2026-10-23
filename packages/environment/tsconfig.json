@@ -10,6 +10,9 @@
 			"path": "../../tools/project-configurations"
 		},
 		{
+			"path": "../arktype-utilities"
+		},
+		{
 			"path": "../cli-utilities"
 		}
 	],

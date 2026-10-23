@@ -28,6 +28,9 @@
 	},
 	"references": [
 		{
+			"path": "../../packages/ai"
+		},
+		{
 			"path": "../../packages/arktype-utilities"
 		},
 		{
@@ -35,6 +38,9 @@
 		},
 		{
 			"path": "../../packages/english-utilities"
+		},
+		{
+			"path": "../../packages/environment"
 		},
 		{
 			"path": "../../packages/string-utilities"
