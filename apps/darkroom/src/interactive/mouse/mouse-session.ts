@@ -41,6 +41,7 @@ export function createMouseSession(input: NodeJS.ReadStream, output: NodeJS.Writ
 		output.write(formatClipboardSequence(text));
 		notices.reporter.reportSuccess("Copied to clipboard");
 	});
+
 	mirror.onWrite(selection.repaint);
 
 	const mouse = createMouseStdin(input, output, (event) => {

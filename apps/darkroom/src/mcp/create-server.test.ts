@@ -28,8 +28,10 @@ import type { McpDependencies } from "./mcp-dependencies";
 
 // 2026-10-14T12:00:00 in local time, so the date part of names is stable.
 const NOW = new Date(2026, 9, 14, 12);
+
 /** Costs $0.50 an image, over what darkroom spends on a model it picks. */
 const PRICEY_MODEL = createModel("test/pricey", { aspect_ratio: { type: "enum", values: ["1:1"] } });
+
 /** Has no published price. */
 const UNPRICED_MODEL = createModel("test/unpriced", { aspect_ratio: { type: "enum", values: ["1:1"] } });
 
@@ -61,6 +63,7 @@ async function createPngBase64Async(): Promise<string> {
 	const png = await sharp({ create: { background: "#ff0000", channels: 3, height: 4, width: 4 } })
 		.png()
 		.toBuffer();
+
 	return png.toString("base64");
 }
 
@@ -158,6 +161,7 @@ function readJson<Schema extends Type>(result: CallToolResult<undefined>, schema
 	if (json?.type !== "text") {
 		throw new Error("Expected the result to have JSON text.");
 	}
+
 	return schema.assert(JSON.parse(json.text));
 }
 
@@ -197,6 +201,7 @@ describe("darkroom MCP server", () => {
 			defaultModel: SINGLE_MODEL.id,
 			models: [MULTI_MODEL, SINGLE_MODEL],
 		});
+
 		await callAsync("generate-image", { prompt: "a lighthouse" });
 
 		expect(getSentModels(sent)).toStrictEqual([SINGLE_MODEL.id]);
@@ -231,6 +236,7 @@ describe("darkroom MCP server", () => {
 			defaultModel: UNPRICED_MODEL.id,
 			models: [UNPRICED_MODEL, MULTI_MODEL],
 		});
+
 		await callAsync("generate-image", { prompt: "a lighthouse" });
 
 		expect(getSentModels(sent)).toStrictEqual([UNPRICED_MODEL.id]);

@@ -88,6 +88,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			callback();
 		},
 	});
+
 	Object.defineProperties(stream, {
 		columns: { get: (): number => output.columns },
 		isTTY: { value: true },
@@ -98,6 +99,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 		terminal.resize(output.columns, output.rows);
 		stream.emit("resize");
 	}
+
 	output.on("resize", onResize);
 
 	function drawSpan({ end, row, start }: SelectionSpan, isHighlighted: boolean): string {
@@ -112,6 +114,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 				drawn += describeCellStyle(cell, isHighlighted ? highlight : undefined) + (cell.getChars() || " ");
 			}
 		}
+
 		return drawn;
 	}
 
@@ -153,6 +156,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 				text += terminal.buffer.active.getLine(row)?.translateToString(false, start, end) ?? "";
 				previous = { end, row, start };
 			}
+
 			return text;
 		},
 		// SAFETY: it has every member Ink uses on stdout, defined above.

@@ -29,6 +29,7 @@ export function getEditor(variables: Readonly<Record<string, string | undefined>
 export async function editInEditorAsync(editor: string, initial = ""): Promise<string | undefined> {
 	const file = nodePath.join(tmpdir(), `darkroom-prompt-${createUlid()}.md`);
 	await writeFile(file, initial, "utf8");
+
 	try {
 		const { status } = spawnSync(`${editor} "${file}"`, { shell: true, stdio: "inherit" });
 		if (status !== 0) return undefined;

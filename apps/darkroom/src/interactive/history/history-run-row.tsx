@@ -24,6 +24,7 @@ function getFactRuns(entry: HistoryEntry, batchSize?: number): Array<StyledRun> 
 	if (batchSize !== undefined) {
 		runs.push({ color: theme.accent, text: `  ◫ ${batchSize} ${toPlural(batchSize, "model")}` });
 	}
+
 	return runs;
 }
 

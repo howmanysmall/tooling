@@ -129,7 +129,7 @@
 		"vitest": "catalog:test",
 		"vitiate": "catalog:test"
 	},
-	"packageManager": "pnpm@12.14.0",
+	"packageManager": "pnpm@12.15.0",
 	"engines": {
 		"node": ">=22.12.0"
 	}

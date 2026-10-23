@@ -28,5 +28,6 @@ export const listCommand = createBaseCommand(scriptName, "1.0.0", "List recent r
 			log.info("No runs yet.");
 			return;
 		}
+
 		console.log(formatHistoryList(shown, format));
 	});

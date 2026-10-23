@@ -23,6 +23,7 @@ export function createNoticeStore(): NoticeStore {
 
 	const reporter = createStatusReporter((action) => {
 		notice = reduceStatus(notice, action);
+
 		for (const listener of listeners) listener();
 	});
 
@@ -39,6 +40,7 @@ export function createNoticeStore(): NoticeStore {
 }
 
 export const NoticeContext = createContext<NoticeStore | undefined>(undefined);
+
 NoticeContext.displayName = "NoticeContext";
 
 /**

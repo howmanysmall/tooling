@@ -39,6 +39,7 @@ export function getSelectionSpans(anchor: CellPoint, head: CellPoint, columns: n
 		const end = row === lastRow ? lastColumn + 1 : columns;
 		spans.push({ end: Math.min(end, columns), row, start });
 	}
+
 	return spans;
 }
 
@@ -101,12 +102,14 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 
 	function release(): boolean {
 		anchor = undefined;
+
 		if (spans.length === 0) return false;
 
 		const text = screen.readText(runs);
 		screen.paint(runs, false);
 		spans = [];
 		runs = [];
+
 		if (text.length > 0) copy(text);
 		return true;
 	}
@@ -117,6 +120,7 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 				anchor = { column: event.column, row: event.row };
 				return false;
 			}
+
 			if (event.action === MouseAction.Drag) return drag(event);
 			if (event.action === MouseAction.Release) return release();
 			return false;

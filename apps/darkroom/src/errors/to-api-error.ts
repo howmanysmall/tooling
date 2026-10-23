@@ -62,6 +62,7 @@ function getResponseMessage(error: OpenRouterError): string {
 	} catch {
 		// The body was not JSON; fall back to its text.
 	}
+
 	const text = error.body.trim();
 	return text.length === 0 ? `HTTP ${error.statusCode}` : text;
 }

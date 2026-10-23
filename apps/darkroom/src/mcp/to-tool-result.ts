@@ -52,6 +52,7 @@ function describeProblems(result: GenerationResult): Array<string> {
 	if (result.providerError !== undefined) {
 		problems.unshift(`The provider stopped early: ${result.providerError} ${CHARGE_NOTE}`);
 	}
+
 	return problems;
 }
 

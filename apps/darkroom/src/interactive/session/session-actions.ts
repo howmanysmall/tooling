@@ -106,6 +106,7 @@ export function createSessionActions({
 				if (failure !== undefined) reportError(`Couldn't save the fork: ${failure}`);
 			});
 		}
+
 		return fork;
 	}
 
@@ -172,6 +173,7 @@ export function createSessionActions({
 			if (turn === undefined || !isSettled(turn)) return;
 
 			dispatchTo(active.id, { id: turnId, type: "turn-removed" });
+
 			if (turn.result === undefined) return;
 			runBrowserTask(deleteRunAsync(turn.result, deletion), (failure) => {
 				if (failure !== undefined) reportError(`Couldn't delete the run: ${failure}`);

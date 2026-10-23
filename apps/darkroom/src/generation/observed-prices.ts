@@ -36,6 +36,7 @@ export function getObservedPrices(entries: ReadonlyArray<HistoryEntry>): Map<str
 
 	const observed = new Map<string, ObservedPrice>();
 	for (const [model, { images, usd }] of totals) observed.set(model, { images, usdPerImage: usd / images });
+
 	return observed;
 }
 

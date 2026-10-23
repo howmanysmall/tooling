@@ -80,6 +80,7 @@ function open(tabs: SessionTabs, session: SessionState): SessionTabs {
 	const existing = tabs.sessions.find(
 		(candidate) => candidate.id === session.id || (isEmpty(session) && isEmpty(candidate)),
 	);
+
 	if (existing !== undefined) return select(tabs, existing.id);
 	return select({ ...tabs, sessions: [...tabs.sessions, session] }, session.id);
 }
@@ -164,6 +165,7 @@ export function getTabStatus(session: SessionState, isUnread: boolean): TabStatu
 	if (session.turns.some((turn) => turn.phase === TurnPhase.Running || turn.phase === TurnPhase.Preparing)) {
 		return TabStatus.Busy;
 	}
+
 	if (session.pending !== undefined) return TabStatus.Waiting;
 	if (!isUnread) return TabStatus.Idle;
 	return session.turns.at(-1)?.phase === TurnPhase.Failed ? TabStatus.Failed : TabStatus.Unread;
