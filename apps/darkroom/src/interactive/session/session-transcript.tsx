@@ -21,9 +21,11 @@ export interface SessionTranscriptProperties {
 // The most cells an image gets, so a few fit side by side.
 const MAX_IMAGE_COLUMNS = 48;
 const MAX_IMAGE_ROWS = 18;
+
 // The transcript's padding, the turn's indent, and the gap between images.
 const CHROME_COLUMNS = 4 + 3;
 const IMAGE_GAP = 2;
+
 // Only the newest turns can be on screen; older ones scroll off the top.
 const SHOWN_TURNS = 6;
 

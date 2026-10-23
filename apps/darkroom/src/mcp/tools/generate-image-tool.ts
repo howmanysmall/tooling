@@ -28,6 +28,7 @@ export function registerGenerateImageTool(server: DarkroomServer, dependencies: 
 				const chosen = input.model ?? dependencies.defaultModel;
 				const chosenAttempts =
 					chosen === undefined ? [] : [{ budget: input, isPicked: false, modelId: chosen }];
+
 				if (input.model !== undefined) {
 					return runPaidGenerationAsync(server, dependencies, generation, chosenAttempts);
 				}
@@ -37,6 +38,7 @@ export function registerGenerateImageTool(server: DarkroomServer, dependencies: 
 					dependencies.getPricingAsync(),
 					dependencies.getObservedPricesAsync(),
 				]);
+
 				// List prices can be the cheapest variant, so cap
 				// the estimate for this request's settings too.
 				const pickedBudget = {
@@ -52,6 +54,7 @@ export function registerGenerateImageTool(server: DarkroomServer, dependencies: 
 					...chosenAttempts,
 					...picked.map((modelId) => ({ budget: pickedBudget, isPicked: true, modelId })),
 				].slice(0, MAX_ATTEMPTS);
+
 				if (attempts.length === 0) {
 					throw new Error(
 						`No model priced at $${MAX_PICKED_PRICE} or less per image can serve this request. Drop some options, or pass a model the user chose.`,

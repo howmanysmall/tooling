@@ -23,7 +23,9 @@ export function formatHalfBlocks(pixels: Uint8Array, width: number, height: numb
 			const bottom = y + 1 < height ? top + width * 3 : top;
 			line += `${ESC}[38;2;${formatColor(pixels, top)}m${ESC}[48;2;${formatColor(pixels, bottom)}m${UPPER_HALF}`;
 		}
+
 		lines.push(`${line}${ESC}[0m`);
 	}
+
 	return lines;
 }

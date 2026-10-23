@@ -102,6 +102,7 @@ async function openTabsAsync(
 	const restored = await Promise.all(
 		toOpen.map(async ({ id, runs }) => createSession(id, numberTurns(await services.restoreAsync(runs)))),
 	);
+
 	if (activeId !== undefined) return createSessionTabs(restored, activeId);
 
 	const fresh = createSession(createUlid());
@@ -178,6 +179,7 @@ export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name,
 		// The app decides what ctrl+c does: clear the prompt, or quit.
 		{ alternateScreen: true, exitOnCtrlC: false, stdin: mouse.stdin, stdout: mouse.stdout },
 	);
+
 	await instance.waitUntilExit();
 	mouse.dispose();
 	previews?.dispose();

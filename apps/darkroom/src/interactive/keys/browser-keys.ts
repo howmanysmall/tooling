@@ -88,7 +88,9 @@ const SPECIAL_KEYS: ReadonlyArray<readonly [keyof Key, BrowserKey]> = [
  */
 export function getBrowserKey(input: string, key: Key): BrowserKey | undefined {
 	if (key.ctrl || key.meta) return undefined;
+
 	for (const [name, binding] of SPECIAL_KEYS) if (key[name] === true) return binding;
+
 	return CHARACTER_KEYS.get(input);
 }
 

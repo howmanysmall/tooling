@@ -32,6 +32,7 @@ export function selectParameterValues(
 		if (lineParameter !== parameter) continue;
 
 		declared.set(id, values);
+
 		for (const value of values) union.add(value);
 	}
 
@@ -39,6 +40,7 @@ export function selectParameterValues(
 		const values = declared.get(modelId);
 		return values === undefined ? [] : [values];
 	});
+
 	if (first === undefined) return [...union];
 
 	return intersect(
@@ -69,5 +71,6 @@ export async function getParameterCompletionsAsync(
 		(await fallbackModelAsync?.(words)) ??
 		// biome-ignore lint/style/noProcessEnv: completions skip the arktype environment to stay fast.
 		env.DARKROOM_MODEL;
+
 	return selectParameterValues(lines, parameter, modelId === undefined ? [] : [modelId]);
 }

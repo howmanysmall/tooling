@@ -24,6 +24,7 @@ export async function confirmAndGenerateAsync(prepared: PreparedGeneration): Pro
 	note(summarizeRequest(prepared, cost), "Request");
 	const shouldGenerate = await confirm({ message: "Generate?" });
 	exitIfCanceled(shouldGenerate);
+
 	if (!shouldGenerate) {
 		outro("Nothing was sent.");
 		return;
@@ -44,6 +45,7 @@ export async function confirmAndGenerateAsync(prepared: PreparedGeneration): Pro
 		progress.error("Failed");
 		throw error;
 	}
+
 	progress.stop(formatSummary(result));
 
 	const paths = formatResult(result, OutputFormat.Pretty, cwd());

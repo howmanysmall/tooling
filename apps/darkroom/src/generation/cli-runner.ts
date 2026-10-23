@@ -26,6 +26,7 @@ import type { GenerationInput, GenerationResult, PreparedGeneration } from "./ru
 // between parsed flags and the generation core that touches the terminal.
 
 const scriptName = getScriptName(true);
+
 // Route every level to stderr so stdout only carries the requested output.
 export const log = consola.create({ stdout: stderr }).withTag(scriptName);
 
@@ -60,12 +61,14 @@ export async function readObservedPricesAsync(): Promise<ObservedPrices> {
 		import("./observed-prices"),
 		readHistoryQuietlyAsync(),
 	]);
+
 	return getObservedPrices(entries);
 }
 
 export async function readStdinAsync(): Promise<string> {
 	const chunks: Array<Buffer> = [];
 	for await (const chunk of stdin) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk)));
+
 	return Buffer.concat(chunks).toString("utf8");
 }
 
@@ -76,6 +79,7 @@ export async function askForPromptAsync(): Promise<string> {
 		cancel("Cancelled.");
 		throw new InterruptedError("Cancelled.");
 	}
+
 	return answer;
 }
 
@@ -166,6 +170,7 @@ export async function prepareQuietlyAsync(input: GenerationInput): Promise<Prepa
 export async function prepareForTerminalAsync(input: GenerationInput): Promise<PreparedGeneration> {
 	const prepared = await prepareQuietlyAsync(input);
 	for (const warning of prepared.warnings) log.warn(warning);
+
 	return prepared;
 }
 
@@ -199,8 +204,10 @@ export async function generateWithInterruptsAsync(
 	const onInterrupt = createInterruptHandler(guard);
 
 	process.on("SIGINT", onInterrupt);
+
 	try {
 		if (options.isQuiet !== true) log.start(`Generating with ${bold.magenta(prepared.model.id)}…`);
+
 		const result = await generateQuietlyAsync(prepared, {
 			guard,
 			onProgress: options.onProgress,
@@ -208,6 +215,7 @@ export async function generateWithInterruptsAsync(
 				log.warn(message);
 			},
 		});
+
 		if (guard.wasInterrupted) process.exitCode = 130;
 		return result;
 	} finally {
@@ -271,6 +279,7 @@ export async function describeCostAsync(
 		import("./cost-estimate"),
 		import("$utilities/model-pricing-utilities"),
 	]);
+
 	try {
 		const [pricing, observed] = await Promise.all([
 			getModelPricingAsync(true, (message) => {
@@ -323,6 +332,7 @@ export function throwIfIncomplete(result: GenerationResult): void {
 	if (result.providerError !== undefined) {
 		throw new ApiError(`The provider stopped early: ${result.providerError} ${CHARGE_NOTE}`);
 	}
+
 	if (result.failures.length === 0) return;
 
 	const details = result.failures.map((failure) => `${failure.message} (saved to ${failure.recoveredPath})`);
@@ -345,6 +355,7 @@ export async function runPreparedAsync(
 		await printDryRunAsync(prepared, format);
 		return;
 	}
+
 	const result = await generateWithInterruptsAsync(prepared);
 	await printResultAsync(result, format);
 }

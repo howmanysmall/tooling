@@ -7,6 +7,7 @@ export interface CellBox {
 
 /** Terminal cells are about twice as tall as they are wide. */
 const CELL_ASPECT = 2;
+
 /** Placeholders can only number this many rows and columns. */
 const MAX_CELLS = ROW_COLUMN_DIACRITICS.length;
 

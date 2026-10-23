@@ -91,10 +91,12 @@ function collectWorkspaceDependencies(manifest: typeof isManifest.infer): Readon
 		manifest.peerDependencies,
 	]) {
 		if (dependencies === undefined) continue;
+
 		for (const [name, specifier] of Object.entries(dependencies)) {
 			if (specifier.startsWith("workspace:")) names.add(name);
 		}
 	}
+
 	return [...names];
 }
 
@@ -114,6 +116,7 @@ async function readChildDirectoriesAsync(directory: string): Promise<ReadonlyArr
 		for (const child of children) {
 			if (child.isDirectory()) names.push(child.name);
 		}
+
 		return names;
 	} catch (error) {
 		// Git does not track empty directories, so `apps/` is missing until the
@@ -134,6 +137,7 @@ async function findProjectsAsync(rootDirectory: string): Promise<ReadonlyArray<P
 	const projects = await Promise.all(
 		candidates.toSorted(compareUsingLocale).map(async (directory) => readProjectAsync(rootDirectory, directory)),
 	);
+
 	return projects.filter((project) => project !== undefined);
 }
 
@@ -149,6 +153,7 @@ async function writeReferencesAsync(filePath: string, referencePaths: ReadonlyAr
 	const entries = Object.entries(tsconfig).filter(([key]) => key !== "references");
 	const leading = entries.filter(([key]) => key === "extends" || key === "compilerOptions");
 	const trailing = entries.filter(([key]) => key !== "extends" && key !== "compilerOptions");
+
 	// `references` is owned by this script; an empty expected list removes the
 	// key instead of leaking the stale one back through.
 	const references: ReadonlyArray<readonly [string, unknown]> =
@@ -173,6 +178,7 @@ function toProjectReferences(
 		const dependencyDirectory = directoriesByName.get(name);
 		if (dependencyDirectory !== undefined) references.push(toRelativeReference(directory, dependencyDirectory));
 	}
+
 	return references.toSorted(compareUsingLocale);
 }
 
@@ -215,6 +221,7 @@ async function findStaleReferencesAsync(rootDirectory: string): Promise<Readonly
 		if (isSameReferences(actualReferences, expectedReferences)) continue;
 		staleReferences.push({ actualReferences, expectedReferences, path });
 	}
+
 	return staleReferences;
 }
 
@@ -224,6 +231,7 @@ async function syncTsconfigReferencesAsync(rootDirectory: string): Promise<Reado
 		// oxlint-disable-next-line no-await-in-loop -- sequential writes keep the report ordered
 		await writeReferencesAsync(nodePath.join(rootDirectory, path), expectedReferences);
 	}
+
 	return staleReferences;
 }
 

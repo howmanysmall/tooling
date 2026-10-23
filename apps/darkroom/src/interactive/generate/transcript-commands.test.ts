@@ -52,6 +52,7 @@ function record(): Recorded {
 			events.push(`write ${data}`);
 		},
 	};
+
 	return { environment, events };
 }
 

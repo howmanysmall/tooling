@@ -39,6 +39,7 @@ function getTotalCost(outcomes: ReadonlyArray<CompareOutcome>): number | undefin
 	for (const { result } of outcomes) {
 		if (result?.cost !== undefined) total = (total ?? 0) + result.cost;
 	}
+
 	return total;
 }
 
@@ -50,6 +51,7 @@ function getTotalCost(outcomes: ReadonlyArray<CompareOutcome>): number | undefin
  */
 export function formatOutcomeLine(outcome: CompareOutcome): string {
 	const seconds = `${(outcome.elapsedMs / 1000).toFixed(1)}s`;
+
 	if (outcome.status === "failed") return `${RED_X} ${outcome.model} · ${outcome.error}`;
 
 	const { result } = outcome;
@@ -142,6 +144,7 @@ export function formatCompareResult(
 				String(outcome.result?.returned ?? 0),
 				formatCost(outcome.result?.cost),
 			]);
+
 			return new Table().header(["Model", "Status", "Images", "Cost"]).body(rows).border().toString();
 		}
 

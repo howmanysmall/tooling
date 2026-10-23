@@ -15,6 +15,7 @@ export interface ShellActions {
 
 /** Set by the browser shell around each screen. */
 export const ShellActionsContext = createContext<ShellActions | undefined>(undefined);
+
 ShellActionsContext.displayName = "ShellActionsContext";
 
 /**

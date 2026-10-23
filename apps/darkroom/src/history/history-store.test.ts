@@ -96,6 +96,7 @@ describe("historyStore", () => {
 			{ length: 20 },
 			(_, index) => `01M4YVAKWVPWQQRBEKXDKQY${String(index).padStart(3, "0")}`,
 		);
+
 		await Promise.all(ids.map(async (id) => appendAsync(store, createEntry(id))));
 
 		const entries = await readAllAsync(store, () => undefined);

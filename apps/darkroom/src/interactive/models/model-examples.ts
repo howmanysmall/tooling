@@ -43,5 +43,6 @@ export function getModelExamples(
 			examples.set(model, { created, path: resolve(image.stored), prompt, source: ExampleSource.Yours });
 		}
 	}
+
 	return examples;
 }

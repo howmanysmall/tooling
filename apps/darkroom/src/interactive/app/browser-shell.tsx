@@ -101,6 +101,7 @@ export function BrowserShell({
 	const toast = pickNewerMessage(status, notice);
 	const tabs = useAppTabs();
 	const { exit } = useApp();
+
 	function showOverlay(kind: Exclude<Overlay, Overlay.Actions>): () => void {
 		return () => {
 			setOverlay({ kind });
@@ -151,6 +152,7 @@ export function BrowserShell({
 				onShiftTab?.();
 			},
 		};
+
 		handlers[route]();
 	});
 

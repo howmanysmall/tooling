@@ -30,6 +30,7 @@ export function getRecentModelIds(entries: ReadonlyArray<HistoryEntry>): Array<s
 		if (recent.size === RECENT_LIMIT) break;
 		recent.add(model);
 	}
+
 	return [...recent];
 }
 
@@ -63,6 +64,7 @@ export function pickModel(
 		const model = id === undefined ? undefined : byId.get(id);
 		if (model !== undefined) return model;
 	}
+
 	return models[0];
 }
 
@@ -71,9 +73,11 @@ function sortByRecency(
 	recentIds: ReadonlyArray<string>,
 ): Array<ImageModelListItem> {
 	const ranks = new Map(recentIds.map((id, index) => [id, index]));
+
 	function getRank(model: ImageModelListItem): number {
 		return ranks.get(model.id) ?? recentIds.length;
 	}
+
 	return models.toSorted(
 		(first, second) => getRank(first) - getRank(second) || first.name.localeCompare(second.name),
 	);

@@ -4,8 +4,10 @@ import type { HistoryEntry } from "$history/history-entry";
 import type { CellBox } from "$preview/cell-fit";
 
 export const COLUMN_GAP = 1;
+
 // Narrower than this and an image is too small to make out.
 const MIN_CELL_COLUMNS = 24;
+
 // Room for `‹ 12` and `18 ›` when the comparison doesn't fit.
 export const MARKER_COLUMNS = 5;
 

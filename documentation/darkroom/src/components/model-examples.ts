@@ -37,5 +37,6 @@ export function getModelExamples(): Array<ModelExample> {
 		const [provider = model] = model.split("/", 1);
 		found.push({ image, model, provider });
 	}
+
 	return found.toSorted((first, second) => first.model.localeCompare(second.model));
 }

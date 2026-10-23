@@ -4,6 +4,7 @@ import { fromAny } from "@total-typescript/shoehorn";
 import { TimestampFormat } from "$validators/timestamp-format-type";
 
 vi.stubEnv("TZ", "America/Denver");
+
 const { formatTimestampAsync } = await import("./format-timestamp.ts");
 
 // 2026-10-05T20:26:57Z, which is 14:26:57 MDT (UTC-6) in America/Denver.

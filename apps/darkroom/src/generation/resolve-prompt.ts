@@ -49,5 +49,6 @@ export async function resolvePromptAsync(sources: PromptSources): Promise<string
 	if (prompt.length === 0) {
 		throw new ValidationError("The prompt is empty.");
 	}
+
 	return prompt;
 }

@@ -84,6 +84,7 @@ export async function prepareAsync(
 			stdoutIsTty: false,
 		},
 	);
+
 	return fitted === undefined ? prepared : { ...prepared, warnings: [...fitted.warnings, ...prepared.warnings] };
 }
 
@@ -104,6 +105,7 @@ export async function createPreviewAsync(path: string): Promise<Preview | undefi
 			.resize({ fit: "inside", height: PREVIEW_EDGE, width: PREVIEW_EDGE, withoutEnlargement: true })
 			.webp()
 			.toBuffer();
+
 		return { data: webp.toString("base64"), mediaType: "image/webp" };
 	} catch {
 		return undefined;

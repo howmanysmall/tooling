@@ -32,9 +32,11 @@ export function toPlural(amount: number, word: string): string {
 
 	const secondToLastByte = word.codePointAt(length - 2);
 	if (lastByte === 104 && (secondToLastByte === 99 || secondToLastByte === 115)) return `${word}es`;
+
 	if (secondToLastByte !== undefined && lastByte === 121 && ENGLISH_CONSONANTS.has(secondToLastByte)) {
 		return `${word.slice(0, -1)}ies`;
 	}
+
 	// irregular plurals are cringe
 	return `${word}s`;
 }
