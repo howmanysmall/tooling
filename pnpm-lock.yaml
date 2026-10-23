@@ -983,6 +983,9 @@ importers:
 
   packages/environment:
     devDependencies:
+      '@howmanysmall/cli-utilities':
+        specifier: workspace:*
+        version: link:../cli-utilities
       '@howmanysmall/project-configurations':
         specifier: workspace:*
         version: link:../../tools/project-configurations

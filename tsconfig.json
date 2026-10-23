@@ -17,6 +17,9 @@
 			"path": "./packages/english-utilities"
 		},
 		{
+			"path": "./packages/environment"
+		},
+		{
 			"path": "./packages/string-utilities"
 		},
 		{
