@@ -901,10 +901,19 @@ importers:
 
   packages/ai:
     dependencies:
+      '@arkenv/core':
+        specifier: catalog:runtime
+        version: 1.0.0-rc.4(arktype@2.2.8)
       '@openrouter/sdk':
         specifier: catalog:ai
         version: 1.4.25
     devDependencies:
+      '@howmanysmall/arktype-utilities':
+        specifier: workspace:*
+        version: link:../arktype-utilities
+      '@howmanysmall/environment':
+        specifier: workspace:*
+        version: link:../environment
       '@howmanysmall/project-configurations':
         specifier: workspace:*
         version: link:../../tools/project-configurations
