@@ -1,4 +1,5 @@
 import { describe, it } from "vitest";
+import { ConfigurationError } from "@howmanysmall/environment/configuration-error";
 import {
 	ConnectionError,
 	InvalidRequestError,
@@ -6,7 +7,6 @@ import {
 	RequestAbortedError,
 } from "@openrouter/sdk/models/errors";
 
-import { ConfigurationError } from "./configuration-error";
 import { CHARGE_NOTE, describeProviderMessage, toApiError } from "./to-api-error";
 
 function createHttpError(status: number, body: string): OpenRouterDefaultError {
