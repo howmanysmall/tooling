@@ -89,7 +89,7 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 	}
 
 	// oxlint-disable eslint/class-methods-use-this -- overrides a Prompt hook that has no use for this
-	// biome-ignore lint/nursery/useThisInClassMethods: overrides a Prompt hook that has no use for this.
+	// biome-ignore lint/style/useThisInClassMethods: overrides a Prompt hook that has no use for this.
 	protected override _isActionKey(_character: string | undefined, key: Key): boolean {
 		// Keep Space and Tab out of the filter text.
 		return key.name === "space" || key.name === "tab";

@@ -1,5 +1,7 @@
 import { describe, it } from "vitest";
 
+import { compareWithLocale } from "$functions/compare-with-locale";
+
 import { createEntry } from "./history-fixture";
 import { parseDuration, parseSize, selectForPrune, toPruneCriteria } from "./prune-selection";
 
@@ -63,7 +65,10 @@ describe("selectForPrune", () => {
 
 		const selected = selectForPrune(ENTRIES, SIZES, { keep: 2, olderThan: 2 * DAY }, NOW);
 
-		expect([...selected].toSorted()).toStrictEqual(["01M4YVAAAAAAAAAAAAAAAAAAA1", "01M4YVAAAAAAAAAAAAAAAAAAA2"]);
+		expect([...selected].toSorted(compareWithLocale)).toStrictEqual([
+			"01M4YVAAAAAAAAAAAAAAAAAAA1",
+			"01M4YVAAAAAAAAAAAAAAAAAAA2",
+		]);
 	});
 });
 
