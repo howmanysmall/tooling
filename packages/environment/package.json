@@ -1,0 +1,36 @@
+{
+	"name": "@howmanysmall/environment",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Validated process environment and environment-derived utilities.",
+	"license": "MIT",
+	"author": {
+		"name": "HowManySmall",
+		"email": "contact@howmanysmall.com",
+		"url": "https://howmanysmall.com"
+	},
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		"./configuration-error": "./src/configuration-error.ts",
+		"./create-get-environment-async": "./src/create-get-environment-async.ts",
+		"./package.json": "./package.json"
+	},
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package packages/environment",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent packages/environment",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsrs --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"devDependencies": {
+		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@types/node": "catalog:node-floor",
+		"vitest": "catalog:test"
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	}
+}
