@@ -1,0 +1,91 @@
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import nodePath from "node:path";
+import { describe, it } from "vitest";
+
+import { loadConfigurationAsync } from "./configuration";
+
+import type { TestContext } from "vitest";
+
+function createProject(onTestFinished: TestContext["onTestFinished"]): string {
+	const root = mkdtempSync(nodePath.join(tmpdir(), "noncommittal-configuration-"));
+	onTestFinished(() => {
+		rmSync(root, { force: true, recursive: true });
+	});
+	return root;
+}
+
+describe("loadConfigurationAsync", () => {
+	it("loads a TypeScript configuration file from the working directory", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "noncommittal.config.ts"), "export default { verbose: true };\n");
+
+		await expect(loadConfigurationAsync({ cwd: root })).resolves.toMatchObject({
+			configuration: { verbose: true },
+		});
+	});
+
+	// Catches running the tool from a project's subfolder and silently
+	// ignoring the project's configuration.
+	it("finds the configuration file in a parent directory", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "noncommittal.config.ts"), "export default { verbose: true };\n");
+		const subfolder = nodePath.join(root, "src", "deep");
+		mkdirSync(subfolder, { recursive: true });
+
+		await expect(loadConfigurationAsync({ cwd: subfolder })).resolves.toMatchObject({
+			configuration: { verbose: true },
+		});
+	});
+
+	// Catches a workspace-level file overriding a package's own configuration.
+	it("prefers the nearest configuration file", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "noncommittal.config.ts"), "export default { verbose: true };\n");
+		const nested = nodePath.join(root, "nested");
+		mkdirSync(nested);
+		writeFileSync(nodePath.join(nested, "noncommittal.config.ts"), "export default { verbose: false };\n");
+
+		await expect(loadConfigurationAsync({ cwd: nested })).resolves.toMatchObject({
+			configuration: { verbose: false },
+		});
+	});
+
+	it("runs with an empty configuration when there is no file", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+
+		await expect(loadConfigurationAsync({ cwd: root })).resolves.toStrictEqual({
+			configFile: undefined,
+			configuration: {},
+		});
+	});
+
+	// Catches a typo in `--config` silently running with defaults.
+	it("rejects a --config file that does not exist", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+
+		await expect(loadConfigurationAsync({ configFile: "missing.config.ts", cwd: root })).rejects.toMatchObject({
+			exitCode: 3,
+		});
+	});
+
+	// Catches a misspelled value being ignored instead of reported.
+	it("rejects a configuration with a wrongly typed setting", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, "noncommittal.config.ts"), 'export default { verbose: "yes" };\n');
+
+		await expect(loadConfigurationAsync({ cwd: root })).rejects.toMatchObject({ exitCode: 3 });
+	});
+});

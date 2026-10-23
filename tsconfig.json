@@ -5,6 +5,9 @@
 			"path": "./apps/darkroom"
 		},
 		{
+			"path": "./apps/noncommittal"
+		},
+		{
 			"path": "./packages/arktype-utilities"
 		},
 		{
