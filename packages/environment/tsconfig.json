@@ -8,6 +8,9 @@
 	"references": [
 		{
 			"path": "../../tools/project-configurations"
+		},
+		{
+			"path": "../cli-utilities"
 		}
 	],
 	"include": ["src/**/*.ts", "./package.json", "*.config.ts"],
