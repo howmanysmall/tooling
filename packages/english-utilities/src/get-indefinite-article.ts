@@ -6,6 +6,7 @@ const ACRONYM_VOWEL_SOUND = new Set<number>([65, 69, 70, 72, 73, 76, 77, 78, 79,
 
 function startsWithAny(value: string, prefixes: ReadonlyArray<string>): boolean {
 	for (const prefix of prefixes) if (value.startsWith(prefix)) return true;
+
 	return false;
 }
 

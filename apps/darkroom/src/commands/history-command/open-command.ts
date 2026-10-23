@@ -25,5 +25,6 @@ export const openCommand = createBaseCommand(scriptName, "1.0.0", "Open a run's 
 			log.warn(`Run ${entry.id} has no images.`);
 			return;
 		}
+
 		await openFilesAsync(entry.images.map((image) => resolve(store, image.stored)));
 	});

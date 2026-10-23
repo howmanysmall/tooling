@@ -132,6 +132,7 @@ function renderIndex(sites: ReadonlyArray<DocumentationSiteEntry>): string {
 			return `\t\t\t<li>${link}<span>${escapeHtml(description)}</span></li>`;
 		})
 		.join("\n");
+
 	return `<!doctype html>
 <html lang="en">
 	<head>
@@ -175,6 +176,7 @@ async function getRefChoicesAsync(): Promise<Array<RefChoice>> {
 		.filter((tag) => tag.length > 0)
 		.slice(0, TAG_LIMIT)
 		.map((tag) => ({ hint: "release", ref: tag }));
+
 	return [{ hint: branch, ref: "main" }, ...releases];
 }
 
@@ -193,6 +195,7 @@ async function askRefAsync(): Promise<string> {
 			{ hint: "a branch, tag, or commit", label: "Another ref…", value: "" },
 		],
 	});
+
 	if (isCancel(answer)) throw new CliError("Canceled.", 130);
 	if (answer.length > 0) return answer;
 
@@ -200,6 +203,7 @@ async function askRefAsync(): Promise<string> {
 		message: "Which ref?",
 		validate: (value) => ((value ?? "").trim().length === 0 ? "Type a branch, tag, or commit." : undefined),
 	});
+
 	if (isCancel(typed)) throw new CliError("Canceled.", 130);
 	return typed.trim();
 }
@@ -240,6 +244,7 @@ async function ensurePagesAsync(repository: string, options: PublishOptions): Pr
 		const answer = await confirm({
 			message: `GitHub Pages is off for ${repository}. Turn it on, deploying from Actions?`,
 		});
+
 		if (answer !== true) throw new CliError("GitHub Pages is off, so there is nowhere to publish.", 1);
 	}
 
@@ -288,6 +293,7 @@ async function findDispatchedRunAsync(startedAt: Date): Promise<undefined | Work
 		// oxlint-disable-next-line no-await-in-loop -- the wait between tries
 		await delay(RUN_LOOKUP_INTERVAL_MS);
 	}
+
 	return undefined;
 }
 
@@ -329,6 +335,7 @@ async function dispatchAsync(
 	}
 
 	log.info(`Workflow run: ${run.url}`);
+
 	if (!options.watch) return;
 
 	await exec("gh", ["run", "watch", String(run.id), "--exit-status"], {
@@ -353,6 +360,7 @@ async function publishAsync(givenRef: string | undefined, options: PublishOption
 	}
 
 	const sites = await getSitesAsync(cwd());
+
 	if (options.interactive) intro("Publish the documentation");
 
 	const fallbackRef = options.yes ? "main" : undefined;
@@ -368,6 +376,7 @@ async function publishAsync(givenRef: string | undefined, options: PublishOption
 	const dispatch = ["workflow", "run", WORKFLOW, "--ref", "main", "-f", `ref=${ref}`];
 	if (options.dryRun) {
 		stdout.write(`gh ${dispatch.join(" ")}\n`);
+
 		if (options.interactive) outro("Dry run: nothing was started.");
 		return;
 	}
@@ -380,7 +389,9 @@ async function publishAsync(givenRef: string | undefined, options: PublishOption
 		"--jq",
 		".nameWithOwner",
 	]);
+
 	await ensurePagesAsync(repository, options);
+
 	if (!(await confirmPublishAsync(sites.length, options))) {
 		cancel("Nothing was published.");
 		return;
@@ -398,6 +409,7 @@ const assembleCommand = new Command()
 		const missing = sites.filter(
 			({ name }) => !existsSync(nodePath.join(rootDirectory, DOCUMENTATION_DIRECTORY, name, "dist")),
 		);
+
 		if (missing.length > 0) {
 			const names = missing.map(({ name }) => `documentation/${name}`).join(", ");
 			throw new CliError(

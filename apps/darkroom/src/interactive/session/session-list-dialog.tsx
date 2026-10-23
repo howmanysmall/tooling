@@ -32,6 +32,7 @@ const HINTS: ReadonlyArray<KeyHint> = [
 	["↑↓", "choose"],
 	["⏎", "resume"],
 ];
+
 // Rows of sessions shown at once.
 const VISIBLE_ROWS = 12;
 

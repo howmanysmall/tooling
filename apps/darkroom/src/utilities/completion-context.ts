@@ -96,6 +96,7 @@ export function getOptionValues(words: ReadonlyArray<string>, flags: ReadonlyArr
 			values.push(word.slice(flag.length + 1));
 		}
 	}
+
 	return values;
 }
 

@@ -7,6 +7,7 @@ function toByteSet(array: ReadonlyArray<string>): ReadonlySet<number> {
 		const lower = character.toLowerCase().codePointAt(0);
 		if (lower !== undefined) byteSet.add(lower);
 	}
+
 	return byteSet;
 }
 

@@ -31,6 +31,7 @@ export async function deleteRunAsync(
 ): Promise<void> {
 	// A line that can't be read is kept out, as everywhere in the app.
 	await deleteAsync(historyStore, new Set([id]), () => undefined);
+
 	if (deletion === RunDeletion.History) return;
 	await Promise.all(outputs.flatMap((output) => (output === "-" ? [] : [rm(output, { force: true })])));
 }

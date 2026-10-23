@@ -22,6 +22,7 @@ export interface SessionSummary {
 function sumCosts(runs: ReadonlyArray<HistoryEntry>): number | undefined {
 	let total: number | undefined;
 	for (const { cost } of runs) if (cost !== undefined) total = (total ?? 0) + cost;
+
 	return total;
 }
 
@@ -59,6 +60,7 @@ export function listSessions(entries: ReadonlyArray<HistoryEntry>): Array<Sessio
 			else group.push(entry);
 		}
 	}
+
 	return Array.from(groups, ([id, runs]) => toSummary(id, runs));
 }
 
@@ -82,9 +84,11 @@ export function resolveSessionReference(sessions: ReadonlyArray<SessionSummary>,
 	const matches = sessions.filter((session) => session.id.startsWith(prefix));
 	const [match] = matches;
 	if (match === undefined) throw new ValidationError(`No session matches "${reference}".`);
+
 	if (matches.length > 1) {
 		const listing = matches.map((session) => `  ${session.id.slice(0, SHORT_ID_LENGTH)}  ${session.title}`);
 		throw new ValidationError(`"${reference}" matches ${matches.length} sessions:\n${listing.join("\n")}`);
 	}
+
 	return match;
 }

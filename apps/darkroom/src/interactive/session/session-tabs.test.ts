@@ -19,6 +19,7 @@ const DONE: SessionTurn = {
 function applyActions(tabs: SessionTabs, actions: ReadonlyArray<SessionTabsAction>): SessionTabs {
 	let state = tabs;
 	for (const action of actions) state = reduceSessionTabs(state, action);
+
 	return state;
 }
 
@@ -100,6 +101,7 @@ describe("createSessionStore", () => {
 		const store = createSessionStore(openThree(), async (tabs) => {
 			saved.push(tabs);
 		});
+
 		store.dispatch({ delta: -1, type: "cycle" });
 		store.dispatch({
 			action: { id: 9, model: "m", prompt: "p", type: "turn-added" },

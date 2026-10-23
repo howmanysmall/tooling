@@ -1,9 +1,12 @@
 const MIN_TAB_WIDTH = 16;
 const MAX_TAB_WIDTH = 32;
+
 /** Columns between tabs. */
 export const TAB_GAP = 1;
+
 // The padding at each side and the `+` button.
 const CHROME_COLUMNS = 4 + 4;
+
 /** Room for `‹ 12` and `12 ›` when the tabs don't fit. */
 export const MARKER_COLUMNS = 5;
 

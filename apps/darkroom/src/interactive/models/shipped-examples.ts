@@ -70,6 +70,7 @@ async function findExamplesDirectoryAsync(): Promise<string | undefined> {
 
 		directory = nodePath.dirname(directory);
 	}
+
 	return undefined;
 }
 

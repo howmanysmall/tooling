@@ -58,4 +58,5 @@ export const isHistoryEntry = type({
 }).readonly();
 
 export type HistoryEntry = typeof isHistoryEntry.infer;
+
 export type StoredRequest = typeof isStoredRequest.infer;

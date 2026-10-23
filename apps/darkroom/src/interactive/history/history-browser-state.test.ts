@@ -22,6 +22,7 @@ const TREE = createEntry("01M4YVAAAAAAAAAAAAAAAAAAA1", { prompt: "a tree" });
 function applyActions(state: BrowserState, actions: ReadonlyArray<BrowserAction>): BrowserState {
 	let next = state;
 	for (const action of actions) next = reduceBrowserState(next, action);
+
 	return next;
 }
 

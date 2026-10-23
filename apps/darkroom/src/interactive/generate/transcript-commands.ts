@@ -31,6 +31,7 @@ function getDeleteCommand(
 	environment: TranscriptEnvironment,
 ): Array<BrowserCommand> {
 	if (turn === undefined || !isSettled(turn)) return [];
+
 	return [
 		{
 			key,
@@ -71,9 +72,11 @@ export function getTranscriptDialog(
 	if (dialog?.kind === GenerateDialog.Prompt) {
 		return { commands: getPromptCommands(dialog.turn, environment), title: "Prompt" };
 	}
+
 	if (dialog?.kind === GenerateDialog.Image) {
 		return { commands: getImageCommands(dialog.image, environment), title: "Image" };
 	}
+
 	return undefined;
 }
 

@@ -72,6 +72,7 @@ describe("createScreenMirror", () => {
 
 		const { mirror } = openTerminal(onTestFinished);
 		await drawAsync(mirror, "┃ a cat  $1 ▀▄\n\nend");
+
 		const runs = mirror.findText([
 			{ end: 20, row: 0, start: 0 },
 			{ end: 20, row: 1, start: 0 },

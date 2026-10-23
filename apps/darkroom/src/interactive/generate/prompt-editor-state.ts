@@ -26,6 +26,7 @@ export type EditorAction =
 export const EMPTY_EDITOR: PromptEditor = { cursor: 0, text: "" };
 
 const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
+
 // Typed or pasted control characters, except the newline, are dropped.
 // oxlint-disable-next-line no-control-regex -- matching control characters is the point
 const CONTROL_CHARACTERS = /[\u0000-\u0009\u000B-\u001F\u007F]/gu;
@@ -51,14 +52,18 @@ function isWordAt(text: string, index: number): boolean {
 function getWordStart(text: string, index: number): number {
 	let start = index;
 	while (start > 0 && !isWordAt(text, start - 1)) start -= 1;
+
 	while (start > 0 && isWordAt(text, start - 1)) start -= 1;
+
 	return start;
 }
 
 function getWordEnd(text: string, index: number): number {
 	let end = index;
 	while (end < text.length && !isWordAt(text, end)) end += 1;
+
 	while (end < text.length && isWordAt(text, end)) end += 1;
+
 	return end;
 }
 
@@ -269,6 +274,7 @@ export function getEditorAction(input: string, key: Key): EditorAction | undefin
 	if (key.return) {
 		return key.meta || key.shift ? NEW_LINE : undefined;
 	}
+
 	return getSpecialAction(key) ?? getModifiedAction(input, key);
 }
 

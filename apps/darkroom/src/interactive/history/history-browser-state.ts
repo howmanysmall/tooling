@@ -84,7 +84,9 @@ export function getBatchRuns(state: BrowserState): Map<string, Array<HistoryEntr
 		runs.push(entry);
 		batches.set(entry.batch, runs);
 	}
+
 	for (const runs of batches.values()) runs.sort(compareByModel);
+
 	return batches;
 }
 
@@ -112,6 +114,7 @@ export function getVisibleRuns(state: BrowserState): ReadonlyArray<HistoryEntry>
 			rows.push(pickRun(state, entry.batch, batches.get(entry.batch) ?? []) ?? entry);
 		}
 	}
+
 	return rows;
 }
 
@@ -197,6 +200,7 @@ function removeRun(state: BrowserState, id: string): BrowserState {
  */
 export function reduceBrowserState(state: BrowserState, action: BrowserAction): BrowserState {
 	if (isCursorMove(action)) return reduceNavigation(state, action);
+
 	switch (action.type) {
 		case BrowserActionType.CancelFilter:
 			return { ...state, cursor: 0, filter: "", mode: BrowserMode.Normal };

@@ -69,12 +69,14 @@ export function reducePickerView(view: PickerView, action: PickerViewAction): Pi
 			const index = PICKER_SORTS.indexOf(view.sort);
 			return { ...view, sort: PICKER_SORTS[(((index + action.delta) % length) + length) % length] ?? view.sort };
 		}
+
 		case "sort":
 			return { ...view, sort: action.sort };
 		default: {
 			const filters = new Set(view.filters);
 			if (filters.has(action.filter)) filters.delete(action.filter);
 			else filters.add(action.filter);
+
 			return { ...view, filters };
 		}
 	}
@@ -119,6 +121,7 @@ export function parsePickerQuery(query: string): PickerQuery {
 		else if (filter === undefined) words.push(word);
 		else filters.add(filter);
 	}
+
 	return { filters, maxPrice, provider, text: words.join(" ") };
 }
 
@@ -157,6 +160,7 @@ function orderMatches(matches: ReadonlyArray<ModelMatch>, sort: PickerSort, cont
 		context.pricing,
 		context.observed,
 	);
+
 	return sorted.flatMap((model) => byId.get(model.id) ?? []);
 }
 
@@ -186,6 +190,7 @@ export function findPickerModels(
 			(provider === undefined || model.id.toLowerCase().startsWith(provider)) &&
 			(maxPrice === undefined || isWithinPrice(model, maxPrice, context)),
 	);
+
 	return orderMatches(getModelMatches(kept, context.recentIds, text), view.sort, context);
 }
 

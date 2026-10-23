@@ -6,6 +6,7 @@ import { Predicate } from "effect";
 
 // oxlint-disable-next-line unicorn-js/no-unnecessary-global-this -- coal
 const nativeTemporal = globalThis.Temporal;
+
 export type TemporalNative = typeof globalThis.Temporal;
 
 export async function getTemporalAsync(): Promise<TemporalNative> {

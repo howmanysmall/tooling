@@ -30,6 +30,7 @@ export function SessionConfirm({ columns, rows }: Readonly<SessionConfirmPropert
 	}
 
 	if (pending === undefined) return null;
+
 	return (
 		<GenerateConfirmDialog
 			columns={columns}

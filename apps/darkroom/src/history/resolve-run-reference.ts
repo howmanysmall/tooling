@@ -29,6 +29,7 @@ export function resolveRunReference(entries: ReadonlyArray<HistoryEntry>, refere
 		if (entry === undefined) {
 			throw new ValidationError(`There is no run ${reference}; the history has ${entries.length}.`);
 		}
+
 		return entry;
 	}
 
@@ -38,10 +39,12 @@ export function resolveRunReference(entries: ReadonlyArray<HistoryEntry>, refere
 	if (match === undefined) {
 		throw new ValidationError(`No run matches "${reference}".`);
 	}
+
 	if (matches.length > 1) {
 		const listing = matches.map((entry) => `  ${summarize(entry)}`).join("\n");
 		throw new ValidationError(`"${reference}" matches ${matches.length} runs:\n${listing}`);
 	}
+
 	return match;
 }
 
@@ -66,6 +69,7 @@ export function getParentChain(entries: ReadonlyArray<HistoryEntry>, entry: Hist
 		seen.add(parentId);
 		parentId = parent.parent;
 	}
+
 	return chain;
 }
 

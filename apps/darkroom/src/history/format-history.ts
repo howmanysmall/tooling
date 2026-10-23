@@ -88,7 +88,9 @@ function describeRequest({ request }: HistoryEntry): Array<Row> {
 		["compression", request.outputCompression],
 		["seed", request.seed],
 	];
+
 	for (const [label, value] of optional) if (value !== undefined) rows.push([label, String(value)]);
+
 	return rows;
 }
 
@@ -111,19 +113,24 @@ export function toShowRows(
 		["returned", `${entry.returned} of ${entry.requested}`],
 		["cost", entry.cost === undefined ? "unknown" : formatCost(entry.cost)],
 	];
+
 	if (parents.length > 0) {
 		rows.push(["parents", parents.map((parent) => parent.id.slice(0, SHORT_ID_LENGTH)).join(" ← ")]);
 	}
+
 	if (entry.batch !== undefined && batch.length > 0) {
 		const others = batch.map((run) => `${run.id.slice(0, SHORT_ID_LENGTH)} ${run.model}`);
 		rows.push(["batch", `${entry.batch.slice(0, SHORT_ID_LENGTH)} · with ${formatArrayAsEnglishList(others)}`]);
 	}
+
 	for (const reference of entry.references) {
 		rows.push(["reference", describeCopy(reference.source, resolve(reference.stored))]);
 	}
+
 	for (const image of entry.images) {
 		rows.push(["image", describeCopy(image.output, resolve(image.stored))]);
 	}
+
 	return rows;
 }
 

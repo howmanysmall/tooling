@@ -31,6 +31,7 @@ async function confirmAsync(count: number): Promise<boolean> {
 	if (!stdin.isTTY || !stderr.isTTY) {
 		throw new ValidationError("Pass --yes to delete runs when not running in a terminal.");
 	}
+
 	const { confirm, isCancel } = await import("@clack/prompts");
 	const answer = await confirm({ message: `Delete ${count} ${toPlural(count, "run")}?`, output: stderr });
 	if (isCancel(answer)) throw new InterruptedError("Cancelled.");
@@ -41,12 +42,14 @@ async function getSizesAsync(store: HistoryStore, entries: ReadonlyArray<History
 	const sizes = await Promise.all(
 		entries.map(async (entry) => [entry.id, await getRunSizeAsync(store, entry.id)] as const),
 	);
+
 	return new Map(sizes);
 }
 
 function sumSizes(sizes: ReadonlyMap<string, number>, ids: Iterable<string>): number {
 	let total = 0;
 	for (const id of ids) total += sizes.get(id) ?? 0;
+
 	return total;
 }
 
@@ -65,10 +68,12 @@ async function deleteRunsAsync(
 	}
 
 	stderr.write(`${listing}\n`);
+
 	if (flags.yes !== true && !(await confirmAsync(doomed.length))) {
 		log.info("Nothing deleted.");
 		return;
 	}
+
 	const removed = await deleteAsync(store, new Set(doomed.map((entry) => entry.id)), warn);
 	log.success(`Deleted ${removed} ${toPlural(removed, "run")} and freed ${freed}.`);
 }
@@ -101,6 +106,7 @@ export const pruneCommand = createBaseCommand(
 			log.info("Nothing to prune.");
 			return;
 		}
+
 		const doomed = entries.filter((entry) => selected.has(entry.id)).toReversed();
 		await deleteRunsAsync(store, doomed, prettyBytes(sumSizes(sizes, selected)), flags);
 	});

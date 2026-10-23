@@ -41,6 +41,7 @@ const HINTS: ReadonlyArray<KeyHint> = [
 	["↑↓", "choose"],
 	["⏎", "use"],
 ];
+
 function createInitialView(isEditing: boolean): PickerView {
 	return { filters: new Set(isEditing ? [PickerFilter.Edits] : []), sort: PickerSort.Recent };
 }

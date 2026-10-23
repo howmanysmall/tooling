@@ -16,6 +16,7 @@ const isPackageManifest = type({
 	"dependencies?": type("Record<string, string>").readonly().or("undefined"),
 	"name?": "string | undefined",
 }).readonly();
+
 type PackageManifest = typeof isPackageManifest.infer;
 
 function readManifest(directory: string): PackageManifest | undefined {
@@ -30,6 +31,7 @@ function readManifest(directory: string): PackageManifest | undefined {
 function escapeRegExp(value: string): string {
 	return value.replaceAll(/[$()*+.?[\\\]^{|}]/gu, String.raw`\$&`);
 }
+
 const JSR_REGEXP = /^@jsr\//u;
 
 function getJsrDependencyPatterns(directory: string): Array<RegExp> {
@@ -58,6 +60,7 @@ function createMacroRunner(): MacroRunner {
 			if (path === undefined) {
 				throw new Error(`Cannot resolve macro "${source}" from ${importer}: ${error}`);
 			}
+
 			return path;
 		},
 	};

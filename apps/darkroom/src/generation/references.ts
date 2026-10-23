@@ -22,6 +22,7 @@ function toReferenceImage(source: string, bytes: Uint8Array): ReferenceImage {
 	if (mediaType === undefined || !isReferenceMediaType(mediaType)) {
 		throw new ValidationError(`Reference ${source} is not a PNG, JPEG, WebP, or GIF image.`);
 	}
+
 	return { bytes, mediaType, source };
 }
 

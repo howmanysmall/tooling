@@ -81,6 +81,7 @@ async function prepareAllAsync(
 			}),
 		),
 	);
+
 	return collectPrepared(settled);
 }
 
@@ -103,6 +104,7 @@ export async function getEstimatesAsync(
 	} catch (error) {
 		dependencies.warn(`Could not read prices: ${error instanceof Error ? error.message : String(error)}`);
 	}
+
 	const observed = await observedPromise;
 
 	return prepared.map((item) => {

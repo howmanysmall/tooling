@@ -109,12 +109,14 @@ export function toggleCurrent(state: PickerState): PickerState {
 	if (state.selected.includes(entry.path)) {
 		return { ...state, selected: state.selected.filter((path) => path !== entry.path), warning: undefined };
 	}
+
 	if (state.selected.length >= state.max) {
 		return {
 			...state,
 			warning: `This model takes at most ${state.max} reference ${toPlural(state.max, "image")}.`,
 		};
 	}
+
 	return { ...state, selected: [...state.selected, entry.path], warning: undefined };
 }
 

@@ -62,13 +62,16 @@ export function getClipboardCommand(png: string, system: NodeJS.Platform, isWayl
 		const script = `set the clipboard to (read (POSIX file ${quoteForAppleScript(png)}) as «class PNGf»)`;
 		return { command: "osascript", parameters: ["-e", script] };
 	}
+
 	if (system === "win32") {
 		const script = [
 			"Add-Type -AssemblyName System.Windows.Forms, System.Drawing",
 			`[System.Windows.Forms.Clipboard]::SetImage([System.Drawing.Image]::FromFile(${quoteForPowerShell(png)}))`,
 		].join("; ");
+
 		return { command: "powershell", parameters: ["-NoProfile", "-STA", "-Command", script] };
 	}
+
 	if (isWayland) return { command: "sh", parameters: ["-c", 'wl-copy --type image/png < "$1"', "sh", png] };
 	return { command: "xclip", parameters: ["-selection", "clipboard", "-t", "image/png", "-i", png] };
 }

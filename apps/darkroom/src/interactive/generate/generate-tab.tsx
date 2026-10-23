@@ -60,6 +60,7 @@ export function GenerateTab({
 	if ("error" in loaded) return <CatalogNotice isError={true} message={loaded.error} title="generate" />;
 
 	const names = new Map(loaded.catalog.models.map((item) => [item.id, item.name]));
+
 	function getModelName(id: string): string {
 		return names.get(id) ?? id;
 	}
@@ -69,6 +70,7 @@ export function GenerateTab({
 		preferred: loaded.preferred,
 		recent: recentIds,
 	});
+
 	return (
 		<ModelNameContext value={getModelName}>
 			<GenerateScreen

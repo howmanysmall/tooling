@@ -41,6 +41,7 @@ export function renderHighlight(text: string): string {
 		codeLines =
 			codeLines === undefined ? renderPlainLine(line, rendered) : renderCodeLine(codeLines, line, rendered);
 	}
+
 	if (codeLines !== undefined) rendered.push(renderCodeBlock(codeLines));
 	return rendered.join("\n");
 }
@@ -50,6 +51,7 @@ function renderCodeBlock(codeLines: ReadonlyArray<string>): string {
 	let size = 0;
 
 	for (const line of codeLines) array[size++] = renderFencedLine(line);
+
 	return array.join("\n");
 }
 
@@ -78,6 +80,7 @@ function findBinaryIndex(parts: ReadonlyArray<string>): number | undefined {
 		if (part.length > 0 && !WHITESPACE_PATTERN.test(part)) return index;
 		index += 1;
 	}
+
 	return undefined;
 }
 
@@ -92,6 +95,7 @@ function parseCommandParts(parts: ReadonlyArray<string>): number | undefined {
 	) {
 		return undefined;
 	}
+
 	return binaryIndex;
 }
 
@@ -105,6 +109,7 @@ function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?:
 		else inlineCode[size++] = index === binaryIndex ? ansi.magentaBright(part) : ansi.cyan(part);
 		index += 1;
 	}
+
 	return inlineCode.join("");
 }
 
@@ -143,6 +148,7 @@ function renderInline(text: string): string {
 		cursor = match.index + match[0].length;
 		match = INLINE_PATTERN.exec(text);
 	}
+
 	parts[size] = text.slice(cursor);
 	return parts.join("");
 }
@@ -257,10 +263,12 @@ function readNearestDescription(from: string): string {
 					`${manifest} has no usable "description"; pass the text to cliffyHighlight() explicitly. Got error: ${result.summary}`,
 				);
 			}
+
 			const { description } = result;
 			if (description === undefined) {
 				throw new Error(`${manifest} has no "description"; pass the text to cliffyHighlight() explicitly.`);
 			}
+
 			return description;
 		}
 
@@ -268,6 +276,7 @@ function readNearestDescription(from: string): string {
 		if (parent === directory) {
 			throw new Error(`No package.json above ${from}; pass the text to cliffyHighlight() explicitly.`);
 		}
+
 		directory = parent;
 	}
 }

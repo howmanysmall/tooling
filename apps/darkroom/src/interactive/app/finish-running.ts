@@ -29,6 +29,7 @@ export function describeSettledRun({ error, prompt, result }: SettledRun, direct
 	for (const { path } of result.images) {
 		if (path !== undefined) lines.push({ level: "info", text: toDisplayPath(path, directory) });
 	}
+
 	return lines;
 }
 
@@ -48,6 +49,7 @@ export async function finishRunningAsync(services: SessionServices): Promise<voi
 	log.start(`Finishing ${count} ${toPlural(count, "generation")}. They'll be saved to the history.`);
 
 	let interrupts = 0;
+
 	function onInterrupt(): void {
 		interrupts += 1;
 		if (interrupts > 1) exit(130);
@@ -55,6 +57,7 @@ export async function finishRunningAsync(services: SessionServices): Promise<voi
 	}
 
 	process.on("SIGINT", onInterrupt);
+
 	try {
 		const settled = await services.waitForRunningAsync();
 		const lines = settled.flatMap((run) => describeSettledRun(run, cwd()));

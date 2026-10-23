@@ -31,6 +31,7 @@ export function TurnImages({ box, getPreview, images }: Readonly<TurnImagesPrope
 		const preview = path === undefined ? undefined : getPreview(path, box);
 		return preview === undefined || path === undefined ? [] : [{ image: { mediaType, path }, preview }];
 	});
+
 	if (previews.length === 0) return null;
 
 	return (
