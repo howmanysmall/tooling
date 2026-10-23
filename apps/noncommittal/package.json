@@ -61,6 +61,7 @@
 	},
 	"devDependencies": {
 		"@cliffy/command": "catalog:runtime",
+		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@total-typescript/ts-reset": "catalog:types",

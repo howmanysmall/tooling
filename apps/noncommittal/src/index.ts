@@ -1,7 +1,7 @@
 /** Settings a `noncommittal` configuration file can set. */
 export interface Configuration {
 	/** Prints extra output while running. */
-	readonly verbose?: boolean;
+	readonly verbose?: boolean | undefined;
 }
 
 /**
