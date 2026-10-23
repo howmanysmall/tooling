@@ -61,6 +61,7 @@ export interface SessionContextValue {
 }
 
 export const SessionContext = createContext<SessionContextValue | undefined>(undefined);
+
 SessionContext.displayName = "SessionContext";
 
 /**
@@ -74,5 +75,6 @@ export function useSession(): SessionContextValue {
 	if (value === undefined) {
 		throw new Error("useSession needs a SessionProvider.");
 	}
+
 	return value;
 }

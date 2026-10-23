@@ -73,6 +73,7 @@ export async function writeFileNoClobberAsync(path: string, bytes: Uint8Array): 
 			// oxlint-disable-next-line no-await-in-loop -- each attempt depends on the previous one failing
 			if (await placeExclusiveAsync(temporaryPath, candidate, bytes)) return candidate;
 		}
+
 		throw new Error(`Could not find a free file name for ${path}.`);
 	} finally {
 		await rm(temporaryPath, { force: true });
@@ -96,5 +97,6 @@ export async function writeFileAtomicAsync(path: string, bytes: string | Uint8Ar
 		await rm(temporaryPath, { force: true });
 		throw error;
 	}
+
 	return path;
 }

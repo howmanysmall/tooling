@@ -2,8 +2,10 @@ import getStringWidth from "fast-string-width";
 
 /** What separates the end of the text from its start as it loops. */
 const GAP = " · ";
+
 /** How long the text rests at its start before scrolling, in ticks. */
 export const MARQUEE_PAUSE_TICKS = 8;
+
 /** How often the text moves one cell, in milliseconds. */
 export const MARQUEE_TICK_MS = 80;
 
@@ -78,6 +80,7 @@ export function sliceMarquee(text: string, width: number, offset: number): Marqu
 		if (used + cell.width > width) break;
 		used += cell.width;
 		visible += cell.value;
+
 		for (let unit = 0; unit < cell.value.length; unit += 1) {
 			sources.push(cell.source === undefined ? undefined : cell.source + unit);
 		}
@@ -142,5 +145,6 @@ export function sliceRuns(runs: ReadonlyArray<StyledRun>, scrolled: MarqueeWindo
 		else sliced.push({ ...run, start: index, text: character });
 		current = run;
 	}
+
 	return sliced;
 }

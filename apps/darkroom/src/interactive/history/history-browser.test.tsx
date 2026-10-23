@@ -44,6 +44,7 @@ const HELP_DIALOG = /Keys[\s\S]*y +Copy run ID[\s\S]*ctrl\+p +Command palette/u;
 const PALETTE_MATCH = /Commands[\s\S]*Re-run +r/u;
 const DELETE_DIALOG = /Delete this run\?[\s\S]*“a cat in a hat”[\s\S]*1\. Yes[\s\S]*3\. No/u;
 const COMPARED_ROW = /compared +01M4YVAA · zeta-model/u;
+
 // Ordered by model, with the selected run marked; a comparison opens on
 // its first model.
 const STRIP_LABELS = /▲ alpha-model +zeta-model/u;
@@ -184,6 +185,7 @@ describe("history browser", () => {
 		const instance = renderScreen(
 			<HistoryBrowserScreen entries={COMPARISON} now={NOW} services={createServices(store, [], [])} />,
 		);
+
 		await delay(20);
 
 		// The row is cut at the pane's edge in the test's narrow terminal.

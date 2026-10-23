@@ -17,6 +17,7 @@ import type { GenerationInput, ImagesClient } from "./run-generation";
 const PNG_BYTES = Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 7, 7, 7]);
 const PNG_BASE64 = Buffer.from(PNG_BYTES).toString("base64");
 const FAKE_KEY = `sk-or-v1-${"a".repeat(64)}`;
+
 // 2026-10-14T12:00:00 in local time, so the date part of names is stable.
 const NOW = new Date(2026, 9, 14, 12);
 
@@ -67,6 +68,7 @@ async function runAsync(
 			// Not used by these tests.
 		},
 	});
+
 	return { result, warnings };
 }
 
@@ -153,6 +155,7 @@ describe("streaming", () => {
 				return createClient(1).generate(request);
 			},
 		};
+
 		await executeGenerationAsync(prepared, {
 			client,
 			guard: new InterruptGuard(),
@@ -180,6 +183,7 @@ describe("requestImagesAsync with the real SDK", () => {
 				return respond();
 			},
 		});
+
 		return { attempts: () => attempts, images: new OpenRouter({ apiKey: FAKE_KEY, httpClient }).images };
 	}
 

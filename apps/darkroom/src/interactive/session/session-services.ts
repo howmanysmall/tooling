@@ -119,6 +119,7 @@ async function runAsync(prepared: PreparedGeneration, handlers: RunHandlers): Pr
 			onProgress: handlers.onProgress,
 			warn: handlers.onWarning,
 		});
+
 		handlers.onDone(result);
 		return { prompt, result };
 	} catch (error) {

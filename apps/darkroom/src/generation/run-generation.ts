@@ -209,6 +209,7 @@ export async function prepareGenerationAsync(
 		parsedSpec.kind === OutputKind.Directory && input.outputStem !== undefined
 			? { ...parsedSpec, stem: input.outputStem }
 			: parsedSpec;
+
 	await checkExplicitOutputAsync(outputSpec, parameters.count, input.force);
 
 	return {

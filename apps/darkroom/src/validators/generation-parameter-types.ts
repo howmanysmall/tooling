@@ -25,6 +25,7 @@ export async function completeModelParameterAsync(parameter: string): Promise<Ar
 		import("$utilities/model-parameter-completions"),
 		import("$history/history-completions"),
 	]);
+
 	return getParameterCompletionsAsync(parameter, getRerunModelAsync);
 }
 

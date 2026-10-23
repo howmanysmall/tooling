@@ -18,6 +18,7 @@ const ENTER = "\r";
 
 const BANANA = { ...createModel("google/banana", {}), name: "Google: Banana" };
 const PALETTE = { ...MULTI_MODEL, name: "OpenAI: Palette" };
+
 // Banana charges by the token, so its list price comes from past runs. Only
 // Palette has made an image.
 const CATALOG: ModelCatalog = {
@@ -78,6 +79,7 @@ async function renderBrowserAsync(): Promise<Harness> {
 	const instance = renderScreen(
 		<ModelBrowserScreen catalog={CATALOG} now={NOW} services={services} sort={ModelSort.Name} />,
 	);
+
 	await delay(20);
 
 	return {

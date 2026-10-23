@@ -15,6 +15,7 @@ export const browseCommand = createBaseCommand(
 	if (!stdin.isTTY || !stdout.isTTY) {
 		throw new ValidationError("history browse needs a terminal. Use history list instead.");
 	}
+
 	// React and Ink only load for this command.
 	const { openDarkroomAsync } = await import("$interactive/app/open-darkroom");
 	await openDarkroomAsync({ tab: AppTab.History });

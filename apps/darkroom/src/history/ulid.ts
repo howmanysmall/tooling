@@ -13,6 +13,7 @@ function encodeTime(milliseconds: number): string {
 		encoded = ALPHABET[remaining % 32] + encoded;
 		remaining = Math.floor(remaining / 32);
 	}
+
 	return encoded;
 }
 
@@ -20,6 +21,7 @@ function encodeRandom(): string {
 	const bytes = getRandomValues(new Uint8Array(RANDOM_LENGTH));
 	let encoded = "";
 	for (const byte of bytes) encoded += ALPHABET[byte % 32];
+
 	return encoded;
 }
 

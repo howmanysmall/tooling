@@ -97,5 +97,6 @@ export const rerunCommand = createBaseCommand(
 			prompt: entry.prompt,
 			references,
 		});
+
 		await runPreparedAsync(prepared, flags.format, flags.dryRun === true);
 	});

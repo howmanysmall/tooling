@@ -86,11 +86,13 @@ function checkReferences(model: ImageModelListItem, referenceCount: number): voi
 	if (max === 0 && referenceCount > 0) {
 		throw new ValidationError(`${model.id} does not accept reference images.`);
 	}
+
 	if (referenceCount > max) {
 		throw new ValidationError(
 			`${model.id} accepts at most ${max} reference ${toPlural(max, "image")}; got ${referenceCount}.`,
 		);
 	}
+
 	if (referenceCount < min) {
 		throw new ValidationError(
 			`${model.id} needs at least ${min} reference ${toPlural(min, "image")}; got ${referenceCount}.`,
@@ -114,17 +116,21 @@ function resolveOutputFormat(output?: string, type?: ImageType): ImageType | und
 	if (pathType === undefined) {
 		throw new ValidationError(`-o ${output} has an extension darkroom can't write.`);
 	}
+
 	if (type !== undefined && type !== pathType) {
 		throw new ValidationError(`--type ${type} disagrees with the extension of -o ${output}.`);
 	}
+
 	return pathType;
 }
 
 function checkStdout(options: GenerationOptions, count: number, stdoutIsTty: boolean): void {
 	if (options.output !== "-") return;
+
 	if (count > 1) {
 		throw new ValidationError("-o - writes a single image; use --count 1.");
 	}
+
 	if (stdoutIsTty) {
 		throw new ValidationError("-o - would write binary image data to the terminal. Pipe it instead.");
 	}
@@ -147,9 +153,11 @@ function collectWarnings(
 	if (options.seed !== undefined && !isDeclared(model, "seed")) {
 		warnings.push(`${model.id} does not declare seed support; --seed may be ignored.`);
 	}
+
 	if (options.compression !== undefined && outputFormat === ImageType.Png) {
 		warnings.push("--compression has no effect on PNG output.");
 	}
+
 	return warnings;
 }
 
@@ -177,6 +185,7 @@ export function validateRequest(options: GenerationOptions, context: ValidationC
 
 	const outputFormat = resolveOutputFormat(options.output, options.type);
 	checkEnum(model, "output_format", "--type", outputFormat);
+
 	if (outputFormat !== undefined && options.background === "transparent" && !TRANSPARENT_TYPES.has(outputFormat)) {
 		throw new ValidationError(`--background transparent needs png or webp output, not ${outputFormat}.`);
 	}

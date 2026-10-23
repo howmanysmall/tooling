@@ -40,9 +40,11 @@ async function planForTerminalAsync(input: CompareInput): Promise<ComparePlan> {
 		import("$generation/cli-runner"),
 		import("$utilities/model-pricing-utilities"),
 	]);
+
 	function warn(message: string): void {
 		log.warn(message);
 	}
+
 	return planCompareAsync(
 		input,
 		{ cwd: cwd(), now: () => new Date(), prepare: prepareForTerminalAsync, warn },
@@ -81,11 +83,13 @@ async function confirmSpendAsync(input: CompareInput, plan: ComparePlan): Promis
 	for (const { count } of rows) images += count;
 
 	note(formatComparePlan(previewPrompt(input.prompt, 60), rows, plan.total), "Compare", { output: stderr });
+
 	const answer = await confirm({
 		initialValue: false,
 		message: `Generate ${images} ${toPlural(images, "image")} for ${plan.total}?`,
 		output: stderr,
 	});
+
 	if (isCancel(answer)) throw new InterruptedError("Cancelled.");
 
 	return answer;
@@ -135,6 +139,7 @@ async function executeAllAsync(prepared: ReadonlyArray<PreparedGeneration>): Pro
 	const onTerminate = createSignalHandler(ExitCode.Terminated);
 	process.on("SIGINT", onInterrupt);
 	process.on("SIGTERM", onTerminate);
+
 	try {
 		const outcomes = await executeCompareAsync(runs, {
 			client: openrouter.images,
@@ -144,6 +149,7 @@ async function executeAllAsync(prepared: ReadonlyArray<PreparedGeneration>): Pro
 				log.warn(message);
 			},
 		});
+
 		return { outcomes, signalCode };
 	} finally {
 		process.off("SIGINT", onInterrupt);

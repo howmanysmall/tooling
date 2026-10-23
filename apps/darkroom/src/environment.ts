@@ -22,4 +22,5 @@ export const environment = arkenv(
 		onUndeclaredKey: "delete",
 	},
 );
+
 export type Environment = typeof environment;

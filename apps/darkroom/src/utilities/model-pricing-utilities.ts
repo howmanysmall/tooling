@@ -37,6 +37,7 @@ async function fetchEndpointsAsync(modelId: string): Promise<Array<EndpointPrici
 		{ author: modelId.slice(0, slash), slug: modelId.slice(slash + 1) },
 		{ retries: READ_ONLY_RETRIES },
 	);
+
 	return endpoints.map((endpoint) => ({
 		pricing: endpoint.pricing.map((entry) => ({
 			billable: entry.billable,
@@ -76,6 +77,7 @@ export async function fetchModelPricingAsync(
 		const fetched = await Promise.all(batch.map(fetchOneAsync));
 		for (const entry of fetched) entries.push(entry);
 	}
+
 	return Object.fromEntries(entries);
 }
 
@@ -121,5 +123,6 @@ export async function getModelPricingAsync(
 	} catch {
 		// Ignore disk write errors.
 	}
+
 	return pricing;
 }

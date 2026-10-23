@@ -29,6 +29,7 @@ export async function pickModelsAsync(): Promise<Array<string>> {
 		output: stderr,
 		required: true,
 	});
+
 	if (isCancel(picked)) throw new InterruptedError("Cancelled.");
 
 	return picked;

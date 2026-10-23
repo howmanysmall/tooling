@@ -43,7 +43,9 @@ export async function getEnvironmentAsync(environmentFile = ".env"): Promise<Env
 		if (error instanceof Error && error.name === "ArkEnvError") {
 			throw new ConfigurationError(`Invalid environment:\n${error.message}`, { cause: error });
 		}
+
 		throw error;
 	}
+
 	return cachedEnvironment;
 }

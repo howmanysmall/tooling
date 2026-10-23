@@ -7,5 +7,6 @@ export async function getHistoryIdsAsync(): Promise<Array<string>> {
 		import("$history/history-completions"),
 		import("$utilities/completion-context"),
 	]);
+
 	return formatRunCompletions(await readRunSummariesAsync(), readCompletionContext().shell);
 }

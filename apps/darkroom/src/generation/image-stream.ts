@@ -102,5 +102,6 @@ export function describeProgress(progress: StreamProgress, requested: number): s
 	const parts = [`image ${current}/${requested}`];
 	if (progress.partials > 0) parts.push(`partial ${progress.partials}`);
 	else if (progress.phase !== undefined && progress.phase !== "content") parts.push(`${progress.phase}…`);
+
 	return parts.join(" · ");
 }

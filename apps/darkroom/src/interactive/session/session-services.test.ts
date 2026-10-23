@@ -28,6 +28,7 @@ async function deleteSavedAsync(directory: string, deletion: RunDeletion): Promi
 		id: "01M4YVAAAAAAAAAAAAAAAAAAA1",
 		images: [{ mediaType: "image/png", path: saved }],
 	});
+
 	await services.deleteRunAsync(result, deletion);
 	return existsAsync(saved);
 }

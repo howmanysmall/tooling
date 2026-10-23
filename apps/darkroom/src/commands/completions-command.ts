@@ -15,6 +15,7 @@ function createShellCommand(shell: Shell, sourceHint: string): Command {
 			const script = generateShellCompletions(root, shell);
 			console.log(injectCompletionContext(script, shell, root.getName()));
 		});
+
 	return command;
 }
 
@@ -27,12 +28,15 @@ function createShellCommand(shell: Shell, sourceHint: string): Command {
  * section of `documentation/darkroom/src/content/docs/guide/install.mdx`.
  */
 export const completionsCommand = new CompletionsCommand();
+
 completionsCommand.command("bash", createShellCommand(Shell.Bash, "source <(darkroom completions bash)"), {
 	override: true,
 });
+
 completionsCommand.command("fish", createShellCommand(Shell.Fish, "source (darkroom completions fish | psub)"), {
 	override: true,
 });
+
 completionsCommand.command("zsh", createShellCommand(Shell.Zsh, "source <(darkroom completions zsh)"), {
 	override: true,
 });

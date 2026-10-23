@@ -80,5 +80,6 @@ export const generateCommand = createBaseCommand(
 			prompt,
 			references,
 		});
+
 		await runPreparedAsync(prepared, flags.format, flags.dryRun === true);
 	});
