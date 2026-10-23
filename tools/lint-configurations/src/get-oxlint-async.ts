@@ -464,6 +464,18 @@ export async function getOxlintAsync({
 				"small-rules/require-paired-calls": "error",
 				"small-rules/require-react-component-keys": "off",
 				"small-rules/require-react-display-names": ["error", { environment: "standard" }],
+				"small-rules/require-readable-spacing": [
+					"error",
+					{
+						allowAttachedUses: true,
+						allowGuardClauseRuns: true,
+						allowMultilineBindingRuns: true,
+						overrides: [
+							{ blankLine: "any", next: "return", previous: "expression" },
+							{ blankLine: "any", next: "binding", previous: "enum", usesPrevious: true },
+						],
+					},
+				],
 				"small-rules/require-safety-comment-for-type-assertion": "error",
 				"small-rules/require-switch-case-braces": [
 					"error",
