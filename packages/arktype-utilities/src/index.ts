@@ -50,16 +50,59 @@ export const isReadonlyArrayOfNumbers = isArrayOfNumbers.readonly();
 export const isMaybeReadonlyArrayOfStrings = isReadonlyArrayOfStrings.or(isUndefined);
 
 export const isDictionaryOfUnknowns = type.Record(isString, isUnknown);
+export const isReadonlyDictionaryOfUnknowns = isDictionaryOfUnknowns.readonly();
 
 export type DictionaryOfUnknowns = typeof isDictionaryOfUnknowns.infer;
 
-export const isReadonlyDictionaryOfUnknowns = type.Record(isString, isUnknown).readonly();
+export const isFunction = type("Function");
+export const isNever = type("never");
+export const isObject = type("object");
+
+export const isPositiveNumber = type("number > 0");
+export const isMaybePositiveNumber = isPositiveNumber.or(isUndefined);
+
+export const isNonNegativeNumber = type("number >= 0");
+export const isMaybeNonNegativeNumber = isNonNegativeNumber.or(isUndefined);
+
+export const isEpoch = type("number.epoch");
+
+export const isEmailString = type("string.email");
+export const isUrlString = type("string.url");
+export const isSemverString = type("string.semver");
+
+export const isStringToNumber = type("string.numeric.parse");
+export const isNumberOrStringToBoolean = isString
+	.or(isNumber)
+	.pipe((value) => value === "true" || value === "1" || value === 1);
+
+export const isArrayBuffer = type("ArrayBuffer");
+
+export const isArrayOfNonEmptyStrings = isNonEmptyString.array();
+
+export const isArrayOfIntegers = isInteger.array();
+
+export const isDictionaryOfBooleans = type.Record(isString, isBoolean);
+export const isDictionaryOfIntegers = type.Record(isString, isInteger);
+
+export const isMaybeUrlString = isUrlString.or(isUndefined);
+
+export const isOptionalBoolean = isMaybeBoolean.or(isNull);
+export const isOptionalNumber = isMaybeNumber.or(isNull);
+export const isOptionalString = isMaybeString.or(isNull);
+export const isOptionalReadonlyArrayOfStrings = isMaybeReadonlyArrayOfStrings.or(isNull);
+export const isOptionalNonNegativeInteger = isNonNegativeInteger.or(isMaybeNull);
+export const isOptionalUrlString = isMaybeUrlString.or(isNull);
 
 export const isDictionaryOfStrings = type.Record(isString, isString);
 export const isReadonlyDictionaryOfStrings = isDictionaryOfStrings.readonly();
 export const isMaybeReadonlyDictionaryOfStrings = isReadonlyDictionaryOfStrings.or(isUndefined);
+export const isOptionalReadonlyDictionaryOfStrings = isMaybeReadonlyDictionaryOfStrings.or(isNull);
 
 export type MaybeReadonlyDictionaryOfStrings = typeof isMaybeReadonlyDictionaryOfStrings.infer;
 
 // Unexported and redeclared ArkType types
+export const REJECT = "reject" as const;
+export const IGNORE = "ignore" as const;
+export const DELETE = "delete" as const;
+
 export type UndeclaredKeyBehavior = "delete" | "ignore" | "reject";
