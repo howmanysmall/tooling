@@ -1,12 +1,12 @@
 import { stat } from "node:fs/promises";
 import process, { cwd, exit, stderr, stdin, stdout } from "node:process";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
+import { ConfigurationError } from "@howmanysmall/environment/configuration-error";
 import { bold, green } from "ansis";
 import { consola } from "consola";
 
 import { environmentPaths } from "$constants/environment-paths";
 import { ApiError } from "$errors/api-error";
-import { ConfigurationError } from "$errors/configuration-error";
 import { InterruptedError } from "$errors/interrupted-error";
 import { CHARGE_NOTE } from "$errors/to-api-error";
 import { createHistoryStore, readAllAsync } from "$history/history-store";

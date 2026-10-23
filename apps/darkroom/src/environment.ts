@@ -1,20 +1,18 @@
 import { env } from "node:process";
-import { arkenv, type } from "@arkenv/core";
-import { isMaybeNonEmptyString, isUndefined } from "@howmanysmall/arktype-utilities";
+import { arkenv } from "@arkenv/core";
+import { isMaybeNonEmptyString } from "@howmanysmall/arktype-utilities";
 
 /**
- * Environment variable schema for server-side or runtime-only validation.
+ * Environment variable schema for darkroom's own settings.
  *
- * `OPENROUTER_API_KEY` is optional here so that commands which never call the
- * API (`--dry-run`, `history`) work without it. `getOpenRouterAsync` asserts it
- * when a request is actually made.
+ * The OpenRouter key lives in `@howmanysmall/ai`, which asserts it when a
+ * request is actually made, so commands which never call the API (`--dry-run`,
+ * `history`) work without it.
  */
 export const environment = arkenv(
 	{
 		"DARKROOM_MODEL?": isMaybeNonEmptyString,
 		"DARKROOM_PREVIEW?": "'blocks' | 'kitty' | 'off' | undefined",
-		NODE_ENV: "'development' | 'production' | 'test' = 'development'",
-		"OPENROUTER_API_KEY?": type(/^sk-or-v1-[a-zA-Z0-9]{64}$/u).or(isUndefined),
 	},
 	{
 		emptyAsUndefined: true,
@@ -22,5 +20,3 @@ export const environment = arkenv(
 		onUndeclaredKey: "delete",
 	},
 );
-
-export type Environment = typeof environment;
