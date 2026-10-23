@@ -926,6 +926,9 @@ importers:
       '@types/node':
         specifier: catalog:node-floor
         version: 26.6.5
+      type-fest:
+        specifier: catalog:types
+        version: 5.10.0
       vitest:
         specifier: catalog:test
         version: 5.0.5(@arethetypeswrong/core@0.18.5)(@types/node@26.6.5)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.5)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1)
