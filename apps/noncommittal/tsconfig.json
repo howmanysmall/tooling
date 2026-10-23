@@ -12,10 +12,13 @@
 	},
 	"references": [
 		{
-			"path": "../../tools/project-configurations"
+			"path": "../../packages/arktype-utilities"
 		},
 		{
 			"path": "../../packages/cli-utilities"
+		},
+		{
+			"path": "../../tools/project-configurations"
 		}
 	],
 	"include": ["src/**/*.ts", "./package.json", "*.config.ts"],

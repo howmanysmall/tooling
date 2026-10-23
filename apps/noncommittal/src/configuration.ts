@@ -1,19 +1,20 @@
 import { existsSync } from "node:fs";
 import nodePath from "node:path";
+import { isMaybeBoolean } from "@howmanysmall/arktype-utilities";
 import { CliError } from "@howmanysmall/cli-utilities/cli-error";
 import { type } from "arktype";
 import { loadConfig, SUPPORTED_EXTENSIONS } from "c12";
 
 import type { LoadConfigOptions } from "c12";
 
-import type { Configuration } from "./index";
+import type { Configuration } from ".";
 
 /** Matches darkroom's `ExitCode.Configuration`. */
 const CONFIGURATION_EXIT_CODE = 3;
 
 // `declare` stops compiling if this schema drifts from `Configuration`.
 const isConfiguration = type.declare<Configuration>().type({
-	"verbose?": "boolean",
+	"verbose?": isMaybeBoolean,
 });
 
 // The same candidates c12 checks in one directory.
@@ -80,6 +81,7 @@ export async function loadConfigurationAsync({
 		cwd: findConfigurationRoot(cwd),
 		schema: isConfiguration,
 	};
+
 	if (configFile !== undefined) {
 		// `--config` is relative to where the command runs, not the found root.
 		c12Options.cwd = nodePath.resolve(cwd);
