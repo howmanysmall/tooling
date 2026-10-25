@@ -9,8 +9,10 @@ import {
 } from "@howmanysmall/arktype-utilities";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name";
+import { editJsoncString } from "@howmanysmall/file-utilities/jsonc";
 import { type } from "arktype";
 import { consola } from "consola";
+import { create } from "mutative";
 
 const scriptName = getScriptName(true);
 const log = consola.withTag(scriptName);
@@ -115,9 +117,11 @@ async function readChildDirectoriesAsync(directory: string): Promise<ReadonlyArr
 	try {
 		const children = await readdir(directory, { withFileTypes: true });
 		const names = new Array<string>();
+		let size = 0;
+
 		for (const child of children) {
 			if (child.isDirectory()) {
-				names.push(child.name);
+				names[size++] = child.name;
 			}
 		}
 
@@ -135,11 +139,13 @@ async function readChildDirectoriesAsync(directory: string): Promise<ReadonlyArr
 
 async function findProjectsAsync(rootDirectory: string): Promise<ReadonlyArray<Project>> {
 	const candidates = new Array<string>();
+	let size = 0;
+
 	for (const parent of PROJECT_PARENTS) {
 		// oxlint-disable-next-line no-await-in-loop -- parents are read in declaration order
 		const children = await readChildDirectoriesAsync(nodePath.join(rootDirectory, parent));
 		for (const child of children) {
-			candidates.push(`${parent}/${child}`);
+			candidates[size++] = `${parent}/${child}`;
 		}
 	}
 
@@ -156,20 +162,25 @@ async function readReferencesAsync(filePath: string): Promise<ReadonlyArray<stri
 }
 
 async function writeReferencesAsync(filePath: string, referencePaths: ReadonlyArray<string>): Promise<void> {
-	const tsconfig = isTsConfig.assert(parseJson.assert(await readFile(filePath, "utf8")));
+	const tsconfigContent = await readFile(filePath, "utf8");
+	const newContent = editJsoncString(tsconfigContent, isTsConfig.assert, (tsconfig) => {
+		return create(tsconfig, (draft) => {
+			// Keep `extends` and `compilerOptions` first, as in every tsconfig
+			// here.
+			const entries = Object.entries(draft).filter(([key]) => key !== "references");
+			const leading = entries.filter(([key]) => key === "extends" || key === "compilerOptions");
+			const trailing = entries.filter(([key]) => key !== "extends" && key !== "compilerOptions");
 
-	// Keep `extends` and `compilerOptions` first, as in every tsconfig here.
-	const entries = Object.entries(tsconfig).filter(([key]) => key !== "references");
-	const leading = entries.filter(([key]) => key === "extends" || key === "compilerOptions");
-	const trailing = entries.filter(([key]) => key !== "extends" && key !== "compilerOptions");
+			// `references` is owned by this script; an empty expected list
+			// removes the key instead of leaking the stale one back through.
+			const references: ReadonlyArray<readonly [string, unknown]> =
+				referencePaths.length > 0 ? [["references", referencePaths.map((path) => ({ path }))]] : [];
 
-	// `references` is owned by this script; an empty expected list removes the
-	// key instead of leaking the stale one back through.
-	const references: ReadonlyArray<readonly [string, unknown]> =
-		referencePaths.length > 0 ? [["references", referencePaths.map((path) => ({ path }))]] : [];
-	const ordered = Object.fromEntries([...leading, ...references, ...trailing]);
+			return Object.fromEntries([...leading, ...references, ...trailing]);
+		});
+	});
 
-	await writeFile(filePath, `${JSON.stringify(ordered, undefined, "\t")}\n`, "utf8");
+	await writeFile(filePath, newContent, "utf8");
 }
 
 function toRelativeReference(fromDirectory: string, toDirectory: string): string {
@@ -183,10 +194,12 @@ function toProjectReferences(
 	directoriesByName: ReadonlyMap<string, string>,
 ): ReadonlyArray<string> {
 	const references = new Array<string>();
+	let size = 0;
+
 	for (const name of workspaceDependencies) {
 		const dependencyDirectory = directoriesByName.get(name);
 		if (dependencyDirectory !== undefined) {
-			references.push(toRelativeReference(directory, dependencyDirectory));
+			references[size++] = toRelativeReference(directory, dependencyDirectory);
 		}
 	}
 
@@ -225,12 +238,14 @@ function isSameReferences(actual: ReadonlyArray<string>, expected: ReadonlyArray
 async function findStaleReferencesAsync(rootDirectory: string): Promise<ReadonlyArray<StaleReferences>> {
 	const configurationFiles = await collectConfigurationFilesAsync(rootDirectory);
 	const staleReferences = new Array<StaleReferences>();
+	let size = 0;
 
 	for (const { expectedReferences, path } of configurationFiles) {
 		// oxlint-disable-next-line no-await-in-loop -- sequential reads keep the report ordered
 		const actualReferences = await readReferencesAsync(nodePath.join(rootDirectory, path));
 		if (isSameReferences(actualReferences, expectedReferences)) continue;
-		staleReferences.push({ actualReferences, expectedReferences, path });
+
+		staleReferences[size++] = { actualReferences, expectedReferences, path };
 	}
 
 	return staleReferences;
@@ -246,7 +261,7 @@ async function syncTsconfigReferencesAsync(rootDirectory: string): Promise<Reado
 	return staleReferences;
 }
 
-const command = createBaseCommand(scriptName, "1.0.0", "Syncs tsconfig.json references for all workspace projects.")
+const command = createBaseCommand(scriptName, "1.1.0", "Syncs tsconfig.json references for all workspace projects.")
 	.option("-c, --check", "Check for stale references without writing changes.")
 	.action(async ({ check }) => {
 		const rootDirectory = cwd();

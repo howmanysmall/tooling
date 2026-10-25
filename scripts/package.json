@@ -12,10 +12,12 @@
 		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/documentation-theme": "workspace:*",
+		"@howmanysmall/file-utilities": "workspace:*",
 		"@howmanysmall/lint-configurations": "workspace:*",
 		"arktype": "catalog:runtime",
 		"bumpp": "catalog:tooling",
 		"consola": "catalog:runtime",
+		"mutative": "catalog:dev",
 		"tinyexec": "catalog:dev"
 	},
 	"devDependencies": {
