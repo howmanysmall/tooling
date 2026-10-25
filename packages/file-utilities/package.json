@@ -1,0 +1,40 @@
+{
+	"name": "@howmanysmall/file-utilities",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Utilities relating to files, such as for editing them.",
+	"license": "MIT",
+	"author": {
+		"name": "HowManySmall",
+		"email": "contact@howmanysmall.com",
+		"url": "https://howmanysmall.com"
+	},
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		"./file-content": "./src/file-content-utilities.ts",
+		"./jsonc": "./src/jsonc-utilities.ts",
+		"./package.json": "./package.json"
+	},
+	"scripts": {
+		"lint:oxlint": "pnpm --workspace-root run lint:package packages/file-utilities",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent packages/file-utilities",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsrs --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"dependencies": {
+		"arktype": "catalog:runtime",
+		"jsonc-parser": "catalog:packages",
+		"just-diff": "catalog:packages"
+	},
+	"devDependencies": {
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@types/node": "catalog:node-floor",
+		"vitest": "catalog:test"
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	}
+}
