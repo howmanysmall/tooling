@@ -22,7 +22,7 @@ bun = "1.4.4"
 communique = "latest"
 direnv = "latest"
 git-cliff = "latest"
-hk = { version = "2.8.0", workflow = "release.yml" }
+hk = { version = "2.8.1", workflow = "release.yml" }
 ni = "latest"
 node = "26"
 pinact = "latest"
