@@ -45,6 +45,7 @@ export function renderHighlight(text: string): string {
 	if (codeLines !== undefined) {
 		rendered.push(renderCodeBlock(codeLines));
 	}
+
 	return rendered.join("\n");
 }
 
@@ -115,6 +116,7 @@ function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?:
 		} else {
 			inlineCode[size++] = index === binaryIndex ? ansi.magentaBright(part) : ansi.cyan(part);
 		}
+
 		index += 1;
 	}
 

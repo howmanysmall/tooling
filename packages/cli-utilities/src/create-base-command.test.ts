@@ -49,6 +49,7 @@ function runHandler(error: Error, debug = false): Captured {
 		if (error_ instanceof ExitSignalError) {
 			return { code: error_.code, helpShown, stderr: stderrText };
 		}
+
 		throw error_;
 	}
 

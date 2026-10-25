@@ -83,6 +83,7 @@ async function askModelAsync(): Promise<ImageModelListItem> {
 	if (model === undefined) {
 		throw new Error(`Unknown model ${id}.`);
 	}
+
 	return model;
 }
 

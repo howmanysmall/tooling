@@ -66,6 +66,7 @@ function* getPatternNames(pattern: null | Pattern): Generator<string> {
 			for (const element of pattern.elements) {
 				yield* getPatternNames(element);
 			}
+
 			break;
 		}
 

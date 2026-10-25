@@ -146,6 +146,7 @@ export function sliceRuns(runs: ReadonlyArray<StyledRun>, scrolled: MarqueeWindo
 		} else {
 			sliced.push({ ...run, start: index, text: character });
 		}
+
 		current = run;
 	}
 

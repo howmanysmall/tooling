@@ -38,6 +38,7 @@ export function createReactCompilerPlugin(options: ReactCompilerOptions = {}): P
 		if (result.fatal) {
 			throw new Error(result.errors.map((error) => error.codeframe ?? error.message).join("\n"));
 		}
+
 		return result.map === undefined ? result.code : { code: result.code, map: result.map };
 	}
 

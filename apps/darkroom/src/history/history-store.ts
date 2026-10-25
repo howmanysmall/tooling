@@ -94,6 +94,7 @@ export async function readAllAsync(
 		if (error instanceof Error && getErrorCode(error) === "ENOENT") {
 			return [];
 		}
+
 		throw error;
 	}
 
@@ -265,8 +266,11 @@ async function getDirectorySizeAsync(directory: string): Promise<number> {
 
 	const files: Array<string> = [];
 	for (const entry of entries) {
-		if (entry.isFile()) files.push(nodePath.join(entry.parentPath, entry.name));
+		if (entry.isFile()) {
+			files.push(nodePath.join(entry.parentPath, entry.name));
+		}
 	}
+
 	const stats = await Promise.all(files.map(async (file) => stat(file)));
 
 	let reduction = 0;

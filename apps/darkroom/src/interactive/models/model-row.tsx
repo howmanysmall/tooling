@@ -27,6 +27,7 @@ function getNameRuns(model: ImageModelListItem, isSelected: boolean): Array<Styl
 	if (provider !== undefined) {
 		runs.push({ color: theme.muted, text: `  ${provider}` });
 	}
+
 	return runs;
 }
 

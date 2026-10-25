@@ -193,6 +193,7 @@ function createInterruptHandler(guard: InterruptGuard): () => void {
 		if (action === InterruptAction.Defer) {
 			log.warn("Saving the images first. Press Ctrl-C again to quit now.");
 		}
+
 		if (action === InterruptAction.Exit) {
 			exit(130);
 		}
@@ -232,6 +233,7 @@ export async function generateWithInterruptsAsync(
 		if (guard.wasInterrupted) {
 			process.exitCode = 130;
 		}
+
 		return result;
 	} finally {
 		process.off("SIGINT", onInterrupt);
@@ -333,6 +335,7 @@ export async function printResultAsync(result: GenerationResult, format: OutputF
 	if (output !== undefined) {
 		console.log(output);
 	}
+
 	stderr.write(`${green("✔")} ${formatSummary(result)}\n`);
 
 	throwIfIncomplete(result);

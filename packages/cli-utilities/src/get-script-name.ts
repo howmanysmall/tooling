@@ -25,6 +25,7 @@ export const getScriptName = defineMacro(function getScriptName(
 		if (nodePath.basename(directory) === "src") {
 			directory = nodePath.dirname(directory);
 		}
+
 		scriptName = nodePath.basename(directory);
 	}
 

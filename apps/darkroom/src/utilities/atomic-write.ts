@@ -41,8 +41,10 @@ async function placeExclusiveAsync(temporaryPath: string, candidate: string, byt
 		if (!(error instanceof Error)) {
 			throw error;
 		}
+
 		const code = getErrorCode(error);
 		if (code === "EEXIST") return false;
+
 		if (code === undefined || !NO_LINK_CODES.has(code)) {
 			throw error;
 		}

@@ -241,6 +241,7 @@ function transformCasing(value: string, mode: TransformMode, delimiter: string):
 			if (hasLineOutput) {
 				pendingDelimiter = true;
 			}
+
 			previousCode = SPACE;
 			continue;
 		}
@@ -259,6 +260,7 @@ function transformCasing(value: string, mode: TransformMode, delimiter: string):
 			if (doesModeEmitDelimiter(mode)) {
 				result += delimiter;
 			}
+
 			capitalizeNext = true;
 		}
 
@@ -304,6 +306,7 @@ function matchesCasing(value: string, mode: MatchingTransformMode, delimiter: st
 			if (hasLineOutput) {
 				pendingDelimiter = true;
 			}
+
 			previousCode = SPACE;
 			continue;
 		}

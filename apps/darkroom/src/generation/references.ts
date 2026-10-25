@@ -34,6 +34,7 @@ async function downloadAsync(url: string, fetchAsync: typeof fetch): Promise<Ref
 		if (!(error instanceof Error)) {
 			throw error;
 		}
+
 		throw new ValidationError(`Could not download reference ${url}: ${error.message}`, { cause: error });
 	}
 
@@ -59,6 +60,7 @@ async function readLocalAsync(path: string): Promise<ReferenceImage> {
 		if (error instanceof ValidationError) {
 			throw error;
 		}
+
 		throw new ValidationError(`Reference image not found: ${path}`, { cause: error });
 	}
 

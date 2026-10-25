@@ -58,6 +58,7 @@ export function wrapText(text: string, width: number): Array<string> {
 	if (line.length > 0) {
 		lines.push(line);
 	}
+
 	return lines;
 }
 

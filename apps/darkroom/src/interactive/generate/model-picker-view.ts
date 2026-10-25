@@ -216,12 +216,15 @@ export function describeAbilities(model: ImageModelListItem): string {
 	if (canDo(model, PickerFilter.Edits)) {
 		abilities.push("edits");
 	}
+
 	const count = getCountRange(model).max;
 	if (count > 1) {
 		abilities.push(`×${count}`);
 	}
+
 	if (canDo(model, PickerFilter.Transparent)) {
 		abilities.push("transparent");
 	}
+
 	return abilities.join(" · ");
 }

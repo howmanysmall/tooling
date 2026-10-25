@@ -59,6 +59,7 @@ export async function finishRunningAsync(services: SessionServices): Promise<voi
 		if (interrupts > 1) {
 			exit(130);
 		}
+
 		log.warn("Still generating. Press Ctrl-C again to quit anyway; the images may be lost.");
 	}
 

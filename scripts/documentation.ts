@@ -199,6 +199,7 @@ async function askRefAsync(): Promise<string> {
 	if (isCancel(answer)) {
 		throw new CliError("Canceled.", 130);
 	}
+
 	if (answer.length > 0) return answer;
 
 	const typed = await text({
@@ -209,6 +210,7 @@ async function askRefAsync(): Promise<string> {
 	if (isCancel(typed)) {
 		throw new CliError("Canceled.", 130);
 	}
+
 	return typed.trim();
 }
 
@@ -393,6 +395,7 @@ async function publishAsync(givenRef: string | undefined, options: PublishOption
 		if (options.interactive) {
 			outro("Dry run: nothing was started.");
 		}
+
 		return;
 	}
 

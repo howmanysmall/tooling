@@ -104,6 +104,7 @@ async function createHarnessAsync({
 					if (rateLimited.includes(request.imageGenerationRequest.model)) {
 						throw createRateLimitError();
 					}
+
 					sent.push(request);
 					return {
 						created: 0,

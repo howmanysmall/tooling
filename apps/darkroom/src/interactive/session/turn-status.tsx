@@ -30,6 +30,7 @@ export function TurnStatus({ turn }: Readonly<TurnStatusProperties>): ReactNode 
 	if (turn.progress !== undefined) {
 		parts.push(describeProgress(turn.progress, turn.requested));
 	}
+
 	parts.push(`${Math.floor(time / 1000)}s`);
 
 	return (
