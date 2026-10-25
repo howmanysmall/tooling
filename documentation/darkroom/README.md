@@ -6,7 +6,7 @@ The documentation site for [darkroom](../../apps/darkroom/). It uses Astro with 
 
 | Path | What lives there |
 | --- | --- |
-| `src/content/docs/` | The pages, written in MDX. `astro.config.ts` sets the sidebar order. |
+| `src/content/docs/` | Pages use Markdown with JSX components. `astro.config.ts` sets the sidebar order. |
 | `src/components/` | The home page and the model gallery, which reads `apps/darkroom/examples/`. |
 | `src/styles/palette.css` | The site's colors, named after darkroom toners. Selenium marks focus, and cyanotype and sepia mark stdout and stderr. |
 
@@ -19,7 +19,7 @@ Run these from this directory, or from the repository root with
 | --- | --- |
 | `dev` | Serves the site with live reload. |
 | `build` | Builds the site into `dist/`. |
-| `check:links` | Checks every built page for dead internal links. |
+| `check:links` | Checks every built page for broken internal links. |
 | `preview` | Serves the built site. |
 | `type-check` | Checks the Astro files with `astro check`. |
 

@@ -7,8 +7,8 @@ description: Generate images from a prompt with one model.
 darkroom generate [prompt] [options]
 ```
 
-Generates images with one model. Saved paths go to stdout, one per line, and progress and cost go to stderr, so the
-command composes with other tools.
+Generates images with one model. Saved paths go to stdout, one per line. Progress and cost go to stderr. You can pipe
+the paths to other tools.
 
 ```sh title="Terminal"
 darkroom generate "a red fox in snow" -m google/gemini-2.5-flash-image
@@ -54,8 +54,8 @@ Completions follow the model too. With `-m` on the command line, `-a` completes 
 
 ## Reference images
 
-`-i` takes a path or a URL. darkroom downloads URLs before the request, checks that every reference is an image, and
-keeps a copy of each in the history. A rerun sends the same pictures.
+`-i` takes a path or a URL. Before sending the request, darkroom downloads each URL and rejects any reference that
+isn't an image. The history keeps a copy of every reference. Reruns use those saved pictures.
 
 ## Output paths
 
