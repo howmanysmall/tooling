@@ -33,8 +33,8 @@ export async function getEnvironmentAsync(environmentFile = ".env"): Promise<Env
 	if (cachedEnvironment !== undefined) return cachedEnvironment;
 
 	const text = await readEnvironmentFileAsync(environmentFile);
-	// biome-ignore lint/style/noProcessEnv: what do you expect me to do?
 	if (text !== undefined) {
+		// biome-ignore lint/style/noProcessEnv: what do you expect me to do?
 		Object.assign(process.env, parseEnv(text));
 	}
 
