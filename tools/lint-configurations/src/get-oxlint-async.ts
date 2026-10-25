@@ -304,6 +304,7 @@ export async function getOxlintAsync({
 						replacements: {},
 					},
 				],
+				"small-rules/curly": "error",
 				"small-rules/directive-disable-enable-pair": "error",
 				"small-rules/directive-no-aggregating-enable": "error",
 				"small-rules/directive-no-duplicate-disable": "error",
@@ -490,6 +491,7 @@ export async function getOxlintAsync({
 						allow: [{ name: "ValidationError", from: "package", package: "@cliffy/command" }],
 					},
 				],
+				"small-rules/require-tsx-for-hooks": "off",
 				"small-rules/require-unicode-regex": "error",
 				"small-rules/rerender-memo-with-default-value": "error",
 				"small-rules/starts-with-verb": [
@@ -642,6 +644,8 @@ export async function getOxlintAsync({
 				"max-lines-per-function": "off",
 				"no-console": "error",
 				"small-rules/no-filter-map-chain": "off",
+				"small-rules/no-real-temporary-directory": "error",
+				"small-rules/no-test-timeout": "error",
 				"small-rules/prefer-expect-assertions": [
 					"error",
 					{
