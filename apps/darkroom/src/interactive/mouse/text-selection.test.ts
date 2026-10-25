@@ -48,8 +48,11 @@ function createFakeScreen(): FakeScreen {
 		highlighted,
 		paint(spans, isHighlighted): void {
 			for (const span of spans) {
-				if (isHighlighted) highlighted.set(span.row, span);
-				else highlighted.delete(span.row);
+				if (isHighlighted) {
+					highlighted.set(span.row, span);
+				} else {
+					highlighted.delete(span.row);
+				}
 			}
 		},
 		readText: (runs) => runs.map(({ end, row, start }) => `row ${row}`.slice(start, end)).join("\n"),

@@ -46,11 +46,21 @@ function getBackground(cell: IBufferCell): string {
  */
 export function describeCellStyle(cell: IBufferCell, highlight?: number): string {
 	const codes = ["0"];
-	if (cell.isBold() !== 0) codes.push("1");
-	if (cell.isDim() !== 0) codes.push("2");
-	if (cell.isItalic() !== 0) codes.push("3");
-	if (cell.isUnderline() !== 0) codes.push("4");
-	if (cell.isStrikethrough() !== 0) codes.push("9");
+	if (cell.isBold() !== 0) {
+		codes.push("1");
+	}
+	if (cell.isDim() !== 0) {
+		codes.push("2");
+	}
+	if (cell.isItalic() !== 0) {
+		codes.push("3");
+	}
+	if (cell.isUnderline() !== 0) {
+		codes.push("4");
+	}
+	if (cell.isStrikethrough() !== 0) {
+		codes.push("9");
+	}
 	codes.push(getForeground(cell), highlight === undefined ? getBackground(cell) : `48;${toRgbCodes(highlight)}`);
 	return `\u001B[${codes.join(";")}m`;
 }
@@ -76,7 +86,9 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 	const listeners = new Set<() => void>();
 
 	function notify(): void {
-		for (const listener of listeners) listener();
+		for (const listener of listeners) {
+			listener();
+		}
 	}
 
 	const stream = new Writable({
@@ -127,7 +139,9 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 		findText(spans): Array<SelectionSpan> {
 			return spans.flatMap((span) => {
 				const line = terminal.buffer.active.getLine(span.row);
-				if (line === undefined) return [];
+				if (line === undefined) {
+					return [];
+				}
 
 				return findTextRuns(span, (column) => {
 					const cell = line.getCell(column);
@@ -143,7 +157,9 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			if (spans.length === 0) return;
 
 			let drawn = SAVE_CURSOR;
-			for (const span of spans) drawn += drawSpan(span, isHighlighted);
+			for (const span of spans) {
+				drawn += drawSpan(span, isHighlighted);
+			}
 			output.write(`${drawn}${RESET}${RESTORE_CURSOR}`);
 		},
 		readText(runs): string {
@@ -151,8 +167,11 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			let previous: SelectionSpan | undefined;
 			for (const { end, row, start } of runs) {
 				// Runs on a row keep their gap, and rows keep blank lines.
-				if (previous?.row === row) text += " ".repeat(start - previous.end);
-				else if (previous !== undefined) text += "\n".repeat(row - previous.row);
+				if (previous?.row === row) {
+					text += " ".repeat(start - previous.end);
+				} else if (previous !== undefined) {
+					text += "\n".repeat(row - previous.row);
+				}
 				text += terminal.buffer.active.getLine(row)?.translateToString(false, start, end) ?? "";
 				previous = { end, row, start };
 			}

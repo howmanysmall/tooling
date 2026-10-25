@@ -110,7 +110,9 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 		spans = [];
 		runs = [];
 
-		if (text.length > 0) copy(text);
+		if (text.length > 0) {
+			copy(text);
+		}
 		return true;
 	}
 
@@ -127,7 +129,9 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 		},
 		repaint(): void {
 			// The text under the drag may have moved.
-			if (spans.length > 0) highlightText();
+			if (spans.length > 0) {
+				highlightText();
+			}
 		},
 	};
 }

@@ -25,7 +25,9 @@ export interface SessionStore {
 export function toOpenTabs({ activeId, sessions }: SessionTabs): OpenTabs {
 	const open: Array<string> = [];
 	for (const session of sessions) {
-		if (session.turns.some((turn) => turn.phase === TurnPhase.Done)) open.push(session.id);
+		if (session.turns.some((turn) => turn.phase === TurnPhase.Done)) {
+			open.push(session.id);
+		}
 	}
 
 	return open.includes(activeId) ? { active: activeId, open } : { open };
@@ -60,7 +62,9 @@ export function createSessionStore(initial: SessionTabs, saveAsync: (tabs: OpenT
 			tabs = reduceSessionTabs(tabs, action);
 			save();
 
-			for (const listener of listeners) listener();
+			for (const listener of listeners) {
+				listener();
+			}
 		},
 		flushAsync: async () => saving,
 		getTabs: () => tabs,

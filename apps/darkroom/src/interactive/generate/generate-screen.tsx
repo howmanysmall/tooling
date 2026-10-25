@@ -151,8 +151,11 @@ export function GenerateScreen({
 	}
 
 	function interrupt(): void {
-		if (screen.editor.text.length === 0) exit();
-		else dispatch(CLEAR_PROMPT);
+		if (screen.editor.text.length === 0) {
+			exit();
+		} else {
+			dispatch(CLEAR_PROMPT);
+		}
 	}
 
 	function closeDialog(): void {
@@ -185,8 +188,9 @@ export function GenerateScreen({
 		cycleSessions: session.actions.cycle,
 		generate,
 		generateWithOptions(): void {
-			if (model === undefined) reportError("There are no models to generate with.");
-			else {
+			if (model === undefined) {
+				reportError("There are no models to generate with.");
+			} else {
 				onGenerateWithOptions({ model, prompt });
 				exit();
 			}
@@ -210,7 +214,9 @@ export function GenerateScreen({
 		}
 
 		const action = getEditorAction(input, key);
-		if (action !== undefined) dispatch({ action, type: "edit" });
+		if (action !== undefined) {
+			dispatch({ action, type: "edit" });
+		}
 	}
 
 	const promptBox = (

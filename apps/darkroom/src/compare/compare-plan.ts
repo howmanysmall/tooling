@@ -31,7 +31,9 @@ export function checkModelIds(modelIds: ReadonlyArray<string>): void {
 	const seen = new Set<string>();
 	const repeated = new Set<string>();
 	for (const modelId of modelIds) {
-		if (seen.has(modelId)) repeated.add(modelId);
+		if (seen.has(modelId)) {
+			repeated.add(modelId);
+		}
 		seen.add(modelId);
 	}
 
@@ -40,7 +42,9 @@ export function checkModelIds(modelIds: ReadonlyArray<string>): void {
 		throw new ValidationError(`${names} is given more than once. Use -n for several images from one model.`);
 	}
 
-	if (modelIds.length < 2) throw new ValidationError("compare needs at least two models: pass -m two or more times.");
+	if (modelIds.length < 2) {
+		throw new ValidationError("compare needs at least two models: pass -m two or more times.");
+	}
 }
 
 /**
@@ -119,12 +123,18 @@ export function collectPrepared<Prepared>(settled: ReadonlyArray<PromiseSettledR
 	const problems: Array<string> = [];
 	const prepared: Array<Prepared> = [];
 	for (const outcome of settled) {
-		if (outcome.status === "fulfilled") prepared.push(outcome.value);
-		else if (outcome.reason instanceof ValidationError) problems.push(outcome.reason.message);
-		else throw outcome.reason;
+		if (outcome.status === "fulfilled") {
+			prepared.push(outcome.value);
+		} else if (outcome.reason instanceof ValidationError) {
+			problems.push(outcome.reason.message);
+		} else {
+			throw outcome.reason;
+		}
 	}
 
-	if (problems.length > 0) throw new ValidationError(problems.join("\n"));
+	if (problems.length > 0) {
+		throw new ValidationError(problems.join("\n"));
+	}
 
 	return prepared;
 }

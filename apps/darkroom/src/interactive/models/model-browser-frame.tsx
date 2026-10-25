@@ -22,7 +22,9 @@ export function ModelBrowserFrame({ children }: Readonly<PropsWithChildren>): Re
 	} = useModelBrowser();
 
 	function captureFilterKeys(_input: string, key: Key): void {
-		if (key.escape) actions.cancelFilter();
+		if (key.escape) {
+			actions.cancelFilter();
+		}
 	}
 
 	return (

@@ -102,17 +102,13 @@ function isWhitespaceCode(code: number): boolean {
 }
 
 function lowerAsciiCharacter(value: string, code: number): string {
-	if (isAsciiUpperCode(code)) {
-		return String.fromCharCode(code + ASCII_CASE_OFFSET);
-	}
+	if (isAsciiUpperCode(code)) return String.fromCharCode(code + ASCII_CASE_OFFSET);
 
 	return localeModeEnabled || code > 127 ? toLowerCaseLocale(value) : value;
 }
 
 function upperAsciiCharacter(value: string, code: number): string {
-	if (isAsciiLowerCode(code)) {
-		return String.fromCharCode(code - ASCII_CASE_OFFSET);
-	}
+	if (isAsciiLowerCode(code)) return String.fromCharCode(code - ASCII_CASE_OFFSET);
 
 	return localeModeEnabled || code > 127 ? toUpperCaseLocale(value) : value;
 }
@@ -127,9 +123,7 @@ function appendTransformedCharacter(
 	switch (mode) {
 		case TransformMode.Camel:
 		case TransformMode.Pascal: {
-			if (capitalizeNext && isAsciiLetterCode(code)) {
-				return result + upperAsciiCharacter(value, code);
-			}
+			if (capitalizeNext && isAsciiLetterCode(code)) return result + upperAsciiCharacter(value, code);
 
 			return result + lowerAsciiCharacter(value, code);
 		}
@@ -154,9 +148,7 @@ function appendTransformedCharacter(
 }
 
 function matchesStringAt(value: string, index: number, expected: string): number {
-	if (expected.length === 1) {
-		return value.charCodeAt(index) === expected.charCodeAt(0) ? index + 1 : -1;
-	}
+	if (expected.length === 1) return value.charCodeAt(index) === expected.charCodeAt(0) ? index + 1 : -1;
 
 	return value.startsWith(expected, index) ? index + expected.length : -1;
 }
@@ -165,9 +157,7 @@ function matchLowerCharacter(value: string, sourceIndex: number, code: number, o
 	if (isAsciiUpperCode(code)) return -1;
 
 	const sourceCharacter = value.charAt(sourceIndex);
-	if (localeModeEnabled || code > 127) {
-		return matchesStringAt(value, outputIndex, toLowerCaseLocale(sourceCharacter));
-	}
+	if (localeModeEnabled || code > 127) return matchesStringAt(value, outputIndex, toLowerCaseLocale(sourceCharacter));
 
 	return value.charCodeAt(outputIndex) === code ? outputIndex + 1 : -1;
 }
@@ -176,9 +166,7 @@ function matchUpperCharacter(value: string, sourceIndex: number, code: number, o
 	if (isAsciiLowerCode(code)) return -1;
 
 	const sourceCharacter = value.charAt(sourceIndex);
-	if (localeModeEnabled || code > 127) {
-		return matchesStringAt(value, outputIndex, toUpperCaseLocale(sourceCharacter));
-	}
+	if (localeModeEnabled || code > 127) return matchesStringAt(value, outputIndex, toUpperCaseLocale(sourceCharacter));
 
 	return value.charCodeAt(outputIndex) === code ? outputIndex + 1 : -1;
 }
@@ -207,9 +195,7 @@ function matchTransformedCharacter(
 		return matchUpperCharacter(value, sourceIndex, code, outputIndex);
 	}
 
-	if (capitalizeNext && isAsciiLowerCode(code)) {
-		return matchUpperCharacter(value, sourceIndex, code, outputIndex);
-	}
+	if (capitalizeNext && isAsciiLowerCode(code)) return matchUpperCharacter(value, sourceIndex, code, outputIndex);
 
 	return value.charCodeAt(outputIndex) === code ? outputIndex + 1 : -1;
 }
@@ -240,7 +226,9 @@ function transformCasing(value: string, mode: TransformMode, delimiter: string):
 			if (code === CARRIAGE_RETURN && value.charCodeAt(index + 1) === LINE_FEED) {
 				result += "\r\n";
 				index += 1;
-			} else result += value[index];
+			} else {
+				result += value[index];
+			}
 
 			hasLineOutput = false;
 			pendingDelimiter = false;
@@ -250,7 +238,9 @@ function transformCasing(value: string, mode: TransformMode, delimiter: string):
 		}
 
 		if (isSeparatorCode(code) || isWhitespaceCode(code)) {
-			if (hasLineOutput) pendingDelimiter = true;
+			if (hasLineOutput) {
+				pendingDelimiter = true;
+			}
 			previousCode = SPACE;
 			continue;
 		}
@@ -266,7 +256,9 @@ function transformCasing(value: string, mode: TransformMode, delimiter: string):
 			(isAsciiLowerCode(previousCode) || (isAsciiUpperCode(previousCode) && isAsciiLowerCode(nextCode)));
 
 		if (hasLineOutput && (pendingDelimiter || hasCamelBoundary)) {
-			if (doesModeEmitDelimiter(mode)) result += delimiter;
+			if (doesModeEmitDelimiter(mode)) {
+				result += delimiter;
+			}
 			capitalizeNext = true;
 		}
 
@@ -309,7 +301,9 @@ function matchesCasing(value: string, mode: MatchingTransformMode, delimiter: st
 		}
 
 		if (isSeparatorCode(code) || isWhitespaceCode(code)) {
-			if (hasLineOutput) pendingDelimiter = true;
+			if (hasLineOutput) {
+				pendingDelimiter = true;
+			}
 			previousCode = SPACE;
 			continue;
 		}
@@ -483,9 +477,7 @@ function getSegment({ segment }: SegmentData): string {
 }
 
 function getCharacters(value: string): Array<string> {
-	if (ASCII_ONLY_REGEXP.test(value)) {
-		return value.split("");
-	}
+	if (ASCII_ONLY_REGEXP.test(value)) return value.split("");
 
 	return Array.from(graphemeSegmenter.segment(value), getSegment);
 }
@@ -516,9 +508,7 @@ export function copy(previousString: string, nextString: string): string {
 	for (let index = 0; index < previousString.length; index += 1) {
 		const previousCode = previousString.charCodeAt(index);
 		const nextCode = nextString.charCodeAt(index);
-		if (previousCode > 127 || nextCode > 127) {
-			return copyGraphemes(previousString, nextString);
-		}
+		if (previousCode > 127 || nextCode > 127) return copyGraphemes(previousString, nextString);
 
 		const nextCharacter = nextString.charAt(index);
 
@@ -545,7 +535,9 @@ export function detect(value: string): Casing {
 				if (isConstantCase(value)) return Casing.ConstantCase;
 			} else if (value.includes(".")) {
 				if (isDotCase(value)) return Casing.DotCase;
-			} else if (value.includes("/") && isPathCase(value)) return Casing.PathCase;
+			} else if (value.includes("/") && isPathCase(value)) {
+				return Casing.PathCase;
+			}
 
 			const [first] = value;
 			if (first !== undefined && isUpperCase(first)) {

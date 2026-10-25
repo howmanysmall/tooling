@@ -93,7 +93,9 @@ function collectWorkspaceDependencies(manifest: typeof isManifest.infer): Readon
 		if (dependencies === undefined) continue;
 
 		for (const [name, specifier] of Object.entries(dependencies)) {
-			if (specifier.startsWith("workspace:")) names.add(name);
+			if (specifier.startsWith("workspace:")) {
+				names.add(name);
+			}
 		}
 	}
 
@@ -114,14 +116,18 @@ async function readChildDirectoriesAsync(directory: string): Promise<ReadonlyArr
 		const children = await readdir(directory, { withFileTypes: true });
 		const names = new Array<string>();
 		for (const child of children) {
-			if (child.isDirectory()) names.push(child.name);
+			if (child.isDirectory()) {
+				names.push(child.name);
+			}
 		}
 
 		return names;
 	} catch (error) {
 		// Git does not track empty directories, so `apps/` is missing until the
 		// first tool exists.
-		if (error instanceof Error && "code" in error && error.code === "ENOENT") return [];
+		if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+			return [];
+		}
 		throw error;
 	}
 }
@@ -131,7 +137,9 @@ async function findProjectsAsync(rootDirectory: string): Promise<ReadonlyArray<P
 	for (const parent of PROJECT_PARENTS) {
 		// oxlint-disable-next-line no-await-in-loop -- parents are read in declaration order
 		const children = await readChildDirectoriesAsync(nodePath.join(rootDirectory, parent));
-		for (const child of children) candidates.push(`${parent}/${child}`);
+		for (const child of children) {
+			candidates.push(`${parent}/${child}`);
+		}
 	}
 
 	const projects = await Promise.all(
@@ -176,7 +184,9 @@ function toProjectReferences(
 	const references = new Array<string>();
 	for (const name of workspaceDependencies) {
 		const dependencyDirectory = directoriesByName.get(name);
-		if (dependencyDirectory !== undefined) references.push(toRelativeReference(directory, dependencyDirectory));
+		if (dependencyDirectory !== undefined) {
+			references.push(toRelativeReference(directory, dependencyDirectory));
+		}
 	}
 
 	return references.toSorted(compareUsingLocale);
@@ -258,7 +268,9 @@ const command = createBaseCommand(scriptName, "1.0.0", "Syncs tsconfig.json refe
 		}
 
 		const staleReferences = await syncTsconfigReferencesAsync(rootDirectory);
-		for (const { path } of staleReferences) log.info(`updated ${path}`);
+		for (const { path } of staleReferences) {
+			log.info(`updated ${path}`);
+		}
 		log.success(
 			staleReferences.length === 0
 				? "all tsconfig references are in sync"

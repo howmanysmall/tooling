@@ -97,7 +97,9 @@ function createContextValue({ actions, browser, layout, now, services }: Context
 function preloadNearby({ meta, state }: ModelBrowserContextValue): void {
 	for (const model of getNearbyItems(state.models, state.selectedIndex)) {
 		const example = meta.getExample(model);
-		if (example !== undefined) meta.getPreview(example);
+		if (example !== undefined) {
+			meta.getPreview(example);
+		}
 	}
 }
 

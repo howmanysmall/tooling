@@ -52,9 +52,13 @@ export function useSearchList<Item>(
 	}
 
 	useInput(function onSearchListInput(_input, key) {
-		if (key.escape) onClose();
-		else if (key.upArrow) handleWheel(-1);
-		else if (key.downArrow) handleWheel(1);
+		if (key.escape) {
+			onClose();
+		} else if (key.upArrow) {
+			handleWheel(-1);
+		} else if (key.downArrow) {
+			handleWheel(1);
+		}
 	});
 
 	return {

@@ -91,7 +91,9 @@ export async function readAllAsync(
 	try {
 		content = await readFile(historyFile, "utf8");
 	} catch (error) {
-		if (error instanceof Error && getErrorCode(error) === "ENOENT") return [];
+		if (error instanceof Error && getErrorCode(error) === "ENOENT") {
+			return [];
+		}
 		throw error;
 	}
 
@@ -100,8 +102,11 @@ export async function readAllAsync(
 		if (line.trim().length === 0) continue;
 
 		const entry = parseLine(line);
-		if (entry === undefined) warn(`Skipping line ${index + 1} of ${historyFile}: it is not a valid run.`);
-		else entries.push(entry);
+		if (entry === undefined) {
+			warn(`Skipping line ${index + 1} of ${historyFile}: it is not a valid run.`);
+		} else {
+			entries.push(entry);
+		}
 	}
 
 	return entries;
@@ -207,7 +212,9 @@ async function tryLockAsync(root: string): Promise<boolean> {
 		await handle.close();
 		return true;
 	} catch (error) {
-		if (!(error instanceof Error) || getErrorCode(error) !== "EEXIST") throw error;
+		if (!(error instanceof Error) || getErrorCode(error) !== "EEXIST") {
+			throw error;
+		}
 	}
 
 	const stats = await stat(lockFile).catch(() => undefined);
@@ -257,11 +264,15 @@ async function getDirectorySizeAsync(directory: string): Promise<number> {
 	if (entries === undefined) return 0;
 
 	const files: Array<string> = [];
-	for (const entry of entries) if (entry.isFile()) files.push(nodePath.join(entry.parentPath, entry.name));
+	for (const entry of entries) {
+		if (entry.isFile()) files.push(nodePath.join(entry.parentPath, entry.name));
+	}
 	const stats = await Promise.all(files.map(async (file) => stat(file)));
 
 	let reduction = 0;
-	for (const { size } of stats) reduction += size;
+	for (const { size } of stats) {
+		reduction += size;
+	}
 
 	return reduction;
 }

@@ -101,7 +101,9 @@ async function createHarnessAsync({
 			return {
 				// oxlint-disable-next-line small-rules/require-async-suffix -- implements the SDK method name
 				async generate(request): Promise<CreateImagesResponse> {
-					if (rateLimited.includes(request.imageGenerationRequest.model)) throw createRateLimitError();
+					if (rateLimited.includes(request.imageGenerationRequest.model)) {
+						throw createRateLimitError();
+					}
 					sent.push(request);
 					return {
 						created: 0,

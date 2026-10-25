@@ -78,7 +78,9 @@ function listHtmlFiles(directory: string): Array<string> {
  */
 function splitReference(reference: string): SplitReference {
 	const hash = reference.indexOf("#");
-	if (hash === -1) return { fragment: "", path: reference };
+	if (hash === -1) {
+		return { fragment: "", path: reference };
+	}
 	return { fragment: reference.slice(hash + 1), path: reference.slice(0, hash) };
 }
 
@@ -117,7 +119,9 @@ function isFile(path: string): boolean {
  */
 function resolveReference(reference: string, pageFile: string, root: string, base: string): ResolveResult {
 	const { path } = splitReference(reference);
-	if (path.length === 0) return { file: pageFile };
+	if (path.length === 0) {
+		return { file: pageFile };
+	}
 	if (path.startsWith("/")) return resolveAbsoluteReference(path, root, base);
 	return resolveRelativeReference(path, pageFile, root);
 }
@@ -249,7 +253,9 @@ function checkPage(
 		if (!isCheckable(reference)) continue;
 
 		const reason = findDeadReason(reference, pageFile, root, base, idsByFile);
-		if (reason !== undefined) dead.push({ page: pageFile, reason, reference });
+		if (reason !== undefined) {
+			dead.push({ page: pageFile, reason, reference });
+		}
 	}
 
 	return dead;

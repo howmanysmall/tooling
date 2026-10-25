@@ -38,10 +38,14 @@ async function placeExclusiveAsync(temporaryPath: string, candidate: string, byt
 		await link(temporaryPath, candidate);
 		return true;
 	} catch (error) {
-		if (!(error instanceof Error)) throw error;
+		if (!(error instanceof Error)) {
+			throw error;
+		}
 		const code = getErrorCode(error);
 		if (code === "EEXIST") return false;
-		if (code === undefined || !NO_LINK_CODES.has(code)) throw error;
+		if (code === undefined || !NO_LINK_CODES.has(code)) {
+			throw error;
+		}
 	}
 
 	try {

@@ -141,8 +141,11 @@ export function sliceRuns(runs: ReadonlyArray<StyledRun>, scrolled: MarqueeWindo
 		const run = findRun(placed, source) ?? gap;
 		const character = scrolled.text.charAt(index);
 		const last = sliced.at(-1);
-		if (last !== undefined && run === current) sliced[sliced.length - 1] = { ...last, text: last.text + character };
-		else sliced.push({ ...run, start: index, text: character });
+		if (last !== undefined && run === current) {
+			sliced[sliced.length - 1] = { ...last, text: last.text + character };
+		} else {
+			sliced.push({ ...run, start: index, text: character });
+		}
 		current = run;
 	}
 

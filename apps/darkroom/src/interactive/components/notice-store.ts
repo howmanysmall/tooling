@@ -24,7 +24,9 @@ export function createNoticeStore(): NoticeStore {
 	const reporter = createStatusReporter((action) => {
 		notice = reduceStatus(notice, action);
 
-		for (const listener of listeners) listener();
+		for (const listener of listeners) {
+			listener();
+		}
 	});
 
 	return {

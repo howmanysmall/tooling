@@ -31,9 +31,7 @@ export interface ModelsTabProperties {
  */
 export function ModelsTab({ catalog, now, services, sort }: Readonly<ModelsTabProperties>): ReactNode {
 	const loaded = use(catalog);
-	if ("error" in loaded) {
-		return <CatalogNotice isError={true} message={loaded.error} title="models" />;
-	}
+	if ("error" in loaded) return <CatalogNotice isError={true} message={loaded.error} title="models" />;
 
 	return <ModelBrowserScreen catalog={loaded.catalog} now={now} services={services} sort={sort} />;
 }

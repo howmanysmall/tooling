@@ -22,7 +22,9 @@ export const getScriptName = defineMacro(function getScriptName(
 		// level up is `src`, not the package. Step past it to reach the
 		// manifest directory.
 		let directory = nodePath.dirname(effectivePath);
-		if (nodePath.basename(directory) === "src") directory = nodePath.dirname(directory);
+		if (nodePath.basename(directory) === "src") {
+			directory = nodePath.dirname(directory);
+		}
 		scriptName = nodePath.basename(directory);
 	}
 

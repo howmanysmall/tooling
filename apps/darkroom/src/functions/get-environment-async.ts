@@ -34,7 +34,9 @@ export async function getEnvironmentAsync(environmentFile = ".env"): Promise<Env
 
 	const text = await readEnvironmentFileAsync(environmentFile);
 	// biome-ignore lint/style/noProcessEnv: what do you expect me to do?
-	if (text !== undefined) Object.assign(process.env, parseEnv(text));
+	if (text !== undefined) {
+		Object.assign(process.env, parseEnv(text));
+	}
 
 	try {
 		const { environment } = await import("$environment");

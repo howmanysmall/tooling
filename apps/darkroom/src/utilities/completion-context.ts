@@ -89,7 +89,9 @@ export function getOptionValues(words: ReadonlyArray<string>, flags: ReadonlyArr
 	const values: Array<string> = [];
 	for (const [index, word] of words.entries()) {
 		const next = words[index + 1];
-		if (next !== undefined && flagSet.has(word)) values.push(next);
+		if (next !== undefined && flagSet.has(word)) {
+			values.push(next);
+		}
 
 		for (const flag of flags) {
 			if (!flag.startsWith("--") || !word.startsWith(`${flag}=`)) continue;

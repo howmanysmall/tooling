@@ -19,7 +19,9 @@ async function prepareAsync(): Promise<PreparedGeneration> {
 
 function applyActions(actions: ReadonlyArray<SessionAction>): SessionState {
 	let state = createSession("SESSION-1");
-	for (const action of actions) state = reduceSession(state, action);
+	for (const action of actions) {
+		state = reduceSession(state, action);
+	}
 
 	return state;
 }

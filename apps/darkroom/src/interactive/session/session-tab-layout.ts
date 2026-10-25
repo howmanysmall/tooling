@@ -28,7 +28,9 @@ export interface TabLayout {
 export function getTabLayout(columns: number, count: number): TabLayout {
 	const room = columns - CHROME_COLUMNS;
 	const shared = Math.floor((room + TAB_GAP) / Math.max(1, count)) - TAB_GAP;
-	if (shared >= MIN_TAB_WIDTH) return { capacity: count, width: Math.min(MAX_TAB_WIDTH, shared) };
+	if (shared >= MIN_TAB_WIDTH) {
+		return { capacity: count, width: Math.min(MAX_TAB_WIDTH, shared) };
+	}
 
 	const capacity = Math.max(1, Math.floor((room - MARKER_COLUMNS * 2 + TAB_GAP) / (MIN_TAB_WIDTH + TAB_GAP)));
 	return { capacity, width: MIN_TAB_WIDTH };

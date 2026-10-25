@@ -37,7 +37,9 @@ function describeImages(result: GenerationResult): string {
 function getTotalCost(outcomes: ReadonlyArray<CompareOutcome>): number | undefined {
 	let total: number | undefined;
 	for (const { result } of outcomes) {
-		if (result?.cost !== undefined) total = (total ?? 0) + result.cost;
+		if (result?.cost !== undefined) {
+			total = (total ?? 0) + result.cost;
+		}
 	}
 
 	return total;
@@ -67,7 +69,9 @@ export function formatOutcomeLine(outcome: CompareOutcome): string {
 export function formatCompareSummary(outcomes: ReadonlyArray<CompareOutcome>): string {
 	const succeeded = outcomes.filter((outcome) => outcome.status === "ok").length;
 	let images = 0;
-	for (const { result } of outcomes) images += result?.returned ?? 0;
+	for (const { result } of outcomes) {
+		images += result?.returned ?? 0;
+	}
 
 	const mark = succeeded === outcomes.length ? GREEN_CHECK : RED_X;
 	const models = `${succeeded} of ${outcomes.length} ${toPlural(outcomes.length, "model")}`;
@@ -171,10 +175,14 @@ export interface PlanRow {
  */
 export function formatComparePlan(prompt: string, rows: ReadonlyArray<PlanRow>, total: string): string {
 	let width = 5;
-	for (const { model } of rows) width = Math.max(width, model.length);
+	for (const { model } of rows) {
+		width = Math.max(width, model.length);
+	}
 
 	let images = 0;
-	for (const { count } of rows) images += count;
+	for (const { count } of rows) {
+		images += count;
+	}
 
 	const lines = rows.map((row) => `${row.model.padEnd(width)}  ${String(row.count).padStart(2)}  ${row.cost}`);
 	return [

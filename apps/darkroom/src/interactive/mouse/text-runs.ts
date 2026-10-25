@@ -59,7 +59,9 @@ export function findTextRuns(
 			const runEnd = findRunEnd(kinds, index);
 			runs.push({ end: start + runEnd, row, start: start + index });
 			index = runEnd;
-		} else index += 1;
+		} else {
+			index += 1;
+		}
 	}
 
 	return runs;
@@ -97,7 +99,9 @@ function isWordGap(kinds: ReadonlyArray<CellKind>, index: number): boolean {
  */
 function findRunEnd(kinds: ReadonlyArray<CellKind>, from: number): number {
 	let end = from + 1;
-	while (kinds[end] === CellKind.Text || isWordGap(kinds, end)) end += 1;
+	while (kinds[end] === CellKind.Text || isWordGap(kinds, end)) {
+		end += 1;
+	}
 
 	return end;
 }

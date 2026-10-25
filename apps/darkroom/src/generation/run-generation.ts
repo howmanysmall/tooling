@@ -71,9 +71,7 @@ export async function requestImagesAsync(
 	const imageGenerationRequest = onProgress === undefined ? request : { ...request, stream: true };
 	try {
 		const response = await client.generate({ imageGenerationRequest }, { retries: NO_RETRIES, signal });
-		if (isStreamResponse(response)) {
-			return await consumeImageStreamAsync(response, onProgress ?? ignoreProgress);
-		}
+		if (isStreamResponse(response)) return await consumeImageStreamAsync(response, onProgress ?? ignoreProgress);
 
 		return { cost: response.usage?.cost ?? undefined, images: response.data };
 	} catch (error) {
@@ -167,7 +165,9 @@ async function checkExplicitOutputAsync(spec: OutputSpec, count: number, force: 
 	);
 	const existing = await Promise.all(paths.map(async (path) => ((await existsAsync(path)) ? path : undefined)));
 	const first = existing.find((path) => path !== undefined);
-	if (first !== undefined) throw new ValidationError(`${first} already exists. Pass --force to overwrite it.`);
+	if (first !== undefined) {
+		throw new ValidationError(`${first} already exists. Pass --force to overwrite it.`);
+	}
 }
 
 /**

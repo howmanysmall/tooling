@@ -38,9 +38,7 @@ const NO_POSITIONS: ReadonlySet<number> = new Set();
  * @returns Every command when the query is empty, otherwise the matches.
  */
 export function getPaletteMatches(commands: ReadonlyArray<BrowserCommand>, query: string): Array<PaletteMatch> {
-	if (query.trim().length === 0) {
-		return commands.map((command) => ({ command, positions: NO_POSITIONS }));
-	}
+	if (query.trim().length === 0) return commands.map((command) => ({ command, positions: NO_POSITIONS }));
 
 	const finder = new Fzf(commands, { selector: (command): string => command.title });
 	return finder.find(query.trim()).map(({ item, positions }) => ({ command: item, positions }));

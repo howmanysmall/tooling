@@ -49,9 +49,13 @@ export function createMouseStdin(
 		const { events, text } = split;
 		({ pending } = split);
 
-		if (text.length > 0) keyboard.write(text);
+		if (text.length > 0) {
+			keyboard.write(text);
+		}
 
-		for (const event of events) onPointer(event);
+		for (const event of events) {
+			onPointer(event);
+		}
 	}
 
 	function disableMouse(): void {

@@ -185,7 +185,9 @@ export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name,
 	previews?.dispose();
 	await Promise.all([finishRunningAsync(session), sessions.flushAsync()]);
 	const summary = formatExitSummary(getActiveSession(sessions.getTabs()), commandName);
-	if (summary !== undefined) stderr.write(`${summary}\n`);
+	if (summary !== undefined) {
+		stderr.write(`${summary}\n`);
+	}
 
 	const guided = getRequest();
 	if (guided === undefined) return;

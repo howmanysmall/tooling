@@ -88,9 +88,7 @@ async function writeToOutputAsync(
 
 	const naming = { count, date: context.date, extension: image.extension, index, slug: context.slug };
 	const planned = getOutputPath(spec, naming);
-	if (prepared.input.force && spec.kind === OutputKind.File) {
-		return writeFileAtomicAsync(planned, image.bytes);
-	}
+	if (prepared.input.force && spec.kind === OutputKind.File) return writeFileAtomicAsync(planned, image.bytes);
 
 	const written = await writeFileNoClobberAsync(planned, image.bytes);
 	if (written !== planned && spec.kind === OutputKind.File) {
@@ -251,10 +249,14 @@ export async function saveRunAsync(run: RunToSave, dependencies: SaveDependencie
 		const { failure, saved } = await saveOneAsync(context, run, image, index + 1, storedPath);
 		images.push(saved);
 
-		if (failure !== undefined) failures.push(failure);
+		if (failure !== undefined) {
+			failures.push(failure);
+		}
 	}
 
-	if (stored !== undefined) await recordEntryAsync(toEntry(run, stored, images), dependencies);
+	if (stored !== undefined) {
+		await recordEntryAsync(toEntry(run, stored, images), dependencies);
+	}
 
 	return { failures, images };
 }

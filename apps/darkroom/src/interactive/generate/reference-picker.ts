@@ -177,7 +177,9 @@ class ReferencePickerPrompt extends Prompt<Array<string>> {
 	}
 
 	private handleKey(key: Key): void {
-		if (key.name === "tab") this.goTo(getOpenTarget(this.picker));
+		if (key.name === "tab") {
+			this.goTo(getOpenTarget(this.picker));
+		}
 
 		if (key.name === "backspace" && this.filterBeforeKey.length === 0) {
 			this.goTo(nodePath.dirname(this.picker.directory));

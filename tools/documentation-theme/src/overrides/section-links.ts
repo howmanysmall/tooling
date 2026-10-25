@@ -68,7 +68,9 @@ export function getSectionLinks(sidebar: ReadonlyArray<SidebarEntry>): Array<Sec
 		}
 
 		const { href, isCurrent } = summarizeGroup(entry.entries);
-		if (href !== undefined) links.push({ href, isCurrent, label: entry.label });
+		if (href !== undefined) {
+			links.push({ href, isCurrent, label: entry.label });
+		}
 	}
 
 	return links;

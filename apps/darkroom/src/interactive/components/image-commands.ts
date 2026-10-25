@@ -34,8 +34,11 @@ export function copyText(environment: ImageCommandEnvironment, text: string, wha
 
 function runTask(environment: ImageCommandEnvironment, task: Promise<void>, success: string, failure: string): void {
 	runBrowserTask(task, (error) => {
-		if (error === undefined) environment.reportSuccess(success);
-		else environment.reportError(`${failure}: ${error}`);
+		if (error === undefined) {
+			environment.reportSuccess(success);
+		} else {
+			environment.reportError(`${failure}: ${error}`);
+		}
 	});
 }
 
