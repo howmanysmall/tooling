@@ -100,8 +100,11 @@ export async function consumeImageStreamAsync(
 export function describeProgress(progress: StreamProgress, requested: number): string {
 	const current = Math.min(progress.completed + 1, requested);
 	const parts = [`image ${current}/${requested}`];
-	if (progress.partials > 0) parts.push(`partial ${progress.partials}`);
-	else if (progress.phase !== undefined && progress.phase !== "content") parts.push(`${progress.phase}…`);
+	if (progress.partials > 0) {
+		parts.push(`partial ${progress.partials}`);
+	} else if (progress.phase !== undefined && progress.phase !== "content") {
+		parts.push(`${progress.phase}…`);
+	}
 
 	return parts.join(" · ");
 }

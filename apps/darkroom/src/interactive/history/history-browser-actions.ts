@@ -67,12 +67,17 @@ export function createBrowserActions({
 
 			const { id } = selected;
 			runBrowserTask(services.deleteRunAsync(selected, deletion), (failure) => {
-				if (failure === undefined) dispatch({ id, type: BrowserActionType.Removed });
-				else reportError(`Could not delete: ${failure}`);
+				if (failure === undefined) {
+					dispatch({ id, type: BrowserActionType.Removed });
+				} else {
+					reportError(`Could not delete: ${failure}`);
+				}
 			});
 		},
 		askDelete(): void {
-			if (selected !== undefined) dispatch(ASK_DELETE);
+			if (selected !== undefined) {
+				dispatch(ASK_DELETE);
+			}
 		},
 		cancelFilter(): void {
 			dispatch(CANCEL_FILTER);
@@ -94,8 +99,11 @@ export function createBrowserActions({
 
 			const count = selected.images.length;
 			runBrowserTask(services.openRunAsync(selected), (failure) => {
-				if (failure === undefined) reportSuccess(`Opened ${count} ${toPlural(count, "image")}`);
-				else reportError(`Could not open: ${failure}`);
+				if (failure === undefined) {
+					reportSuccess(`Opened ${count} ${toPlural(count, "image")}`);
+				} else {
+					reportError(`Could not open: ${failure}`);
+				}
 			});
 		},
 		quit(): void {

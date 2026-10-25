@@ -34,7 +34,9 @@ export function PaletteRow({ isSelected, match, onChoose }: Readonly<PaletteRowP
 	const { attachNode, isHovered } = useMouseTarget(`palette:${command.key}`, { onClick: onChoose });
 	const muted = isSelected ? theme.background : theme.muted;
 	const runs = getHighlightRuns(command.title, positions, isSelected);
-	if (command.description !== undefined) runs.push({ color: muted, text: `  ${command.description}` });
+	if (command.description !== undefined) {
+		runs.push({ color: muted, text: `  ${command.description}` });
+	}
 
 	return (
 		<Box

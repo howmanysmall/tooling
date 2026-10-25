@@ -23,11 +23,15 @@ export interface ReportLine {
  * @returns A summary and a line per saved image, or the failure.
  */
 export function describeSettledRun({ error, prompt, result }: SettledRun, directory: string): Array<ReportLine> {
-	if (result === undefined) return [{ level: "error", text: `${prompt}: ${error ?? "failed"}` }];
+	if (result === undefined) {
+		return [{ level: "error", text: `${prompt}: ${error ?? "failed"}` }];
+	}
 
 	const lines: Array<ReportLine> = [{ level: "success", text: formatSummary(result) }];
 	for (const { path } of result.images) {
-		if (path !== undefined) lines.push({ level: "info", text: toDisplayPath(path, directory) });
+		if (path !== undefined) {
+			lines.push({ level: "info", text: toDisplayPath(path, directory) });
+		}
 	}
 
 	return lines;
@@ -52,7 +56,10 @@ export async function finishRunningAsync(services: SessionServices): Promise<voi
 
 	function onInterrupt(): void {
 		interrupts += 1;
-		if (interrupts > 1) exit(130);
+		if (interrupts > 1) {
+			exit(130);
+		}
+
 		log.warn("Still generating. Press Ctrl-C again to quit anyway; the images may be lost.");
 	}
 
@@ -61,7 +68,9 @@ export async function finishRunningAsync(services: SessionServices): Promise<voi
 	try {
 		const settled = await services.waitForRunningAsync();
 		const lines = settled.flatMap((run) => describeSettledRun(run, cwd()));
-		for (const { level, text } of lines) log[level](text);
+		for (const { level, text } of lines) {
+			log[level](text);
+		}
 	} finally {
 		process.off("SIGINT", onInterrupt);
 	}

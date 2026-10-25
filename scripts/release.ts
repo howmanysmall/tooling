@@ -119,8 +119,13 @@ const command = createBaseCommand(scriptName, "1.0.0", "Releases one tool from a
 			tag: `${tool}@%s`,
 		};
 
-		if (yes) overrides.confirm = false;
-		if (release !== undefined) overrides.release = release;
+		if (yes) {
+			overrides.confirm = false;
+		}
+
+		if (release !== undefined) {
+			overrides.release = release;
+		}
 
 		const configuration = await loadBumpConfig(overrides, rootDirectory);
 

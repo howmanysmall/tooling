@@ -46,7 +46,10 @@ function runHandler(error: Error, debug = false): Captured {
 	try {
 		handleCommandError(error, command, io);
 	} catch (error_) {
-		if (error_ instanceof ExitSignalError) return { code: error_.code, helpShown, stderr: stderrText };
+		if (error_ instanceof ExitSignalError) {
+			return { code: error_.code, helpShown, stderr: stderrText };
+		}
+
 		throw error_;
 	}
 

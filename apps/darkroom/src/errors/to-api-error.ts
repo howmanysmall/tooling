@@ -97,9 +97,7 @@ export function toApiError(error: Error, isPaidRequest: boolean): CliError {
 		return new ApiError(appendChargeNote(`Network error: ${error.message}`, isPaidRequest), { cause: error });
 	}
 
-	if (error instanceof HTTPClientError) {
-		return new ApiError(`Request failed: ${error.message}`, { cause: error });
-	}
+	if (error instanceof HTTPClientError) return new ApiError(`Request failed: ${error.message}`, { cause: error });
 
 	return new ApiError(error.message, { cause: error });
 }

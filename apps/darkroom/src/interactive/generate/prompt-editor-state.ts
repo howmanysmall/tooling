@@ -51,18 +51,26 @@ function isWordAt(text: string, index: number): boolean {
 
 function getWordStart(text: string, index: number): number {
 	let start = index;
-	while (start > 0 && !isWordAt(text, start - 1)) start -= 1;
+	while (start > 0 && !isWordAt(text, start - 1)) {
+		start -= 1;
+	}
 
-	while (start > 0 && isWordAt(text, start - 1)) start -= 1;
+	while (start > 0 && isWordAt(text, start - 1)) {
+		start -= 1;
+	}
 
 	return start;
 }
 
 function getWordEnd(text: string, index: number): number {
 	let end = index;
-	while (end < text.length && !isWordAt(text, end)) end += 1;
+	while (end < text.length && !isWordAt(text, end)) {
+		end += 1;
+	}
 
-	while (end < text.length && isWordAt(text, end)) end += 1;
+	while (end < text.length && isWordAt(text, end)) {
+		end += 1;
+	}
 
 	return end;
 }
@@ -244,18 +252,12 @@ const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
  * @returns The edit, or `undefined` when the key is typing or unused.
  */
 function getSpecialAction(key: Key): EditorAction | undefined {
-	if (key.backspace) {
-		return key.meta ? DELETE_WORD : { type: "delete-backward" };
-	}
+	if (key.backspace) return key.meta ? DELETE_WORD : { type: "delete-backward" };
 
 	const isWordStep = key.meta || key.ctrl;
-	if (key.leftArrow) {
-		return isWordStep ? WORD_LEFT : { type: "left" };
-	}
+	if (key.leftArrow) return isWordStep ? WORD_LEFT : { type: "left" };
 
-	if (key.rightArrow) {
-		return isWordStep ? WORD_RIGHT : { type: "right" };
-	}
+	if (key.rightArrow) return isWordStep ? WORD_RIGHT : { type: "right" };
 
 	return SPECIAL_ACTIONS.find(([name]) => key[name] === true)?.[1];
 }
@@ -271,9 +273,7 @@ function getSpecialAction(key: Key): EditorAction | undefined {
  * @returns The edit, or `undefined` for keys the box doesn't use.
  */
 export function getEditorAction(input: string, key: Key): EditorAction | undefined {
-	if (key.return) {
-		return key.meta || key.shift ? NEW_LINE : undefined;
-	}
+	if (key.return) return key.meta || key.shift ? NEW_LINE : undefined;
 
 	return getSpecialAction(key) ?? getModifiedAction(input, key);
 }

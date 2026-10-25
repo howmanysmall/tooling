@@ -18,9 +18,7 @@ export function getOpenCommands(paths: ReadonlyArray<string>, system: NodeJS.Pla
 		return [{ command: "open", parameters: paths }];
 	}
 
-	if (system === "win32") {
-		return paths.map((path) => ({ command: "cmd", parameters: ["/c", "start", '""', path] }));
-	}
+	if (system === "win32") return paths.map((path) => ({ command: "cmd", parameters: ["/c", "start", '""', path] }));
 
 	return paths.map((path) => ({ command: "xdg-open", parameters: [path] }));
 }

@@ -21,7 +21,11 @@ export interface SessionSummary {
 
 function sumCosts(runs: ReadonlyArray<HistoryEntry>): number | undefined {
 	let total: number | undefined;
-	for (const { cost } of runs) if (cost !== undefined) total = (total ?? 0) + cost;
+	for (const { cost } of runs) {
+		if (cost !== undefined) {
+			total = (total ?? 0) + cost;
+		}
+	}
 
 	return total;
 }
@@ -40,7 +44,10 @@ function toSummary(id: string, newestFirst: ReadonlyArray<HistoryEntry>): Sessio
 }
 
 function getSessions({ forks, session }: HistoryEntry): ReadonlyArray<string> {
-	if (session === undefined) return [];
+	if (session === undefined) {
+		return [];
+	}
+
 	return forks === undefined ? [session] : [session, ...forks];
 }
 
@@ -56,8 +63,11 @@ export function listSessions(entries: ReadonlyArray<HistoryEntry>): Array<Sessio
 	for (const entry of entries) {
 		for (const session of getSessions(entry)) {
 			const group = groups.get(session);
-			if (group === undefined) groups.set(session, [entry]);
-			else group.push(entry);
+			if (group === undefined) {
+				groups.set(session, [entry]);
+			} else {
+				group.push(entry);
+			}
 		}
 	}
 
@@ -76,14 +86,19 @@ export function listSessions(entries: ReadonlyArray<HistoryEntry>): Array<Sessio
 export function resolveSessionReference(sessions: ReadonlyArray<SessionSummary>, reference: string): SessionSummary {
 	if (reference === "last") {
 		const [last] = sessions;
-		if (last === undefined) throw new ValidationError("There is no session yet.");
+		if (last === undefined) {
+			throw new ValidationError("There is no session yet.");
+		}
+
 		return last;
 	}
 
 	const prefix = reference.toUpperCase();
 	const matches = sessions.filter((session) => session.id.startsWith(prefix));
 	const [match] = matches;
-	if (match === undefined) throw new ValidationError(`No session matches "${reference}".`);
+	if (match === undefined) {
+		throw new ValidationError(`No session matches "${reference}".`);
+	}
 
 	if (matches.length > 1) {
 		const listing = matches.map((session) => `  ${session.id.slice(0, SHORT_ID_LENGTH)}  ${session.title}`);

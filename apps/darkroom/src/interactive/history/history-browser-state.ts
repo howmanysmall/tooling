@@ -85,7 +85,9 @@ export function getBatchRuns(state: BrowserState): Map<string, Array<HistoryEntr
 		batches.set(entry.batch, runs);
 	}
 
-	for (const runs of batches.values()) runs.sort(compareByModel);
+	for (const runs of batches.values()) {
+		runs.sort(compareByModel);
+	}
 
 	return batches;
 }

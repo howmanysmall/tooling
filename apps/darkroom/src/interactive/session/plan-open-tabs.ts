@@ -29,7 +29,9 @@ export function planOpenTabs(
 	const isNew = resume === undefined || (resume === "last" && sessions.length === 0);
 	const target = isNew ? undefined : resolveSessionReference(sessions, resume);
 	const ids = new Set(open);
-	if (target !== undefined) ids.add(target.id);
+	if (target !== undefined) {
+		ids.add(target.id);
+	}
 
 	const byId = new Map(sessions.map((session) => [session.id, session]));
 	return { activeId: target?.id, toOpen: [...ids].flatMap((id) => byId.get(id) ?? []) };

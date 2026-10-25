@@ -5,7 +5,9 @@ const Y_SOUND_PREFIXES: ReadonlyArray<string> = ["uni", "user", "use", "ufo", "u
 const ACRONYM_VOWEL_SOUND = new Set<number>([65, 69, 70, 72, 73, 76, 77, 78, 79, 82, 83, 88]);
 
 function startsWithAny(value: string, prefixes: ReadonlyArray<string>): boolean {
-	for (const prefix of prefixes) if (value.startsWith(prefix)) return true;
+	for (const prefix of prefixes) {
+		if (value.startsWith(prefix)) return true;
+	}
 
 	return false;
 }
