@@ -1,6 +1,6 @@
 # @howmanysmall/string-utilities
 
-String manipulation, casing, transliteration, and redaction helpers.
+Helpers for string case, transliteration, and redaction.
 
 Private. Tools consume the TypeScript source through `workspace:*`, and tsdown bundles it into each
 tool's build.
