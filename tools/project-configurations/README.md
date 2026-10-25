@@ -1,6 +1,6 @@
 # @howmanysmall/project-configurations
 
-Shared tsdown and Vitest configuration for every workspace package.
+Shared settings for tsdown builds and Vitest tests across packages.
 
 | Export | What it provides |
 | --- | --- |
