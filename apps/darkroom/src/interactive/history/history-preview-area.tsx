@@ -27,7 +27,9 @@ export function HistoryPreviewArea(): ReactNode {
 	const first = selected?.images[0];
 	const { attachNode } = useMouseTarget("history-preview", {
 		onClick(): void {
-			if (first !== undefined) showImage(getImagePath(first, meta.resolve));
+			if (first !== undefined) {
+				showImage(getImagePath(first, meta.resolve));
+			}
 		},
 	});
 

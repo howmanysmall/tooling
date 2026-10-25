@@ -33,7 +33,9 @@ function getCapture(
 	if (mode !== BrowserMode.Filter) return undefined;
 
 	return (_input, key) => {
-		if (key.escape) actions.cancelFilter();
+		if (key.escape) {
+			actions.cancelFilter();
+		}
 	};
 }
 

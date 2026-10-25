@@ -35,7 +35,9 @@ interface PickerCatalog {
 
 function getNameWidth(models: ReadonlyArray<ImageModelListItem>): number {
 	let width = 0;
-	for (const { name } of models) width = Math.max(width, name.length);
+	for (const { name } of models) {
+		width = Math.max(width, name.length);
+	}
 
 	return width;
 }
@@ -78,7 +80,9 @@ async function askModelAsync(): Promise<ImageModelListItem> {
 
 	exitIfCanceled(id);
 	const model = models.find((item) => item.id === id);
-	if (model === undefined) throw new Error(`Unknown model ${id}.`);
+	if (model === undefined) {
+		throw new Error(`Unknown model ${id}.`);
+	}
 	return model;
 }
 
@@ -119,7 +123,9 @@ async function askPromptAsync(): Promise<string> {
 
 async function askReferencesAsync(model: ImageModelListItem): Promise<Array<ReferenceImage>> {
 	const { max } = getReferenceRange(model);
-	if (max === 0) return [];
+	if (max === 0) {
+		return [];
+	}
 
 	const picked = await pickReferencesAsync({ directory: cwd(), max, message: "Reference images", output: stdout });
 	exitIfCanceled(picked);

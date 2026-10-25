@@ -5,4 +5,6 @@ import { env, stdout } from "node:process";
 // color, turn it off when stdout is not a terminal. This module must be
 // imported before anything that loads ansis.
 // biome-ignore lint/style/noProcessEnv: this runs before any environment schema, by design.
-if (!stdout.isTTY && env.FORCE_COLOR === undefined) env.NO_COLOR ??= "1";
+if (!stdout.isTTY && env.FORCE_COLOR === undefined) {
+	env.NO_COLOR ??= "1";
+}

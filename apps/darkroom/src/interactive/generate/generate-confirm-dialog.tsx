@@ -45,8 +45,11 @@ export function GenerateConfirmDialog({
 	rows,
 }: Readonly<GenerateConfirmDialogProperties>): ReactNode {
 	useInput(function onConfirmInput(input, key) {
-		if (input === "y" || key.return) onConfirm();
-		else if (input === "n" || key.escape) onCancel();
+		if (input === "y" || key.return) {
+			onConfirm();
+		} else if (input === "n" || key.escape) {
+			onCancel();
+		}
 	});
 
 	return (

@@ -97,9 +97,7 @@ function toPrettyCapabilityDescriptor(capabilityDescriptor: CapabilityDescriptor
 			return formatList(capabilityDescriptor.values.toSorted(compareNatural));
 
 		case "range": {
-			if (capabilityDescriptor.min === capabilityDescriptor.max) {
-				return formatNumber(capabilityDescriptor.min);
-			}
+			if (capabilityDescriptor.min === capabilityDescriptor.max) return formatNumber(capabilityDescriptor.min);
 
 			return `${formatNumber(capabilityDescriptor.min)}${dim("–")}${formatNumber(capabilityDescriptor.max)}`;
 		}
@@ -189,7 +187,9 @@ function renderPrettyObject(prettyObject: PrettyObject): string {
 	const sections = [`${bold.magenta(prettyObject.id)}${dim(" · ")}${prettyObject.name}`];
 
 	const description = wrapText(prettyObject.description, Math.max(40, width - INDENT.length));
-	if (description.length > 0) sections.push(description.map((line) => `${INDENT}${line}`).join("\n"));
+	if (description.length > 0) {
+		sections.push(description.map((line) => `${INDENT}${line}`).join("\n"));
+	}
 
 	sections.push(renderRows(detailRows, labelWidth, width));
 

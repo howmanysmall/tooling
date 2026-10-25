@@ -15,7 +15,9 @@ async function readPromptFileAsync(path: string): Promise<string> {
 	try {
 		return await readFile(path, "utf8");
 	} catch (error) {
-		if (!(error instanceof Error)) throw error;
+		if (!(error instanceof Error)) {
+			throw error;
+		}
 		throw new ValidationError(`Could not read --prompt-file ${path}: ${error.message}`, { cause: error });
 	}
 }

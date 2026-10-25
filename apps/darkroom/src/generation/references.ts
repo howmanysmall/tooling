@@ -31,7 +31,9 @@ async function downloadAsync(url: string, fetchAsync: typeof fetch): Promise<Ref
 	try {
 		response = await fetchAsync(url);
 	} catch (error) {
-		if (!(error instanceof Error)) throw error;
+		if (!(error instanceof Error)) {
+			throw error;
+		}
 		throw new ValidationError(`Could not download reference ${url}: ${error.message}`, { cause: error });
 	}
 
@@ -50,9 +52,13 @@ async function readLocalAsync(path: string): Promise<ReferenceImage> {
 
 	try {
 		const stats = await stat(path);
-		if (!stats.isFile()) throw new ValidationError(`Reference ${path} is not a file.`);
+		if (!stats.isFile()) {
+			throw new ValidationError(`Reference ${path} is not a file.`);
+		}
 	} catch (error) {
-		if (error instanceof ValidationError) throw error;
+		if (error instanceof ValidationError) {
+			throw error;
+		}
 		throw new ValidationError(`Reference image not found: ${path}`, { cause: error });
 	}
 

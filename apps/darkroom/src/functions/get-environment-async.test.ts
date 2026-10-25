@@ -10,7 +10,9 @@ const VALID_KEY = `sk-or-v1-${"a".repeat(64)}`;
 async function loadWithEnvironmentAsync(
 	variables: Readonly<Record<string, string>>,
 ): Promise<PromiseSettledResult<Environment>> {
-	for (const [key, value] of Object.entries(variables)) vi.stubEnv(key, value);
+	for (const [key, value] of Object.entries(variables)) {
+		vi.stubEnv(key, value);
+	}
 	vi.resetModules();
 	const { getEnvironmentAsync } = await import("./get-environment-async.ts");
 	// A path with no file, so the real .env never overrides the stubbed values.

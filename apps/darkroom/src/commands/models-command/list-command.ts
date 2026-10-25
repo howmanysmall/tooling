@@ -79,7 +79,9 @@ async function listModelsAsync(flags: ListFlags, search?: string): Promise<void>
 	}
 
 	const output = formatModelList(shown, pricing, flags.format, stdout.isTTY, observed);
-	if (output.length > 0) console.log(output);
+	if (output.length > 0) {
+		console.log(output);
+	}
 }
 
 export const listCommand = createBaseCommand(scriptName, "1.0.0", "List and filter image models.")

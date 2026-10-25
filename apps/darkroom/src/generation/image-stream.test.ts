@@ -9,7 +9,9 @@ import type { StreamProgress } from "./image-stream";
 async function* toStreamAsync(
 	events: ReadonlyArray<ImageStreamingResponseData>,
 ): AsyncGenerator<ImageStreamingResponseData> {
-	for (const event of events) yield event;
+	for (const event of events) {
+		yield event;
+	}
 }
 
 function createCompletedEvent(b64Json: string, cost: number): ImageStreamingResponseData {

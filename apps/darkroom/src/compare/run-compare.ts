@@ -80,7 +80,9 @@ async function confirmSpendAsync(input: CompareInput, plan: ComparePlan): Promis
 		model: item.model.id,
 	}));
 	let images = 0;
-	for (const { count } of rows) images += count;
+	for (const { count } of rows) {
+		images += count;
+	}
 
 	note(formatComparePlan(previewPrompt(input.prompt, 60), rows, plan.total), "Compare", { output: stderr });
 
@@ -90,7 +92,9 @@ async function confirmSpendAsync(input: CompareInput, plan: ComparePlan): Promis
 		output: stderr,
 	});
 
-	if (isCancel(answer)) throw new InterruptedError("Cancelled.");
+	if (isCancel(answer)) {
+		throw new InterruptedError("Cancelled.");
+	}
 
 	return answer;
 }
@@ -131,7 +135,9 @@ async function executeAllAsync(prepared: ReadonlyArray<PreparedGeneration>): Pro
 				log.warn("Saving the images that arrived. Press Ctrl-C again to quit now.");
 			}
 
-			if (action === InterruptAction.Exit) exit(code);
+			if (action === InterruptAction.Exit) {
+				exit(code);
+			}
 		};
 	}
 
@@ -159,7 +165,9 @@ async function executeAllAsync(prepared: ReadonlyArray<PreparedGeneration>): Pro
 
 function finishCompare(input: CompareInput, plan: ComparePlan, { outcomes, signalCode }: ExecutionReport): void {
 	const output = formatCompareResult({ batch: plan.batch, outcomes, prompt: input.prompt }, input.format, cwd());
-	if (output !== undefined) console.log(output);
+	if (output !== undefined) {
+		console.log(output);
+	}
 	stderr.write(`${formatCompareSummary(outcomes)}\n`);
 
 	if (signalCode !== undefined) {
@@ -168,7 +176,9 @@ function finishCompare(input: CompareInput, plan: ComparePlan, { outcomes, signa
 	}
 
 	const failure = describeFailures(outcomes);
-	if (failure !== undefined) throw new ApiError(failure);
+	if (failure !== undefined) {
+		throw new ApiError(failure);
+	}
 }
 
 /**

@@ -46,7 +46,9 @@ const STATE = createModelBrowserState(
 
 function apply(state: ModelBrowserState, ...actions: ReadonlyArray<ModelBrowserAction>): ModelBrowserState {
 	let next = state;
-	for (const action of actions) next = reduceModelBrowserState(next, action);
+	for (const action of actions) {
+		next = reduceModelBrowserState(next, action);
+	}
 
 	return next;
 }

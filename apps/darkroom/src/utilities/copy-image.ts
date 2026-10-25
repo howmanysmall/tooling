@@ -37,8 +37,11 @@ async function runAsync(command: string, parameters: ReadonlyArray<string>): Pro
 	});
 	child.once("error", reject);
 	child.once("close", (code) => {
-		if (code === 0) resolve();
-		else reject(new Error(errorOutput.trim() || `${command} exited with ${code}.`));
+		if (code === 0) {
+			resolve();
+		} else {
+			reject(new Error(errorOutput.trim() || `${command} exited with ${code}.`));
+		}
 	});
 	return promise;
 }
@@ -72,7 +75,9 @@ export function getClipboardCommand(png: string, system: NodeJS.Platform, isWayl
 		return { command: "powershell", parameters: ["-NoProfile", "-STA", "-Command", script] };
 	}
 
-	if (isWayland) return { command: "sh", parameters: ["-c", 'wl-copy --type image/png < "$1"', "sh", png] };
+	if (isWayland) {
+		return { command: "sh", parameters: ["-c", 'wl-copy --type image/png < "$1"', "sh", png] };
+	}
 	return { command: "xclip", parameters: ["-selection", "clipboard", "-t", "image/png", "-i", png] };
 }
 

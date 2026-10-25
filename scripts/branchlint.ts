@@ -102,13 +102,17 @@ const command = createBaseCommand(
 			if (PREFIXLESS_BRANCHES.has(branchName)) continue;
 
 			const problems = findBranchNameProblems(branchName);
-			if (problems.length > 0) failures.push({ branchName, problems });
+			if (problems.length > 0) {
+				failures.push({ branchName, problems });
+			}
 		}
 
 		if (failures.length === 0) {
 			// The hook runs on every push, so a clean stdin-mode run stays quiet.
 			if (branchNames.length > 0) {
-				for (const branchName of names) log.success(`"${branchName}" is a valid branch name`);
+				for (const branchName of names) {
+					log.success(`"${branchName}" is a valid branch name`);
+				}
 			}
 
 			return;
@@ -117,7 +121,9 @@ const command = createBaseCommand(
 		for (const { branchName, problems } of failures) {
 			log.fail(`branch name "${branchName}" is invalid`);
 
-			for (const problem of problems) log.fail(`  - ${problem}`);
+			for (const problem of problems) {
+				log.fail(`  - ${problem}`);
+			}
 		}
 
 		log.fail(`${failures.length} invalid branch name(s); rename with "git branch -m <old-name> <new-name>"`);

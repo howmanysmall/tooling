@@ -137,8 +137,11 @@ export function BrowserShell({
 				// A dialog has the key.
 			},
 			[ShellRoute.Interrupt](): void {
-				if (onInterrupt === undefined) exit();
-				else onInterrupt();
+				if (onInterrupt === undefined) {
+					exit();
+				} else {
+					onInterrupt();
+				}
 			},
 			[ShellRoute.NextTab](): void {
 				tabs?.cycle(1);

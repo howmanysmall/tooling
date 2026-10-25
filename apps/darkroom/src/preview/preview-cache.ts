@@ -44,7 +44,9 @@ export class PreviewCache {
 
 	/** Frees every image sent to the terminal. */
 	public dispose(): void {
-		for (const id of this.imageIds) this.write(formatKittyDelete(id));
+		for (const id of this.imageIds) {
+			this.write(formatKittyDelete(id));
+		}
 		this.imageIds.clear();
 	}
 
@@ -67,7 +69,9 @@ export class PreviewCache {
 
 	private async loadAsync(path: string, box: CellBox): Promise<Preview> {
 		const preview = await loadPreviewAsync({ box, path, protocol: this.protocol }, this.write);
-		if (preview.kind === "image" && preview.imageId !== undefined) this.imageIds.add(preview.imageId);
+		if (preview.kind === "image" && preview.imageId !== undefined) {
+			this.imageIds.add(preview.imageId);
+		}
 		return preview;
 	}
 }

@@ -29,7 +29,9 @@ export function getOutputWidth(): number {
 
 export function getLabelWidth(rows: ReadonlyArray<Row>): number {
 	let labelWidth = 0;
-	for (const [label] of rows) labelWidth = Math.max(labelWidth, label.length);
+	for (const [label] of rows) {
+		labelWidth = Math.max(labelWidth, label.length);
+	}
 
 	return labelWidth;
 }
@@ -53,7 +55,9 @@ export function wrapText(text: string, width: number): Array<string> {
 		}
 	}
 
-	if (line.length > 0) lines.push(line);
+	if (line.length > 0) {
+		lines.push(line);
+	}
 	return lines;
 }
 

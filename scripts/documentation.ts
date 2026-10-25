@@ -196,7 +196,9 @@ async function askRefAsync(): Promise<string> {
 		],
 	});
 
-	if (isCancel(answer)) throw new CliError("Canceled.", 130);
+	if (isCancel(answer)) {
+		throw new CliError("Canceled.", 130);
+	}
 	if (answer.length > 0) return answer;
 
 	const typed = await text({
@@ -204,7 +206,9 @@ async function askRefAsync(): Promise<string> {
 		validate: (value) => ((value ?? "").trim().length === 0 ? "Type a branch, tag, or commit." : undefined),
 	});
 
-	if (isCancel(typed)) throw new CliError("Canceled.", 130);
+	if (isCancel(typed)) {
+		throw new CliError("Canceled.", 130);
+	}
 	return typed.trim();
 }
 
@@ -218,7 +222,9 @@ async function assertRefExistsAsync(ref: string): Promise<void> {
 	if (COMMIT_REGEXP.test(ref)) return;
 
 	const remote = await exec("git", ["ls-remote", "--exit-code", "origin", ref]);
-	if (remote.exitCode !== 0) throw new CliError(`origin has no branch or tag named ${ref}. Push it first.`, 1);
+	if (remote.exitCode !== 0) {
+		throw new CliError(`origin has no branch or tag named ${ref}. Push it first.`, 1);
+	}
 }
 
 /**
@@ -245,7 +251,9 @@ async function ensurePagesAsync(repository: string, options: PublishOptions): Pr
 			message: `GitHub Pages is off for ${repository}. Turn it on, deploying from Actions?`,
 		});
 
-		if (answer !== true) throw new CliError("GitHub Pages is off, so there is nowhere to publish.", 1);
+		if (answer !== true) {
+			throw new CliError("GitHub Pages is off, so there is nowhere to publish.", 1);
+		}
 	}
 
 	await exec("gh", ["api", "--method", "POST", `repos/${repository}/pages`, "-f", "build_type=workflow"], {
@@ -343,8 +351,11 @@ async function dispatchAsync(
 		throwOnError: true,
 	});
 	const urls = sites.map(({ url }) => url);
-	if (options.interactive) outro(`Published. ${urls.join("  ")}`);
-	else stdout.write(`${urls.join("\n")}\n`);
+	if (options.interactive) {
+		outro(`Published. ${urls.join("  ")}`);
+	} else {
+		stdout.write(`${urls.join("\n")}\n`);
+	}
 }
 
 /**
@@ -361,7 +372,9 @@ async function publishAsync(givenRef: string | undefined, options: PublishOption
 
 	const sites = await getSitesAsync(cwd());
 
-	if (options.interactive) intro("Publish the documentation");
+	if (options.interactive) {
+		intro("Publish the documentation");
+	}
 
 	const fallbackRef = options.yes ? "main" : undefined;
 	const ref = givenRef ?? fallbackRef ?? (await askRefAsync());
@@ -377,7 +390,9 @@ async function publishAsync(givenRef: string | undefined, options: PublishOption
 	if (options.dryRun) {
 		stdout.write(`gh ${dispatch.join(" ")}\n`);
 
-		if (options.interactive) outro("Dry run: nothing was started.");
+		if (options.interactive) {
+			outro("Dry run: nothing was started.");
+		}
 		return;
 	}
 

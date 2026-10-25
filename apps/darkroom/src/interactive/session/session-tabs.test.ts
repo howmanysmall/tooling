@@ -18,7 +18,9 @@ const DONE: SessionTurn = {
 
 function applyActions(tabs: SessionTabs, actions: ReadonlyArray<SessionTabsAction>): SessionTabs {
 	let state = tabs;
-	for (const action of actions) state = reduceSessionTabs(state, action);
+	for (const action of actions) {
+		state = reduceSessionTabs(state, action);
+	}
 
 	return state;
 }

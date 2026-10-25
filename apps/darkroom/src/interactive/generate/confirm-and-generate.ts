@@ -49,7 +49,9 @@ export async function confirmAndGenerateAsync(prepared: PreparedGeneration): Pro
 	progress.stop(formatSummary(result));
 
 	const paths = formatResult(result, OutputFormat.Pretty, cwd());
-	if (paths !== undefined) note(paths, "Saved");
+	if (paths !== undefined) {
+		note(paths, "Saved");
+	}
 	outro("Done.");
 	runner.throwIfIncomplete(result);
 }

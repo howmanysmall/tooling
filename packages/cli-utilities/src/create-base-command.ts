@@ -36,7 +36,9 @@ function getDefaultIo(): CommandErrorIo {
 }
 
 function writeStack(error: Error, io: CommandErrorIo): void {
-	if (io.debug && error.stack !== undefined) io.writeError(`${error.stack}\n`);
+	if (io.debug && error.stack !== undefined) {
+		io.writeError(`${error.stack}\n`);
+	}
 }
 
 /**
@@ -89,7 +91,9 @@ export function createBaseCommand(
 			types: true,
 		});
 
-	if (version !== undefined) baseCommand.version(version);
+	if (version !== undefined) {
+		baseCommand.version(version);
+	}
 
 	if (options?.showHelpWithoutArguments === true) {
 		baseCommand.action(() => {

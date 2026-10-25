@@ -45,7 +45,9 @@ export function createMouseSession(input: NodeJS.ReadStream, output: NodeJS.Writ
 	mirror.onWrite(selection.repaint);
 
 	const mouse = createMouseStdin(input, output, (event) => {
-		if (selection.handle(event)) registry.cancelPress();
+		if (selection.handle(event)) {
+			registry.cancelPress();
+		}
 		registry.dispatch(event);
 	});
 
