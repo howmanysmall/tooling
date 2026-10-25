@@ -29,8 +29,8 @@ pnpm install
 ```
 
 Both generators prompt for a name, a description, an npm scope, and a runtime (`bun` or `node`).
-The new `apps/<name>/` gets its scripts, a first test, and a README, and its tsconfig references
-stay synced. Use `pnpm turbo gen package` for a shared library in `packages/`.
+The new `apps/<name>/` gets its scripts, a first test, and a README. The generator also updates its `tsconfig`
+references. Use `pnpm turbo gen package` for a shared library in `packages/`.
 
 ## Release a tool
 

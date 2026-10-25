@@ -1,7 +1,7 @@
 # @howmanysmall/linter-utilities
 
-Finds and validates linter and formatter configuration, such as the repository's `.oxfmtrc.json`, for
-the lint configurations to reuse.
+Finds and checks linter and formatter settings for reuse by lint configs. This includes the repo's
+`.oxfmtrc.json` file.
 
 | Export | What it provides |
 | --- | --- |
