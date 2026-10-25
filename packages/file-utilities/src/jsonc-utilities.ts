@@ -25,7 +25,7 @@ function buildFormattingOptions(content: string): FormattingOptions {
  * @param callback - A function that receives a draft of the data and returns the modified version.
  * @returns The modified JSONC string with comments preserved.
  */
-export function editJsonc<TIn extends object>(
+export function editJsoncString<TIn extends object>(
 	content: string,
 	// oxlint-disable-next-line small-rules/no-unknown-parameters -- type guard.
 	validator: (data: unknown) => TIn,
