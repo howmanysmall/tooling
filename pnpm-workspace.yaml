@@ -146,6 +146,9 @@ catalogs:
   # against that floor instead of the Node 26 that mise runs.
   node-floor:
     "@types/node": ~26.6.5
+  packages:
+    jsonc-parser: 3.3.1
+    just-diff: 6.0.2
   polyfills:
     temporal-polyfill: 1.0.6
   runtime:
@@ -244,6 +247,8 @@ fetchRetryMintimeout: 1000
 fetchTimeout: 60000
 
 permissions:
+  arktype:
+    skills: true
   fallow:
     skills: true
 

@@ -341,6 +341,15 @@ catalogs:
     '@types/node':
       specifier: ~26.6.5
       version: 26.6.5
+  packages:
+
+    jsonc-parser:
+      specifier: 3.3.1
+      version: 3.3.1
+
+    just-diff:
+      specifier: 6.0.2
+      version: 6.0.2
   polyfills:
     temporal-polyfill:
       specifier: 1.0.6
@@ -917,6 +926,28 @@ importers:
       type-fest:
         specifier: catalog:types
         version: 5.10.0
+    devDependencies:
+      '@howmanysmall/project-configurations':
+        specifier: workspace:*
+        version: link:../../tools/project-configurations
+      '@types/node':
+        specifier: catalog:node-floor
+        version: 26.6.5
+      vitest:
+        specifier: catalog:test
+        version: 5.0.5(@arethetypeswrong/core@0.18.5)(@types/node@26.6.5)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.5)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1)
+
+  packages/file-utilities:
+    dependencies:
+      arktype:
+        specifier: catalog:runtime
+        version: 2.2.9
+      jsonc-parser:
+        specifier: catalog:packages
+        version: 3.3.1
+      just-diff:
+        specifier: catalog:packages
+        version: 6.0.2
     devDependencies:
       '@howmanysmall/project-configurations':
         specifier: workspace:*
@@ -18433,6 +18464,8 @@ time:
   ink@7.1.1: '2026-07-16T13:07:31.525Z'
   jest-extended@7.0.0: '2025-11-05T19:15:00.324Z'
   jiti@2.7.0: '2026-05-05T21:02:47.918Z'
+  jsonc-parser@3.3.1: '2024-06-24T21:12:45.445Z'
+  just-diff@6.0.2: '2023-03-26T00:59:36.579Z'
   oxc-transform-react@0.155.0: '2026-10-19T14:49:58.683Z'
   oxfmt@0.74.0: '2026-10-19T17:26:47.800Z'
   oxlint-plugin-react-doctor@0.9.18: '2026-10-12T23:19:38.090Z'
