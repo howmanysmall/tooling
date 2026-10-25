@@ -67,7 +67,9 @@ export async function readObservedPricesAsync(): Promise<ObservedPrices> {
 
 export async function readStdinAsync(): Promise<string> {
 	const chunks: Array<Buffer> = [];
-	for await (const chunk of stdin) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk)));
+	for await (const chunk of stdin) {
+		chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(String(chunk)));
+	}
 
 	return Buffer.concat(chunks).toString("utf8");
 }
@@ -117,8 +119,11 @@ async function isDirectoryAsync(path: string): Promise<boolean> {
 async function writeStdoutAsync(bytes: Uint8Array): Promise<void> {
 	const { promise, reject, resolve } = Promise.withResolvers<void>();
 	stdout.write(bytes, (error) => {
-		if (error instanceof Error) reject(error);
-		else resolve();
+		if (error instanceof Error) {
+			reject(error);
+		} else {
+			resolve();
+		}
 	});
 	await promise;
 }
@@ -169,7 +174,9 @@ export async function prepareQuietlyAsync(input: GenerationInput): Promise<Prepa
  */
 export async function prepareForTerminalAsync(input: GenerationInput): Promise<PreparedGeneration> {
 	const prepared = await prepareQuietlyAsync(input);
-	for (const warning of prepared.warnings) log.warn(warning);
+	for (const warning of prepared.warnings) {
+		log.warn(warning);
+	}
 
 	return prepared;
 }
@@ -183,8 +190,13 @@ export interface GenerateOptions {
 function createInterruptHandler(guard: InterruptGuard): () => void {
 	return () => {
 		const action = guard.interrupt();
-		if (action === InterruptAction.Defer) log.warn("Saving the images first. Press Ctrl-C again to quit now.");
-		if (action === InterruptAction.Exit) exit(130);
+		if (action === InterruptAction.Defer) {
+			log.warn("Saving the images first. Press Ctrl-C again to quit now.");
+		}
+
+		if (action === InterruptAction.Exit) {
+			exit(130);
+		}
 	};
 }
 
@@ -206,7 +218,9 @@ export async function generateWithInterruptsAsync(
 	process.on("SIGINT", onInterrupt);
 
 	try {
-		if (options.isQuiet !== true) log.start(`Generating with ${bold.magenta(prepared.model.id)}…`);
+		if (options.isQuiet !== true) {
+			log.start(`Generating with ${bold.magenta(prepared.model.id)}…`);
+		}
 
 		const result = await generateQuietlyAsync(prepared, {
 			guard,
@@ -216,7 +230,10 @@ export async function generateWithInterruptsAsync(
 			},
 		});
 
-		if (guard.wasInterrupted) process.exitCode = 130;
+		if (guard.wasInterrupted) {
+			process.exitCode = 130;
+		}
+
 		return result;
 	} finally {
 		process.off("SIGINT", onInterrupt);
@@ -315,7 +332,10 @@ export async function printDryRunAsync(prepared: PreparedGeneration, format: Out
 export async function printResultAsync(result: GenerationResult, format: OutputFormat): Promise<void> {
 	const { formatResult, formatSummary } = await import("./format-result");
 	const output = formatResult(result, format, cwd());
-	if (output !== undefined) console.log(output);
+	if (output !== undefined) {
+		console.log(output);
+	}
+
 	stderr.write(`${green("✔")} ${formatSummary(result)}\n`);
 
 	throwIfIncomplete(result);

@@ -35,7 +35,10 @@ export function createReactCompilerPlugin(options: ReactCompilerOptions = {}): P
 
 		const { transform } = await import("oxc-transform-react");
 		const result = await transform(id, code, { reactCompiler: { target: "19" }, sourcemap });
-		if (result.fatal) throw new Error(result.errors.map((error) => error.codeframe ?? error.message).join("\n"));
+		if (result.fatal) {
+			throw new Error(result.errors.map((error) => error.codeframe ?? error.message).join("\n"));
+		}
+
 		return result.map === undefined ? result.code : { code: result.code, map: result.map };
 	}
 

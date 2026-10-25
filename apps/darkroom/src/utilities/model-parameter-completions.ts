@@ -33,7 +33,9 @@ export function selectParameterValues(
 
 		declared.set(id, values);
 
-		for (const value of values) union.add(value);
+		for (const value of values) {
+			union.add(value);
+		}
 	}
 
 	const [first, ...rest] = modelIds.flatMap((modelId) => {
@@ -41,7 +43,9 @@ export function selectParameterValues(
 		return values === undefined ? [] : [values];
 	});
 
-	if (first === undefined) return [...union];
+	if (first === undefined) {
+		return [...union];
+	}
 
 	return intersect(
 		first,

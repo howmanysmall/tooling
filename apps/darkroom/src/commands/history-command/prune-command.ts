@@ -34,7 +34,10 @@ async function confirmAsync(count: number): Promise<boolean> {
 
 	const { confirm, isCancel } = await import("@clack/prompts");
 	const answer = await confirm({ message: `Delete ${count} ${toPlural(count, "run")}?`, output: stderr });
-	if (isCancel(answer)) throw new InterruptedError("Cancelled.");
+	if (isCancel(answer)) {
+		throw new InterruptedError("Cancelled.");
+	}
+
 	return answer;
 }
 
@@ -48,7 +51,9 @@ async function getSizesAsync(store: HistoryStore, entries: ReadonlyArray<History
 
 function sumSizes(sizes: ReadonlyMap<string, number>, ids: Iterable<string>): number {
 	let total = 0;
-	for (const id of ids) total += sizes.get(id) ?? 0;
+	for (const id of ids) {
+		total += sizes.get(id) ?? 0;
+	}
 
 	return total;
 }

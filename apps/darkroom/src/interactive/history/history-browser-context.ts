@@ -101,7 +101,9 @@ HistoryBrowserContext.displayName = "HistoryBrowserContext";
  */
 export function useHistoryBrowser(): HistoryBrowserContextValue {
 	const value = use(HistoryBrowserContext);
-	if (value === undefined) throw new Error("useHistoryBrowser must be used inside HistoryBrowser.Provider.");
+	if (value === undefined) {
+		throw new Error("useHistoryBrowser must be used inside HistoryBrowser.Provider.");
+	}
 
 	return value;
 }

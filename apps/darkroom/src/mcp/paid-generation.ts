@@ -72,7 +72,9 @@ async function attemptAsync(
 	const [estimate] = await getEstimatesAsync([prepared], dependencies);
 	const check = checkBudget([estimate?.estimate], budget);
 	// Thrown, not returned, so a fallback model gets a chance: nothing was sent.
-	if (!check.isAllowed) throw new ValidationError(check.reason);
+	if (!check.isAllowed) {
+		throw new ValidationError(check.reason);
+	}
 
 	const result = await executeGenerationAsync(prepared, {
 		client: await dependencies.getImagesClientAsync(),

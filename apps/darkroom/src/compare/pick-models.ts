@@ -30,7 +30,9 @@ export async function pickModelsAsync(): Promise<Array<string>> {
 		required: true,
 	});
 
-	if (isCancel(picked)) throw new InterruptedError("Cancelled.");
+	if (isCancel(picked)) {
+		throw new InterruptedError("Cancelled.");
+	}
 
 	return picked;
 }
@@ -47,7 +49,9 @@ export async function chooseModelsAsync(
 	given: ReadonlyArray<string> | undefined,
 	canAsk: boolean,
 ): Promise<Array<string>> {
-	if (given !== undefined) return [...given];
+	if (given !== undefined) {
+		return [...given];
+	}
 
 	return canAsk ? pickModelsAsync() : [];
 }

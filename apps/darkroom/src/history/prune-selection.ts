@@ -93,7 +93,9 @@ export function selectForPrune(
 		const isTooOld = criteria.olderThan !== undefined && Date.parse(entry.created) < now - criteria.olderThan;
 		const isBeyondKeep = criteria.keep !== undefined && index >= criteria.keep;
 		const isOverSize = criteria.maxSize !== undefined && total > criteria.maxSize;
-		if (isTooOld || isBeyondKeep || isOverSize) selected.add(entry.id);
+		if (isTooOld || isBeyondKeep || isOverSize) {
+			selected.add(entry.id);
+		}
 	}
 
 	return selected;

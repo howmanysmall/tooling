@@ -80,7 +80,9 @@ export function ModelPickerDialog({
 	const list = useSearchList((query) => findPickerModels(catalog.models, query, view, context), visibleRows, onClose);
 
 	useInput(function onPickerInput(_input, key) {
-		if (key.tab) dispatchView({ delta: key.shift ? -1 : 1, type: "cycle-sort" });
+		if (key.tab) {
+			dispatchView({ delta: key.shift ? -1 : 1, type: "cycle-sort" });
+		}
 	});
 
 	function pick(match?: ModelMatch): void {

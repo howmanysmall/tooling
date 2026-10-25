@@ -74,8 +74,11 @@ export function reducePickerView(view: PickerView, action: PickerViewAction): Pi
 			return { ...view, sort: action.sort };
 		default: {
 			const filters = new Set(view.filters);
-			if (filters.has(action.filter)) filters.delete(action.filter);
-			else filters.add(action.filter);
+			if (filters.has(action.filter)) {
+				filters.delete(action.filter);
+			} else {
+				filters.add(action.filter);
+			}
 
 			return { ...view, filters };
 		}
@@ -116,10 +119,15 @@ export function parsePickerQuery(query: string): PickerQuery {
 	for (const word of query.trim().split(WHITESPACE)) {
 		const amount = MAX_PRICE.exec(word)?.groups?.amount;
 		const filter = word.startsWith("+") ? findFilter(word.slice(1).toLowerCase()) : undefined;
-		if (amount !== undefined) maxPrice = Number(amount);
-		else if (word.startsWith("@") && word.length > 1) provider = word.slice(1).toLowerCase();
-		else if (filter === undefined) words.push(word);
-		else filters.add(filter);
+		if (amount !== undefined) {
+			maxPrice = Number(amount);
+		} else if (word.startsWith("@") && word.length > 1) {
+			provider = word.slice(1).toLowerCase();
+		} else if (filter === undefined) {
+			words.push(word);
+		} else {
+			filters.add(filter);
+		}
 	}
 
 	return { filters, maxPrice, provider, text: words.join(" ") };
@@ -151,7 +159,9 @@ const MODEL_SORTS: Readonly<Record<Exclude<PickerSort, PickerSort.Recent>, Model
 };
 
 function orderMatches(matches: ReadonlyArray<ModelMatch>, sort: PickerSort, context: PickerContext): Array<ModelMatch> {
-	if (sort === PickerSort.Recent) return [...matches];
+	if (sort === PickerSort.Recent) {
+		return [...matches];
+	}
 
 	const byId = new Map(matches.map((match) => [match.model.id, match]));
 	const sorted = sortModels(
@@ -203,9 +213,18 @@ export function findPickerModels(
  */
 export function describeAbilities(model: ImageModelListItem): string {
 	const abilities: Array<string> = [];
-	if (canDo(model, PickerFilter.Edits)) abilities.push("edits");
+	if (canDo(model, PickerFilter.Edits)) {
+		abilities.push("edits");
+	}
+
 	const count = getCountRange(model).max;
-	if (count > 1) abilities.push(`×${count}`);
-	if (canDo(model, PickerFilter.Transparent)) abilities.push("transparent");
+	if (count > 1) {
+		abilities.push(`×${count}`);
+	}
+
+	if (canDo(model, PickerFilter.Transparent)) {
+		abilities.push("transparent");
+	}
+
 	return abilities.join(" · ");
 }

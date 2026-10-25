@@ -35,7 +35,9 @@ export function getObservedPrices(entries: ReadonlyArray<HistoryEntry>): Map<str
 	}
 
 	const observed = new Map<string, ObservedPrice>();
-	for (const [model, { images, usd }] of totals) observed.set(model, { images, usdPerImage: usd / images });
+	for (const [model, { images, usd }] of totals) {
+		observed.set(model, { images, usdPerImage: usd / images });
+	}
 
 	return observed;
 }
@@ -110,9 +112,7 @@ export function formatObservedPrice(observed: ObservedPrice): string {
  */
 export function describeListPrice({ endpoints, observed }: ModelPrices): string {
 	const price = getListPrice(endpoints);
-	if (observed !== undefined && price?.unit !== "image") {
-		return formatObservedPrice(observed);
-	}
+	if (observed !== undefined && price?.unit !== "image") return formatObservedPrice(observed);
 
 	return price === undefined ? UNKNOWN_PRICE : formatUnitPrice(price);
 }

@@ -61,11 +61,17 @@ export function ChoiceDialog({
 
 	useInput(function onChoiceInput(input, key) {
 		const number = Math.trunc(Number(input));
-		if (key.escape) onChoose(last);
-		else if (key.return) onChoose(cursor);
-		else if (key.upArrow) setCursor(Math.max(0, cursor - 1));
-		else if (key.downArrow) setCursor(Math.min(last, cursor + 1));
-		else if (number >= 1 && number <= choices.length) onChoose(number - 1);
+		if (key.escape) {
+			onChoose(last);
+		} else if (key.return) {
+			onChoose(cursor);
+		} else if (key.upArrow) {
+			setCursor(Math.max(0, cursor - 1));
+		} else if (key.downArrow) {
+			setCursor(Math.min(last, cursor + 1));
+		} else if (number >= 1 && number <= choices.length) {
+			onChoose(number - 1);
+		}
 	});
 
 	return (

@@ -27,7 +27,10 @@ export interface TurnStatusProperties {
 export function TurnStatus({ turn }: Readonly<TurnStatusProperties>): ReactNode {
 	const { frame, time } = useAnimation({ interval: 100 });
 	const parts = ["Generating", useModelName(turn.model)];
-	if (turn.progress !== undefined) parts.push(describeProgress(turn.progress, turn.requested));
+	if (turn.progress !== undefined) {
+		parts.push(describeProgress(turn.progress, turn.requested));
+	}
+
 	parts.push(`${Math.floor(time / 1000)}s`);
 
 	return (

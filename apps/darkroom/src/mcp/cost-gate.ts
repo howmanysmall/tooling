@@ -27,11 +27,15 @@ export function checkBudget(
 	estimates: ReadonlyArray<CostEstimate | undefined>,
 	{ allowUnknownCost, maxCost }: Budget,
 ): BudgetCheck {
-	if (maxCost === undefined) return { isAllowed: true };
+	if (maxCost === undefined) {
+		return { isAllowed: true };
+	}
 
 	const total = describeTotalCost(estimates);
 	let usd = 0;
-	for (const estimate of estimates) usd += estimate?.usd ?? 0;
+	for (const estimate of estimates) {
+		usd += estimate?.usd ?? 0;
+	}
 
 	if (usd > maxCost) {
 		return { isAllowed: false, reason: `Estimated cost ${total} is over maxCost $${maxCost}. Nothing was sent.` };

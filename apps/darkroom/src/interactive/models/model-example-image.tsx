@@ -31,7 +31,9 @@ export function ModelExampleImage({ model }: Readonly<ModelExampleImagePropertie
 	const example = meta.getExample(model);
 	const { attachNode } = useMouseTarget("model-example", {
 		onClick(): void {
-			if (example !== undefined) showImage(example.path);
+			if (example !== undefined) {
+				showImage(example.path);
+			}
 		},
 	});
 	const preview = example === undefined ? undefined : meta.getPreview(example);

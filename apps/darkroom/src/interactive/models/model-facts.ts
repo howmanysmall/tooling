@@ -35,7 +35,9 @@ const addedFormatter = new Intl.DateTimeFormat("en-GB", { day: "numeric", month:
  */
 export function splitModelName(displayName: string): ModelNameParts {
 	const separator = displayName.indexOf(PROVIDER_SEPARATOR);
-	if (separator === -1) return { name: displayName };
+	if (separator === -1) {
+		return { name: displayName };
+	}
 
 	return {
 		name: displayName.slice(separator + PROVIDER_SEPARATOR.length),
@@ -63,7 +65,9 @@ export function describeExampleCaption(example: ModelExample, now: Date, canSwit
 			? ["your latest", prompt, describeMadeAt(example.created, now)]
 			: ["example", prompt];
 
-	if (canSwitch) parts.push(isYours ? "e for the example" : "e for yours");
+	if (canSwitch) {
+		parts.push(isYours ? "e for the example" : "e for yours");
+	}
 
 	return parts.join(" · ");
 }
@@ -177,7 +181,9 @@ export function getPriceLines({ endpoints, observed }: ModelPrices): Array<Fact>
 		})),
 	);
 
-	if (observed !== undefined) lines.push({ label: "your runs", value: describeObserved(observed) });
+	if (observed !== undefined) {
+		lines.push({ label: "your runs", value: describeObserved(observed) });
+	}
 
 	return lines;
 }

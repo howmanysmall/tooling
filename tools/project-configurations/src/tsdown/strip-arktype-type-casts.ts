@@ -63,7 +63,10 @@ function* getPatternNames(pattern: null | Pattern): Generator<string> {
 
 	switch (pattern.type) {
 		case "ArrayPattern": {
-			for (const element of pattern.elements) yield* getPatternNames(element);
+			for (const element of pattern.elements) {
+				yield* getPatternNames(element);
+			}
+
 			break;
 		}
 
@@ -115,7 +118,9 @@ function countDeclarations(program: ESTree.Program): ReadonlyMap<string, number>
 	 * @param name - The declared name, if the declaration has one.
 	 */
 	function add(name?: string): void {
-		if (name !== undefined) counts.set(name, (counts.get(name) ?? 0) + 1);
+		if (name !== undefined) {
+			counts.set(name, (counts.get(name) ?? 0) + 1);
+		}
 	}
 
 	/**
@@ -124,7 +129,9 @@ function countDeclarations(program: ESTree.Program): ReadonlyMap<string, number>
 	 * @param pattern - The binding pattern whose names are declared.
 	 */
 	function addPattern(pattern: null | Pattern): void {
-		for (const name of getPatternNames(pattern)) add(name);
+		for (const name of getPatternNames(pattern)) {
+			add(name);
+		}
 	}
 
 	/**
@@ -133,9 +140,13 @@ function countDeclarations(program: ESTree.Program): ReadonlyMap<string, number>
 	 * @param node - The function whose name and parameters are declared.
 	 */
 	function addFunction(node: ESTree.ArrowFunctionExpression | ESTree.Function): void {
-		if (node.type !== "ArrowFunctionExpression") add(node.id?.name);
+		if (node.type !== "ArrowFunctionExpression") {
+			add(node.id?.name);
+		}
 
-		for (const parameter of node.params) addPattern(parameter);
+		for (const parameter of node.params) {
+			addPattern(parameter);
+		}
 	}
 
 	/**
@@ -243,7 +254,9 @@ function getTypeFunctionNames(program: ESTree.Program, isUnshadowed: (name: stri
 		if (statement.source.value !== "arktype") continue;
 
 		for (const specifier of statement.specifiers) {
-			if (isTypeFunctionImport(specifier) && isUnshadowed(specifier.local.name)) names.add(specifier.local.name);
+			if (isTypeFunctionImport(specifier) && isUnshadowed(specifier.local.name)) {
+				names.add(specifier.local.name);
+			}
 		}
 	}
 
@@ -258,7 +271,9 @@ function getTopLevelConstDeclarators(program: ESTree.Program): Array<ESTree.Vari
 
 		if (statement?.type !== "VariableDeclaration" || statement.kind !== "const") continue;
 
-		for (const declarator of statement.declarations) declarators.push(declarator);
+		for (const declarator of statement.declarations) {
+			declarators.push(declarator);
+		}
 	}
 
 	return declarators;
@@ -359,7 +374,9 @@ export function stripArktypeTypeCasts(): Plugin {
 				new Visitor({
 					CallExpression(call) {
 						const receiver = getStrippableReceiver(call, bindings);
-						if (receiver !== undefined) magicString.remove(receiver.end, call.end);
+						if (receiver !== undefined) {
+							magicString.remove(receiver.end, call.end);
+						}
 					},
 				}).visit(program);
 

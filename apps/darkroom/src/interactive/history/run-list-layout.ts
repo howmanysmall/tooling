@@ -52,7 +52,9 @@ export function buildRunListItems(runs: ReadonlyArray<HistoryEntry>, now: Date):
 	for (const [index, entry] of runs.entries()) {
 		const created = new Date(entry.created);
 		const day = formatLocalDate(created);
-		if (day !== previousDay) items.push({ key: `day:${day}`, kind: "day", label: formatDayLabel(created, now) });
+		if (day !== previousDay) {
+			items.push({ key: `day:${day}`, kind: "day", label: formatDayLabel(created, now) });
+		}
 
 		previousDay = day;
 		items.push({ key: entry.id, entry, index, kind: "run" });
@@ -81,17 +83,26 @@ export function getVisibleItems(
 	for (const item of items) {
 		tops.push(total);
 
-		if (item.kind === "run" && item.index === selectedIndex) selectedTop = total;
+		if (item.kind === "run" && item.index === selectedIndex) {
+			selectedTop = total;
+		}
+
 		total += getLines(item);
 	}
 
-	if (total <= height) return [...items];
+	if (total <= height) {
+		return [...items];
+	}
 
 	const centered = Math.max(0, Math.min(selectedTop - Math.floor((height - RUN_LINES) / 2), total - height));
 	// Start at an item's top, so the pane holds whole items with no blank line
 	// where half a run would have been.
 	let start = 0;
-	for (const top of tops) if (top <= centered) start = top;
+	for (const top of tops) {
+		if (top <= centered) {
+			start = top;
+		}
+	}
 
 	return items.filter((item, index) => {
 		const top = tops[index] ?? 0;

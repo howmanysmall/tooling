@@ -102,8 +102,14 @@ function close(tabs: SessionTabs, id: string, replacement: SessionState): Sessio
 	const sessions = tabs.sessions.toSpliced(index, 1);
 	const unread = withoutUnread(tabs.unread, id);
 	const neighbor = sessions[Math.max(0, index - 1)];
-	if (neighbor === undefined) return { activeId: replacement.id, sessions: [replacement], unread };
-	if (id !== tabs.activeId) return { ...tabs, sessions, unread };
+	if (neighbor === undefined) {
+		return { activeId: replacement.id, sessions: [replacement], unread };
+	}
+
+	if (id !== tabs.activeId) {
+		return { ...tabs, sessions, unread };
+	}
+
 	return select({ ...tabs, sessions, unread }, neighbor.id);
 }
 

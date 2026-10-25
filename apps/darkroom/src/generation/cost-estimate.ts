@@ -126,9 +126,7 @@ function getOutputCost(price: PricingEntry, request: EstimateRequest): number | 
 	if (price.unit === "request") return price.costUsd;
 
 	const megapixels = getMegapixels(request.resolution, request.aspectRatio);
-	if (megapixels !== undefined && price.unit === "megapixel") {
-		return price.costUsd * megapixels * request.count;
-	}
+	if (megapixels !== undefined && price.unit === "megapixel") return price.costUsd * megapixels * request.count;
 
 	return undefined;
 }
@@ -141,14 +139,20 @@ interface ReferenceCost {
 function getReferenceCost(pricing: ReadonlyArray<PricingEntry>, referenceCount: number): ReferenceCost {
 	let usd = 0;
 	let isApproximate = false;
-	if (referenceCount === 0) return { isApproximate, usd };
+	if (referenceCount === 0) {
+		return { isApproximate, usd };
+	}
 
 	for (const entry of pricing) {
 		if (!REFERENCE_BILLABLES.has(entry.billable) || entry.variant !== undefined) continue;
 
-		if (entry.unit === "image") usd += entry.costUsd * referenceCount;
-		else if (entry.unit === "request") usd += entry.costUsd;
-		else isApproximate = true;
+		if (entry.unit === "image") {
+			usd += entry.costUsd * referenceCount;
+		} else if (entry.unit === "request") {
+			usd += entry.costUsd;
+		} else {
+			isApproximate = true;
+		}
 	}
 
 	return { isApproximate, usd };
@@ -189,7 +193,9 @@ export function getCostEstimate(
 	let cheapest: CostEstimate | undefined;
 	for (const endpoint of endpoints) {
 		const estimate = getEndpointEstimate(endpoint, request);
-		if (estimate !== undefined && (cheapest === undefined || estimate.usd < cheapest.usd)) cheapest = estimate;
+		if (estimate !== undefined && (cheapest === undefined || estimate.usd < cheapest.usd)) {
+			cheapest = estimate;
+		}
 	}
 
 	if (cheapest !== undefined || observed === undefined) return cheapest;
@@ -216,9 +222,7 @@ const priceFormatter = new Intl.NumberFormat("en-US", {
  * @returns The formatted price.
  */
 export function formatUnitPrice(entry: PricingEntry): string {
-	if (entry.unit === "token") {
-		return `${priceFormatter.format(entry.costUsd * 1e6)}/M tok`;
-	}
+	if (entry.unit === "token") return `${priceFormatter.format(entry.costUsd * 1e6)}/M tok`;
 
 	return `${priceFormatter.format(entry.costUsd)}/${UNIT_LABELS.get(entry.unit) ?? entry.unit}`;
 }

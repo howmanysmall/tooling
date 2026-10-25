@@ -8,7 +8,9 @@ import type { EditorAction, PromptEditor } from "./prompt-editor-state";
 
 function apply(editor: PromptEditor, ...actions: ReadonlyArray<EditorAction>): PromptEditor {
 	let next = editor;
-	for (const action of actions) next = reducePromptEditor(next, action);
+	for (const action of actions) {
+		next = reducePromptEditor(next, action);
+	}
 
 	return next;
 }

@@ -20,7 +20,9 @@ function encodeTime(milliseconds: number): string {
 function encodeRandom(): string {
 	const bytes = getRandomValues(new Uint8Array(RANDOM_LENGTH));
 	let encoded = "";
-	for (const byte of bytes) encoded += ALPHABET[byte % 32];
+	for (const byte of bytes) {
+		encoded += ALPHABET[byte % 32];
+	}
 
 	return encoded;
 }

@@ -36,8 +36,11 @@ export function HistoryStripCell({ box, run }: Readonly<HistoryStripCellProperti
 	const [first] = run.images;
 	const { attachNode, isHovered } = useMouseTarget(`strip:${run.id}`, {
 		onClick(): void {
-			if (!isSelected) actions.selectRun(run.id);
-			else if (first !== undefined) showImage(getImagePath(first, meta.resolve));
+			if (!isSelected) {
+				actions.selectRun(run.id);
+			} else if (first !== undefined) {
+				showImage(getImagePath(first, meta.resolve));
+			}
 		},
 	});
 	const preview = meta.getPreview(run, box);

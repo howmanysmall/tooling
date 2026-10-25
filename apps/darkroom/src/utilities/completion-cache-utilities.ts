@@ -34,7 +34,9 @@ function getParameterLines(imageModel: ImageModelListItem): Array<string> {
 	const lines: Array<string> = [];
 	for (const parameter of COMPLETED_PARAMETERS) {
 		const descriptor = imageModel.supportedParameters[parameter];
-		if (descriptor?.type === "enum") lines.push([imageModel.id, parameter, ...descriptor.values].join("\t"));
+		if (descriptor?.type === "enum") {
+			lines.push([imageModel.id, parameter, ...descriptor.values].join("\t"));
+		}
 	}
 
 	return lines;

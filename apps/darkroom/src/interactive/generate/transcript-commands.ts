@@ -30,7 +30,9 @@ function getDeleteCommand(
 	turn: SessionTurn | undefined,
 	environment: TranscriptEnvironment,
 ): Array<BrowserCommand> {
-	if (turn === undefined || !isSettled(turn)) return [];
+	if (turn === undefined || !isSettled(turn)) {
+		return [];
+	}
 
 	return [
 		{

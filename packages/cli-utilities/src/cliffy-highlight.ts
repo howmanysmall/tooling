@@ -42,7 +42,10 @@ export function renderHighlight(text: string): string {
 			codeLines === undefined ? renderPlainLine(line, rendered) : renderCodeLine(codeLines, line, rendered);
 	}
 
-	if (codeLines !== undefined) rendered.push(renderCodeBlock(codeLines));
+	if (codeLines !== undefined) {
+		rendered.push(renderCodeBlock(codeLines));
+	}
+
 	return rendered.join("\n");
 }
 
@@ -50,7 +53,9 @@ function renderCodeBlock(codeLines: ReadonlyArray<string>): string {
 	const array = Array.from<string>({ length: codeLines.length });
 	let size = 0;
 
-	for (const line of codeLines) array[size++] = renderFencedLine(line);
+	for (const line of codeLines) {
+		array[size++] = renderFencedLine(line);
+	}
 
 	return array.join("\n");
 }
@@ -104,9 +109,14 @@ function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?:
 	let size = 0;
 	let index = 0;
 	for (const part of parts) {
-		if (part.length === 0 || WHITESPACE_PATTERN.test(part)) inlineCode[size++] = part;
-		else if (INLINE_FLAG_PATTERN.test(part)) inlineCode[size++] = ansi.blueBright(part);
-		else inlineCode[size++] = index === binaryIndex ? ansi.magentaBright(part) : ansi.cyan(part);
+		if (part.length === 0 || WHITESPACE_PATTERN.test(part)) {
+			inlineCode[size++] = part;
+		} else if (INLINE_FLAG_PATTERN.test(part)) {
+			inlineCode[size++] = ansi.blueBright(part);
+		} else {
+			inlineCode[size++] = index === binaryIndex ? ansi.magentaBright(part) : ansi.cyan(part);
+		}
+
 		index += 1;
 	}
 
@@ -167,9 +177,7 @@ function renderLine(line: string): string {
 	}
 
 	const quote = QUOTE_PATTERN.exec(line);
-	if (quote !== null) {
-		return `${ansi.dim(">")} ${renderInline(quote.groups.content)}`;
-	}
+	if (quote !== null) return `${ansi.dim(">")} ${renderInline(quote.groups.content)}`;
 
 	const bullet = BULLET_PATTERN.exec(line);
 	if (bullet !== null) {
@@ -196,12 +204,16 @@ function renderPlainLine(line: string, rendered: Array<string>): Array<string> |
 	const { marker } = opening.groups;
 	const rest = line.slice(opening[0].length);
 	const closingIndex = rest.indexOf(marker);
-	if (closingIndex === -1) return [];
+	if (closingIndex === -1) {
+		return [];
+	}
 
 	rendered.push(renderCodeBlock([rest.slice(0, closingIndex)]));
 
 	const remainder = rest.slice(closingIndex + marker.length);
-	if (remainder.length > 0) rendered.push(renderLine(remainder));
+	if (remainder.length > 0) {
+		rendered.push(renderLine(remainder));
+	}
 
 	return undefined;
 }
@@ -219,7 +231,9 @@ function renderCodeLine(codeLines: Array<string>, line: string, rendered: Array<
 	rendered.push(renderCodeBlock(codeLines));
 
 	const remainder = line.slice(closingFenceIndex + marker.length);
-	if (remainder.length > 0) rendered.push(renderLine(remainder));
+	if (remainder.length > 0) {
+		rendered.push(renderLine(remainder));
+	}
 
 	return undefined;
 }

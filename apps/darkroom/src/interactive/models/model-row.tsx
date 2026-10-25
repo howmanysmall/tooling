@@ -24,7 +24,10 @@ const PRICE_WIDTH = 13;
 function getNameRuns(model: ImageModelListItem, isSelected: boolean): Array<StyledRun> {
 	const { name, provider } = splitModelName(model.name);
 	const runs: Array<StyledRun> = [{ color: theme.text, isBold: isSelected, text: name }];
-	if (provider !== undefined) runs.push({ color: theme.muted, text: `  ${provider}` });
+	if (provider !== undefined) {
+		runs.push({ color: theme.muted, text: `  ${provider}` });
+	}
+
 	return runs;
 }
 

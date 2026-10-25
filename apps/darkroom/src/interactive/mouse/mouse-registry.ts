@@ -65,12 +65,17 @@ function pickHit<Node>(
 	hasHandler: (target: MouseHandlers) => boolean,
 ): Hit<Node> | undefined {
 	let topLayer = Number.NEGATIVE_INFINITY;
-	for (const { target } of hits) topLayer = Math.max(topLayer, target.layer);
+	for (const { target } of hits) {
+		topLayer = Math.max(topLayer, target.layer);
+	}
 
 	let best: Hit<Node> | undefined;
 	for (const hit of hits) {
 		if (hit.target.layer !== topLayer || !hasHandler(hit.target)) continue;
-		if (best === undefined || hit.area < best.area) best = hit;
+
+		if (best === undefined || hit.area < best.area) {
+			best = hit;
+		}
 	}
 
 	return best;
@@ -121,12 +126,17 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 		hoveredId = hit?.id;
 		hit?.target.onHover?.();
 
-		for (const listener of listeners) listener();
+		for (const listener of listeners) {
+			listener();
+		}
 	}
 
 	function release(hits: ReadonlyArray<Hit<Node>>): void {
 		const hit = pickHit(hits, hasClick);
-		if (hit !== undefined && hit.id === pressedId) hit.target.onClick?.();
+		if (hit !== undefined && hit.id === pressedId) {
+			hit.target.onClick?.();
+		}
+
 		pressedId = undefined;
 	}
 
@@ -172,7 +182,9 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 		register(id, target): () => void {
 			targets.set(id, target);
 			return () => {
-				if (targets.get(id) === target) targets.delete(id);
+				if (targets.get(id) === target) {
+					targets.delete(id);
+				}
 			};
 		},
 		subscribe(listener): () => void {

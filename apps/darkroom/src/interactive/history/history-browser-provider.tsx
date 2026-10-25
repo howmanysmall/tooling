@@ -129,7 +129,9 @@ function preloadNearby({ meta, state }: HistoryBrowserContextValue): void {
 
 		// A comparison shows a strip of smaller images instead.
 		const { box, shown } = planBatchStrip(getComparisonRuns(run, batch), run.id, meta.layout.previewBox);
-		for (const cell of shown) meta.getPreview(cell, box);
+		for (const cell of shown) {
+			meta.getPreview(cell, box);
+		}
 	}
 }
 

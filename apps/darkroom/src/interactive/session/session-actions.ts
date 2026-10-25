@@ -103,7 +103,9 @@ export function createSessionActions({
 		const runs = kept.flatMap((turn) => (turn.result === undefined ? [] : [turn.result.id]));
 		if (runs.length > 0) {
 			runBrowserTask(saveForkAsync(runs, fork.id), (failure) => {
-				if (failure !== undefined) reportError(`Couldn't save the fork: ${failure}`);
+				if (failure !== undefined) {
+					reportError(`Couldn't save the fork: ${failure}`);
+				}
 			});
 		}
 
@@ -163,7 +165,9 @@ export function createSessionActions({
 		},
 		fork(turnId): void {
 			const session = createFork(turnId);
-			if (session !== undefined) dispatch({ session, type: "open" });
+			if (session !== undefined) {
+				dispatch({ session, type: "open" });
+			}
 		},
 		newSession(): void {
 			dispatch({ session: createSession(createUlid()), type: "open" });
@@ -176,20 +180,27 @@ export function createSessionActions({
 
 			if (turn.result === undefined) return;
 			runBrowserTask(deleteRunAsync(turn.result, deletion), (failure) => {
-				if (failure !== undefined) reportError(`Couldn't delete the run: ${failure}`);
+				if (failure !== undefined) {
+					reportError(`Couldn't delete the run: ${failure}`);
+				}
 			});
 		},
 		resume(session): void {
-			if (tabs.sessions.some((open) => open.id === session.id)) dispatch({ id: session.id, type: "select" });
-			else {
+			if (tabs.sessions.some((open) => open.id === session.id)) {
+				dispatch({ id: session.id, type: "select" });
+			} else {
 				runBrowserTask(resumeAsync(session), (failure) => {
-					if (failure !== undefined) reportError(`Couldn't resume the session: ${failure}`);
+					if (failure !== undefined) {
+						reportError(`Couldn't resume the session: ${failure}`);
+					}
 				});
 			}
 		},
 		rewind(turnId): void {
 			const session = createFork(turnId);
-			if (session !== undefined) dispatch({ id: active.id, session, type: "replace" });
+			if (session !== undefined) {
+				dispatch({ id: active.id, session, type: "replace" });
+			}
 		},
 		select(id): void {
 			dispatch({ id, type: "select" });
@@ -205,7 +216,9 @@ export function createSessionActions({
 				type: "turn-added",
 			});
 			runBrowserTask(prepareAsync(session, id, request), (failure) => {
-				if (failure !== undefined) fail(session, id, failure);
+				if (failure !== undefined) {
+					fail(session, id, failure);
+				}
 			});
 		},
 		toggleMode(): void {
