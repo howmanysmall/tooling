@@ -14,7 +14,6 @@ cargo.binstall_native = true
 
 [tools]
 "github:howmanysmall/pullhook" = "latest"
-"github:jdx/jactionlint" = "latest"
 "github:vale-cli/vale-ls" = "latest"
 "npm:sherif" = "latest"
 betterleaks = "latest"
@@ -23,6 +22,7 @@ communique = "latest"
 direnv = "latest"
 git-cliff = "latest"
 hk = { version = "2.8.1", workflow = "release.yml" }
+jactionlint = "latest"
 ni = "latest"
 node = "26"
 pinact = "latest"
