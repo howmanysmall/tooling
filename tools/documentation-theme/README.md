@@ -1,8 +1,8 @@
 # @howmanysmall/documentation-theme
 
-Anna's field-notebook design for the Starlight documentation sites in `documentation/`. Pages are paper, ink, and
-hairline rules. Newsreader sets the headings and IBM Plex the rest. Only data and links get a hue, plus one riso
-overprint on the number a page is about.
+Anna's field-notebook design for the Starlight documentation sites in `documentation/`. Pages use paper, ink, and
+hairline rules. Newsreader sets the headings. Plex Sans handles body text, and Plex Mono handles code. Data and links
+get a hue. One number on each page gets a riso overprint.
 
 Figma has the design, on the `T - darkroom docs` page of the
 [anna-design file](https://www.figma.com/design/B4T0nYhSFRwiGvL9sh2BCD?node-id=130-2). Its `darkroom docs` variables
@@ -40,14 +40,14 @@ export default defineConfig({
 | Section rows, readouts, legends, and the footnote band | `src/styles/notebook.css`, with the components in `src/components/`. |
 | The fonts | `src/styles/fonts.css`. |
 | The header and footer | `src/overrides/`. |
-| Syntax colors | `src/syntax-themes.ts`, which follows the ink scale in `tokens.css`, plus gold flags and pink values in shells. |
+| Syntax colors | `src/syntax-themes.ts`, which follows the ink scale in `tokens.css`. Shell output adds gold flags and pink values. |
 | The address the sites publish to | `src/site.ts`. |
 
 A palette change belongs in both places. Update the matching Figma variable along with the CSS.
 
 ## Components
 
-Import them in MDX or Astro from `@howmanysmall/documentation-theme/components/<name>.astro`.
+Import components into documentation pages or Astro files from `@howmanysmall/documentation-theme/components/<name>.astro`.
 
 | Component | What it draws |
 | --- | --- |

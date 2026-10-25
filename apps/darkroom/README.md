@@ -21,10 +21,10 @@ Set `OPENROUTER_API_KEY`, in the environment or in a `.env` file. Commands that 
 Run `darkroom` with no arguments to open the full-screen app. It has three tabs; `tab` cycles them, and outside the
 prompt box `1`, `2`, and `3` jump to one. `ctrl+p` opens a command palette on every tab, and `?` lists every key.
 
-Clicking a tab, a list row, or a palette entry chooses it, and the wheel scrolls the list under the pointer. A click
-outside a dialog closes it. Since the app takes the mouse, it selects text itself: drag across the screen, and darkroom
-lights up the cells and copies the text through the Operating System Command (OSC) 52 sequence when you let go. Text cut off in a list or a tab scrolls
-while its row is chosen or under the pointer, so you can read it all. Clicking any image, or the path of one, opens
+Clicking a tab, a list row, or a palette entry chooses it, and the wheel scrolls the list under the pointer. Outside a
+dialog, clicks close it. Drag across the screen to select text. When you let go, darkroom highlights the cells and copies
+the selection with Operating System Command (OSC) 52. Text cut off in a list or tab scrolls while its row is chosen or
+under the pointer, so you can read it all. Clicking any image, or its path, opens
 the same actions as an image in a session, such as copying the picture itself.
 
 - **generate**: a prompt box with the model and its price beneath it. Enter shows the request with its estimated cost
