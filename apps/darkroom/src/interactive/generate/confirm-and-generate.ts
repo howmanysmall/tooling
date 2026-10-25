@@ -52,6 +52,7 @@ export async function confirmAndGenerateAsync(prepared: PreparedGeneration): Pro
 	if (paths !== undefined) {
 		note(paths, "Saved");
 	}
+
 	outro("Done.");
 	runner.throwIfIncomplete(result);
 }

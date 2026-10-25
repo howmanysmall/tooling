@@ -13,6 +13,7 @@ async function loadWithEnvironmentAsync(
 	for (const [key, value] of Object.entries(variables)) {
 		vi.stubEnv(key, value);
 	}
+
 	vi.resetModules();
 	const { getEnvironmentAsync } = await import("./get-environment-async.ts");
 	// A path with no file, so the real .env never overrides the stubbed values.

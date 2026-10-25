@@ -168,6 +168,7 @@ function finishCompare(input: CompareInput, plan: ComparePlan, { outcomes, signa
 	if (output !== undefined) {
 		console.log(output);
 	}
+
 	stderr.write(`${formatCompareSummary(outcomes)}\n`);
 
 	if (signalCode !== undefined) {

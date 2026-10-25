@@ -105,9 +105,11 @@ function close(tabs: SessionTabs, id: string, replacement: SessionState): Sessio
 	if (neighbor === undefined) {
 		return { activeId: replacement.id, sessions: [replacement], unread };
 	}
+
 	if (id !== tabs.activeId) {
 		return { ...tabs, sessions, unread };
 	}
+
 	return select({ ...tabs, sessions, unread }, neighbor.id);
 }
 

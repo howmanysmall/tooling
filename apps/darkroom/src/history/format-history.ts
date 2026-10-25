@@ -90,7 +90,9 @@ function describeRequest({ request }: HistoryEntry): Array<Row> {
 	];
 
 	for (const [label, value] of optional) {
-		if (value !== undefined) rows.push([label, String(value)]);
+		if (value !== undefined) {
+			rows.push([label, String(value)]);
+		}
 	}
 
 	return rows;

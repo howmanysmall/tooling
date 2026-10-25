@@ -113,6 +113,7 @@ export function createTextSelection(screen: TextSelectionScreen, copy: (text: st
 		if (text.length > 0) {
 			copy(text);
 		}
+
 		return true;
 	}
 

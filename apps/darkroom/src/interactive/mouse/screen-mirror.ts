@@ -49,18 +49,23 @@ export function describeCellStyle(cell: IBufferCell, highlight?: number): string
 	if (cell.isBold() !== 0) {
 		codes.push("1");
 	}
+
 	if (cell.isDim() !== 0) {
 		codes.push("2");
 	}
+
 	if (cell.isItalic() !== 0) {
 		codes.push("3");
 	}
+
 	if (cell.isUnderline() !== 0) {
 		codes.push("4");
 	}
+
 	if (cell.isStrikethrough() !== 0) {
 		codes.push("9");
 	}
+
 	codes.push(getForeground(cell), highlight === undefined ? getBackground(cell) : `48;${toRgbCodes(highlight)}`);
 	return `\u001B[${codes.join(";")}m`;
 }
@@ -160,6 +165,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			for (const span of spans) {
 				drawn += drawSpan(span, isHighlighted);
 			}
+
 			output.write(`${drawn}${RESET}${RESTORE_CURSOR}`);
 		},
 		readText(runs): string {
@@ -172,6 +178,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 				} else if (previous !== undefined) {
 					text += "\n".repeat(row - previous.row);
 				}
+
 				text += terminal.buffer.active.getLine(row)?.translateToString(false, start, end) ?? "";
 				previous = { end, row, start };
 			}

@@ -122,6 +122,7 @@ const command = createBaseCommand(scriptName, "1.0.0", "Releases one tool from a
 		if (yes) {
 			overrides.confirm = false;
 		}
+
 		if (release !== undefined) {
 			overrides.release = release;
 		}

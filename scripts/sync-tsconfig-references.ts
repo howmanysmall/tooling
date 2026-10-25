@@ -128,6 +128,7 @@ async function readChildDirectoriesAsync(directory: string): Promise<ReadonlyArr
 		if (error instanceof Error && "code" in error && error.code === "ENOENT") {
 			return [];
 		}
+
 		throw error;
 	}
 }
@@ -271,6 +272,7 @@ const command = createBaseCommand(scriptName, "1.0.0", "Syncs tsconfig.json refe
 		for (const { path } of staleReferences) {
 			log.info(`updated ${path}`);
 		}
+
 		log.success(
 			staleReferences.length === 0
 				? "all tsconfig references are in sync"

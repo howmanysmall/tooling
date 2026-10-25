@@ -37,6 +37,7 @@ async function confirmAsync(count: number): Promise<boolean> {
 	if (isCancel(answer)) {
 		throw new InterruptedError("Cancelled.");
 	}
+
 	return answer;
 }
 

@@ -86,6 +86,7 @@ export function getVisibleItems(
 		if (item.kind === "run" && item.index === selectedIndex) {
 			selectedTop = total;
 		}
+
 		total += getLines(item);
 	}
 
@@ -98,7 +99,9 @@ export function getVisibleItems(
 	// where half a run would have been.
 	let start = 0;
 	for (const top of tops) {
-		if (top <= centered) start = top;
+		if (top <= centered) {
+			start = top;
+		}
 	}
 
 	return items.filter((item, index) => {

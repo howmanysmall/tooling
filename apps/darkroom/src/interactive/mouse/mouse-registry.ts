@@ -72,6 +72,7 @@ function pickHit<Node>(
 	let best: Hit<Node> | undefined;
 	for (const hit of hits) {
 		if (hit.target.layer !== topLayer || !hasHandler(hit.target)) continue;
+
 		if (best === undefined || hit.area < best.area) {
 			best = hit;
 		}
@@ -135,6 +136,7 @@ export function createMouseRegistry<Node>(measure: (node: Node) => CellRect | un
 		if (hit !== undefined && hit.id === pressedId) {
 			hit.target.onClick?.();
 		}
+
 		pressedId = undefined;
 	}
 

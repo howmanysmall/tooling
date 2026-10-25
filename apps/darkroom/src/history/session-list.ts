@@ -22,7 +22,9 @@ export interface SessionSummary {
 function sumCosts(runs: ReadonlyArray<HistoryEntry>): number | undefined {
 	let total: number | undefined;
 	for (const { cost } of runs) {
-		if (cost !== undefined) total = (total ?? 0) + cost;
+		if (cost !== undefined) {
+			total = (total ?? 0) + cost;
+		}
 	}
 
 	return total;
@@ -45,6 +47,7 @@ function getSessions({ forks, session }: HistoryEntry): ReadonlyArray<string> {
 	if (session === undefined) {
 		return [];
 	}
+
 	return forks === undefined ? [session] : [session, ...forks];
 }
 
@@ -86,6 +89,7 @@ export function resolveSessionReference(sessions: ReadonlyArray<SessionSummary>,
 		if (last === undefined) {
 			throw new ValidationError("There is no session yet.");
 		}
+
 		return last;
 	}
 

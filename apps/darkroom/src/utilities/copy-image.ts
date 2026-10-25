@@ -78,6 +78,7 @@ export function getClipboardCommand(png: string, system: NodeJS.Platform, isWayl
 	if (isWayland) {
 		return { command: "sh", parameters: ["-c", 'wl-copy --type image/png < "$1"', "sh", png] };
 	}
+
 	return { command: "xclip", parameters: ["-selection", "clipboard", "-t", "image/png", "-i", png] };
 }
 

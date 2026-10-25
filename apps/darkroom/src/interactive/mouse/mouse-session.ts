@@ -48,6 +48,7 @@ export function createMouseSession(input: NodeJS.ReadStream, output: NodeJS.Writ
 		if (selection.handle(event)) {
 			registry.cancelPress();
 		}
+
 		registry.dispatch(event);
 	});
 

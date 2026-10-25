@@ -34,6 +34,7 @@ export function checkModelIds(modelIds: ReadonlyArray<string>): void {
 		if (seen.has(modelId)) {
 			repeated.add(modelId);
 		}
+
 		seen.add(modelId);
 	}
 

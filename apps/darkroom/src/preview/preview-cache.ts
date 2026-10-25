@@ -47,6 +47,7 @@ export class PreviewCache {
 		for (const id of this.imageIds) {
 			this.write(formatKittyDelete(id));
 		}
+
 		this.imageIds.clear();
 	}
 
@@ -72,6 +73,7 @@ export class PreviewCache {
 		if (preview.kind === "image" && preview.imageId !== undefined) {
 			this.imageIds.add(preview.imageId);
 		}
+
 		return preview;
 	}
 }

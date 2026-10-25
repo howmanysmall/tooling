@@ -81,6 +81,7 @@ function splitReference(reference: string): SplitReference {
 	if (hash === -1) {
 		return { fragment: "", path: reference };
 	}
+
 	return { fragment: reference.slice(hash + 1), path: reference.slice(0, hash) };
 }
 
@@ -122,6 +123,7 @@ function resolveReference(reference: string, pageFile: string, root: string, bas
 	if (path.length === 0) {
 		return { file: pageFile };
 	}
+
 	if (path.startsWith("/")) return resolveAbsoluteReference(path, root, base);
 	return resolveRelativeReference(path, pageFile, root);
 }
