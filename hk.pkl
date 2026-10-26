@@ -191,6 +191,7 @@ local fileChecks = new Mapping<String, Step> {
             "--staged",
             "--redact",
             "--no-banner",
+            "--verbose",
           )
       }
       effect = "read"
@@ -318,7 +319,7 @@ hooks {
         stdin = "{{hook_stdin}}"
         check = new CommandSpec {
           command = new Command {
-            argv = List("bash", "scripts/betterleaks-pre-push.sh")
+            argv = List("bun", "run", "scripts/betterleaks-pre-push.ts")
           }
           effect = "read"
         }
