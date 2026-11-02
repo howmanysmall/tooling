@@ -1,6 +1,6 @@
-import { TextInput } from "@inkjs/ui";
 import { Box, Text } from "ink";
 
+import { SearchInput } from "./search-input";
 import { theme } from "./theme";
 
 import type { ReactNode } from "react";
@@ -37,8 +37,8 @@ export function FilterInput({
 				<Text bold={true} color={theme.accent}>
 					{"/ "}
 				</Text>
-				<TextInput
-					defaultValue={initialValue}
+				<SearchInput
+					initialValue={initialValue}
 					placeholder={placeholder}
 					onChange={onChange}
 					onSubmit={onSubmit}

@@ -2,7 +2,7 @@ import process from "node:process";
 import { PassThrough } from "node:stream";
 import { StringDecoder } from "node:string_decoder";
 
-import { splitMouseInput } from "./mouse-input";
+import { normalizeCtrlBackspace, splitMouseInput } from "./mouse-input";
 
 import type { Duplex } from "node:stream";
 
@@ -50,7 +50,7 @@ export function createMouseStdin(
 		({ pending } = split);
 
 		if (text.length > 0) {
-			keyboard.write(text);
+			keyboard.write(normalizeCtrlBackspace(text));
 		}
 
 		for (const event of events) {

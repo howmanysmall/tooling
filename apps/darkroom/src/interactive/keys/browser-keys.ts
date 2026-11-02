@@ -28,6 +28,7 @@ export const enum BrowserKey {
 	Open = "open",
 	PageDown = "page-down",
 	PageUp = "page-up",
+	PasteImage = "paste-image",
 	PreviousSession = "previous-session",
 	PromptCopy = "prompt-copy",
 	PromptDelete = "prompt-delete",

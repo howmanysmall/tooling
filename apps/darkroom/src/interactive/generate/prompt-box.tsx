@@ -12,6 +12,7 @@ import type { ReactNode } from "react";
 import type { ModelPrices } from "$generation/observed-prices";
 
 import type { PromptEditor } from "./prompt-editor-state";
+import type { PromptImage } from "./prompt-images";
 
 export interface PromptBoxProperties {
 	/** Whether the model takes images, to edit one. */
@@ -19,6 +20,8 @@ export interface PromptBoxProperties {
 	/** The file name of the image the prompt edits, or `undefined`. */
 	editFileName?: string | undefined;
 	editor: PromptEditor;
+	/** The images pasted into the prompt. */
+	images: ReadonlyArray<PromptImage>;
 	model?: ImageModelListItem | undefined;
 	prices?: ModelPrices | undefined;
 	width: number;
@@ -35,6 +38,7 @@ const PLACEHOLDER = "Describe an image…";
  * @param properties.canEdit - Whether the model takes images.
  * @param properties.editFileName - The image the prompt edits, if any.
  * @param properties.editor - The text and cursor.
+ * @param properties.images - The images pasted into the prompt.
  * @param properties.model - The model to generate with, if any.
  * @param properties.prices - That model's prices.
  * @param properties.width - How wide the box is.
@@ -44,6 +48,7 @@ export function PromptBox({
 	canEdit,
 	editFileName,
 	editor,
+	images,
 	model,
 	prices,
 	width,
@@ -63,7 +68,7 @@ export function PromptBox({
 			rowGap={1}
 			width={width}
 		>
-			<PromptText editor={editor} placeholder={PLACEHOLDER} />
+			<PromptText editor={editor} images={images} placeholder={PLACEHOLDER} />
 			<Box>
 				<Box flexShrink={0}>
 					<PromptModeLabel canEdit={canEdit} editFileName={editFileName} />

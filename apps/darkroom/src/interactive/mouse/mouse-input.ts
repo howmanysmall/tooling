@@ -41,6 +41,22 @@ const WHEEL_BIT = 64;
 const BUTTON_BITS = 3;
 const PRIMARY_BUTTON = 0;
 
+// oxlint-disable-next-line no-control-regex -- the point; ESC+BS stays alt+backspace
+const LEGACY_CTRL_BACKSPACE = /(?<!\u001B)\u0008/gu;
+const CTRL_W = "\u0017";
+
+/**
+ * Turns the `BS` byte into `ctrl+w`. Mac terminals send `DEL` for backspace,
+ * so a `BS` is `ctrl+backspace`, which Ink can't tell from backspace. That
+ * gives up `ctrl+h` as a backspace, which no key in the app relies on.
+ *
+ * @param text - Keyboard input, with the mouse reports taken out.
+ * @returns The input, with `ctrl+backspace` deleting a word.
+ */
+export function normalizeCtrlBackspace(text: string): string {
+	return text.replaceAll(LEGACY_CTRL_BACKSPACE, CTRL_W);
+}
+
 /**
  * Reads one SGR report's button code.
  *
