@@ -8,6 +8,7 @@ import { baseIgnores, projectType } from "./constants.ts";
 
 import type { OxfmtOptions } from "@isentinel/eslint-config";
 import type { OxlintConfig } from "@isentinel/eslint-config/oxlint";
+import type { LiteralUnion } from "type-fest";
 
 const CONFIGURATION_FILES = `**/*.config.${GLOB_SRC_EXT}`;
 const SCRIPT_FILES = `scripts/${GLOB_SRC}`;
@@ -63,8 +64,16 @@ const REACT_EFFECT_RESTRICTED_SYNTAX = [
 	},
 ] as const;
 
+export const ReactMode = {
+	BanUseEffect: 2,
+	ReactCompiler: 1,
+} as const;
+
+export type ReactMode = LiteralUnion<(typeof ReactMode)[keyof typeof ReactMode], number>;
+
 interface ConfigurationOptions {
 	readonly argv?: ReadonlyArray<string> | undefined;
+	readonly reactMode?: ReactMode | undefined;
 	readonly rootDirectory: string;
 	readonly tsconfigPath: string;
 }
@@ -74,8 +83,33 @@ async function getOxfmtOptionsAsync(): Promise<OxfmtOptions> {
 	return getOxfmtConfigurationAsync();
 }
 
+type NoRestrictedSyntax = NonNullable<
+	NonNullable<NonNullable<Parameters<typeof isentinel>[0]>["rules"]>["eslint-js/no-restricted-syntax"]
+>;
+
+function getNoRestrictedSyntax(reactMode?: ReactMode): NoRestrictedSyntax | undefined {
+	if (reactMode === undefined) return undefined;
+
+	const noRestrictedSyntax: NoRestrictedSyntax = ["error"];
+
+	if (reactMode & ReactMode.ReactCompiler) {
+		for (const syntax of REACT_COMPILER_RESTRICTED_SYNTAX) {
+			noRestrictedSyntax.push(syntax);
+		}
+	}
+
+	if (reactMode & ReactMode.BanUseEffect) {
+		for (const syntax of REACT_EFFECT_RESTRICTED_SYNTAX) {
+			noRestrictedSyntax.push(syntax);
+		}
+	}
+
+	return noRestrictedSyntax;
+}
+
 export async function getOxlintAsync({
 	argv,
+	reactMode,
 	rootDirectory,
 	tsconfigPath,
 }: ConfigurationOptions): Promise<OxlintConfig> {
@@ -244,11 +278,7 @@ export async function getOxlintAsync({
 				"no-magic-numbers": "off",
 				"no-nested-ternary": "off",
 				"no-plusplus": "off",
-				"no-restricted-syntax": [
-					"error",
-					...REACT_COMPILER_RESTRICTED_SYNTAX,
-					...REACT_EFFECT_RESTRICTED_SYNTAX,
-				],
+				"no-restricted-syntax": getNoRestrictedSyntax(reactMode),
 				"no-ternary": "off",
 				"no-undefined": "off",
 				"no-underscore-dangle": "off",
@@ -343,6 +373,7 @@ export async function getOxlintAsync({
 				"small-rules/no-cascading-set-state": "error",
 				"small-rules/no-chain-state-updates": "error",
 				"small-rules/no-chained-type-assertions": "error",
+				"small-rules/no-cliffy-action-wrapper": "error",
 				"small-rules/no-color3-constructor": "off",
 				"small-rules/no-conditional-empty-object-spread": "error",
 				"small-rules/no-constant-condition-with-break": [
@@ -369,10 +400,14 @@ export async function getOxlintAsync({
 				"small-rules/no-increment-decrement": ["error", { allowAutofix: true }],
 				"small-rules/no-initialize-state": ["error", { environment: "standard" }],
 				"small-rules/no-inline-property-on-memo-component": "error",
+				"small-rules/no-inline-signature-types": "error",
 				"small-rules/no-instance-methods-without-this": "off",
+				"small-rules/no-jsx-spread-child": "error",
 				"small-rules/no-known-value-widening": "error",
 				"small-rules/no-module-mocking": "error",
+				"small-rules/no-multiple-cliffy-commands": "error",
 				"small-rules/no-native-properties-spread": "off",
+				"small-rules/no-nested-hook-calls": "warn",
 				"small-rules/no-new-instance-in-use-memo": "off",
 				"small-rules/no-object-parameters": "error",
 				"small-rules/no-pass-data-to-parent": ["error", { environment: "standard" }],

@@ -1059,6 +1059,9 @@ importers:
       oxlint-plugin-react-doctor:
         specifier: catalog:lint
         version: 0.9.21
+      type-fest:
+        specifier: catalog:types
+        version: 5.10.0
     devDependencies:
       '@howmanysmall/project-configurations':
         specifier: workspace:*
