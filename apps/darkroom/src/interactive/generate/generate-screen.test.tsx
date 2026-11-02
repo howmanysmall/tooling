@@ -81,6 +81,7 @@ function createFakeSession(): FakeSession {
 			getRunningCount: () => 0,
 			async prepareAsync(request): Promise<PendingRequest> {
 				requests.push(request);
+
 				const prepared = await prepareGenerationAsync(
 					{
 						force: false,
