@@ -90,21 +90,11 @@ type NoRestrictedSyntax = NonNullable<
 function getNoRestrictedSyntax(reactMode?: ReactMode): NoRestrictedSyntax | undefined {
 	if (reactMode === undefined) return undefined;
 
-	const noRestrictedSyntax: NoRestrictedSyntax = ["error"];
-
-	if (reactMode & ReactMode.ReactCompiler) {
-		for (const syntax of REACT_COMPILER_RESTRICTED_SYNTAX) {
-			noRestrictedSyntax.push(syntax);
-		}
-	}
-
-	if (reactMode & ReactMode.BanUseEffect) {
-		for (const syntax of REACT_EFFECT_RESTRICTED_SYNTAX) {
-			noRestrictedSyntax.push(syntax);
-		}
-	}
-
-	return noRestrictedSyntax;
+	return [
+		"error",
+		...(reactMode & ReactMode.ReactCompiler ? REACT_COMPILER_RESTRICTED_SYNTAX : []),
+		...(reactMode & ReactMode.BanUseEffect ? REACT_EFFECT_RESTRICTED_SYNTAX : []),
+	];
 }
 
 export async function getOxlintAsync({
