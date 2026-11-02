@@ -34,6 +34,7 @@ const generationFields = {
 	"quality?": text.describe("a quality level the model supports"),
 	"resolution?": text.describe("a resolution tier the model supports, like 2k"),
 	"seed?": type("number.integer").describe("a seed, for models that take one"),
+	// oxlint-disable-next-line typescript/no-unsafe-enum-assignment -- ArkType's variadic parameter is untyped, and `IMAGE_TYPES` holds only ImageType members.
 	"type?": type.enumerated(...IMAGE_TYPES).describe("the image encoding"),
 } as const;
 
@@ -43,6 +44,7 @@ export const listModelsInput = type({
 	"ratio?": text.describe("an aspect ratio every listed model must accept"),
 	"refs?": flag.describe("whether to keep only models that accept reference images"),
 	"search?": text.describe("a case-insensitive match on name, ID, and description"),
+	// oxlint-disable-next-line typescript/no-unsafe-enum-assignment -- ArkType's variadic parameter is untyped, and these are all ModelSort members.
 	"sort?": type.enumerated(ModelSort.Created, ModelSort.Name, ModelSort.Price).describe("the sort order"),
 	"transparent?": flag.describe("whether to keep only models that can make a transparent background"),
 });
