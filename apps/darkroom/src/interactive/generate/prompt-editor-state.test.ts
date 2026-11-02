@@ -77,6 +77,18 @@ describe("reducePromptEditor", () => {
 	});
 });
 
+describe("image tokens", () => {
+	it("delete in one step, whichever way you come at them", ({ expect }) => {
+		expect.assertions(3);
+
+		const editor = at("a fox [Image 1]", 15);
+
+		expect(apply(editor, { type: "delete-backward" })).toStrictEqual(at("a fox ", 6));
+		expect(apply(editor, { type: "delete-word" })).toStrictEqual(at("a fox ", 6));
+		expect(apply(at("a fox [Image 1]", 6), { type: "delete-forward" })).toStrictEqual(at("a fox ", 6));
+	});
+});
+
 describe("splitAtCursor", () => {
 	it("puts the cursor on a character, or on a space at a line's end", ({ expect }) => {
 		expect.assertions(3);
@@ -100,10 +112,21 @@ describe("getEditorAction", () => {
 		expect(getEditorAction("x", NO_KEY)).toStrictEqual({ text: "x", type: "insert" });
 	});
 
-	it("adds a line for ctrl+j and alt+enter, but leaves a plain Enter alone", ({ expect }) => {
+	it("deletes a word on ctrl or option+backspace, and to the line's start on cmd+backspace", ({ expect }) => {
 		expect.assertions(3);
 
+		expect(getEditorAction("", { ...NO_KEY, backspace: true, ctrl: true })).toStrictEqual({ type: "delete-word" });
+		expect(getEditorAction("", { ...NO_KEY, backspace: true, meta: true })).toStrictEqual({ type: "delete-word" });
+		expect(getEditorAction("", { ...NO_KEY, backspace: true, super: true })).toStrictEqual({
+			type: "delete-to-start",
+		});
+	});
+
+	it("adds a line for ctrl+j and alt+enter, but leaves a plain Enter alone", ({ expect }) => {
+		expect.assertions(4);
+
 		expect(getEditorAction("\n", NO_KEY)).toStrictEqual({ text: "\n", type: "insert" });
+		expect(getEditorAction("j", { ...NO_KEY, ctrl: true })).toStrictEqual({ text: "\n", type: "insert" });
 		expect(getEditorAction("", { ...NO_KEY, meta: true, return: true })).toStrictEqual({
 			text: "\n",
 			type: "insert",

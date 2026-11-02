@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, useApp, useInput } from "ink";
+import { Box, useApp, useInput, usePaste } from "ink";
 
 import { pickNewerMessage, useNotice } from "$interactive/components/notice-store";
 import { theme } from "$interactive/components/theme";
@@ -47,6 +47,8 @@ export interface BrowserShellProperties {
 	hasDialog?: boolean | undefined;
 	/** What `ctrl+c` does, such as clearing the prompt; quits by default. */
 	onInterrupt?: (() => void) | undefined;
+	/** Takes a whole paste, while nothing is open over the screen. */
+	onPaste?: ((text: string) => void) | undefined;
 	/** What `shift+tab` does instead of showing the previous tab. */
 	onShiftTab?: (() => void) | undefined;
 	rows: number;
@@ -78,6 +80,7 @@ function createShellActions(setOverlay: (overlay: ShellOverlay) => void): ShellA
  * @param properties.commands - What the screen can do.
  * @param properties.hasDialog - Whether a dialog of the screen's own is open.
  * @param properties.onInterrupt - What `ctrl+c` does; quits by default.
+ * @param properties.onPaste - Takes pasted text, when the screen wants it whole.
  * @param properties.onShiftTab - What `shift+tab` does, if not the previous tab.
  * @param properties.rows - The terminal's height.
  * @param properties.status - The last action's outcome, if any.
@@ -91,6 +94,7 @@ export function BrowserShell({
 	commands,
 	hasDialog,
 	onInterrupt,
+	onPaste,
 	onShiftTab,
 	rows,
 	status,
@@ -116,6 +120,14 @@ export function BrowserShell({
 		showKeys: showOverlay(Overlay.Help),
 		tabs,
 	});
+
+	// Off under a dialog or overlay, so a paste reaches their search instead.
+	usePaste(
+		function onShellPaste(text) {
+			onPaste?.(text);
+		},
+		{ isActive: onPaste !== undefined && hasDialog !== true && overlay.kind === Overlay.None },
+	);
 
 	useInput(function onShellInput(input, key) {
 		const route = getShellRoute(input, key, {

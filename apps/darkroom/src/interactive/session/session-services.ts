@@ -23,6 +23,8 @@ import type { BaseImage, PendingRequest } from "./session-state";
 /** What to generate: a new prompt, or a past run again. */
 export type SessionRequest =
 	| {
+			/** Images pasted into the prompt, sent after the one being edited. */
+			readonly attachments: ReadonlyArray<string>;
 			/** The image to edit, or `undefined` to start fresh. */
 			readonly base?: BaseImage | undefined;
 			readonly model: ImageModelListItem;
@@ -91,9 +93,10 @@ function canTakeImages(model: ImageModelListItem): boolean {
 
 async function toInputAsync(request: SessionRequest, session: string, store: HistoryStore): Promise<GenerationInput> {
 	if (request.type === "new") {
-		const { base, model, prompt } = request;
+		const { attachments, base, model, prompt } = request;
 		const isEditing = base !== undefined && canTakeImages(model);
-		const references = isEditing ? [await loadReferenceAsync(base.path)] : [];
+		const sources = isEditing ? [base.path, ...attachments] : attachments;
+		const references = await Promise.all(sources.map(async (source) => loadReferenceAsync(source)));
 		return { force: false, modelId: model.id, options: {}, prompt, references, session };
 	}
 

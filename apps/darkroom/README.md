@@ -30,7 +30,9 @@ the same actions as an image in a session, such as copying the picture itself.
 - **generate**: a prompt box with the model and its price beneath it. Enter shows the request with its estimated cost
   and asks before anything is sent. `ctrl+o` picks another model, `ctrl+j` or `alt+enter` adds a line, and `ctrl+g`
   continues in a guided session to add reference images and settings. The box edits like a shell: `ctrl+a`/`ctrl+e`,
-  `ctrl+w`, `ctrl+u`, and `ctrl+k` work.
+  `ctrl+w`, `ctrl+u`, and `ctrl+k` work, as do `option+backspace` and `ctrl+backspace` for a word and `cmd+backspace`
+  back to the start of the line. Searches edit the same way. Pasting the path of an image, or `ctrl+v` on macOS for a
+  picture on the clipboard, adds it to the request as `[Image 1]`; deleting that token removes it.
 - **the model picker** (`ctrl+o`) searches names the way fzf does and shows what each model can do beside its
   price. `tab` cycles the order between recent, price, name, and newest. The chips filter by editing, batch image
   generation, or transparency. The search also takes `@google` for a provider, `$0.02` for a top
