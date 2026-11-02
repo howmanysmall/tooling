@@ -153,6 +153,7 @@ catalogs:
   polyfills:
     temporal-polyfill: 1.0.6
   runtime:
+    "@ark/util": 0.56.8
     "@arkenv/core": 1.0.0-rc.4
     "@clack/core": 1.5.1
     "@clack/prompts": 1.8.1
@@ -161,7 +162,6 @@ catalogs:
     "@inkjs/ui": 2.0.0
     "@xterm/headless": 6.0.0
     ansis: 4.5.0
-    arkregex: 0.0.14
     arktype: 2.2.9
     confbox: 0.3.2
     consola: 3.4.2
