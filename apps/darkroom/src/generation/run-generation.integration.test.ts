@@ -38,11 +38,12 @@ function createInput(overrides: Partial<GenerationInput["options"]> = {}, force 
 	return { force, modelId: MULTI_MODEL.id, options: overrides, prompt: "a cat in a hat", references: [] };
 }
 
-async function runAsync(
-	cwd: string,
-	client: ImagesClient,
-	input: GenerationInput,
-): Promise<{ result: Awaited<ReturnType<typeof executeGenerationAsync>>; warnings: Array<string> }> {
+interface RunOutcome {
+	readonly result: Awaited<ReturnType<typeof executeGenerationAsync>>;
+	readonly warnings: Array<string>;
+}
+
+async function runAsync(cwd: string, client: ImagesClient, input: GenerationInput): Promise<RunOutcome> {
 	const warnings: Array<string> = [];
 	const prepared = await prepareGenerationAsync(input, {
 		cwd,

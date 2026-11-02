@@ -149,7 +149,7 @@ export function GenerateScreen({
 			reportError("Write a prompt first.");
 		} else {
 			const resolved = resolvePromptImages(prompt, screen.images, base !== undefined && canEdit ? 2 : 1);
-			if (resolved.paths.length > 0 && !canEdit) {
+			if (!canEdit && resolved.paths.length > 0) {
 				reportError(`${model.name} can't take images. ctrl+o picks one that can.`);
 				return;
 			}
@@ -159,17 +159,21 @@ export function GenerateScreen({
 		}
 	}
 
+	async function attachClipboardImageAsync(): Promise<void> {
+		const path = await readClipboardImageAsync();
+		if (path === undefined) {
+			reportError("There's no image on the clipboard.");
+		} else {
+			dispatch({ paths: [path], type: "attach" });
+		}
+	}
+
 	function pasteClipboardImage(): void {
-		runBrowserTask(
-			readClipboardImageAsync().then((path) => {
-				if (path === undefined) {
-					reportError("There's no image on the clipboard.");
-				} else {
-					dispatch({ paths: [path], type: "attach" });
-				}
-			}),
-			reportError,
-		);
+		runBrowserTask(attachClipboardImageAsync(), (failure) => {
+			if (failure !== undefined) {
+				reportError(failure);
+			}
+		});
 	}
 
 	function handlePaste(text: string): void {

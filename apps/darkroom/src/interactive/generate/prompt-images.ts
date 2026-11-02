@@ -17,7 +17,9 @@ export interface ResolvedPromptImages {
 	readonly prompt: string;
 }
 
-const IMAGE_TOKEN = /\[Image (\d+)\]/gu;
+const IMAGE_TOKEN = /\[Image (?<number>\d+)\]/gu;
+const ESCAPED_CHARACTER = /\\(?<character>.)/gu;
+
 // A quoted word, or a word with its spaces escaped, as terminals paste paths.
 const SHELL_WORD = /'[^']*'|"(?:[^"\\]|\\.)*"|(?:\\.|[^\s\\])+/gu;
 
@@ -30,17 +32,17 @@ function isImageFile(path: string): boolean {
 	return statSync(path, { throwIfNoEntry: false })?.isFile() === true;
 }
 
-function unquote(word: string): string {
+function removeQuotes(word: string): string {
 	const quote = word.charAt(0);
 	if (word.length >= 2 && (quote === "'" || quote === '"') && word.endsWith(quote)) {
-		return quote === "'" ? word.slice(1, -1) : word.slice(1, -1).replaceAll(/\\(.)/gu, "$1");
+		return quote === "'" ? word.slice(1, -1) : word.slice(1, -1).replaceAll(ESCAPED_CHARACTER, "$<character>");
 	}
 
-	return word.replaceAll(/\\(.)/gu, "$1");
+	return word.replaceAll(ESCAPED_CHARACTER, "$<character>");
 }
 
 function toPath(word: string): string {
-	const path = unquote(word);
+	const path = removeQuotes(word);
 	if (path.startsWith("file://")) return fileURLToPath(path);
 	return path.startsWith("~/") ? nodePath.join(homedir(), path.slice(2)) : path;
 }
@@ -60,9 +62,11 @@ export function parsePastedImagePaths(text: string, isImage = isImageFile): Read
 
 	// A copied path can hold bare spaces, which splitting would break.
 	const whole = toPath(trimmed);
-	if (isImage(whole)) return [whole];
+	if (isImage(whole)) {
+		return [whole];
+	}
 
-	const paths = (trimmed.match(SHELL_WORD) ?? []).map(toPath);
+	const paths = (trimmed.match(SHELL_WORD) ?? []).map((word) => toPath(word));
 	return paths.length > 0 && paths.every((path) => isImage(path)) ? paths : undefined;
 }
 
@@ -71,10 +75,10 @@ export function parsePastedImagePaths(text: string, isImage = isImageFile): Read
  * where each image lands in the request, so `[Image 1]` names the first image
  * the model sees. A token deleted from the prompt drops its image.
  *
- * @param text - The prompt.
- * @param images - The images pasted into it.
- * @param firstPosition - The position of the first of them: `2` when the image
- *   being edited goes first.
+ * @param text - What was typed, tokens included.
+ * @param images - What was pasted into it, oldest first.
+ * @param firstPosition - `1`, or `2` when the image being edited goes ahead of
+ *   them.
  * @returns The paths to send, and the prompt to send with them.
  */
 export function resolvePromptImages(

@@ -5,12 +5,18 @@ import { createEntry } from "$history/history-fixture";
 
 import { getModelMatches, getRecentModelIds, pickModel } from "./model-picker-state";
 
+import type { ImageModelListItem } from "@openrouter/sdk/models";
+
 const BANANA = { ...createModel("google/banana", {}), name: "Google: Nano Banana" };
 const FLUX = { ...createModel("bfl/flux", {}), name: "Black Forest Labs: Flux" };
 const IMAGE = { ...createModel("openai/gpt-image-1", {}), name: "OpenAI: GPT Image 1" };
 const MODELS = [IMAGE, BANANA, FLUX];
 
-function getIds(matches: ReadonlyArray<{ readonly model: { readonly id: string } }>): Array<string> {
+interface MatchedModel {
+	readonly model: Pick<ImageModelListItem, "id">;
+}
+
+function getIds(matches: ReadonlyArray<MatchedModel>): Array<string> {
 	return matches.map(({ model }) => model.id);
 }
 

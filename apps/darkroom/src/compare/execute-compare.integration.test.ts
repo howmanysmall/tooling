@@ -19,14 +19,14 @@ import type { ImagesClient, PreparedGeneration } from "$generation/run-generatio
 const PNG_BASE64 = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 7]).toString("base64");
 const BATCH = "01M4YVBATCHAAAAAAAAAAAAAAA";
 
+interface GenerateParameters {
+	readonly imageGenerationRequest: ImageGenerationRequest;
+}
+
 /** Answers with one image, except for the single-image model, which refuses. */
 const CLIENT: ImagesClient = {
 	// oxlint-disable-next-line small-rules/require-async-suffix -- implements the SDK method name
-	async generate({
-		imageGenerationRequest,
-	}: {
-		imageGenerationRequest: ImageGenerationRequest;
-	}): Promise<CreateImagesResponse> {
+	async generate({ imageGenerationRequest }: GenerateParameters): Promise<CreateImagesResponse> {
 		if (imageGenerationRequest.model === SINGLE_MODEL.id) {
 			throw new Error("The model refused the prompt.");
 		}
