@@ -54,6 +54,7 @@ const CTRL_W = "\u0017";
  * @returns The input, with `ctrl+backspace` deleting a word.
  */
 export function normalizeCtrlBackspace(text: string): string {
+	// eslint-disable-next-line unicorn/no-unsafe-string-replacement -- think this is fine mate
 	return text.replaceAll(LEGACY_CTRL_BACKSPACE, CTRL_W);
 }
 
