@@ -3,6 +3,9 @@
 	"compilerOptions": {
 		"composite": true,
 		"tsBuildInfoFile": "./node_modules/.tsbuildinfo-node",
+		"paths": {
+			"@cliffy/command/_dist/*": ["./scripts/node_modules/@cliffy/command/_dist/*"]
+		},
 		"types": ["node"]
 	},
 	"references": [
@@ -19,6 +22,6 @@
 			"path": "./tools/lint-configurations"
 		}
 	],
-	"include": ["*.config.ts", ".config/*.ts", "scripts/*.ts", "turbo/generators/*.ts"],
+	"include": ["*.config.ts", ".config/*.ts", "scripts/**/*.ts", "turbo/generators/*.ts"],
 	"exclude": ["dist", "node_modules"]
 }
