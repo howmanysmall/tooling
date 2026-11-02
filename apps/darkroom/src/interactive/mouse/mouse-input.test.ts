@@ -1,6 +1,15 @@
 import { describe, it } from "vitest";
 
-import { MouseAction, splitMouseInput, toMouseAction } from "./mouse-input";
+import { MouseAction, normalizeCtrlBackspace, splitMouseInput, toMouseAction } from "./mouse-input";
+
+describe("normalizeCtrlBackspace", () => {
+	it("makes ctrl+backspace delete a word, and leaves backspace and alt+backspace", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(normalizeCtrlBackspace("\b\b")).toBe("\u0017\u0017");
+		expect(normalizeCtrlBackspace("\u007F\u001B\b\u001B\u007F")).toBe("\u007F\u001B\b\u001B\u007F");
+	});
+});
 
 describe("splitMouseInput", () => {
 	it("takes the reports out and leaves the typing, in zero-based cells", ({ expect }) => {

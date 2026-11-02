@@ -1,8 +1,8 @@
-import { TextInput } from "@inkjs/ui";
 import { Box, Text } from "ink";
 
 import { Dialog } from "$interactive/components/dialog";
 import { DialogList } from "$interactive/components/dialog-list";
+import { SearchInput } from "$interactive/components/search-input";
 import { theme } from "$interactive/components/theme";
 import { CommandGroup } from "$interactive/keys/browser-command";
 
@@ -74,7 +74,7 @@ export function CommandPalette({
 				<Text bold={true} color={theme.accent}>
 					{"› "}
 				</Text>
-				<TextInput placeholder="Search" onChange={list.handleQueryChange} onSubmit={runSelected} />
+				<SearchInput placeholder="Search" onChange={list.handleQueryChange} onSubmit={runSelected} />
 			</Box>
 			{list.visible.length === 0 ? <Text color={theme.muted}>{"No commands match."}</Text> : null}
 			<DialogList target="palette:list" onWheel={list.handleWheel}>

@@ -86,7 +86,6 @@
 		"@howmanysmall/english-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@howmanysmall/string-utilities": "workspace:*",
-		"@inkjs/ui": "catalog:runtime",
 		"@tmcp/transport-in-memory": "catalog:ai",
 		"@total-typescript/shoehorn": "catalog:test",
 		"@total-typescript/ts-reset": "catalog:types",

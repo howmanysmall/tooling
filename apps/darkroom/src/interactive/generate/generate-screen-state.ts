@@ -1,11 +1,13 @@
 import { reduceStatus } from "$interactive/components/status-message";
 
 import { EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
+import { formatImageToken } from "./prompt-images";
 
 import type { StatusAction, StatusMessage } from "$interactive/components/status-message";
 import type { BaseImage, SessionTurn } from "$interactive/session/session-state";
 
 import type { EditorAction, PromptEditor } from "./prompt-editor-state";
+import type { PromptImage } from "./prompt-images";
 
 /** A dialog over the generate screen. */
 export const enum GenerateDialog {
@@ -31,15 +33,27 @@ export interface GenerateScreenState {
 	/** The dialog open over the prompt box, if any. */
 	readonly dialog?: OpenDialog | undefined;
 	readonly editor: PromptEditor;
+	/** The images pasted into the prompt, oldest first. */
+	readonly images: ReadonlyArray<PromptImage>;
 	readonly status?: StatusMessage | undefined;
 }
 
 export type GenerateScreenAction =
 	| StatusAction
 	| { readonly action: EditorAction; readonly type: "edit" }
+	| { readonly paths: ReadonlyArray<string>; readonly type: "attach" }
 	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" };
 
-export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR };
+export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR, images: [] };
+
+function attachImage(state: GenerateScreenState, path: string): GenerateScreenState {
+	const number = (state.images.at(-1)?.number ?? 0) + 1;
+	return {
+		...state,
+		editor: reducePromptEditor(state.editor, { text: formatImageToken(number), type: "insert" }),
+		images: [...state.images, { number, path }],
+	};
+}
 
 /**
  * Applies one action to the generate screen.
@@ -52,8 +66,14 @@ export function reduceGenerateScreen(state: GenerateScreenState, action: Generat
 	switch (action.type) {
 		case "dialog":
 			return { ...state, dialog: action.dialog };
+		case "attach":
+			return action.paths.reduce(attachImage, state);
 		case "edit":
-			return { ...state, editor: reducePromptEditor(state.editor, action.action) };
+			return {
+				...state,
+				editor: reducePromptEditor(state.editor, action.action),
+				images: action.action.type === "clear" ? [] : state.images,
+			};
 		default:
 			return { ...state, status: reduceStatus(state.status, action) };
 	}
