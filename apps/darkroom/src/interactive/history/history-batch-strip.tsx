@@ -10,6 +10,11 @@ import type { ReactNode } from "react";
 
 import type { HistoryEntry } from "$history/history-entry";
 
+export interface HistoryBatchStripProperties {
+	/** Every run of the comparison, the selected one included. */
+	runs: ReadonlyArray<HistoryEntry>;
+}
+
 /**
  * The selected run's comparison: its models' images side by side, ordered
  * by model. When there are more than fit at a readable size, it shows the
@@ -19,7 +24,7 @@ import type { HistoryEntry } from "$history/history-entry";
  * @param properties.runs - Every run of the comparison, the selected one included.
  * @returns A row of images with their models underneath.
  */
-export function HistoryBatchStrip({ runs }: Readonly<{ runs: ReadonlyArray<HistoryEntry> }>): ReactNode {
+export function HistoryBatchStrip({ runs }: Readonly<HistoryBatchStripProperties>): ReactNode {
 	const {
 		meta: { layout },
 		state: { selected },

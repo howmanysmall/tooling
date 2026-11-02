@@ -376,9 +376,6 @@ catalogs:
     '@cliffy/table':
       specifier: jsr:1.3.1
       version: 1.3.1
-    '@inkjs/ui':
-      specifier: 2.0.0
-      version: 2.0.0
     '@xterm/headless':
       specifier: 6.0.0
       version: 6.0.0
@@ -531,7 +528,7 @@ overrides:
   '@vitiate/core>@swc/core': 1.15.41
   vite: npm:@voidzero-dev/vite-plus-core@1.2.0
 
-packageExtensionsChecksum: sha256-yM6Rjo6UvZi7JOvl82xT0E61ESgM5O5Ch/l3rGc/c9Q=
+packageExtensionsChecksum: sha256-511FWJVXu+T5sGuOJK4vKP4fj2yGhUpHsJOzQk9/N+k=
 
 patchedDependencies:
   '@stryker-mutator/vitest-runner@10.0.0': b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d
@@ -803,9 +800,6 @@ importers:
       '@howmanysmall/string-utilities':
         specifier: workspace:*
         version: link:../../packages/string-utilities
-      '@inkjs/ui':
-        specifier: catalog:runtime
-        version: 2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)
       '@tmcp/transport-in-memory':
         specifier: catalog:ai
         version: 0.1.1(tmcp@1.20.1(typescript@6.0.3))
@@ -1065,6 +1059,9 @@ importers:
       oxlint-plugin-react-doctor:
         specifier: catalog:lint
         version: 0.9.21
+      type-fest:
+        specifier: catalog:types
+        version: 5.10.0
     devDependencies:
       '@howmanysmall/project-configurations':
         specifier: workspace:*
@@ -2820,13 +2817,6 @@ packages:
     engines: {node: '>=20.9.0'}
     cpu: [x64]
     os: [win32]
-
-  '@inkjs/ui@2.0.0':
-    resolution: {integrity: sha512-5+8fJmwtF9UvikzLfph9sA+LS+l37Ij/szQltkuXLOAXwNkBX9innfzh4pLGXIB59vKEQUtc6D4qGvhD7h3pAg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      ink: '>=5'
-      react: '>=18.0.0'
 
   '@inquirer/ansi@1.0.2':
     resolution: {integrity: sha512-S8qNSZiYzFd0wAcyG5AXCvUHC5Sr7xpZ9wZ2py9XR88jUz8wooStVx5M6dRzczbBWjic9NP7+rY0Xi7qqK/aMQ==}
@@ -5694,10 +5684,6 @@ packages:
     resolution: {integrity: sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==}
     engines: {node: '>=6'}
 
-  cli-spinners@3.4.0:
-    resolution: {integrity: sha512-bXfOC4QcT1tKXGorxL3wbJm6XJPDqEnij2gQ2m7ESQuE+/z9YFIWnl/5RpTiKWbMq3EVKR4fRLJGn6DVfu0mpw==}
-    engines: {node: '>=18.20'}
-
   cli-truncate@6.1.1:
     resolution: {integrity: sha512-06p9vyLahLa4zkGcgsGxU6iEkSOiuI4fhCH6Emhe2lPAcoUv73n72DnODsnHA+5wwXGnV0n9M9/qOQJSjYhFhw==}
     engines: {node: '>=22'}
@@ -5922,10 +5908,6 @@ packages:
 
   deep-is@0.1.4:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
-
-  deepmerge@4.3.1:
-    resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
-    engines: {node: '>=0.10.0'}
 
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
@@ -10942,15 +10924,6 @@ snapshots:
   '@img/sharp-win32-x64@0.35.5':
     optional: true
 
-  '@inkjs/ui@2.0.0(ink@7.1.1(@types/react@19.3.0)(react@19.3.1))(react@19.3.1)':
-    dependencies:
-      chalk: 5.6.2
-      cli-spinners: 3.4.0
-      deepmerge: 4.3.1
-      figures: 6.1.0
-      ink: 7.1.1(@types/react@19.3.0)(react@19.3.1)
-      react: 19.3.1
-
   '@inquirer/ansi@1.0.2': {}
 
   '@inquirer/ansi@2.0.9': {}
@@ -13899,8 +13872,6 @@ snapshots:
 
   cli-spinners@2.9.2: {}
 
-  cli-spinners@3.4.0: {}
-
   cli-truncate@6.1.1:
     dependencies:
       slice-ansi: 9.0.1
@@ -14127,8 +14098,6 @@ snapshots:
   deep-extend@0.6.0: {}
 
   deep-is@0.1.4: {}
-
-  deepmerge@4.3.1: {}
 
   defaults@1.0.4:
     dependencies:
@@ -18294,7 +18263,6 @@ time:
   '@fontsource-variable/ibm-plex-sans@5.3.0': '2026-07-19T03:50:23.534Z'
   '@fontsource-variable/newsreader@5.3.0': '2026-07-19T03:50:51.165Z'
   '@fontsource/ibm-plex-mono@5.3.0': '2026-07-19T03:39:57.977Z'
-  '@inkjs/ui@2.0.0': '2024-05-22T12:20:05.842Z'
   '@isentinel/eslint-config@6.2.0': '2026-10-22T23:30:44.122Z'
   '@isentinel/hooks@1.7.0': '2026-10-06T16:13:06.841Z'
   '@jsr/cliffy__command@1.3.1': '2026-09-18T20:43:56.527Z'

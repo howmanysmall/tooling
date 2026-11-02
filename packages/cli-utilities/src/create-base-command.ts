@@ -15,11 +15,16 @@ export interface CommandErrorIo {
 	readonly writeError: (text: string) => void;
 }
 
+/** A command the error handler only asks for its name. */
+export interface NamedCommand {
+	getName(): string;
+}
+
 /**
  * The subset of a Cliffy command that the error handler needs.
  */
 export interface ErrorCommand {
-	getMainCommand(): { getName(): string };
+	getMainCommand(): NamedCommand;
 	getPath(): string;
 	showHelp(): void;
 }
@@ -79,7 +84,7 @@ export function createBaseCommand(
 	name: string,
 	version: string | undefined,
 	description: string,
-	options?: ExtraOptions,
+	extraOptions?: ExtraOptions,
 ): Command {
 	const baseCommand = new Command()
 		.error((error, command) => handleCommandError(error, command))
@@ -95,7 +100,7 @@ export function createBaseCommand(
 		baseCommand.version(version);
 	}
 
-	if (options?.showHelpWithoutArguments === true) {
+	if (extraOptions?.showHelpWithoutArguments === true) {
 		baseCommand.action(() => {
 			throw new ShowHelpError("No command specified.");
 		});

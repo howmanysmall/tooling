@@ -32,6 +32,11 @@ const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 const CONTROL_CHARACTERS = /[\u0000-\u0009\u000B-\u001F\u007F]/gu;
 const LINE_BREAKS = /\r\n?/gu;
 const WORD_CHARACTER = /[\p{L}\p{N}_]/u;
+const LINE_BREAK_RUN = /[\r\n]+/gu;
+
+// A pasted image's token goes in one step, so it never lingers half deleted.
+const IMAGE_TOKEN_BEFORE = /\[Image \d+\]$/u;
+const IMAGE_TOKEN_AFTER = /^\[Image \d+\]/u;
 
 function getBoundaries(text: string): Array<number> {
 	return [...Array.from(segmenter.segment(text), ({ index }) => index), text.length];
@@ -50,6 +55,9 @@ function isWordAt(text: string, index: number): boolean {
 }
 
 function getWordStart(text: string, index: number): number {
+	const token = IMAGE_TOKEN_BEFORE.exec(text.slice(0, index));
+	if (token !== null) return token.index;
+
 	let start = index;
 	while (start > 0 && !isWordAt(text, start - 1)) {
 		start -= 1;
@@ -161,11 +169,15 @@ export function reducePromptEditor(editor: PromptEditor, action: EditorAction): 
 		case "clear":
 			return EMPTY_EDITOR;
 
-		case "delete-backward":
-			return splice(editor, getPreviousBoundary(text, cursor), cursor);
+		case "delete-backward": {
+			const token = IMAGE_TOKEN_BEFORE.exec(text.slice(0, cursor));
+			return splice(editor, token?.index ?? getPreviousBoundary(text, cursor), cursor);
+		}
 
-		case "delete-forward":
-			return splice(editor, cursor, getNextBoundary(text, cursor));
+		case "delete-forward": {
+			const token = IMAGE_TOKEN_AFTER.exec(text.slice(cursor));
+			return splice(editor, cursor, token === null ? getNextBoundary(text, cursor) : cursor + token[0].length);
+		}
 
 		case "delete-to-end":
 			return splice(editor, cursor, getLineEnd(text, cursor));
@@ -185,6 +197,7 @@ export function reducePromptEditor(editor: PromptEditor, action: EditorAction): 
 }
 
 const DELETE_FORWARD: EditorAction = { type: "delete-forward" };
+const DELETE_TO_START: EditorAction = { type: "delete-to-start" };
 const DELETE_WORD: EditorAction = { type: "delete-word" };
 const LINE_END: EditorAction = { type: "line-end" };
 const LINE_START: EditorAction = { type: "line-start" };
@@ -227,8 +240,10 @@ const CTRL_ACTIONS: ReadonlyMap<string, EditorAction> = new Map<string, EditorAc
 	["d", DELETE_FORWARD],
 	["e", LINE_END],
 	["f", { type: "right" }],
+	// The kitty protocol reports ctrl+j as a key, not as a line feed.
+	["j", NEW_LINE],
 	["k", { type: "delete-to-end" }],
-	["u", { type: "delete-to-start" }],
+	["u", DELETE_TO_START],
 	["w", DELETE_WORD],
 ]);
 
@@ -245,6 +260,11 @@ const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
 	["delete", DELETE_FORWARD],
 ];
 
+function getBackspaceAction(key: Key): EditorAction {
+	if (key.super) return DELETE_TO_START;
+	return key.meta || key.ctrl ? DELETE_WORD : { type: "delete-backward" };
+}
+
 /**
  * Maps the keys that aren't typing: backspace, the arrows, and the like.
  *
@@ -252,7 +272,7 @@ const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
  * @returns The edit, or `undefined` when the key is typing or unused.
  */
 function getSpecialAction(key: Key): EditorAction | undefined {
-	if (key.backspace) return key.meta ? DELETE_WORD : { type: "delete-backward" };
+	if (key.backspace) return getBackspaceAction(key);
 
 	const isWordStep = key.meta || key.ctrl;
 	if (key.leftArrow) return isWordStep ? WORD_LEFT : { type: "left" };
@@ -264,9 +284,10 @@ function getSpecialAction(key: Key): EditorAction | undefined {
 
 /**
  * Maps a key press in the prompt box to an edit, with the usual shell keys:
- * `ctrl+a`/`ctrl+e` for the line's ends, `ctrl+w` and `alt+backspace` to
- * delete a word, `ctrl+u`/`ctrl+k` to delete to either end, and `ctrl+j`,
- * `alt+enter`, or `shift+enter` for a new line. A plain Enter is not an edit.
+ * `ctrl+a`/`ctrl+e` for the line's ends, `ctrl+w`, `alt+backspace`, and
+ * `ctrl+backspace` to delete a word, `ctrl+u`, `cmd+backspace`, and `ctrl+k`
+ * to delete to either end, and `ctrl+j`, `alt+enter`, or `shift+enter` for a
+ * new line. A plain Enter is not an edit.
  *
  * @param input - The typed text, if any.
  * @param key - Ink's description of the key.
@@ -276,6 +297,24 @@ export function getEditorAction(input: string, key: Key): EditorAction | undefin
 	if (key.return) return key.meta || key.shift ? NEW_LINE : undefined;
 
 	return getSpecialAction(key) ?? getModifiedAction(input, key);
+}
+
+/**
+ * Maps a key press in a one-line input, such as a search. It edits like the
+ * prompt box, but has no lines to move between or to add: ↑↓ belong to the
+ * list it searches, and a pasted line break becomes a space.
+ *
+ * @param input - The typed text, if any.
+ * @param key - Ink's description of the key.
+ * @returns The edit, or `undefined` for keys the input doesn't use.
+ */
+export function getSingleLineAction(input: string, key: Key): EditorAction | undefined {
+	if (key.upArrow || key.downArrow) return undefined;
+
+	const action = getEditorAction(input, key);
+	if (action === NEW_LINE) return undefined;
+	if (action?.type !== "insert") return action;
+	return { text: action.text.replaceAll(LINE_BREAK_RUN, " "), type: "insert" };
 }
 
 function getModifiedAction(input: string, key: Key): EditorAction | undefined {

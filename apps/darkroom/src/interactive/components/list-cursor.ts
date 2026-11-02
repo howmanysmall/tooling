@@ -19,13 +19,18 @@ const CURSOR_MOVES: ReadonlySet<number> = new Set([
 	CursorMoveType.To,
 ]);
 
+/** Any browser action, as far as telling cursor moves apart goes. */
+interface TypedAction {
+	readonly type: number;
+}
+
 /**
  * Tells cursor moves from a browser's other actions.
  *
  * @param action - Any browser action.
  * @returns Whether it moves the cursor.
  */
-export function isCursorMove(action: { readonly type: number }): action is CursorMove {
+export function isCursorMove(action: TypedAction): action is CursorMove {
 	return CURSOR_MOVES.has(action.type);
 }
 

@@ -39,9 +39,11 @@ export interface ImagesResponse {
 	readonly images: ReadonlyArray<GeneratedImage>;
 }
 
-function isStreamResponse(
-	response: CreateImagesResponse,
-): response is Exclude<CreateImagesResponse, { data: unknown }> {
+interface WholeResponse {
+	readonly data: unknown;
+}
+
+function isStreamResponse(response: CreateImagesResponse): response is Exclude<CreateImagesResponse, WholeResponse> {
 	return !("data" in response);
 }
 
