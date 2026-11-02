@@ -18,6 +18,7 @@
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
 	"dependencies": {
+		"@ark/util": "catalog:runtime",
 		"arktype": "catalog:runtime"
 	},
 	"devDependencies": {
