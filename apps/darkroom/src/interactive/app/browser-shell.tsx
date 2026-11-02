@@ -20,6 +20,7 @@ import type { ReactNode } from "react";
 import type { StatusMessage } from "$interactive/components/status-message";
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 
+import type { AppTabs } from "./app-tabs-context";
 import type { ShellActions } from "./shell-actions-context";
 
 const enum Overlay {
@@ -65,61 +66,45 @@ function createShellActions(setOverlay: (overlay: ShellOverlay) => void): ShellA
 	};
 }
 
+type ShellInputProperty = "capture" | "hasDialog" | "onInterrupt" | "onPaste" | "onShiftTab";
+
+interface ShellInputOptions extends Pick<BrowserShellProperties, ShellInputProperty> {
+	readonly allCommands: ReadonlyArray<BrowserCommand>;
+	readonly closeOverlay: () => void;
+	readonly overlay: ShellOverlay;
+	readonly showOverlay: (kind: Exclude<Overlay, Overlay.Actions>) => () => void;
+	readonly tabs: AppTabs | undefined;
+}
+
 /**
- * The frame every full-screen screen shares: the background, the toast, the
- * help and `ctrl+p` command palette, the actions for anything clicked,
- * switching tabs, and the key bindings, all driven by the screen's command
- * table.
+ * Sends the terminal's pastes and keys to whatever should have them: the
+ * screen, a dialog, or the shell's own bindings.
  *
- * `tab` and `ctrl+p` work even while the screen captures keys, so the
- * prompt box can't trap you; a dialog of the screen's own takes everything.
- *
- * @param properties - The screen's commands, size, and parts.
- * @param properties.capture - Takes every key while the screen needs them.
- * @param properties.columns - The terminal's width.
- * @param properties.commands - What the screen can do.
- * @param properties.hasDialog - Whether a dialog of the screen's own is open.
- * @param properties.onInterrupt - What `ctrl+c` does; quits by default.
- * @param properties.onPaste - Takes pasted text, when the screen wants it whole.
- * @param properties.onShiftTab - What `shift+tab` does, if not the previous tab.
- * @param properties.rows - The terminal's height.
- * @param properties.status - The last action's outcome, if any.
- * @param properties.children - The header, panes, status bar, and any
- *   dialog of the screen's own.
- * @returns A box the size of the terminal.
+ * @param options - The shell's state, and what its keys can do.
+ * @param options.allCommands - The screen's commands and the shell's own.
+ * @param options.capture - Takes every key while the screen needs them.
+ * @param options.closeOverlay - Closes whatever is open over the screen.
+ * @param options.hasDialog - Whether a dialog of the screen's own is open.
+ * @param options.onInterrupt - What `ctrl+c` does; quits by default.
+ * @param options.onPaste - Takes pasted text, when the screen wants it whole.
+ * @param options.onShiftTab - What `shift+tab` does, if not the previous tab.
+ * @param options.overlay - What is open over the screen.
+ * @param options.showOverlay - Makes a handler that opens an overlay.
+ * @param options.tabs - The app's tabs, if it has any.
  */
-export function BrowserShell({
+function useShellInput({
+	allCommands,
 	capture,
-	columns,
-	commands,
+	closeOverlay,
 	hasDialog,
 	onInterrupt,
 	onPaste,
 	onShiftTab,
-	rows,
-	status,
-	children,
-}: Readonly<BrowserShellProperties>): ReactNode {
-	const [overlay, setOverlay] = useState<ShellOverlay>({ kind: Overlay.None });
-	const notice = useNotice();
-	const toast = pickNewerMessage(status, notice);
-	const tabs = useAppTabs();
+	overlay,
+	showOverlay,
+	tabs,
+}: Readonly<ShellInputOptions>): void {
 	const { exit } = useApp();
-
-	function showOverlay(kind: Exclude<Overlay, Overlay.Actions>): () => void {
-		return () => {
-			setOverlay({ kind });
-		};
-	}
-
-	const shellActions = createShellActions(setOverlay);
-
-	const closeOverlay = showOverlay(Overlay.None);
-	const allCommands = getShellCommands(commands, {
-		isTyping: capture !== undefined,
-		showKeys: showOverlay(Overlay.Help),
-		tabs,
-	});
 
 	// Off under a dialog or overlay, so a paste reaches their search instead.
 	usePaste(
@@ -169,6 +154,75 @@ export function BrowserShell({
 		};
 
 		handlers[route]();
+	});
+}
+
+/**
+ * The frame every full-screen screen shares: the background, the toast, the
+ * help and `ctrl+p` command palette, the actions for anything clicked,
+ * switching tabs, and the key bindings, all driven by the screen's command
+ * table.
+ *
+ * `tab` and `ctrl+p` work even while the screen captures keys, so the
+ * prompt box can't trap you; a dialog of the screen's own takes everything.
+ *
+ * @param properties - The screen's commands, size, and parts.
+ * @param properties.capture - Takes every key while the screen needs them.
+ * @param properties.columns - The terminal's width.
+ * @param properties.commands - What the screen can do.
+ * @param properties.hasDialog - Whether a dialog of the screen's own is open.
+ * @param properties.onInterrupt - What `ctrl+c` does; quits by default.
+ * @param properties.onPaste - Takes pasted text, when the screen wants it whole.
+ * @param properties.onShiftTab - What `shift+tab` does, if not the previous tab.
+ * @param properties.rows - The terminal's height.
+ * @param properties.status - The last action's outcome, if any.
+ * @param properties.children - The header, panes, status bar, and any
+ *   dialog of the screen's own.
+ * @returns A box the size of the terminal.
+ */
+export function BrowserShell({
+	capture,
+	columns,
+	commands,
+	hasDialog,
+	onInterrupt,
+	onPaste,
+	onShiftTab,
+	rows,
+	status,
+	children,
+}: Readonly<BrowserShellProperties>): ReactNode {
+	const [overlay, setOverlay] = useState<ShellOverlay>({ kind: Overlay.None });
+	const notice = useNotice();
+	const toast = pickNewerMessage(status, notice);
+	const tabs = useAppTabs();
+
+	function showOverlay(kind: Exclude<Overlay, Overlay.Actions>): () => void {
+		return () => {
+			setOverlay({ kind });
+		};
+	}
+
+	const shellActions = createShellActions(setOverlay);
+
+	const closeOverlay = showOverlay(Overlay.None);
+	const allCommands = getShellCommands(commands, {
+		isTyping: capture !== undefined,
+		showKeys: showOverlay(Overlay.Help),
+		tabs,
+	});
+
+	useShellInput({
+		allCommands,
+		capture,
+		closeOverlay,
+		hasDialog,
+		onInterrupt,
+		onPaste,
+		onShiftTab,
+		overlay,
+		showOverlay,
+		tabs,
 	});
 
 	return (
