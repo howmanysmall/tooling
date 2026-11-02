@@ -1,10 +1,12 @@
-import { useEffect, useReducer, useRef } from "react";
+import { useRef, useState } from "react";
 import { useInput } from "ink";
 
 import { getSingleLineAction, reducePromptEditor } from "$interactive/generate/prompt-editor-state";
 import { PromptText } from "$interactive/generate/prompt-text";
 
 import type { ReactNode } from "react";
+
+import type { PromptEditor } from "$interactive/generate/prompt-editor-state";
 
 export interface SearchInputProperties {
 	/** The text when the input opens. */
@@ -33,15 +35,9 @@ export function SearchInput({
 	onSubmit,
 	placeholder,
 }: Readonly<SearchInputProperties>): ReactNode {
-	const [editor, dispatch] = useReducer(reducePromptEditor, { cursor: initialValue.length, text: initialValue });
-	const reported = useRef(initialValue);
-
-	useEffect(() => {
-		if (reported.current !== editor.text) {
-			reported.current = editor.text;
-			onChange(editor.text);
-		}
-	}, [editor.text, onChange]);
+	const [editor, setEditor] = useState<PromptEditor>({ cursor: initialValue.length, text: initialValue });
+	// Held backspaces arrive faster than renders; each builds on the last.
+	const latestRef = useRef(editor);
 
 	useInput(function onSearchInput(input, key) {
 		if (key.return) {
@@ -50,8 +46,15 @@ export function SearchInput({
 		}
 
 		const action = getSingleLineAction(input, key);
-		if (action !== undefined) {
-			dispatch(action);
+		if (action === undefined) return;
+
+		const previous = latestRef.current;
+		const next = reducePromptEditor(previous, action);
+		latestRef.current = next;
+		setEditor(next);
+
+		if (next.text !== previous.text) {
+			onChange(next.text);
 		}
 	});
 

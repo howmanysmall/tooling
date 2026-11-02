@@ -3,7 +3,7 @@ import { Text } from "ink";
 import { theme } from "$interactive/components/theme";
 
 import { splitAtCursor } from "./prompt-editor-state";
-import { formatImageToken } from "./prompt-images";
+import { TokenizedText } from "./tokenized-text";
 
 import type { ReactNode } from "react";
 
@@ -18,7 +18,6 @@ export interface PromptTextProperties {
 	placeholder: string;
 }
 
-const IMAGE_TOKEN = /(\[Image \d+\])/u;
 const NO_IMAGES: ReadonlyArray<PromptImage> = [];
 
 /**
@@ -44,24 +43,9 @@ export function PromptText({ editor, images = NO_IMAGES, placeholder }: Readonly
 	const { after, at, before } = splitAtCursor(editor);
 	return (
 		<Text color={theme.text}>
-			{renderImageTokens(before, images)}
+			<TokenizedText images={images} text={before} />
 			<Text inverse={true}>{at}</Text>
-			{renderImageTokens(after, images)}
+			<TokenizedText images={images} text={after} />
 		</Text>
-	);
-}
-
-function renderImageTokens(text: string, images: ReadonlyArray<PromptImage>): ReactNode {
-	if (images.length === 0) return text;
-
-	return text.split(IMAGE_TOKEN).map((part, index) =>
-		images.some(({ number }) => formatImageToken(number) === part) ? (
-			// oxlint-disable-next-line react/no-array-index-key -- the parts have no identity but their place
-			<Text backgroundColor={theme.accent} color={theme.background} key={index}>
-				{part}
-			</Text>
-		) : (
-			part
-		),
 	);
 }

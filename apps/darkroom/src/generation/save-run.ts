@@ -138,11 +138,12 @@ async function storeCopiesAsync(
 	}
 }
 
-function toEntry(
-	run: RunToSave,
-	stored: { images: ReadonlyArray<string>; references: ReadonlyArray<string> },
-	saved: ReadonlyArray<SavedImage>,
-): HistoryEntry {
+interface StoredCopies {
+	readonly images: ReadonlyArray<string>;
+	readonly references: ReadonlyArray<string>;
+}
+
+function toEntry(run: RunToSave, stored: StoredCopies, saved: ReadonlyArray<SavedImage>): HistoryEntry {
 	const { input, parameters } = run.prepared;
 	return {
 		id: run.id,
@@ -185,13 +186,18 @@ async function recoverAsync(run: RunToSave, image: DecodedImage, index: number, 
 	return writeFileNoClobberAsync(recoveryPath, image.bytes);
 }
 
+interface SavedOneImage {
+	readonly failure?: SaveFailure;
+	readonly saved: SavedImage;
+}
+
 async function saveOneAsync(
 	context: OutputContext,
 	run: RunToSave,
 	image: DecodedImage,
 	index: number,
 	storedPath?: string,
-): Promise<{ readonly failure?: SaveFailure; readonly saved: SavedImage }> {
+): Promise<SavedOneImage> {
 	try {
 		const path = await writeToOutputAsync(context, image, index, run.images.length);
 		return { saved: { mediaType: image.mediaType, path } };

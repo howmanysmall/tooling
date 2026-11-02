@@ -10,12 +10,14 @@ import { parsePastedImagePaths } from "./prompt-images";
 const READ_FILE_SCRIPT = "POSIX path of (the clipboard as «class furl»)";
 
 // A copied picture, from a screenshot or a browser, comes as PNG data.
-const SAVE_PICTURE_SCRIPT = `on run {outputPath}
-	set pngData to the clipboard as «class PNGf»
-	set fileHandle to open for access (POSIX file outputPath) with write permission
-	write pngData to fileHandle
-	close access fileHandle
-end run`;
+const SAVE_PICTURE_SCRIPT = [
+	"on run {outputPath}",
+	"set pngData to the clipboard as «class PNGf»",
+	"set fileHandle to open for access (POSIX file outputPath) with write permission",
+	"write pngData to fileHandle",
+	"close access fileHandle",
+	"end run",
+].join("\n");
 
 async function runOsaScriptAsync(script: string, ...parameters: ReadonlyArray<string>): Promise<string | undefined> {
 	return new Promise((resolve) => {
@@ -28,7 +30,8 @@ async function runOsaScriptAsync(script: string, ...parameters: ReadonlyArray<st
 /**
  * Finds the image on the clipboard: a copied image file, or a copied picture
  * saved to the temporary directory, since it has no file of its own. Only
- * macOS is supported; terminals can't paste a picture, so it has to be asked for.
+ * macOS is supported; terminals can't paste a picture, so it has to be asked
+ * for.
  *
  * @returns The image's path, or `undefined` when there is no image.
  */

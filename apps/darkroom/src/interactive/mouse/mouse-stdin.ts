@@ -2,7 +2,7 @@ import process from "node:process";
 import { PassThrough } from "node:stream";
 import { StringDecoder } from "node:string_decoder";
 
-import { normalizeCtrlBackspace, splitMouseInput } from "./mouse-input";
+import { normalizeCtrlBackspace, splitMouseInput, takeKeyboardReply } from "./mouse-input";
 
 import type { Duplex } from "node:stream";
 
@@ -11,6 +11,12 @@ import type { PointerEvent } from "./mouse-input";
 // Report presses, every movement, and the wheel, in SGR form.
 const ENABLE_MOUSE = "\u001B[?1000h\u001B[?1003h\u001B[?1006h";
 const DISABLE_MOUSE = "\u001B[?1006l\u001B[?1003l\u001B[?1000l";
+
+// The kitty keyboard protocol is how a terminal can report cmd+backspace at
+// all. Ink's own detection asks before raw mode is on, so the answer is lost.
+const QUERY_KEYBOARD = "\u001B[?u";
+const ENABLE_KEYBOARD = "\u001B[>1u";
+const DISABLE_KEYBOARD = "\u001B[<u";
 
 export interface MouseStdin {
 	/** Stops reporting the mouse and lets go of the terminal's input. */
@@ -38,6 +44,8 @@ export function createMouseStdin(
 	const keyboard: Duplex = new PassThrough({ encoding: "utf8" });
 	const decoder = new StringDecoder("utf8");
 	let pending = "";
+	let hasAskedKeyboard = false;
+	let isKeyboardEnhanced = false;
 
 	/**
 	 * Splits a chunk of the terminal's input into keys and pointer events.
@@ -46,8 +54,14 @@ export function createMouseStdin(
 	 */
 	function onData(chunk: Buffer): void {
 		const split = splitMouseInput(pending + decoder.write(chunk));
-		const { events, text } = split;
+		const { events } = split;
 		({ pending } = split);
+
+		const { hasReply, text } = takeKeyboardReply(split.text);
+		if (hasReply && !isKeyboardEnhanced) {
+			isKeyboardEnhanced = true;
+			output.write(ENABLE_KEYBOARD);
+		}
 
 		if (text.length > 0) {
 			keyboard.write(normalizeCtrlBackspace(text));
@@ -59,7 +73,8 @@ export function createMouseStdin(
 	}
 
 	function disableMouse(): void {
-		output.write(DISABLE_MOUSE);
+		output.write(isKeyboardEnhanced ? `${DISABLE_MOUSE}${DISABLE_KEYBOARD}` : DISABLE_MOUSE);
+		isKeyboardEnhanced = false;
 	}
 
 	// Ink drives raw mode and the event loop through these, as on a TTY.
@@ -71,6 +86,12 @@ export function createMouseStdin(
 		},
 		setRawMode(mode: boolean): Duplex {
 			source.setRawMode(mode);
+
+			if (mode && !hasAskedKeyboard) {
+				hasAskedKeyboard = true;
+				output.write(QUERY_KEYBOARD);
+			}
+
 			return keyboard;
 		},
 		unref(): Duplex {

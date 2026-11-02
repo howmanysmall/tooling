@@ -177,14 +177,7 @@ export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name,
 			</NoticeContext>
 		</MouseRegistryContext>,
 		// The app decides what ctrl+c does: clear the prompt, or quit.
-		// The kitty protocol is how a terminal can report cmd+backspace at all.
-		{
-			alternateScreen: true,
-			exitOnCtrlC: false,
-			kittyKeyboard: { mode: "auto" },
-			stdin: mouse.stdin,
-			stdout: mouse.stdout,
-		},
+		{ alternateScreen: true, exitOnCtrlC: false, stdin: mouse.stdin, stdout: mouse.stdout },
 	);
 
 	await instance.waitUntilExit();
