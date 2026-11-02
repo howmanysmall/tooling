@@ -4,6 +4,11 @@ import { parseSync, Visitor } from "rolldown/utils";
 import type { Plugin } from "rolldown";
 import type { ESTree } from "rolldown/utils";
 
+/** What the plugin's transform hands back to rolldown. */
+interface TransformedCode {
+	readonly code: RolldownMagicString;
+}
+
 /**
  * Arktype methods that only change the inferred type. At runtime they
  * `return this` (see `BaseRoot` in `@ark/schema/out/roots/root.js`).
@@ -356,7 +361,7 @@ export function stripArktypeTypeCasts(): Plugin {
 				moduleType: ["js", "jsx", "ts", "tsx"],
 			},
 			// oxlint-disable-next-line small-rules/starts-with-verb -- rolldown names this hook.
-			handler(code, id, meta): undefined | { code: RolldownMagicString } {
+			handler(code, id, meta): TransformedCode | undefined {
 				if (!CANDIDATE_CALL.test(code)) return undefined;
 
 				const lang =
