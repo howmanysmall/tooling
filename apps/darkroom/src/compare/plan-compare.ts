@@ -63,9 +63,14 @@ export interface EstimateDependencies {
 	readonly warn: (message: string) => void;
 }
 
+interface CompareTarget {
+	readonly batch: string;
+	readonly directory: string;
+}
+
 async function prepareAllAsync(
 	request: CompareRequest,
-	{ batch, directory }: { readonly batch: string; readonly directory: string },
+	{ batch, directory }: CompareTarget,
 	prepare: PlanDependencies["prepare"],
 ): Promise<Array<PreparedGeneration>> {
 	const settled = await Promise.allSettled(

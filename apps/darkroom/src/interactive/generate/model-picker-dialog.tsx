@@ -1,10 +1,10 @@
 import { useReducer } from "react";
-import { TextInput } from "@inkjs/ui";
 import { Box, Text, useInput } from "ink";
 
 import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 import { Dialog } from "$interactive/components/dialog";
 import { DialogList } from "$interactive/components/dialog-list";
+import { SearchInput } from "$interactive/components/search-input";
 import { theme } from "$interactive/components/theme";
 import { useSearchList } from "$interactive/palette/use-search-list";
 
@@ -101,7 +101,7 @@ export function ModelPickerDialog({
 				<Text bold={true} color={theme.accent}>
 					{"› "}
 				</Text>
-				<TextInput placeholder="Search models" onChange={list.handleQueryChange} onSubmit={pickSelected} />
+				<SearchInput placeholder="Search models" onChange={list.handleQueryChange} onSubmit={pickSelected} />
 			</Box>
 			<ModelPickerToolbar dispatch={dispatchView} view={view} />
 			{list.visible.length === 0 ? <Text color={theme.muted}>{"No models match."}</Text> : null}

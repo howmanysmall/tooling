@@ -1,8 +1,8 @@
-import { TextInput } from "@inkjs/ui";
 import { Box, Text } from "ink";
 
 import { Dialog } from "$interactive/components/dialog";
 import { DialogList } from "$interactive/components/dialog-list";
+import { SearchInput } from "$interactive/components/search-input";
 import { theme } from "$interactive/components/theme";
 import { useSearchList } from "$interactive/palette/use-search-list";
 
@@ -77,7 +77,11 @@ export function SessionListDialog({
 				<Text bold={true} color={theme.accent}>
 					{"› "}
 				</Text>
-				<TextInput placeholder="Search sessions" onChange={list.handleQueryChange} onSubmit={resumeSelected} />
+				<SearchInput
+					placeholder="Search sessions"
+					onChange={list.handleQueryChange}
+					onSubmit={resumeSelected}
+				/>
 			</Box>
 			{list.visible.length === 0 ? (
 				<Text color={theme.muted}>{sessions.length === 0 ? "No sessions yet." : "No sessions match."}</Text>

@@ -20,6 +20,8 @@ export interface GenerateActions {
 	readonly generateWithOptions: () => void;
 	readonly insertNewLine: () => void;
 	readonly newSession: () => void;
+	/** Adds the image on the clipboard to the prompt. */
+	readonly pasteImage: () => void;
 	/** Opens the list of past sessions. */
 	readonly showSessions: () => void;
 	/** Switches between editing the image above and starting fresh. */
@@ -45,6 +47,7 @@ export function getGenerateCommands(actions: GenerateActions): Array<BrowserComm
 			run: actions.chooseModel,
 			title: "Choose model",
 		},
+		{ key: BrowserKey.PasteImage, group, keyLabel: "ctrl+v", run: actions.pasteImage, title: "Paste image" },
 		{ key: BrowserKey.NewSession, group, keyLabel: "ctrl+n", run: actions.newSession, title: "New session" },
 		{ key: BrowserKey.Sessions, group, keyLabel: "ctrl+s", run: actions.showSessions, title: "Sessions" },
 		{ key: BrowserKey.CloseSession, group, keyLabel: "", run: actions.closeSession, title: "Close session" },
@@ -126,6 +129,7 @@ const CTRL_KEYS: ReadonlyMap<string, BrowserKey> = new Map([
 	["n", BrowserKey.NewSession],
 	["o", BrowserKey.ChooseModel],
 	["s", BrowserKey.Sessions],
+	["v", BrowserKey.PasteImage],
 ]);
 
 /**
