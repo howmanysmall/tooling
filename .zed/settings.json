@@ -100,14 +100,7 @@
 				}
 			],
 			"hard_tabs": true,
-			"language_servers": [
-				"!knip",
-				"!tailwind-css-language-server",
-				"astro-language-server",
-				"biome",
-				"discord_presence",
-				"..."
-			]
+			"language_servers": ["!knip", "astro-language-server", "biome", "..."]
 		},
 		"CSS": {
 			"code_actions_on_format": {
@@ -124,15 +117,7 @@
 				}
 			],
 			"hard_tabs": true,
-			"language_servers": [
-				"!knip",
-				"!tailwind-css-language-server",
-				"biome",
-				"discord_presence",
-				"eslint",
-				"oxfmt",
-				"..."
-			],
+			"language_servers": ["!knip", "!tailwind-css-language-server", "eslint", "biome", "oxfmt", "..."],
 			"prettier": { "allowed": false },
 			"tab_size": 4
 		},
@@ -145,12 +130,12 @@
 			"hard_tabs": true,
 			"language_servers": [
 				"!knip",
+				"eslint",
 				"biome",
 				"codebook",
 				"dependi",
 				"deputy",
 				"discord_presence",
-				"eslint",
 				"harper-ls",
 				"json-language-server",
 				"package-version-server",
@@ -183,12 +168,12 @@
 		"JavaScript": {
 			"language_servers": [
 				"!deno",
-				"!knip",
-				"!vtsls",
 				"!effect-tsgo",
 				"!graphql",
+				"!knip",
+				"!sloptor",
 				"!typescript-language-server",
-				"!tailwind-css-language-server",
+				"!vtsls",
 				"..."
 			]
 		},
@@ -246,10 +231,10 @@
 			"language_servers": [
 				"!knip",
 				"bash-language-server",
-				"codebook",
-				"discord_presence",
-				"harper-ls",
 				"wakatime",
+				"codebook",
+				"harper-ls",
+				"discord_presence",
 				"..."
 			],
 			"tab_size": 4
@@ -259,7 +244,6 @@
 			"hard_tabs": true,
 			"language_servers": [
 				"!knip",
-				"discord_presence",
 				"dependi",
 				"deputy",
 				"eslint",
@@ -267,7 +251,8 @@
 				"tombi",
 				"wakatime",
 				"codebook",
-				"harper-ls"
+				"harper-ls",
+				"discord_presence"
 			],
 			"tab_size": 4
 		},
@@ -282,12 +267,12 @@
 			"hard_tabs": true,
 			"language_servers": [
 				"!deno",
-				"!knip",
-				"!vtsls",
 				"!effect-tsgo",
 				"!graphql",
+				"!knip",
+				"!sloptor",
 				"!typescript-language-server",
-				"!tailwind-css-language-server",
+				"!vtsls",
 				"..."
 			],
 			"prettier": { "allowed": false },
@@ -304,12 +289,12 @@
 			"hard_tabs": true,
 			"language_servers": [
 				"!deno",
-				"!knip",
-				"!vtsls",
 				"!effect-tsgo",
 				"!graphql",
+				"!knip",
+				"!sloptor",
 				"!typescript-language-server",
-				"!tailwind-css-language-server",
+				"!vtsls",
 				"..."
 			],
 			"prettier": { "allowed": false },
@@ -320,7 +305,6 @@
 			"hard_tabs": false,
 			"language_servers": [
 				"!knip",
-				"discord_presence",
 				"dependi",
 				"eslint",
 				"json-language-server",
@@ -469,6 +453,10 @@
 							".lefthook.yaml",
 							"lefthook.json",
 							".lefthook.json"
+						],
+						"https://raw.githubusercontent.com/jdx/jactionlint/main/schema/jactionlint-config.json": [
+							".github/jactionlint.yaml",
+							".github/jactionlint.yml"
 						]
 					}
 				}

@@ -33,13 +33,54 @@ export interface SplitInput {
 // oxlint-disable-next-line no-control-regex -- the reports start with ESC
 const REPORT = /\u001B\[<(?<code>\d+);(?<column>\d+);(?<row>\d+)(?<final>[Mm])/gu;
 
+// A mouse report or a keyboard reply, cut off at the chunk's end.
 // oxlint-disable-next-line no-control-regex -- the reports start with ESC
-const PARTIAL_REPORT = /\u001B\[<[\d;]*$/u;
+const PARTIAL_REPORT = /\u001B\[(?:<[\d;]*|\?\d*)$/u;
+
+// The terminal's answer when asked for its keyboard protocol flags.
+// oxlint-disable-next-line no-control-regex -- the reply starts with ESC
+const KEYBOARD_REPLY = /\u001B\[\?\d+u/gu;
 
 const MOTION_BIT = 32;
 const WHEEL_BIT = 64;
 const BUTTON_BITS = 3;
 const PRIMARY_BUTTON = 0;
+
+// oxlint-disable-next-line no-control-regex -- the point; ESC+BS stays alt+backspace
+const LEGACY_CTRL_BACKSPACE = /(?<!\u001B)\u0008/gu;
+const CTRL_W = "\u0017";
+
+/** Keyboard input with the terminal's protocol answer taken out. */
+export interface KeyboardReplySplit {
+	/** The terminal answered, so it speaks the kitty keyboard protocol. */
+	readonly hasReply: boolean;
+	readonly text: string;
+}
+
+/**
+ * Takes the terminal's answer to the keyboard protocol query out of the
+ * input, so it never reaches a key handler as typing.
+ *
+ * @param text - Keyboard input, with the mouse reports taken out.
+ * @returns Whether the terminal answered, and the rest of the input.
+ */
+export function takeKeyboardReply(text: string): KeyboardReplySplit {
+	const rest = text.replaceAll(KEYBOARD_REPLY, "");
+	return { hasReply: rest.length !== text.length, text: rest };
+}
+
+/**
+ * Turns the `BS` byte into `ctrl+w`. Mac terminals send `DEL` for backspace,
+ * so a `BS` is `ctrl+backspace`, which Ink can't tell from backspace. That
+ * gives up `ctrl+h` as a backspace, which no key in the app relies on.
+ *
+ * @param text - Keyboard input, with the mouse reports taken out.
+ * @returns The input, with `ctrl+backspace` deleting a word.
+ */
+export function normalizeCtrlBackspace(text: string): string {
+	// eslint-disable-next-line unicorn/no-unsafe-string-replacement -- think this is fine mate
+	return text.replaceAll(LEGACY_CTRL_BACKSPACE, CTRL_W);
+}
 
 /**
  * Reads one SGR report's button code.

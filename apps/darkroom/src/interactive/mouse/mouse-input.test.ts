@@ -1,6 +1,30 @@
 import { describe, it } from "vitest";
 
-import { MouseAction, splitMouseInput, toMouseAction } from "./mouse-input";
+import { MouseAction, normalizeCtrlBackspace, splitMouseInput, takeKeyboardReply, toMouseAction } from "./mouse-input";
+
+describe("takeKeyboardReply", () => {
+	it("takes the terminal's answer out of the typing, so it is never typed", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(takeKeyboardReply("a\u001B[?0ub")).toStrictEqual({ hasReply: true, text: "ab" });
+		expect(takeKeyboardReply("a\u001B[127;9ub")).toStrictEqual({ hasReply: false, text: "a\u001B[127;9ub" });
+	});
+
+	it("holds back an answer cut off at the end of a chunk", ({ expect }) => {
+		expect.assertions(1);
+
+		expect(splitMouseInput("a\u001B[?0")).toStrictEqual({ events: [], pending: "\u001B[?0", text: "a" });
+	});
+});
+
+describe("normalizeCtrlBackspace", () => {
+	it("makes ctrl+backspace delete a word, and leaves backspace and alt+backspace", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(normalizeCtrlBackspace("\b\b")).toBe("\u0017\u0017");
+		expect(normalizeCtrlBackspace("\u007F\u001B\b\u001B\u007F")).toBe("\u007F\u001B\b\u001B\u007F");
+	});
+});
 
 describe("splitMouseInput", () => {
 	it("takes the reports out and leaves the typing, in zero-based cells", ({ expect }) => {

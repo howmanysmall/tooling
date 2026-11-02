@@ -1,11 +1,13 @@
 import { reduceStatus } from "$interactive/components/status-message";
 
 import { EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
+import { formatImageToken } from "./prompt-images";
 
 import type { StatusAction, StatusMessage } from "$interactive/components/status-message";
 import type { BaseImage, SessionTurn } from "$interactive/session/session-state";
 
 import type { EditorAction, PromptEditor } from "./prompt-editor-state";
+import type { PromptImage } from "./prompt-images";
 
 /** A dialog over the generate screen. */
 export const enum GenerateDialog {
@@ -31,15 +33,36 @@ export interface GenerateScreenState {
 	/** The dialog open over the prompt box, if any. */
 	readonly dialog?: OpenDialog | undefined;
 	readonly editor: PromptEditor;
+	/** The images pasted into the prompt, oldest first. */
+	readonly images: ReadonlyArray<PromptImage>;
 	readonly status?: StatusMessage | undefined;
 }
 
 export type GenerateScreenAction =
 	| StatusAction
 	| { readonly action: EditorAction; readonly type: "edit" }
-	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" };
+	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" }
+	| { readonly paths: ReadonlyArray<string>; readonly type: "attach" };
 
-export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR };
+export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR, images: [] };
+
+function attachImage(state: GenerateScreenState, path: string): GenerateScreenState {
+	const number = (state.images.at(-1)?.number ?? 0) + 1;
+	return {
+		...state,
+		editor: reducePromptEditor(state.editor, { text: formatImageToken(number), type: "insert" }),
+		images: [...state.images, { number, path }],
+	};
+}
+
+function attachImages(state: GenerateScreenState, paths: ReadonlyArray<string>): GenerateScreenState {
+	let next = state;
+	for (const path of paths) {
+		next = attachImage(next, path);
+	}
+
+	return next;
+}
 
 /**
  * Applies one action to the generate screen.
@@ -50,10 +73,20 @@ export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITO
  */
 export function reduceGenerateScreen(state: GenerateScreenState, action: GenerateScreenAction): GenerateScreenState {
 	switch (action.type) {
+		case "attach":
+			return attachImages(state, action.paths);
+
 		case "dialog":
 			return { ...state, dialog: action.dialog };
-		case "edit":
-			return { ...state, editor: reducePromptEditor(state.editor, action.action) };
+
+		case "edit": {
+			return {
+				...state,
+				editor: reducePromptEditor(state.editor, action.action),
+				images: action.action.type === "clear" ? [] : state.images,
+			};
+		}
+
 		default:
 			return { ...state, status: reduceStatus(state.status, action) };
 	}

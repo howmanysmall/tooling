@@ -22,7 +22,8 @@
 	"dependencies": {
 		"@howmanysmall/linter-utilities": "workspace:*",
 		"@isentinel/eslint-config": "catalog:lint",
-		"oxlint-plugin-react-doctor": "catalog:lint"
+		"oxlint-plugin-react-doctor": "catalog:lint",
+		"type-fest": "catalog:types"
 	},
 	"devDependencies": {
 		"@howmanysmall/project-configurations": "workspace:*",

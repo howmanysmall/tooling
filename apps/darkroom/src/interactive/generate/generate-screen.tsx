@@ -5,6 +5,7 @@ import { Box, useApp, useWindowSize } from "ink";
 import { getReferenceRange } from "$generation/model-capabilities";
 import { getModelPrices } from "$generation/observed-prices";
 import { BrowserShell } from "$interactive/app/browser-shell";
+import { runBrowserTask } from "$interactive/app/run-browser-task";
 import { DarkroomLogo } from "$interactive/components/darkroom-logo";
 import { KeyHints } from "$interactive/components/key-hints";
 import { ScreenHeader } from "$interactive/components/screen-header";
@@ -22,6 +23,8 @@ import { GenerateDialogs } from "./generate-dialogs";
 import { GenerateDialog, INITIAL_GENERATE_STATE, reduceGenerateScreen } from "./generate-screen-state";
 import { PromptBox } from "./prompt-box";
 import { getEditorAction } from "./prompt-editor-state";
+import { parsePastedImagePaths, resolvePromptImages } from "./prompt-images";
+import { readClipboardImageAsync } from "./read-clipboard-image";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { Key } from "ink";
@@ -145,9 +148,43 @@ export function GenerateScreen({
 		} else if (prompt.length === 0) {
 			reportError("Write a prompt first.");
 		} else {
-			session.actions.send({ base, model, prompt, type: "new" });
+			const resolved = resolvePromptImages(prompt, screen.images, base !== undefined && canEdit ? 2 : 1);
+			if (!canEdit && resolved.paths.length > 0) {
+				reportError(`${model.name} can't take images. ctrl+o picks one that can.`);
+				return;
+			}
+
+			session.actions.send({ attachments: resolved.paths, base, model, prompt: resolved.prompt, type: "new" });
 			dispatch(CLEAR_PROMPT);
 		}
+	}
+
+	async function attachClipboardImageAsync(): Promise<void> {
+		const path = await readClipboardImageAsync();
+		if (path === undefined) {
+			reportError("There's no image on the clipboard.");
+		} else {
+			dispatch({ paths: [path], type: "attach" });
+		}
+	}
+
+	function pasteClipboardImage(): void {
+		runBrowserTask(attachClipboardImageAsync(), (failure) => {
+			if (failure !== undefined) {
+				reportError(failure);
+			}
+		});
+	}
+
+	function handlePaste(text: string): void {
+		// Some terminals paste nothing at all when the clipboard holds a picture.
+		if (text.length === 0) {
+			pasteClipboardImage();
+			return;
+		}
+
+		const paths = parsePastedImagePaths(text);
+		dispatch(paths === undefined ? { action: { text, type: "insert" }, type: "edit" } : { paths, type: "attach" });
 	}
 
 	function interrupt(): void {
@@ -199,6 +236,7 @@ export function GenerateScreen({
 			dispatch(NEW_LINE);
 		},
 		newSession: session.actions.newSession,
+		pasteImage: pasteClipboardImage,
 		showSessions(): void {
 			dispatch(OPEN_SESSIONS);
 		},
@@ -224,6 +262,7 @@ export function GenerateScreen({
 			canEdit={canEdit}
 			editFileName={base === undefined ? undefined : nodePath.basename(base.path)}
 			editor={screen.editor}
+			images={screen.images}
 			model={model}
 			prices={model === undefined ? undefined : getModelPrices(catalog.pricing, catalog.observed, model.id)}
 			width={boxWidth}
@@ -244,6 +283,7 @@ export function GenerateScreen({
 			rows={rows}
 			status={screen.status}
 			onInterrupt={interrupt}
+			onPaste={handlePaste}
 			onShiftTab={handleShiftTab}
 		>
 			<ScreenHeader title="generate" />

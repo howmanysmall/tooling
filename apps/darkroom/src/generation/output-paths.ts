@@ -93,6 +93,10 @@ export interface OutputNaming {
 	readonly slug: string;
 }
 
+interface StdoutSpec {
+	readonly kind: OutputKind.Stdout;
+}
+
 /**
  * Gets the path for one image before any collision suffix is added.
  *
@@ -100,10 +104,7 @@ export interface OutputNaming {
  * @param naming - The parts of the generated name.
  * @returns The absolute path.
  */
-export function getOutputPath(
-	spec: Exclude<OutputSpec, { readonly kind: OutputKind.Stdout }>,
-	naming: OutputNaming,
-): string {
+export function getOutputPath(spec: Exclude<OutputSpec, StdoutSpec>, naming: OutputNaming): string {
 	if (spec.kind === OutputKind.Directory) {
 		const stem = spec.stem ?? `${naming.date}_${naming.slug}`;
 		return nodePath.join(spec.directory, `${stem}_${naming.index}.${naming.extension}`);
