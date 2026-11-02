@@ -41,8 +41,8 @@ export interface GenerateScreenState {
 export type GenerateScreenAction =
 	| StatusAction
 	| { readonly action: EditorAction; readonly type: "edit" }
-	| { readonly paths: ReadonlyArray<string>; readonly type: "attach" }
-	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" };
+	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" }
+	| { readonly paths: ReadonlyArray<string>; readonly type: "attach" };
 
 export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR, images: [] };
 
@@ -64,16 +64,20 @@ function attachImage(state: GenerateScreenState, path: string): GenerateScreenSt
  */
 export function reduceGenerateScreen(state: GenerateScreenState, action: GenerateScreenAction): GenerateScreenState {
 	switch (action.type) {
-		case "dialog":
-			return { ...state, dialog: action.dialog };
 		case "attach":
 			return action.paths.reduce(attachImage, state);
-		case "edit":
+
+		case "dialog":
+			return { ...state, dialog: action.dialog };
+
+		case "edit": {
 			return {
 				...state,
 				editor: reducePromptEditor(state.editor, action.action),
 				images: action.action.type === "clear" ? [] : state.images,
 			};
+		}
+
 		default:
 			return { ...state, status: reduceStatus(state.status, action) };
 	}
