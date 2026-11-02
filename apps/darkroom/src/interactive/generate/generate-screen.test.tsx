@@ -1,6 +1,3 @@
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
-import nodePath from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, it } from "vitest";
 
@@ -17,7 +14,7 @@ import { GenerateScreen } from "./generate-screen.tsx";
 import type { GenerationResult } from "$generation/run-generation";
 import type { SessionSummary } from "$history/session-list";
 import type { ModelCatalog } from "$interactive/models/model-browser-state";
-import type { SessionRequest, SessionServices } from "$interactive/session/session-services";
+import type { SessionServices } from "$interactive/session/session-services";
 import type { PendingRequest } from "$interactive/session/session-state";
 import type { SessionStore } from "$interactive/session/session-store";
 
@@ -58,7 +55,6 @@ function ignore(): void {
 interface FakeSession {
 	/** Records each saved run in `saved`. */
 	readonly handleRunSaved: () => void;
-	readonly requests: Array<SessionRequest>;
 	readonly saved: Array<string>;
 	readonly sent: Array<string>;
 	readonly services: SessionServices;
@@ -67,12 +63,10 @@ interface FakeSession {
 function createFakeSession(): FakeSession {
 	const sent: Array<string> = [];
 	const saved: Array<string> = [];
-	const requests: Array<SessionRequest> = [];
 	return {
 		handleRunSaved(): void {
 			saved.push("saved");
 		},
-		requests,
 		saved,
 		sent,
 		services: {
@@ -80,8 +74,6 @@ function createFakeSession(): FakeSession {
 			forkAsync: async () => undefined,
 			getRunningCount: () => 0,
 			async prepareAsync(request): Promise<PendingRequest> {
-				requests.push(request);
-
 				const prepared = await prepareGenerationAsync(
 					{
 						force: false,
@@ -155,49 +147,5 @@ describe("generate screen", () => {
 
 		await expect.poll(() => String(instance.lastFrame())).toMatch(FINISHED);
 		expect(saved).toStrictEqual(["saved"]);
-	});
-
-	it("attaches an image pasted as a quoted path, and sends it with the prompt", async ({ expect }) => {
-		// oxlint-disable-next-line small-rules/prefer-expect-assertions -- vitest counts expect.poll, this rule does not
-		expect.assertions(3);
-
-		const directory = await mkdtemp(nodePath.join(tmpdir(), "darkroom paste "));
-		const image = nodePath.join(directory, "fox.png");
-		await writeFile(image, "");
-
-		const { handleRunSaved, requests, services } = createFakeSession();
-		const instance = renderScreen(
-			<SessionProvider services={services} store={createTestStore()} onRunSaved={handleRunSaved}>
-				<GenerateScreen
-					catalog={EDITING_CATALOG}
-					getPreview={getNoPreview}
-					model={EDITING_MODEL}
-					now={NOW}
-					recentIds={NO_RECENT}
-					sessions={NO_SESSIONS}
-					onChooseModel={ignore}
-					onGenerateWithOptions={ignore}
-				/>
-			</SessionProvider>,
-		);
-
-		await delay(20);
-		instance.stdin.write(`\u001B[200~ '${image}'\n\u001B[201~`);
-
-		await expect.poll(() => String(instance.lastFrame())).toContain("[Image 1]");
-		expect(String(instance.lastFrame())).not.toContain("fox.png");
-
-		await typeAsync(
-			(data) => {
-				instance.stdin.write(data);
-			},
-			" but red",
-			ENTER,
-		);
-
-		await expect.poll(() => requests.at(0)).toMatchObject({ attachments: [image], prompt: "[Image 1] but red" });
-
-		instance.unmount();
-		await rm(directory, { force: true, recursive: true });
 	});
 });

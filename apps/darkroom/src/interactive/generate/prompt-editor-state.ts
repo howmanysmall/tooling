@@ -32,6 +32,8 @@ const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
 const CONTROL_CHARACTERS = /[\u0000-\u0009\u000B-\u001F\u007F]/gu;
 const LINE_BREAKS = /\r\n?/gu;
 const WORD_CHARACTER = /[\p{L}\p{N}_]/u;
+const LINE_BREAK_RUN = /[\r\n]+/gu;
+
 // A pasted image's token goes in one step, so it never lingers half deleted.
 const IMAGE_TOKEN_BEFORE = /\[Image \d+\]$/u;
 const IMAGE_TOKEN_AFTER = /^\[Image \d+\]/u;
@@ -195,6 +197,7 @@ export function reducePromptEditor(editor: PromptEditor, action: EditorAction): 
 }
 
 const DELETE_FORWARD: EditorAction = { type: "delete-forward" };
+const DELETE_TO_START: EditorAction = { type: "delete-to-start" };
 const DELETE_WORD: EditorAction = { type: "delete-word" };
 const LINE_END: EditorAction = { type: "line-end" };
 const LINE_START: EditorAction = { type: "line-start" };
@@ -240,7 +243,7 @@ const CTRL_ACTIONS: ReadonlyMap<string, EditorAction> = new Map<string, EditorAc
 	// The kitty protocol reports ctrl+j as a key, not as a line feed.
 	["j", NEW_LINE],
 	["k", { type: "delete-to-end" }],
-	["u", { type: "delete-to-start" }],
+	["u", DELETE_TO_START],
 	["w", DELETE_WORD],
 ]);
 
@@ -258,7 +261,7 @@ const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
 ];
 
 function getBackspaceAction(key: Key): EditorAction {
-	if (key.super) return { type: "delete-to-start" };
+	if (key.super) return DELETE_TO_START;
 	return key.meta || key.ctrl ? DELETE_WORD : { type: "delete-backward" };
 }
 
@@ -309,8 +312,9 @@ export function getSingleLineAction(input: string, key: Key): EditorAction | und
 	if (key.upArrow || key.downArrow) return undefined;
 
 	const action = getEditorAction(input, key);
-	if (action === NEW_LINE || action?.type !== "insert") return action === NEW_LINE ? undefined : action;
-	return { text: action.text.replaceAll(/\s*[\r\n]+\s*/gu, " "), type: "insert" };
+	if (action === NEW_LINE) return undefined;
+	if (action?.type !== "insert") return action;
+	return { text: action.text.replaceAll(LINE_BREAK_RUN, " "), type: "insert" };
 }
 
 function getModifiedAction(input: string, key: Key): EditorAction | undefined {

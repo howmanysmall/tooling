@@ -13,7 +13,11 @@ const MODELS = [
 	}),
 ];
 
-function getIds(models: ReadonlyArray<{ readonly id: string }>): Array<string> {
+interface IdentifiedModel {
+	readonly id: string;
+}
+
+function getIds(models: ReadonlyArray<IdentifiedModel>): Array<string> {
 	return models.map((model) => model.id);
 }
 

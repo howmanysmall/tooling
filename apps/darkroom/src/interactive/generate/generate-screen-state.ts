@@ -55,6 +55,15 @@ function attachImage(state: GenerateScreenState, path: string): GenerateScreenSt
 	};
 }
 
+function attachImages(state: GenerateScreenState, paths: ReadonlyArray<string>): GenerateScreenState {
+	let next = state;
+	for (const path of paths) {
+		next = attachImage(next, path);
+	}
+
+	return next;
+}
+
 /**
  * Applies one action to the generate screen.
  *
@@ -65,7 +74,7 @@ function attachImage(state: GenerateScreenState, path: string): GenerateScreenSt
 export function reduceGenerateScreen(state: GenerateScreenState, action: GenerateScreenAction): GenerateScreenState {
 	switch (action.type) {
 		case "attach":
-			return action.paths.reduce(attachImage, state);
+			return attachImages(state, action.paths);
 
 		case "dialog":
 			return { ...state, dialog: action.dialog };
