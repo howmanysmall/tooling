@@ -8,7 +8,8 @@ import { describe, it } from "vitest";
 import type { TestContext } from "vitest";
 
 const CLI_PATH = nodePath.join(import.meta.dirname, "cli.ts");
-const CONFIGURATION_FILE = ".config/footnote.json";
+const CONFIGURATION_FILE = "footnote.config.json";
+const NESTED_CONFIGURATION_FILE = ".config/footnote.json";
 const WORKSPACE_YAML = 'packages:\n  - "apps/*"\n  - "packages/*"\n';
 
 const COMPOSITE = '{ "compilerOptions": { "composite": true } }\n';
@@ -182,7 +183,7 @@ describe("writing the configuration", () => {
 
 		expect(exitCode).toBe(0);
 		expect(stdout).toBe(`${nodePath.join(root, CONFIGURATION_FILE)}\n`);
-		expect(existsSync(nodePath.join(root, "apps/plain/src/.config"))).toBe(false);
+		expect(existsSync(nodePath.join(root, "apps/plain/src", CONFIGURATION_FILE))).toBe(false);
 	});
 });
 
@@ -190,8 +191,8 @@ describe("an existing configuration", () => {
 	// Catches a hand-written configuration being clobbered, in any loaded form.
 	it.for([
 		{ file: CONFIGURATION_FILE, original: '{ "ignore": ["apps/*"] }\n' },
-		{ file: "footnote.config.json", original: '{ "ignore": ["apps/*"] }\n' },
-		{ file: ".footnoterc", original: "ignore=apps/*\n" },
+		{ file: "footnote.config.ts", original: 'export default { ignore: ["apps/*"] };\n' },
+		{ file: NESTED_CONFIGURATION_FILE, original: '{ "ignore": ["apps/*"] }\n' },
 	])("exits 1 and leaves $file alone", ({ file, original }, { expect, onTestFinished }) => {
 		expect.assertions(4);
 
@@ -234,7 +235,7 @@ describe("an existing configuration", () => {
 		expect(stderr).not.toContain("warning");
 	});
 
-	// Catches a silent conflict, where another file keeps deciding what loads.
+	// Catches a silent conflict, or the other file being deleted or rewritten.
 	it("--force warns about another configuration file and keeps it", ({ expect, onTestFinished }) => {
 		expect.assertions(4);
 
@@ -245,16 +246,40 @@ describe("an existing configuration", () => {
 				"apps/plain": NO_OPTIONS,
 			},
 			{
-				"footnote.config.json": other,
+				[NESTED_CONFIGURATION_FILE]: other,
 			},
 		);
 
 		const { exitCode, stderr } = runCli(root, "initialize", "--force");
 
 		expect(exitCode).toBe(0);
-		expect(stderr).toContain(`warning: ${nodePath.join(root, "footnote.config.json")}`);
-		expect(read(root, "footnote.config.json")).toBe(other);
+		expect(stderr).toContain(`warning: ${nodePath.join(root, NESTED_CONFIGURATION_FILE)}`);
+		expect(read(root, NESTED_CONFIGURATION_FILE)).toBe(other);
 		expect(JSON.parse(read(root, CONFIGURATION_FILE))).toStrictEqual({ ignore: ["apps/plain"] });
+	});
+
+	// Catches --force writing a file that has no effect on the next sync.
+	it("--force writes a file that wins over .config", ({ expect, onTestFinished }) => {
+		expect.assertions(3);
+
+		const root = createWorkspace(
+			onTestFinished,
+			{
+				"apps/composite": COMPOSITE,
+				"apps/plain": NO_OPTIONS,
+			},
+			{
+				[NESTED_CONFIGURATION_FILE]: '{ "ignore": ["apps/*"] }\n',
+				"tsconfig.json": "{}\n",
+			},
+		);
+
+		expect(runCli(root, "initialize", "--force").exitCode).toBe(0);
+
+		const { exitCode, stdout } = runCli(root, "--check");
+
+		expect(exitCode).toBe(1);
+		expect(stdout).toBe("tsconfig.json\n  + ./apps/composite\n");
 	});
 });
 
@@ -269,7 +294,7 @@ describe("--dry-run", () => {
 
 		expect(exitCode).toBe(0);
 		expect(stdout).toBe('{\n\t"ignore": [\n\t\t"apps/plain"\n\t]\n}\n');
-		expect(existsSync(nodePath.join(root, ".config"))).toBe(false);
+		expect(existsSync(nodePath.join(root, CONFIGURATION_FILE))).toBe(false);
 	});
 
 	// Catches a preview succeeding where the real command would fail.
@@ -309,7 +334,7 @@ describe("failures", () => {
 
 		expect(exitCode).toBe(1);
 		expect(stderr).toContain("packages/broken/tsconfig.json");
-		expect(existsSync(nodePath.join(root, ".config"))).toBe(false);
+		expect(existsSync(nodePath.join(root, CONFIGURATION_FILE))).toBe(false);
 	});
 
 	// Catches a configuration being written into a directory no sync would use.
@@ -325,7 +350,7 @@ describe("failures", () => {
 
 		expect(exitCode).toBe(1);
 		expect(stderr).toContain("pnpm-workspace.yaml");
-		expect(existsSync(nodePath.join(directory, ".config"))).toBe(false);
+		expect(existsSync(nodePath.join(directory, CONFIGURATION_FILE))).toBe(false);
 	});
 
 	// Catches a mistyped --dry-run being dropped, which would write the file.
@@ -335,6 +360,6 @@ describe("failures", () => {
 		const root = createWorkspace(onTestFinished, { "apps/plain": NO_OPTIONS });
 
 		expect(runCli(root, "initialize", "--dryrun").exitCode).toBe(2);
-		expect(existsSync(nodePath.join(root, ".config"))).toBe(false);
+		expect(existsSync(nodePath.join(root, CONFIGURATION_FILE))).toBe(false);
 	});
 });

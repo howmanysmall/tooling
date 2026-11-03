@@ -54,6 +54,7 @@ export async function loadConfigurationAsync({
 	const c12Options: LoadConfigOptions<Configuration> = {
 		name: "footnote",
 		cwd: root,
+		rcFile: false,
 		schema: isConfiguration,
 	};
 

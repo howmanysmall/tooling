@@ -16,6 +16,18 @@ function createProject(onTestFinished: TestContext["onTestFinished"]): string {
 }
 
 describe("loadConfigurationAsync", () => {
+	// Catches a leftover `.footnoterc` quietly changing what gets synced.
+	it("does not load a .footnoterc file", async ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const root = createProject(onTestFinished);
+		writeFileSync(nodePath.join(root, ".footnoterc"), "ignore=a\n");
+
+		const { configuration } = await loadConfigurationAsync({ cwd: root, root });
+
+		expect(configuration.ignore).toBeUndefined();
+	});
+
 	it("loads a TypeScript configuration file from the workspace root", async ({ expect, onTestFinished }) => {
 		expect.assertions(1);
 
