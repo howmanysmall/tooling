@@ -1,5 +1,6 @@
 import { clampCursor, isCursorMove, moveCursor } from "$interactive/components/list-cursor";
 import { reduceStatus } from "$interactive/components/status-message";
+import { BrowserActionType } from "$meta/action-types";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { CursorMove } from "$interactive/components/list-cursor";
@@ -24,15 +25,6 @@ export interface BrowserState {
 	/** The run shown for each comparison batch, by batch ID. */
 	readonly picks: ReadonlyMap<string, string>;
 	readonly status?: StatusMessage | undefined;
-}
-
-export const enum BrowserActionType {
-	StepBatch = 5,
-	Filter = 6,
-	Removed = 7,
-	Select = 8,
-	Mode = 9,
-	CancelFilter = 10,
 }
 
 export type BrowserAction =
