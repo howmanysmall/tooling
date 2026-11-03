@@ -1,17 +1,10 @@
 import { describe, it } from "vitest";
 
-import { SessionActionType } from "$meta/action-types";
+import { SessionActionType, SessionTabsActionType } from "$meta/action-types";
 
 import { createSession, TurnPhase } from "./session-state";
 import { createSessionStore, toOpenTabs } from "./session-store";
-import {
-	createSessionTabs,
-	getActiveSession,
-	getTabStatus,
-	reduceSessionTabs,
-	SessionTabsActionType,
-	TabStatus,
-} from "./session-tabs";
+import { createSessionTabs, getActiveSession, getTabStatus, reduceSessionTabs, TabStatus } from "./session-tabs";
 
 import type { SessionState, SessionTurn } from "./session-state";
 import type { SessionTabs, SessionTabsAction } from "./session-tabs";

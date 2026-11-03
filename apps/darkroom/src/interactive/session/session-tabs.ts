@@ -1,4 +1,4 @@
-import { SessionActionType } from "$meta/action-types";
+import { SessionActionType, SessionTabsActionType } from "$meta/action-types";
 
 import { createSession, reduceSession, TurnPhase } from "./session-state";
 
@@ -16,15 +16,6 @@ export interface SessionTabs {
 	readonly sessions: ReadonlyArray<SessionState>;
 	/** Sessions that finished something while another tab was showing. */
 	readonly unread: ReadonlySet<string>;
-}
-
-export const enum SessionTabsActionType {
-	Close = 1,
-	Cycle = 2,
-	InSession = 3,
-	Open = 4,
-	Replace = 5,
-	Select = 6,
 }
 
 export type SessionTabsAction =

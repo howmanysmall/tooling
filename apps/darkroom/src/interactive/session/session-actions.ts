@@ -1,9 +1,9 @@
 import { createUlid } from "$history/ulid";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
-import { SessionActionType } from "$meta/action-types";
+import { SessionActionType, SessionTabsActionType } from "$meta/action-types";
 
 import { createSession, PromptMode, TurnPhase } from "./session-state";
-import { getActiveSession, SessionTabsActionType } from "./session-tabs";
+import { getActiveSession } from "./session-tabs";
 
 import type { GenerationResult } from "$generation/run-generation";
 import type { RunDeletion } from "$history/delete-run";

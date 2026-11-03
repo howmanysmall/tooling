@@ -64,3 +64,12 @@ export const enum SessionActionType {
 	TurnStarted = 10,
 	TurnWarned = 11,
 }
+
+export const enum SessionTabsActionType {
+	Close = 1,
+	Cycle = 2,
+	InSession = 3,
+	Open = 4,
+	Replace = 5,
+	Select = 6,
+}
