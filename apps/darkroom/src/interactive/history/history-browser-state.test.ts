@@ -1,8 +1,7 @@
 import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
-import { StatusActionType } from "$interactive/components/status-message";
-import { CursorMoveType } from "$meta/action-types";
+import { CursorMoveType, StatusActionType } from "$meta/action-types";
 
 import {
 	BrowserActionType,

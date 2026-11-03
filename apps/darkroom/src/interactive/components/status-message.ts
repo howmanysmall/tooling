@@ -1,14 +1,11 @@
+import { StatusActionType } from "$meta/action-types";
+
 /** A short message shown as a toast, such as a copied ID or a failure. */
 export interface StatusMessage {
 	/** Tells this message from a newer one with the same text. */
 	readonly id: number;
 	readonly text: string;
 	readonly tone: "error" | "success";
-}
-
-export const enum StatusActionType {
-	StatusExpired = 11,
-	Status = 12,
 }
 
 /** What a browser's reducer accepts to show or expire a toast. */
