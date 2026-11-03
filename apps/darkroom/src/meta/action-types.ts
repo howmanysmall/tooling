@@ -28,6 +28,12 @@ export const enum ModelBrowserActionType {
 	SwitchExample = 18,
 }
 
+export const enum GenerateScreenActionType {
+	Edit = 19,
+	Dialog = 20,
+	Attach = 21,
+}
+
 export const enum EditorActionType {
 	Clear = 1,
 	DeleteBackward = 2,

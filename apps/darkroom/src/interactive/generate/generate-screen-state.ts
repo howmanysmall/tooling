@@ -1,5 +1,5 @@
 import { reduceStatus } from "$interactive/components/status-message";
-import { EditorActionType } from "$meta/action-types";
+import { EditorActionType, GenerateScreenActionType } from "$meta/action-types";
 
 import { EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
 import { formatImageToken } from "./prompt-images";
@@ -41,9 +41,9 @@ export interface GenerateScreenState {
 
 export type GenerateScreenAction =
 	| StatusAction
-	| { readonly action: EditorAction; readonly type: "edit" }
-	| { readonly dialog: OpenDialog | undefined; readonly type: "dialog" }
-	| { readonly paths: ReadonlyArray<string>; readonly type: "attach" };
+	| { readonly action: EditorAction; readonly type: GenerateScreenActionType.Edit }
+	| { readonly dialog: OpenDialog | undefined; readonly type: GenerateScreenActionType.Dialog }
+	| { readonly paths: ReadonlyArray<string>; readonly type: GenerateScreenActionType.Attach };
 
 export const INITIAL_GENERATE_STATE: GenerateScreenState = { editor: EMPTY_EDITOR, images: [] };
 
@@ -74,13 +74,13 @@ function attachImages(state: GenerateScreenState, paths: ReadonlyArray<string>):
  */
 export function reduceGenerateScreen(state: GenerateScreenState, action: GenerateScreenAction): GenerateScreenState {
 	switch (action.type) {
-		case "attach":
+		case GenerateScreenActionType.Attach:
 			return attachImages(state, action.paths);
 
-		case "dialog":
+		case GenerateScreenActionType.Dialog:
 			return { ...state, dialog: action.dialog };
 
-		case "edit": {
+		case GenerateScreenActionType.Edit: {
 			return {
 				...state,
 				editor: reducePromptEditor(state.editor, action.action),
