@@ -1,6 +1,8 @@
 import { describe, it } from "vitest";
 
-import { createSession, SessionActionType, TurnPhase } from "./session-state";
+import { SessionActionType } from "$meta/action-types";
+
+import { createSession, TurnPhase } from "./session-state";
 import { createSessionStore, toOpenTabs } from "./session-store";
 import {
 	createSessionTabs,

@@ -1,3 +1,5 @@
+import { SessionActionType } from "$meta/action-types";
+
 import type { StreamProgress } from "$generation/image-stream";
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
 
@@ -64,20 +66,6 @@ export interface SessionState {
 	readonly pending?: (PendingRequest & { readonly id: number }) | undefined;
 	/** Oldest first. */
 	readonly turns: ReadonlyArray<SessionTurn>;
-}
-
-export const enum SessionActionType {
-	ChooseBase = 1,
-	Dismiss = 2,
-	Prepared = 3,
-	SetMode = 4,
-	TurnAdded = 5,
-	TurnDone = 6,
-	TurnFailed = 7,
-	TurnProgress = 8,
-	TurnRemoved = 9,
-	TurnStarted = 10,
-	TurnWarned = 11,
 }
 
 export type SessionAction =

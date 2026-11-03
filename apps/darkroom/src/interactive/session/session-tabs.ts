@@ -1,4 +1,6 @@
-import { createSession, reduceSession, SessionActionType, TurnPhase } from "./session-state";
+import { SessionActionType } from "$meta/action-types";
+
+import { createSession, reduceSession, TurnPhase } from "./session-state";
 
 import type { SessionAction, SessionState } from "./session-state";
 
