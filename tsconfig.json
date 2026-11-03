@@ -5,6 +5,9 @@
 			"path": "./apps/darkroom"
 		},
 		{
+			"path": "./apps/footnote"
+		},
+		{
 			"path": "./packages/arktype-utilities"
 		},
 		{
