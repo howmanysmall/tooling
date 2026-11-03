@@ -7,7 +7,7 @@ Command-line tools by howmanysmall, in one pnpm monorepo.
 | Directory | What lives there |
 | --- | --- |
 | `apps/<tool>/` | One published command-line tool per directory, such as `apps/darkroom/`. Each has its own version, changelog, and npm package. |
-| `documentation/<tool>/` | The tool's documentation site, built with Astro and Starlight. |
+| `documentation/<tool>/` | The tool's documentation site. Built with Astro and Starlight. |
 | `packages/` | Private libraries the tools share. They're bundled into each tool at build time. |
 | `tools/` | Lint, test, and build configuration shared by every workspace project, and the documentation theme. |
 | `scripts/` | Repository scripts: releasing and publishing the documentation. `apps/footnote/` does the `tsconfig` reference syncing. |
@@ -77,8 +77,8 @@ publish.
 Every workspace package has `lint:oxlint` and `type-check`, plus `test` when it has tests and
 `build` when it produces a binary. Each has an `:agent` variant. Turbo runs lint, test, and build
 per package and caches the results, so only changed packages run again. Type-checking runs once at
-the root instead: a single `tsrs --build` covers every project reference, and tsrs keeps its own
-incremental state, so a turbo layer on top only adds cache misses.
+the root instead. `tsrs --build` follows the references in the root `tsconfig.json`. Each referenced project
+writes its `.tsbuildinfo` under its own `node_modules/`, so a turbo layer on top only adds cache misses.
 
 The turbo `lint` task runs `lint:oxlint` in every package, `//#lint:oxlint` for root configuration
 files, and `//#lint:eslint` once over the whole repository. Oxlint and Biome can't cache, so turbo
