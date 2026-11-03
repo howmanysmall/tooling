@@ -16,7 +16,7 @@ const LABEL_WIDTH = 13;
  * @returns One `label value` line per setting that is set.
  */
 export function summarizeRequest({ input, model, parameters }: PreparedGeneration, cost: string): string {
-	const rows: Array<readonly [string, number | string | undefined]> = [
+	const rows: ReadonlyArray<readonly [string, number | string | undefined]> = [
 		["model", model.id],
 		["prompt", previewPrompt(input.prompt, 60)],
 		["count", parameters.count],

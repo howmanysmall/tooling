@@ -45,7 +45,7 @@ function compareByName(first: DirectoryItem, second: DirectoryItem): number {
  * @param items - Its contents.
  * @returns The entries to show.
  */
-export function toEntries(directory: string, items: ReadonlyArray<DirectoryItem>): Array<PickerEntry> {
+export function toEntries(directory: string, items: ReadonlyArray<DirectoryItem>): ReadonlyArray<PickerEntry> {
 	const visible = items.filter((item) => !item.name.startsWith("."));
 	const directories = visible.filter((item) => item.isDirectory).toSorted(compareByName);
 	const files = visible
