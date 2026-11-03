@@ -23,7 +23,7 @@
 			"args": ["x", "--", "jsr-cli", "mcp"],
 			"command": "mise"
 		},
-		"npm": {
+		"npm-registry": {
 			"args": ["x", "--", "npm-registry-mcp"],
 			"command": "mise"
 		},
