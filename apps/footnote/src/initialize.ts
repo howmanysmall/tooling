@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { mkdir, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
 import nodePath from "node:path";
 import { cwd, stdout } from "node:process";
 import { CliError } from "@howmanysmall/cli-utilities/cli-error";
@@ -12,17 +12,14 @@ import { findWorkspaceRoot, readNonCompositeProjectsAsync, readWorkspaceGlobsAsy
 
 import type { Configuration } from "./index";
 
-const CONFIGURATION_FILE = ".config/footnote.json";
+const CONFIGURATION_FILE = "footnote.config.json";
 
 // The same candidates c12 checks in the workspace root.
-const CONFIGURATION_FILES = [
-	".footnoterc",
-	...SUPPORTED_EXTENSIONS.flatMap((extension) => [
-		`footnote.config${extension}`,
-		`.config/footnote${extension}`,
-		`.config/footnote.config${extension}`,
-	]),
-];
+const CONFIGURATION_FILES = SUPPORTED_EXTENSIONS.flatMap((extension) => [
+	`footnote.config${extension}`,
+	`.config/footnote${extension}`,
+	`.config/footnote.config${extension}`,
+]);
 
 function toConfigurationJson(ignore: ReadonlyArray<string>): string {
 	const configuration: Configuration = ignore.length > 0 ? { ignore } : {};
@@ -76,10 +73,9 @@ export const initializeCommand = createBaseCommand(
 			if (other === CONFIGURATION_FILE) continue;
 
 			const otherPath = nodePath.join(root, other);
-			writeWarning(`${otherPath} still exists and is still loaded; it may conflict`);
+			writeWarning(`${otherPath} also exists; footnote only loads one configuration file`);
 		}
 
-		await mkdir(nodePath.dirname(path), { recursive: true });
 		await writeFile(path, json, "utf8");
 
 		stdout.write(`${path}\n`);
