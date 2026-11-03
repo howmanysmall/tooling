@@ -17,7 +17,7 @@ import { getEditBase, PromptMode } from "$interactive/session/session-state";
 import { SessionTabStrip } from "$interactive/session/session-tab-strip";
 import { SessionTranscript } from "$interactive/session/session-transcript";
 import { TranscriptActionsContext } from "$interactive/session/transcript-actions-context";
-import { EditorActionType, GenerateScreenActionType } from "$meta/action-types";
+import { EditorActionType, GenerateScreenActionType, SessionRequestType } from "$meta/action-types";
 
 import { getBoxHints, getGenerateCommands, getGenerateKey, PromptBasis } from "./generate-commands";
 import { GenerateDialogs } from "./generate-dialogs";
@@ -169,7 +169,13 @@ export function GenerateScreen({
 				return;
 			}
 
-			session.actions.send({ attachments: resolved.paths, base, model, prompt: resolved.prompt, type: "new" });
+			session.actions.send({
+				attachments: resolved.paths,
+				base,
+				model,
+				prompt: resolved.prompt,
+				type: SessionRequestType.New,
+			});
 			dispatch(CLEAR_PROMPT);
 		}
 	}

@@ -8,6 +8,7 @@ import { SessionProvider } from "$interactive/session/session-provider.tsx";
 import { createSession } from "$interactive/session/session-state";
 import { createSessionStore } from "$interactive/session/session-store";
 import { createSessionTabs } from "$interactive/session/session-tabs";
+import { SessionRequestType } from "$meta/action-types.ts";
 
 import { GenerateScreen } from "./generate-screen.tsx";
 
@@ -79,7 +80,7 @@ function createFakeSession(): FakeSession {
 						force: false,
 						modelId: MULTI_MODEL.id,
 						options: {},
-						prompt: request.type === "new" ? request.prompt : request.entry.prompt,
+						prompt: request.type === SessionRequestType.New ? request.prompt : request.entry.prompt,
 						references: [],
 					},
 					{ cwd: "/tmp", isDirectoryAsync: async () => false, models: [MULTI_MODEL], stdoutIsTty: false },
