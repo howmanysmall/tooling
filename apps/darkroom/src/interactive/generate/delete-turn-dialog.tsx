@@ -25,7 +25,7 @@ export interface DeleteTurnDialogProperties {
 // A few lines of the prompt at most; it wraps rather than being cut.
 const MAX_PROMPT_LENGTH = 240;
 
-function getSavedPaths(turn: SessionTurn): Array<string> {
+function getSavedPaths(turn: SessionTurn): ReadonlyArray<string> {
 	return turn.result?.images.flatMap(({ path }) => (path === undefined ? [] : [path])) ?? [];
 }
 

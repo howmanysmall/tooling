@@ -24,7 +24,7 @@ const NO_POSITIONS: ReadonlySet<number> = new Set();
  * @param entries - Past runs, newest first.
  * @returns Up to five model IDs, most recent first, each once.
  */
-export function getRecentModelIds(entries: ReadonlyArray<HistoryEntry>): Array<string> {
+export function getRecentModelIds(entries: ReadonlyArray<HistoryEntry>): ReadonlyArray<string> {
 	const recent = new Set<string>();
 	for (const { model } of entries) {
 		if (recent.size === RECENT_LIMIT) break;
@@ -71,7 +71,7 @@ export function pickModel(
 function sortByRecency(
 	models: ReadonlyArray<ImageModelListItem>,
 	recentIds: ReadonlyArray<string>,
-): Array<ImageModelListItem> {
+): ReadonlyArray<ImageModelListItem> {
 	const ranks = new Map(recentIds.map((id, index) => [id, index]));
 
 	function getRank(model: ImageModelListItem): number {
@@ -96,7 +96,7 @@ export function getModelMatches(
 	models: ReadonlyArray<ImageModelListItem>,
 	recentIds: ReadonlyArray<string>,
 	query: string,
-): Array<ModelMatch> {
+): ReadonlyArray<ModelMatch> {
 	const recent = new Set(recentIds);
 	const trimmed = query.trim();
 	if (trimmed.length === 0) {
