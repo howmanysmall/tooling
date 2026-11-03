@@ -57,14 +57,21 @@
 	},
 	"dependencies": {
 		"arktype": "catalog:runtime",
-		"c12": "catalog:runtime"
+		"c12": "catalog:runtime",
+		"picomatch": "catalog:runtime",
+		"tinyglobby": "catalog:runtime",
+		"yaml": "catalog:runtime"
 	},
 	"devDependencies": {
 		"@cliffy/command": "catalog:runtime",
+		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/file-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:node-floor",
+		"@types/picomatch": "catalog:types",
+		"jsonc-parser": "catalog:packages",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",
 		"vitest": "catalog:test"

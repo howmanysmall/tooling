@@ -170,9 +170,12 @@ catalogs:
     fast-string-width: 3.0.2
     fzf: 0.5.2
     ink: 7.1.1
+    picomatch: 4.0.7
     pretty-bytes: 7.2.0
     react: 19.3.1
     sharp: 0.34.5
+    tinyglobby: 0.2.17
+    yaml: 2.9.1
   test:
     "@stryker-mutator/api": 10.0.0
     "@stryker-mutator/core": 10.0.0
@@ -203,6 +206,7 @@ catalogs:
     "@total-typescript/ts-reset": 0.6.1
     # eslint-disable-next-line pnpm/yaml-no-duplicate-catalog-item -- completely separate versions.
     "@types/node": ^26.6.6
+    "@types/picomatch": 4.0.3
     "@types/react": 19.3.0
     "@types/react-dom": 19.3.0
     type-fest: 5.10.0
