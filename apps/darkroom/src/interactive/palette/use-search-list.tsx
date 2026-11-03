@@ -1,7 +1,8 @@
 import { useReducer } from "react";
 import { useInput } from "ink";
 
-import { CursorMoveType, getWindowStart } from "$interactive/components/list-cursor";
+import { getWindowStart } from "$interactive/components/list-cursor";
+import { CursorMoveType } from "$meta/action-types";
 
 import { INITIAL_PALETTE_STATE, PaletteActionType, reducePaletteState } from "./command-palette-state";
 

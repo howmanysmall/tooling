@@ -1,9 +1,4 @@
-export const enum CursorMoveType {
-	Move = 1,
-	To = 2,
-	First = 3,
-	Last = 4,
-}
+import { CursorMoveType } from "$meta/action-types";
 
 /** How a key, a click, or the wheel moves the cursor through a list. */
 export type CursorMove =
