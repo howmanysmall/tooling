@@ -17,12 +17,13 @@ import { getEditBase, PromptMode } from "$interactive/session/session-state";
 import { SessionTabStrip } from "$interactive/session/session-tab-strip";
 import { SessionTranscript } from "$interactive/session/session-transcript";
 import { TranscriptActionsContext } from "$interactive/session/transcript-actions-context";
+import { EditorActionType } from "$meta/action-types";
 
 import { getBoxHints, getGenerateCommands, getGenerateKey, PromptBasis } from "./generate-commands";
 import { GenerateDialogs } from "./generate-dialogs";
 import { GenerateDialog, INITIAL_GENERATE_STATE, reduceGenerateScreen } from "./generate-screen-state";
 import { PromptBox } from "./prompt-box";
-import { EditorActionType, getEditorAction } from "./prompt-editor-state";
+import { getEditorAction } from "./prompt-editor-state";
 import { parsePastedImagePaths, resolvePromptImages } from "./prompt-images";
 import { readClipboardImageAsync } from "./read-clipboard-image";
 
