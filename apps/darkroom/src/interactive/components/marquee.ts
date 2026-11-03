@@ -24,7 +24,7 @@ interface Cell {
 	readonly width: number;
 }
 
-function toCells(text: string, isGap: boolean): Array<Cell> {
+function toCells(text: string, isGap: boolean): ReadonlyArray<Cell> {
 	return Array.from(segmenter.segment(text), ({ index, segment }) => ({
 		source: isGap ? undefined : index,
 		value: segment,
@@ -92,8 +92,8 @@ export function sliceMarquee(text: string, width: number, offset: number): Marqu
 /** A stretch of text in one style. */
 export interface StyledRun {
 	readonly color: string;
-	readonly isBold?: boolean;
-	readonly isUnderlined?: boolean;
+	readonly isBold?: boolean | undefined;
+	readonly isUnderlined?: boolean | undefined;
 	readonly text: string;
 }
 
@@ -109,7 +109,7 @@ export interface PlacedRun extends StyledRun {
  * @param runs - The line, in styled stretches.
  * @returns Each run with where it starts.
  */
-export function placeRuns(runs: ReadonlyArray<StyledRun>): Array<PlacedRun> {
+export function placeRuns(runs: ReadonlyArray<StyledRun>): ReadonlyArray<PlacedRun> {
 	let start = 0;
 	return runs.map((run) => {
 		const placed = { ...run, start };
@@ -132,10 +132,10 @@ function findRun(runs: ReadonlyArray<PlacedRun>, source?: number): PlacedRun | u
  * @param scrolled - The visible part, from {@link sliceMarquee}.
  * @returns The visible part, in styled stretches.
  */
-export function sliceRuns(runs: ReadonlyArray<StyledRun>, scrolled: MarqueeWindow): Array<PlacedRun> {
+export function sliceRuns(runs: ReadonlyArray<StyledRun>, scrolled: MarqueeWindow): ReadonlyArray<PlacedRun> {
 	const placed = placeRuns(runs);
 	const gap: StyledRun = { color: runs[0]?.color ?? "", text: "" };
-	const sliced: Array<PlacedRun> = [];
+	const sliced = new Array<PlacedRun>();
 	let current: StyledRun | undefined;
 	for (const [index, source] of scrolled.sources.entries()) {
 		const run = findRun(placed, source) ?? gap;
