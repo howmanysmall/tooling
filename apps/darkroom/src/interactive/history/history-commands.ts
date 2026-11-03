@@ -15,7 +15,7 @@ const ROW_NAMES: RowNames = { first: "Newest run", item: "run", last: "Oldest ru
  * @param actions - The browser's actions.
  * @returns The commands, actions first, in the order help lists them.
  */
-export function getHistoryCommands(actions: HistoryBrowserActions): Array<BrowserCommand> {
+export function getHistoryCommands(actions: HistoryBrowserActions): ReadonlyArray<BrowserCommand> {
 	const group = CommandGroup.Act;
 	return [
 		{ key: BrowserKey.Filter, group, isFeatured: true, keyLabel: "/", run: actions.openFilter, title: "Filter" },

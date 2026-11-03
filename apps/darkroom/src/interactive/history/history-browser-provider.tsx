@@ -16,7 +16,7 @@ import {
 	reduceBrowserState,
 } from "./history-browser-state";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { LoadingPreview } from "$preview/load-preview";
@@ -31,7 +31,6 @@ export interface HistoryBrowserProviderProperties {
 	/** When the browser opened, for naming days like `Today`. */
 	now: Date;
 	services: BrowserServices;
-	children: ReactNode;
 }
 
 // The header, the status bar, and the list's padding above and below.
@@ -151,7 +150,7 @@ export function HistoryBrowserProvider({
 	now,
 	services,
 	children,
-}: Readonly<HistoryBrowserProviderProperties>): ReactNode {
+}: Readonly<PropsWithChildren<HistoryBrowserProviderProperties>>): ReactNode {
 	const [browser, dispatch] = useReducer(reduceBrowserState, entries, createBrowserState);
 	const { exit } = useApp();
 	const { write } = useStdout();

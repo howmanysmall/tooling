@@ -33,7 +33,10 @@ function compareByModel(first: HistoryEntry, second: HistoryEntry): number {
  * @param batch - The comparison's other runs.
  * @returns All of its runs, by model.
  */
-export function getComparisonRuns(selected: HistoryEntry, batch: ReadonlyArray<HistoryEntry>): Array<HistoryEntry> {
+export function getComparisonRuns(
+	selected: HistoryEntry,
+	batch: ReadonlyArray<HistoryEntry>,
+): ReadonlyArray<HistoryEntry> {
 	return [selected, ...batch].toSorted(compareByModel);
 }
 
