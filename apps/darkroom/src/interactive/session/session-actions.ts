@@ -48,7 +48,7 @@ function takeTurnId(): number {
  * @param restored - The turns, oldest first.
  * @returns The same turns, each with its own ID.
  */
-export function numberTurns(restored: ReadonlyArray<RestoredTurn>): Array<SessionTurn> {
+export function numberTurns(restored: ReadonlyArray<RestoredTurn>): ReadonlyArray<SessionTurn> {
 	return Array.from(restored, (turn): SessionTurn => ({ ...turn, id: takeTurnId() }));
 }
 

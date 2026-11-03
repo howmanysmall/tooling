@@ -28,7 +28,7 @@ const GENERAL_KEYS: ReadonlyArray<HelpRow> = [
 ];
 const HINTS: ReadonlyArray<KeyHint> = [["any key", "close"]];
 
-function toRows(commands: ReadonlyArray<BrowserCommand>, group: CommandGroup): Array<HelpRow> {
+function toRows(commands: ReadonlyArray<BrowserCommand>, group: CommandGroup): ReadonlyArray<HelpRow> {
 	return commands.flatMap((command) => (command.group === group ? [[command.keyLabel, command.title]] : []));
 }
 

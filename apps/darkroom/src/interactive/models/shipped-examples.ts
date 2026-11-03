@@ -43,7 +43,10 @@ export function toExampleFileName(modelId: string): string {
  * @param directory - The folder holding the manifest and images.
  * @returns Each model's example, keyed by model ID.
  */
-export function toShippedExamples({ models, prompt }: ExamplesManifest, directory: string): Map<string, ModelExample> {
+export function toShippedExamples(
+	{ models, prompt }: ExamplesManifest,
+	directory: string,
+): ReadonlyMap<string, ModelExample> {
 	return new Map(
 		Object.entries(models).map(([model, file]) => [
 			model,
@@ -80,7 +83,7 @@ async function findExamplesDirectoryAsync(): Promise<string | undefined> {
  *
  * @returns Each model's shipped example, keyed by model ID.
  */
-export async function readShippedExamplesAsync(): Promise<Map<string, ModelExample>> {
+export async function readShippedExamplesAsync(): Promise<ReadonlyMap<string, ModelExample>> {
 	const directory = await findExamplesDirectoryAsync();
 	if (directory === undefined) return new Map();
 

@@ -41,7 +41,7 @@ const MOVE_LAST: CursorMove = { type: CursorMoveType.Last };
  * @param names - What the browser calls its rows.
  * @returns The movement commands with their keys.
  */
-export function getNavigationCommands(actions: CursorActions, names: RowNames): Array<BrowserCommand> {
+export function getNavigationCommands(actions: CursorActions, names: RowNames): ReadonlyArray<BrowserCommand> {
 	const group = CommandGroup.Navigate;
 	return [
 		{ key: BrowserKey.Up, group, keyLabel: "↑ k", run: actions.moveUp, title: `Previous ${names.item}` },

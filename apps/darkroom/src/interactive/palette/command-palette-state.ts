@@ -37,7 +37,7 @@ const NO_POSITIONS: ReadonlySet<number> = new Set();
  * @param query - What has been typed.
  * @returns Every command when the query is empty, otherwise the matches.
  */
-export function getPaletteMatches(commands: ReadonlyArray<BrowserCommand>, query: string): Array<PaletteMatch> {
+export function getPaletteMatches(commands: ReadonlyArray<BrowserCommand>, query: string): ReadonlyArray<PaletteMatch> {
 	if (query.trim().length === 0) return commands.map((command) => ({ command, positions: NO_POSITIONS }));
 
 	const finder = new Fzf(commands, { selector: (command): string => command.title });
@@ -60,9 +60,9 @@ export interface TitleSegment {
  * @param positions - The indexes of the matched characters.
  * @returns The runs, in order.
  */
-export function splitTitle(title: string, positions: ReadonlySet<number>): Array<TitleSegment> {
+export function splitTitle(title: string, positions: ReadonlySet<number>): ReadonlyArray<TitleSegment> {
 	// Titles are plain text, and fzf counts positions in UTF-16 units too.
-	const segments: Array<TitleSegment> = [];
+	const segments = new Array<TitleSegment>();
 	for (let index = 0; index < title.length; index += 1) {
 		const isMatch = positions.has(index);
 		const last = segments.at(-1);
