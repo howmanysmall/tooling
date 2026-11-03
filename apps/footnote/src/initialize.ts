@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import nodePath from "node:path";
-import { cwd, stdout } from "node:process";
+import process, { stdout } from "node:process";
 import { CliError } from "@howmanysmall/cli-utilities/cli-error";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
@@ -39,6 +39,60 @@ function reportIgnored(ignore: ReadonlyArray<string>): void {
 	}
 }
 
+export interface InitializeOptions {
+	/** The directory the command runs in. */
+	readonly cwd: string;
+	/** Prints the JSON instead of writing it. */
+	readonly dryRun?: boolean | undefined;
+	/** Writes even if a configuration already exists. */
+	readonly force?: boolean | undefined;
+}
+
+/**
+ * Writes a starting configuration file in the workspace root, ignoring every
+ * project whose own tsconfig lacks `composite: true`.
+ *
+ * @param options - How to run.
+ * @param options.cwd - The directory the command runs in.
+ * @param options.dryRun - Whether to print the JSON instead of writing it.
+ * @param options.force - Whether to write even if a configuration exists.
+ * @rejects {Error} When a configuration exists without `force`, or the
+ *   workspace can't be read.
+ */
+export async function runInitializeAsync({ cwd, dryRun = false, force = false }: InitializeOptions): Promise<void> {
+	const root = findWorkspaceRoot(cwd);
+	const workspaceGlobs = await readWorkspaceGlobsAsync(root);
+
+	const path = nodePath.join(root, CONFIGURATION_FILE);
+	const existing = CONFIGURATION_FILES.filter((file) => existsSync(nodePath.join(root, file)));
+
+	const [firstExisting] = existing;
+	if (firstExisting !== undefined && !force) {
+		throw new CliError(`${nodePath.join(root, firstExisting)} already exists; pass --force to overwrite`, 1);
+	}
+
+	const ignore = await readNonCompositeProjectsAsync(root, workspaceGlobs);
+	const json = toConfigurationJson(ignore);
+
+	if (dryRun) {
+		stdout.write(json);
+		return;
+	}
+
+	for (const other of existing) {
+		if (other === CONFIGURATION_FILE) continue;
+
+		const otherPath = nodePath.join(root, other);
+		writeWarning(`${otherPath} also exists; footnote only loads one configuration file`);
+	}
+
+	await writeFile(path, json, "utf8");
+
+	stdout.write(`${path}\n`);
+	reportIgnored(ignore);
+	writeDetail("run footnote next to sync the references");
+}
+
 /** The `initialize` subcommand, which writes a starting configuration file. */
 export const initializeCommand = createBaseCommand(
 	"initialize",
@@ -50,35 +104,5 @@ export const initializeCommand = createBaseCommand(
 	.example("Write the file", "footnote initialize")
 	.example("Preview the file", "footnote initialize --dry-run")
 	.action(async ({ dryRun, force }) => {
-		const root = findWorkspaceRoot(cwd());
-		const workspaceGlobs = await readWorkspaceGlobsAsync(root);
-
-		const path = nodePath.join(root, CONFIGURATION_FILE);
-		const existing = CONFIGURATION_FILES.filter((file) => existsSync(nodePath.join(root, file)));
-
-		const [firstExisting] = existing;
-		if (firstExisting !== undefined && force !== true) {
-			throw new CliError(`${nodePath.join(root, firstExisting)} already exists; pass --force to overwrite`, 1);
-		}
-
-		const ignore = await readNonCompositeProjectsAsync(root, workspaceGlobs);
-		const json = toConfigurationJson(ignore);
-
-		if (dryRun === true) {
-			stdout.write(json);
-			return;
-		}
-
-		for (const other of existing) {
-			if (other === CONFIGURATION_FILE) continue;
-
-			const otherPath = nodePath.join(root, other);
-			writeWarning(`${otherPath} also exists; footnote only loads one configuration file`);
-		}
-
-		await writeFile(path, json, "utf8");
-
-		stdout.write(`${path}\n`);
-		reportIgnored(ignore);
-		writeDetail("run footnote next to sync the references");
+		await runInitializeAsync({ cwd: process.cwd(), dryRun, force });
 	});
