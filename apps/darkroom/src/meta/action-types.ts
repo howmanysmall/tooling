@@ -45,3 +45,8 @@ export const enum EditorActionType {
 	WordLeft = 14,
 	WordRight = 15,
 }
+
+export const enum PaletteActionType {
+	Move = 1,
+	Query = 2,
+}
