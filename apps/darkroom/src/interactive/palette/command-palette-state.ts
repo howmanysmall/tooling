@@ -1,6 +1,7 @@
 import { Fzf } from "fzf";
 
 import { moveCursor } from "$interactive/components/list-cursor";
+import { PaletteActionType } from "$meta/action-types";
 
 import type { CursorMove } from "$interactive/components/list-cursor";
 import type { BrowserCommand } from "$interactive/keys/browser-command";
@@ -15,11 +16,6 @@ export interface PaletteMatch {
 export interface PaletteState {
 	readonly cursor: number;
 	readonly query: string;
-}
-
-export const enum PaletteActionType {
-	Move = 1,
-	Query = 2,
 }
 
 export type PaletteAction =
