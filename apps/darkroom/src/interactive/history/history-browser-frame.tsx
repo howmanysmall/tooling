@@ -6,13 +6,9 @@ import { getHistoryCommands } from "./history-commands";
 import { HistoryDeleteDialog } from "./history-delete-dialog";
 
 import type { Key } from "ink";
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { HistoryBrowserActions } from "./history-browser-context";
-
-export interface HistoryBrowserFrameProperties {
-	children: ReactNode;
-}
 
 /**
  * Picks who reads the keys: the delete question reads its own, and while
@@ -47,7 +43,7 @@ function getCapture(
  * @param properties.children - The header, panes, and status bar.
  * @returns A box the size of the terminal.
  */
-export function HistoryBrowserFrame({ children }: Readonly<HistoryBrowserFrameProperties>): ReactNode {
+export function HistoryBrowserFrame({ children }: Readonly<PropsWithChildren>): ReactNode {
 	const {
 		actions,
 		meta: { layout },

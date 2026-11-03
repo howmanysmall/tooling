@@ -76,7 +76,7 @@ function compareByModel(first: HistoryEntry, second: HistoryEntry): number {
  * @returns Each batch's matching runs, sorted by model, as the strip
  *   shows them.
  */
-export function getBatchRuns(state: BrowserState): Map<string, Array<HistoryEntry>> {
+export function getBatchRuns(state: BrowserState): Map<string, ReadonlyArray<HistoryEntry>> {
 	const batches = new Map<string, Array<HistoryEntry>>();
 	for (const entry of getMatchingRuns(state)) {
 		if (entry.batch === undefined) continue;

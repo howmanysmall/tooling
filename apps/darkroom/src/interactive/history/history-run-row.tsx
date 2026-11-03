@@ -15,11 +15,11 @@ import type { ReactNode } from "react";
 import type { HistoryEntry } from "$history/history-entry";
 import type { StyledRun } from "$interactive/components/marquee";
 
-function getPromptRuns(entry: HistoryEntry, isSelected: boolean): Array<StyledRun> {
+function getPromptRuns(entry: HistoryEntry, isSelected: boolean): ReadonlyArray<StyledRun> {
 	return [{ color: theme.text, isBold: isSelected, text: previewPrompt(entry.prompt, Number.POSITIVE_INFINITY) }];
 }
 
-function getFactRuns(entry: HistoryEntry, batchSize?: number): Array<StyledRun> {
+function getFactRuns(entry: HistoryEntry, batchSize?: number): ReadonlyArray<StyledRun> {
 	const runs: Array<StyledRun> = [{ color: theme.muted, text: describeRunLine(entry) }];
 	if (batchSize !== undefined) {
 		runs.push({ color: theme.accent, text: `  ◫ ${batchSize} ${toPlural(batchSize, "model")}` });
