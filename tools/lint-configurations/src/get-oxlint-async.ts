@@ -828,5 +828,17 @@ export async function getOxlintAsync({
 				],
 			},
 		},
+		{
+			name: "bin/disable-terrible-rule",
+			files: [GLOB_SRC],
+			rules: {
+				"jsdoc/require-param": [
+					"error",
+					{
+						checkDestructuredRoots: false,
+					},
+				],
+			},
+		},
 	);
 }
