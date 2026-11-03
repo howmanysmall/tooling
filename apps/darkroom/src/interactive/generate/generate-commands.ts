@@ -35,7 +35,7 @@ export interface GenerateActions {
  * @param actions - The screen's actions.
  * @returns The commands, in the order help lists them.
  */
-export function getGenerateCommands(actions: GenerateActions): Array<BrowserCommand> {
+export function getGenerateCommands(actions: GenerateActions): ReadonlyArray<BrowserCommand> {
 	const group = CommandGroup.Act;
 	return [
 		{ key: BrowserKey.Generate, group, isFeatured: true, keyLabel: "⏎", run: actions.generate, title: "Generate" },

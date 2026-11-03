@@ -22,7 +22,7 @@ import { getBoxHints, getGenerateCommands, getGenerateKey, PromptBasis } from ".
 import { GenerateDialogs } from "./generate-dialogs";
 import { GenerateDialog, INITIAL_GENERATE_STATE, reduceGenerateScreen } from "./generate-screen-state";
 import { PromptBox } from "./prompt-box";
-import { getEditorAction } from "./prompt-editor-state";
+import { EditorActionType, getEditorAction } from "./prompt-editor-state";
 import { parsePastedImagePaths, resolvePromptImages } from "./prompt-images";
 import { readClipboardImageAsync } from "./read-clipboard-image";
 
@@ -81,8 +81,8 @@ const SESSION_CHROME_ROWS = 1 + 1 + 6 + 1 + 1;
 const OPEN_PICKER: GenerateScreenAction = { dialog: { kind: GenerateDialog.Model }, type: "dialog" };
 const OPEN_SESSIONS: GenerateScreenAction = { dialog: { kind: GenerateDialog.Sessions }, type: "dialog" };
 const CLOSE_DIALOG: GenerateScreenAction = { dialog: undefined, type: "dialog" };
-const CLEAR_PROMPT: GenerateScreenAction = { action: { type: "clear" }, type: "edit" };
-const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: "insert" }, type: "edit" };
+const CLEAR_PROMPT: GenerateScreenAction = { action: { type: EditorActionType.Clear }, type: "edit" };
+const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: EditorActionType.Insert }, type: "edit" };
 
 function createTranscriptActions(dispatch: Dispatch<GenerateScreenAction>): TranscriptActions {
 	return {
@@ -130,10 +130,12 @@ export function GenerateScreen({
 	sessions,
 }: Readonly<GenerateScreenProperties>): ReactNode {
 	const [screen, dispatch] = useReducer(reduceGenerateScreen, INITIAL_GENERATE_STATE);
+
 	const session = useSession();
 	const { exit } = useApp();
 	const { columns, rows } = useWindowSize();
 	const { reportError, reportSuccess } = createStatusReporter(dispatch);
+
 	const transcriptActions = createTranscriptActions(dispatch);
 	const isHome = session.state.turns.length === 0;
 	const boxWidth = isHome ? Math.min(MAX_HOME_WIDTH, columns - 8) : columns - 4;
@@ -184,7 +186,11 @@ export function GenerateScreen({
 		}
 
 		const paths = parsePastedImagePaths(text);
-		dispatch(paths === undefined ? { action: { text, type: "insert" }, type: "edit" } : { paths, type: "attach" });
+		dispatch(
+			paths === undefined
+				? { action: { text, type: EditorActionType.Insert }, type: "edit" }
+				: { paths, type: "attach" },
+		);
 	}
 
 	function interrupt(): void {
@@ -205,14 +211,14 @@ export function GenerateScreen({
 
 	function fillPrompt(text: string): void {
 		dispatch(CLEAR_PROMPT);
-		dispatch({ action: { text, type: "insert" }, type: "edit" });
+		dispatch({ action: { text, type: EditorActionType.Insert }, type: "edit" });
 	}
 
 	function handleShiftTab(): void {
 		session.actions.toggleMode();
 	}
 
-	const actions: GenerateActions = {
+	const generateActions: GenerateActions = {
 		chooseModel(): void {
 			dispatch(OPEN_PICKER);
 		},
@@ -242,7 +248,8 @@ export function GenerateScreen({
 		},
 		toggleMode: session.actions.toggleMode,
 	};
-	const commands = getGenerateCommands(actions);
+
+	const commands = getGenerateCommands(generateActions);
 
 	function captureTyping(input: string, key: Key): void {
 		const command = findCommand(commands, getGenerateKey(input, key));

@@ -1,6 +1,6 @@
 import { reduceStatus } from "$interactive/components/status-message";
 
-import { EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
+import { EditorActionType, EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
 import { formatImageToken } from "./prompt-images";
 
 import type { StatusAction, StatusMessage } from "$interactive/components/status-message";
@@ -50,7 +50,7 @@ function attachImage(state: GenerateScreenState, path: string): GenerateScreenSt
 	const number = (state.images.at(-1)?.number ?? 0) + 1;
 	return {
 		...state,
-		editor: reducePromptEditor(state.editor, { text: formatImageToken(number), type: "insert" }),
+		editor: reducePromptEditor(state.editor, { text: formatImageToken(number), type: EditorActionType.Insert }),
 		images: [...state.images, { number, path }],
 	};
 }
@@ -83,7 +83,7 @@ export function reduceGenerateScreen(state: GenerateScreenState, action: Generat
 			return {
 				...state,
 				editor: reducePromptEditor(state.editor, action.action),
-				images: action.action.type === "clear" ? [] : state.images,
+				images: action.action.type === EditorActionType.Clear ? [] : state.images,
 			};
 		}
 
