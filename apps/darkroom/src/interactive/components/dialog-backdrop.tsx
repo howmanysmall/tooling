@@ -2,7 +2,7 @@ import { Box } from "ink";
 
 import { useMouseTarget } from "$interactive/mouse/mouse-context";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 export interface DialogBackdropProperties {
 	columns: number;
@@ -11,7 +11,6 @@ export interface DialogBackdropProperties {
 	rows: number;
 	/** The dialog's name, which makes the target's ID. */
 	title: string;
-	children: ReactNode;
 }
 
 /**
@@ -32,7 +31,7 @@ export function DialogBackdrop({
 	rows,
 	title,
 	children,
-}: Readonly<DialogBackdropProperties>): ReactNode {
+}: Readonly<PropsWithChildren<DialogBackdropProperties>>): ReactNode {
 	const { attachNode } = useMouseTarget(`dialog:${title}:backdrop`, { onClick: onDismiss });
 
 	return (
