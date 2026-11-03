@@ -5,8 +5,8 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/darkroom.tsbuildinfo",
 		"jsx": "react-jsx",
 		"paths": {
-			"$compare/*": ["./src/compare/*"],
 			"$commands/*": ["./src/commands/*"],
+			"$compare/*": ["./src/compare/*"],
 			"$constants": ["./src/constants/constants.ts"],
 			"$constants/*": ["./src/constants/*"],
 			"$environment": ["./src/environment.ts"],
@@ -16,13 +16,14 @@
 			"$history/*": ["./src/history/*"],
 			"$interactive/*": ["./src/interactive/*"],
 			"$mcp/*": ["./src/mcp/*"],
+			"$meta/*": ["./src/meta/*"],
+			"$package": ["./package.json"],
 			"$polyfills/*": ["./src/polyfills/*"],
 			"$preview/*": ["./src/preview/*"],
 			"$types/*": ["./src/types/*"],
 			"$utilities/*": ["./src/utilities/*"],
 			"$validators/*": ["./src/validators/*"],
-			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"],
-			"$package": ["./package.json"]
+			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
 		"types": ["node"]
 	},
