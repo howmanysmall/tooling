@@ -4,3 +4,8 @@ export const enum CursorMoveType {
 	First = 3,
 	Last = 4,
 }
+
+export const enum StatusActionType {
+	StatusExpired = 11,
+	Status = 12,
+}
