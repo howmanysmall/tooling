@@ -41,6 +41,8 @@ const configuration = defineConfig([
 		tsconfig: "tsconfig.lib.json",
 	}),
 	mergeConfig(cliConfiguration, {
+		// Bundling the UMD `main` leaves its relative `require` calls unresolved.
+		alias: { "jsonc-parser": "jsonc-parser/lib/esm/main.js" },
 		clean: false,
 		deps,
 		entry: Object.fromEntries(BIN_ENTRIES),

@@ -10,7 +10,7 @@ Command-line tools by howmanysmall, in one pnpm monorepo.
 | `documentation/<tool>/` | The tool's documentation site, built with Astro and Starlight. |
 | `packages/` | Private libraries the tools share. They're bundled into each tool at build time. |
 | `tools/` | Lint, test, and build configuration shared by every workspace project, and the documentation theme. |
-| `scripts/` | Repository scripts: releasing, publishing the documentation, and `tsconfig` reference syncing. |
+| `scripts/` | Repository scripts: releasing and publishing the documentation. `apps/footnote/` does the `tsconfig` reference syncing. |
 | `turbo/generators/` | Templates for new tools and libraries. |
 
 The tools run on Bun or Node. Code uses Node APIs only, so it behaves the same on both, and pnpm
@@ -29,8 +29,8 @@ pnpm install
 ```
 
 Both generators prompt for a name, a description, an npm scope, and a runtime (`bun` or `node`).
-The new `apps/<name>/` gets its scripts, a first test, and a README. The generator also updates its `tsconfig`
-references. Use `pnpm turbo gen package` for a shared library in `packages/`.
+The new `apps/<name>/` gets its scripts, a first test, and a README. The generator also runs footnote to update its
+`tsconfig` references. Use `pnpm turbo gen package` for a shared library in `packages/`.
 
 ## Release a tool
 
