@@ -73,3 +73,9 @@ export const enum SessionTabsActionType {
 	Replace = 5,
 	Select = 6,
 }
+
+export const enum AppActionType {
+	ChooseModel = 1,
+	Cycle = 2,
+	Select = 3,
+}
