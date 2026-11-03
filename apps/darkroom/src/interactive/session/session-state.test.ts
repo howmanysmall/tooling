@@ -3,7 +3,7 @@ import { describe, it } from "vitest";
 import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
 
-import { createSession, getEditBase, PromptMode, reduceSession, TurnPhase } from "./session-state";
+import { createSession, getEditBase, PromptMode, reduceSession, SessionActionType, TurnPhase } from "./session-state";
 import { summarizeTurn } from "./turn-summary";
 
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
@@ -47,10 +47,10 @@ describe("reduceSession", () => {
 
 		const pending = { cost: "$0.08", prepared: await prepareAsync() };
 		const confirming = applyActions([
-			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
-			{ id: 1, pending, type: "prepared" },
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: SessionActionType.TurnAdded },
+			{ id: 1, pending, type: SessionActionType.Prepared },
 		]);
-		const running = reduceSession(confirming, { id: 1, at: 1000, type: "turn-started" });
+		const running = reduceSession(confirming, { id: 1, at: 1000, type: SessionActionType.TurnStarted });
 
 		expect(confirming.pending?.id).toBe(1);
 		expect(confirming.turns[0]).toMatchObject({ phase: TurnPhase.Confirming, requested: 2 });
@@ -63,13 +63,13 @@ describe("reduceSession", () => {
 
 		const pending = { cost: "$0.08", prepared: await prepareAsync() };
 		const canceled = applyActions([
-			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
-			{ id: 1, pending, type: "prepared" },
-			{ type: "dismiss" },
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: SessionActionType.TurnAdded },
+			{ id: 1, pending, type: SessionActionType.Prepared },
+			{ type: SessionActionType.Dismiss },
 		]);
 		const failed = applyActions([
-			{ id: 2, model: "missing/model", prompt: "a dog", type: "turn-added" },
-			{ id: 2, at: 5, error: "Unknown model.", type: "turn-failed" },
+			{ id: 2, model: "missing/model", prompt: "a dog", type: SessionActionType.TurnAdded },
+			{ id: 2, at: 5, error: "Unknown model.", type: SessionActionType.TurnFailed },
 		]);
 
 		expect(canceled.turns).toHaveLength(0);
@@ -83,11 +83,11 @@ describe("turn-removed", () => {
 
 		const older = { ...RESULT, images: [{ mediaType: "image/png", path: "/work/older.png" }] };
 		const state = applyActions([
-			{ id: 1, model: MULTI_MODEL.id, prompt: "a dog", type: "turn-added" },
-			{ id: 1, at: 1, result: older, type: "turn-done" },
-			{ id: 2, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
-			{ id: 2, at: 2, result: RESULT, type: "turn-done" },
-			{ id: 2, type: "turn-removed" },
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a dog", type: SessionActionType.TurnAdded },
+			{ id: 1, at: 1, result: older, type: SessionActionType.TurnDone },
+			{ id: 2, model: MULTI_MODEL.id, prompt: "a cat", type: SessionActionType.TurnAdded },
+			{ id: 2, at: 2, result: RESULT, type: SessionActionType.TurnDone },
+			{ id: 2, type: SessionActionType.TurnRemoved },
 		]);
 
 		expect(state.turns.map(({ id }) => id)).toStrictEqual([1]);
@@ -100,14 +100,14 @@ describe("getEditBase", () => {
 		expect.assertions(4);
 
 		const done = applyActions([
-			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: "turn-added" },
-			{ id: 1, at: 5, result: RESULT, type: "turn-done" },
+			{ id: 1, model: MULTI_MODEL.id, prompt: "a cat", type: SessionActionType.TurnAdded },
+			{ id: 1, at: 5, result: RESULT, type: SessionActionType.TurnDone },
 		]);
 		const chosen = reduceSession(done, {
 			image: { mediaType: "image/png", path: "/elsewhere/a-cat-2.png" },
-			type: "choose-base",
+			type: SessionActionType.ChooseBase,
 		});
-		const fresh = reduceSession(chosen, { mode: PromptMode.New, type: "set-mode" });
+		const fresh = reduceSession(chosen, { mode: PromptMode.New, type: SessionActionType.SetMode });
 
 		expect(getEditBase(createSession("S"))).toBeUndefined();
 		expect(getEditBase(done)?.path).toBe("/work/a-cat.png");
