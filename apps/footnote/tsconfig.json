@@ -18,6 +18,9 @@
 			"path": "../../packages/cli-utilities"
 		},
 		{
+			"path": "../../packages/english-utilities"
+		},
+		{
 			"path": "../../packages/file-utilities"
 		},
 		{
