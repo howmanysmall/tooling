@@ -21,7 +21,7 @@ export interface ModelRowProperties {
 // Wide enough for prices like `≈ $0.0195/img` and `$30/M tok`.
 const PRICE_WIDTH = 13;
 
-function getNameRuns(model: ImageModelListItem, isSelected: boolean): Array<StyledRun> {
+function getNameRuns(model: ImageModelListItem, isSelected: boolean): ReadonlyArray<StyledRun> {
 	const { name, provider } = splitModelName(model.name);
 	const runs: Array<StyledRun> = [{ color: theme.text, isBold: isSelected, text: name }];
 	if (provider !== undefined) {

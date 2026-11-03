@@ -6,7 +6,7 @@ import { createSessionActions } from "./session-actions";
 import { SessionContext } from "./session-context";
 import { getActiveSession } from "./session-tabs";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { SessionEnvironment } from "./session-actions";
 import type { SessionContextValue } from "./session-context";
@@ -19,7 +19,6 @@ export interface SessionProviderProperties {
 	services: SessionServices;
 	/** The open sessions, which outlive the screens. */
 	store: SessionStore;
-	children: ReactNode;
 }
 
 function createSessionValue(environment: SessionEnvironment): SessionContextValue {
@@ -44,7 +43,7 @@ export function SessionProvider({
 	services,
 	store,
 	children,
-}: Readonly<SessionProviderProperties>): ReactNode {
+}: Readonly<PropsWithChildren<SessionProviderProperties>>): ReactNode {
 	const tabs = useSyncExternalStore(store.subscribe, store.getTabs);
 	const notices = use(NoticeContext);
 

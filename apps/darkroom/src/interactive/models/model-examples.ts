@@ -27,7 +27,7 @@ export interface ModelExample {
 export function getModelExamples(
 	entries: ReadonlyArray<HistoryEntry>,
 	resolve: (stored: string) => string,
-): Map<string, ModelExample> {
+): ReadonlyMap<string, ModelExample> {
 	const newest = new Map<string, HistoryEntry>();
 	for (const entry of entries) {
 		const current = newest.get(entry.model);

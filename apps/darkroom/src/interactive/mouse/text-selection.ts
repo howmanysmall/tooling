@@ -29,7 +29,7 @@ function comesFirst(left: CellPoint, right: CellPoint): boolean {
  * @param columns - How wide the screen is.
  * @returns One span per row, top to bottom.
  */
-export function getSelectionSpans(anchor: CellPoint, head: CellPoint, columns: number): Array<SelectionSpan> {
+export function getSelectionSpans(anchor: CellPoint, head: CellPoint, columns: number): ReadonlyArray<SelectionSpan> {
 	const [from, to] = comesFirst(anchor, head) ? [anchor, head] : [head, anchor];
 	const { column: firstColumn, row: firstRow } = from;
 	const { column: lastColumn, row: lastRow } = to;
@@ -45,7 +45,7 @@ export function getSelectionSpans(anchor: CellPoint, head: CellPoint, columns: n
 
 export interface TextSelectionScreen {
 	/** Narrows spans to the runs of text in them, leaving out the rest. */
-	readonly findText: (spans: ReadonlyArray<SelectionSpan>) => Array<SelectionSpan>;
+	readonly findText: (spans: ReadonlyArray<SelectionSpan>) => ReadonlyArray<SelectionSpan>;
 	/** How wide the screen is now. */
 	readonly getColumns: () => number;
 	/** Draws cells highlighted, or as they are when `isHighlighted` is off. */
