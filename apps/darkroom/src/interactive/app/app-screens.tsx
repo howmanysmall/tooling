@@ -6,7 +6,7 @@ import { getRecentModelIds } from "$interactive/generate/model-picker-state";
 import { HistoryBrowserScreen } from "$interactive/history/history-browser-screen";
 import { ModelsTab } from "$interactive/models/models-tab";
 import { useSession } from "$interactive/session/session-context";
-import { AppActionType } from "$meta/action-types";
+import { AppActionType, SessionRequestType } from "$meta/action-types";
 
 import { reduceAppState } from "./app-state";
 import { AppTab } from "./app-tab";
@@ -126,7 +126,7 @@ export function AppScreens({
 	}
 
 	function handleRerun(entry: HistoryEntry): void {
-		session.actions.send({ entry, type: "rerun" });
+		session.actions.send({ entry, type: SessionRequestType.Rerun });
 		tabs.select(AppTab.Generate);
 	}
 

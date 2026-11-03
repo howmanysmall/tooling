@@ -34,6 +34,13 @@ export const enum GenerateScreenActionType {
 	Attach = 21,
 }
 
+// Separated between types
+
+export const enum SessionRequestType {
+	New = 1,
+	Rerun = 2,
+}
+
 export const enum EditorActionType {
 	Clear = 1,
 	DeleteBackward = 2,

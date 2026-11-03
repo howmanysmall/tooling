@@ -1,6 +1,6 @@
 import { createUlid } from "$history/ulid";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
-import { SessionActionType, SessionTabsActionType } from "$meta/action-types";
+import { SessionActionType, SessionRequestType, SessionTabsActionType } from "$meta/action-types";
 
 import { createSession, PromptMode, TurnPhase } from "./session-state";
 import { getActiveSession } from "./session-tabs";
@@ -209,7 +209,7 @@ export function createSessionActions({
 		send(request): void {
 			const session = active.id;
 			const id = takeTurnId();
-			const isNew = request.type === "new";
+			const isNew = request.type === SessionRequestType.New;
 			dispatchTo(session, {
 				id,
 				model: isNew ? request.model.id : request.entry.model,
