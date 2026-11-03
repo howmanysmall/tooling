@@ -1,7 +1,7 @@
 /** Settings a `footnote` configuration file can set. */
 export interface Configuration {
-	/** Prints extra output while running. */
-	readonly verbose?: boolean;
+	/** Workspace-relative globs for projects footnote leaves alone. */
+	readonly ignore?: ReadonlyArray<string> | undefined;
 }
 
 /**

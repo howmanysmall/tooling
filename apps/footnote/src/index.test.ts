@@ -6,7 +6,7 @@ describe("defineConfiguration", () => {
 	it("returns the configuration a file exports", ({ expect }) => {
 		expect.assertions(1);
 
-		const configuration = { verbose: true };
+		const configuration = { ignore: ["a/*"] };
 
 		expect(defineConfiguration(configuration)).toBe(configuration);
 	});

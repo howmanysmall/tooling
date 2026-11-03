@@ -1,8 +1,8 @@
-import { existsSync } from "node:fs";
 import nodePath from "node:path";
+import { isMaybeReadonlyArrayOfStrings } from "@howmanysmall/arktype-utilities";
 import { CliError } from "@howmanysmall/cli-utilities/cli-error";
 import { type } from "arktype";
-import { loadConfig, SUPPORTED_EXTENSIONS } from "c12";
+import { loadConfig } from "c12";
 
 import type { LoadConfigOptions } from "c12";
 
@@ -12,47 +12,21 @@ import type { Configuration } from "./index";
 const CONFIGURATION_EXIT_CODE = 3;
 
 // `declare` stops compiling if this schema drifts from `Configuration`.
-const isConfiguration = type.declare<Configuration>().type({
-	"verbose?": "boolean",
-});
-
-// The same candidates c12 checks in one directory.
-const CONFIGURATION_FILES = [
-	".footnoterc",
-	...SUPPORTED_EXTENSIONS.flatMap((extension) => [
-		`footnote.config${extension}`,
-		`.config/footnote${extension}`,
-		`.config/footnote.config${extension}`,
-	]),
-];
-
-function hasConfigurationFile(directory: string): boolean {
-	return CONFIGURATION_FILES.some((file) => existsSync(nodePath.join(directory, file)));
-}
-
-/**
- * Finds the nearest ancestor with a configuration file, since c12 only looks
- * in the directory it is given and a subfolder would skip the project's file.
- *
- * @param cwd - The directory the command runs in.
- * @returns The nearest directory with a configuration file, or `cwd`.
- */
-function findConfigurationRoot(cwd: string): string {
-	let directory = nodePath.resolve(cwd);
-	let parent = nodePath.dirname(directory);
-	while (parent !== directory && !hasConfigurationFile(directory)) {
-		directory = parent;
-		parent = nodePath.dirname(directory);
-	}
-
-	return hasConfigurationFile(directory) ? directory : nodePath.resolve(cwd);
-}
+const isConfiguration = type
+	.declare<Configuration>()
+	.type({
+		"ignore?": isMaybeReadonlyArrayOfStrings,
+	})
+	.readonly()
+	.onUndeclaredKey("reject");
 
 export interface LoadConfigurationOptions {
 	/** A `--config` file. It must exist, and it replaces the search. */
 	readonly configFile?: string | undefined;
-	/** The directory the search starts from, walking up to the root. */
+	/** The directory a relative `--config` file resolves from. */
 	readonly cwd: string;
+	/** The workspace root, the only directory searched for a configuration. */
+	readonly root: string;
 }
 
 export interface LoadedConfiguration {
@@ -66,7 +40,8 @@ export interface LoadedConfiguration {
  *
  * @param options - Where to search, or which file to load.
  * @param options.configFile - A `--config` file, if one was passed.
- * @param options.cwd - The directory the search starts from.
+ * @param options.cwd - The directory a relative `--config` file resolves from.
+ * @param options.root - The workspace root to search.
  * @returns The validated configuration and the file it came from.
  * @rejects {CliError} With exit code 3 when `--config` is missing, the file
  *   fails to load, or the configuration is invalid.
@@ -74,14 +49,15 @@ export interface LoadedConfiguration {
 export async function loadConfigurationAsync({
 	configFile,
 	cwd,
+	root,
 }: LoadConfigurationOptions): Promise<LoadedConfiguration> {
 	const c12Options: LoadConfigOptions<Configuration> = {
 		name: "footnote",
-		cwd: findConfigurationRoot(cwd),
+		cwd: root,
 		schema: isConfiguration,
 	};
+
 	if (configFile !== undefined) {
-		// `--config` is relative to where the command runs, not the found root.
 		c12Options.cwd = nodePath.resolve(cwd);
 		c12Options.configFile = nodePath.resolve(cwd, configFile);
 		c12Options.configFileRequired = true;
