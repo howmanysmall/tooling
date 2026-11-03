@@ -1,8 +1,15 @@
 import { describe, it } from "vitest";
 
-import { createSession, TurnPhase } from "./session-state";
+import { createSession, SessionActionType, TurnPhase } from "./session-state";
 import { createSessionStore, toOpenTabs } from "./session-store";
-import { createSessionTabs, getActiveSession, getTabStatus, reduceSessionTabs, TabStatus } from "./session-tabs";
+import {
+	createSessionTabs,
+	getActiveSession,
+	getTabStatus,
+	reduceSessionTabs,
+	SessionTabsActionType,
+	TabStatus,
+} from "./session-tabs";
 
 import type { SessionState, SessionTurn } from "./session-state";
 import type { SessionTabs, SessionTabsAction } from "./session-tabs";
@@ -40,24 +47,57 @@ describe("reduceSessionTabs", () => {
 
 		const tabs = applyActions(openThree(), [
 			{
-				action: { id: 2, model: "test/multi", prompt: "a dog", type: "turn-added" },
+				action: {
+					id: 2,
+					model: "test/multi",
+					prompt: "a dog",
+					type: SessionActionType.TurnAdded,
+				},
 				session: "A",
-				type: "in-session",
+				type: SessionTabsActionType.InSession,
 			},
-			{ action: { id: 2, at: 5, error: "Failed.", type: "turn-failed" }, session: "A", type: "in-session" },
+			{
+				action: {
+					id: 2,
+					at: 5,
+					error: "Failed.",
+					type: SessionActionType.TurnFailed,
+				},
+				session: "A",
+				type: SessionTabsActionType.InSession,
+			},
 		]);
 
 		expect(getActiveSession(tabs).id).toBe("C");
 		expect(tabs.sessions[0]?.turns.map((turn) => turn.prompt)).toStrictEqual(["a cat", "a dog"]);
-		expect(getTabStatus(getActiveSession({ ...tabs, activeId: "A" }), tabs.unread.has("A"))).toBe(TabStatus.Failed);
-		expect(reduceSessionTabs(tabs, { id: "A", type: "select" }).unread.size).toBe(0);
+		expect(
+			getTabStatus(
+				getActiveSession({
+					...tabs,
+					activeId: "A",
+				}),
+				tabs.unread.has("A"),
+			),
+		).toBe(TabStatus.Failed);
+		expect(
+			reduceSessionTabs(tabs, {
+				id: "A",
+				type: SessionTabsActionType.Select,
+			}).unread.size,
+		).toBe(0);
 	});
 
 	it("reuses an empty tab for a new session, and shows an open session instead of opening it twice", ({ expect }) => {
 		expect.assertions(2);
 
-		const fresh = reduceSessionTabs(openThree(), { session: createSession("D"), type: "open" });
-		const again = reduceSessionTabs(openThree(), { session: createSession("A", [DONE]), type: "open" });
+		const fresh = reduceSessionTabs(openThree(), {
+			session: createSession("D"),
+			type: SessionTabsActionType.Open,
+		});
+		const again = reduceSessionTabs(openThree(), {
+			session: createSession("A", [DONE]),
+			type: SessionTabsActionType.Open,
+		});
 
 		expect([getIds(fresh), fresh.activeId]).toStrictEqual([["A", "B", "C"], "C"]);
 		expect([getIds(again), again.activeId]).toStrictEqual([["A", "B", "C"], "A"]);
@@ -66,9 +106,17 @@ describe("reduceSessionTabs", () => {
 	it("shows the tab to the left after closing the one on screen, and a new session after the last", ({ expect }) => {
 		expect.assertions(2);
 
-		const closed = reduceSessionTabs(openThree(), { id: "C", replacement: createSession("N"), type: "close" });
+		const closed = reduceSessionTabs(openThree(), {
+			id: "C",
+			replacement: createSession("N"),
+			type: SessionTabsActionType.Close,
+		});
 		const last = applyActions(createSessionTabs([createSession("A", [DONE])], "A"), [
-			{ id: "A", replacement: createSession("N"), type: "close" },
+			{
+				id: "A",
+				replacement: createSession("N"),
+				type: SessionTabsActionType.Close,
+			},
 		]);
 
 		expect([getIds(closed), closed.activeId]).toStrictEqual([["A", "B"], "B"]);
@@ -81,7 +129,7 @@ describe("reduceSessionTabs", () => {
 		const rewound = reduceSessionTabs(openThree(), {
 			id: "B",
 			session: createSession("F", [DONE]),
-			type: "replace",
+			type: SessionTabsActionType.Replace,
 		});
 
 		expect([getIds(rewound), rewound.activeId]).toStrictEqual([["A", "F", "C"], "F"]);
@@ -90,8 +138,18 @@ describe("reduceSessionTabs", () => {
 	it("cycles through the tabs in both directions, wrapping around", ({ expect }) => {
 		expect.assertions(2);
 
-		expect(reduceSessionTabs(openThree(), { delta: 1, type: "cycle" }).activeId).toBe("A");
-		expect(reduceSessionTabs(openThree(), { delta: -1, type: "cycle" }).activeId).toBe("B");
+		expect(
+			reduceSessionTabs(openThree(), {
+				delta: 1,
+				type: SessionTabsActionType.Cycle,
+			}).activeId,
+		).toBe("A");
+		expect(
+			reduceSessionTabs(openThree(), {
+				delta: -1,
+				type: SessionTabsActionType.Cycle,
+			}).activeId,
+		).toBe("B");
 	});
 });
 
@@ -104,15 +162,30 @@ describe("createSessionStore", () => {
 			saved.push(tabs);
 		});
 
-		store.dispatch({ delta: -1, type: "cycle" });
 		store.dispatch({
-			action: { id: 9, model: "m", prompt: "p", type: "turn-added" },
+			delta: -1,
+			type: SessionTabsActionType.Cycle,
+		});
+		store.dispatch({
+			action: {
+				id: 9,
+				model: "m",
+				prompt: "p",
+				type: SessionActionType.TurnAdded,
+			},
 			session: "B",
-			type: "in-session",
+			type: SessionTabsActionType.InSession,
 		});
 		await store.flushAsync();
 
-		expect(saved).toStrictEqual([{ active: "B", open: ["A", "B"] }]);
-		expect(toOpenTabs(openThree())).toStrictEqual({ open: ["A", "B"] });
+		expect(saved).toStrictEqual([
+			{
+				active: "B",
+				open: ["A", "B"],
+			},
+		]);
+		expect(toOpenTabs(openThree())).toStrictEqual({
+			open: ["A", "B"],
+		});
 	});
 });
