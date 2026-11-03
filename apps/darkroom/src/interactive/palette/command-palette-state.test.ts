@@ -1,8 +1,8 @@
 import { describe, it } from "vitest";
 
-import { CursorMoveType } from "$interactive/components/list-cursor";
 import { CommandGroup } from "$interactive/keys/browser-command";
 import { BrowserKey } from "$interactive/keys/browser-keys";
+import { CursorMoveType } from "$meta/action-types";
 
 import {
 	getPaletteMatches,

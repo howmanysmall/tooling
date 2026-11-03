@@ -1,4 +1,4 @@
-import { CursorMoveType } from "$interactive/components/list-cursor";
+import { CursorMoveType } from "$meta/action-types";
 
 import { CommandGroup } from "./browser-command";
 import { BrowserKey } from "./browser-keys";

@@ -1,7 +1,7 @@
 import { describe, it } from "vitest";
 
 import { createModel } from "$generation/model-fixture";
-import { CursorMoveType } from "$interactive/components/list-cursor";
+import { CursorMoveType } from "$meta/action-types";
 import { ModelSort } from "$utilities/model-filters";
 
 import {
