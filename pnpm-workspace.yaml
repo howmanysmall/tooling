@@ -162,6 +162,7 @@ catalogs:
     "@xterm/headless": 6.0.0
     ansis: 4.5.0
     arktype: 2.2.9
+    c12: 4.0.0-rc.2
     confbox: 0.3.2
     consola: 3.4.2
     effect: 4.1.1

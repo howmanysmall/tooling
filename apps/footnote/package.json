@@ -1,0 +1,78 @@
+{
+	"name": "@pobammer-ts/footnote",
+	"version": "0.0.0",
+	"description": "Syncs `tsconfig.json` `references` for all workspace projects.",
+	"keywords": [
+		"tools",
+		"cli",
+		"typescript"
+	],
+	"bugs": {
+		"email": "contact@howmanysmall.com",
+		"url": "https://github.com/howmanysmall/tooling/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/howmanysmall/tooling.git",
+		"directory": "apps/footnote"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "HowManySmall",
+		"email": "contact@howmanysmall.com",
+		"url": "https://howmanysmall.com"
+	},
+	"maintainers": [
+		{
+			"name": "HowManySmall",
+			"email": "contact@howmanysmall.com",
+			"url": "https://howmanysmall.com"
+		}
+	],
+	"sideEffects": false,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"bin": {
+		"footnote": "./dist/footnote.js",
+		"footnote-bun": "./dist/footnote-bun.js"
+	},
+	"files": [
+		"dist"
+	],
+	"scripts": {
+		"build": "tsdown",
+		"lint:oxlint": "pnpm --workspace-root run lint:package apps/footnote",
+		"lint:oxlint:agent": "pnpm --workspace-root run lint:package:agent apps/footnote",
+		"prepublishOnly": "turbo run build --filter=@pobammer-ts/footnote",
+		"test": "vitest run",
+		"test:agent": "node --run test -- --reporter agent",
+		"type-check": "tsrs --build",
+		"type-check:agent": "node --run type-check -- --pretty false"
+	},
+	"dependencies": {
+		"arktype": "catalog:runtime",
+		"c12": "catalog:runtime"
+	},
+	"devDependencies": {
+		"@cliffy/command": "catalog:runtime",
+		"@howmanysmall/cli-utilities": "workspace:*",
+		"@howmanysmall/project-configurations": "workspace:*",
+		"@total-typescript/ts-reset": "catalog:types",
+		"@types/node": "catalog:node-floor",
+		"tsdown": "catalog:build",
+		"unplugin-macros": "catalog:build",
+		"vitest": "catalog:test"
+	},
+	"engines": {
+		"node": ">=22.18.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}
