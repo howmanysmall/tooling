@@ -85,3 +85,9 @@ export const enum AppActionType {
 	Cycle = 2,
 	Select = 3,
 }
+
+export const enum PickerViewActionType {
+	CycleSort = 1,
+	Sort = 2,
+	ToggleFilter = 3,
+}

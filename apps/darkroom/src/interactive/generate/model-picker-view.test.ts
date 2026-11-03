@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 
 import { createModel, MULTI_MODEL, SINGLE_MODEL } from "$generation/model-fixture";
+import { PickerViewActionType } from "$meta/action-types";
 
 import {
 	describeAbilities,
@@ -61,7 +62,9 @@ describe("findPickerModels", () => {
 			SINGLE_MODEL.id,
 			OLD.id,
 		]);
-		expect(reducePickerView(RECENT, { delta: -1, type: "cycle-sort" }).sort).toBe(PickerSort.Newest);
+		expect(reducePickerView(RECENT, { delta: -1, type: PickerViewActionType.CycleSort }).sort).toBe(
+			PickerSort.Newest,
+		);
 	});
 });
 

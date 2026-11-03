@@ -1,6 +1,7 @@
 import { Box, Text } from "ink";
 
 import { theme } from "$interactive/components/theme";
+import { PickerViewActionType } from "$meta/action-types";
 
 import { PICKER_FILTERS, PICKER_SORTS, PickerFilter, PickerSort } from "./model-picker-view";
 import { PickerChip } from "./picker-chip";
@@ -50,7 +51,7 @@ export function ModelPickerToolbar({ dispatch, view }: Readonly<ModelPickerToolb
 						label={SORT_LABELS[sort]}
 						target={`picker-sort:${sort}`}
 						onPress={(): void => {
-							dispatch({ sort, type: "sort" });
+							dispatch({ sort, type: PickerViewActionType.Sort });
 						}}
 					/>
 				))}
@@ -66,7 +67,7 @@ export function ModelPickerToolbar({ dispatch, view }: Readonly<ModelPickerToolb
 						label={FILTER_LABELS[filter]}
 						target={`picker-filter:${filter}`}
 						onPress={(): void => {
-							dispatch({ filter, type: "toggle-filter" });
+							dispatch({ filter, type: PickerViewActionType.ToggleFilter });
 						}}
 					/>
 				))}
