@@ -867,6 +867,9 @@ importers:
       '@howmanysmall/cli-utilities':
         specifier: workspace:*
         version: link:../../packages/cli-utilities
+      '@howmanysmall/english-utilities':
+        specifier: workspace:*
+        version: link:../../packages/english-utilities
       '@howmanysmall/file-utilities':
         specifier: workspace:*
         version: link:../../packages/file-utilities
