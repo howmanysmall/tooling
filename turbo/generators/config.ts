@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import nodePath from "node:path";
-import { cwd, execPath } from "node:process";
+import { cwd } from "node:process";
 import { type } from "arktype";
 import { Predicate } from "effect";
 import { exec } from "tinyexec";
@@ -85,10 +85,10 @@ function createEnsureDirectoryAvailable(directory: WorkspaceDirectory): PlopType
 function createSyncTsconfigReferencesAsync(directory: WorkspaceDirectory): PlopTypes.CustomActionFunction {
 	return async function syncTsconfigReferencesAsync(answers) {
 		const validAnswers = isGeneratorAnswers.assert(answers);
-		await exec(execPath, ["scripts/sync-tsconfig-references.ts"], {
-			nodeOptions: {
-				cwd: readRoot(validAnswers),
-			},
+		// `turbo gen` runs under node, and footnote's entry only runs under bun.
+		await exec("bun", ["run", "apps/footnote/src/cli.ts"], {
+			nodeOptions: { cwd: readRoot(validAnswers) },
+			throwOnError: true,
 		});
 		return `Synced tsconfig references. Next: pnpm install, then build on ${directory}/${validAnswers.name}.`;
 	};
