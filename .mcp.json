@@ -12,13 +12,17 @@
 			"args": ["--run", "fallow-mcp"],
 			"command": "node"
 		},
-		"gh-grep": {
-			"type": "http",
-			"url": "https://mcp.grep.app"
-		},
 		"hk": {
 			"args": ["x", "--", "hk", "mcp", "--root", "."],
 			"command": "mise"
+		},
+		"npm-registry": {
+			"args": ["x", "--", "npm-registry-mcp"],
+			"command": "mise"
+		},
+		"openrouter-mcp": {
+			"type": "http",
+			"url": "https://mcp.openrouter.ai/mcp"
 		},
 		"playwright": {
 			"args": ["x", "--", "nlx", "@playwright/mcp@latest"],

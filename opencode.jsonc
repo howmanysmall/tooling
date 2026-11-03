@@ -199,6 +199,10 @@
 	},
 	"mcp": {
 		"servers": {
+			"astro-docs": {
+				"type": "remote",
+				"url": "https://mcp.docs.astro.build/mcp",
+			},
 			"chrome-devtools": {
 				"command": ["bash", "scripts/get-chrome-path.sh", "--serve"],
 				"type": "local",
@@ -237,6 +241,10 @@
 			"openrouter-mcp": {
 				"type": "remote",
 				"url": "https://mcp.openrouter.ai/mcp",
+			},
+			"playwright": {
+				"command": ["mise", "x", "--", "nlx", "@playwright/mcp@latest"],
+				"type": "local",
 			},
 		},
 	},
