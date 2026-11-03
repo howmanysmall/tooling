@@ -9,7 +9,7 @@ const BANNED_DEPENDENCIES = {
 	presets: ["microutilities", "native", "preferred"] satisfies ReadonlyArray<string>,
 };
 
-type LintConfiguration = Awaited<ReturnType<typeof isentinel>>;
+export type LintConfiguration = Awaited<ReturnType<typeof isentinel>>;
 
 export async function getEslintAsync(tsconfigPath: string): Promise<LintConfiguration> {
 	const { getOxfmtConfigurationAsync } = await import("@howmanysmall/linter-utilities/configuration");
