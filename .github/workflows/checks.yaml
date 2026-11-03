@@ -61,6 +61,11 @@ jobs:
       - name: Type Check
         run: node --run type-check
 
+      # The root type-check only covers the tsrs project graph; the Astro
+      # sites check themselves.
+      - name: Type Check (documentation)
+        run: pnpm --recursive --filter './documentation/*' run type-check
+
       - name: Dead code
         run: node --run fallow:dead-code
 
