@@ -9,7 +9,7 @@ inputs:
   tools:
     description: Space-separated Mise tools to install.
     required: false
-    default: node pnpm
+    default: node pnpm bun
 
 runs:
   using: composite
