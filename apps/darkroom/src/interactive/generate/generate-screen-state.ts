@@ -1,6 +1,7 @@
 import { reduceStatus } from "$interactive/components/status-message";
+import { EditorActionType } from "$meta/action-types";
 
-import { EditorActionType, EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
+import { EMPTY_EDITOR, reducePromptEditor } from "./prompt-editor-state";
 import { formatImageToken } from "./prompt-images";
 
 import type { StatusAction, StatusMessage } from "$interactive/components/status-message";

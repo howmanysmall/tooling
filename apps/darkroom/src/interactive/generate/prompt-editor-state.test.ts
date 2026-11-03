@@ -1,14 +1,9 @@
 import { describe, it } from "vitest";
 
 import { NO_KEY } from "$interactive/keys/test-key";
+import { EditorActionType } from "$meta/action-types";
 
-import {
-	EditorActionType,
-	EMPTY_EDITOR,
-	getEditorAction,
-	reducePromptEditor,
-	splitAtCursor,
-} from "./prompt-editor-state";
+import { EMPTY_EDITOR, getEditorAction, reducePromptEditor, splitAtCursor } from "./prompt-editor-state";
 
 import type { EditorAction, PromptEditor } from "./prompt-editor-state";
 
