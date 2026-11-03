@@ -1,5 +1,6 @@
 import { clampCursor, isCursorMove, moveCursor } from "$interactive/components/list-cursor";
 import { reduceStatus } from "$interactive/components/status-message";
+import { ModelBrowserActionType } from "$meta/action-types";
 import { filterModels, ModelSort, sortModels } from "$utilities/model-filters";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
@@ -34,15 +35,6 @@ export interface ModelBrowserState {
 	readonly prefersShipped: boolean;
 	readonly sort: ModelSort;
 	readonly status?: StatusMessage | undefined;
-}
-
-export const enum ModelBrowserActionType {
-	Filter = 13,
-	Select = 14,
-	Filtering = 15,
-	CancelFilter = 16,
-	NextSort = 17,
-	SwitchExample = 18,
 }
 
 export type ModelBrowserAction =

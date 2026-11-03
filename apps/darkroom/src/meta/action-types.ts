@@ -19,6 +19,15 @@ export const enum StatusActionType {
 	Status = 12,
 }
 
+export const enum ModelBrowserActionType {
+	Filter = 13,
+	Select = 14,
+	Filtering = 15,
+	CancelFilter = 16,
+	NextSort = 17,
+	SwitchExample = 18,
+}
+
 export const enum EditorActionType {
 	Clear = 1,
 	DeleteBackward = 2,
