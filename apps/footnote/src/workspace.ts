@@ -45,6 +45,10 @@ export const isTsconfig = type({
 	"references?": isReference.array().readonly().or(isUndefined),
 }).readonly();
 
+const isCompositeTsconfig = type({
+	"compilerOptions?": { "composite?": "unknown" },
+}).readonly();
+
 // oxlint-disable-next-line small-rules/no-unknown-parameters -- type guard.
 function parseJsonc<TData>(text: string, validate: (data: unknown) => TData): TData {
 	const errors = new Array<ParseError>();
@@ -152,6 +156,39 @@ async function readProjectAsync(root: string, directory: string): Promise<Projec
 	};
 }
 
+async function findProjectDirectoriesAsync(
+	root: string,
+	workspaceGlobs: ReadonlyArray<string>,
+	ignore: ReadonlyArray<string>,
+): Promise<ReadonlyArray<string>> {
+	if (workspaceGlobs.length === 0) {
+		return [];
+	}
+
+	const matches = await glob([...workspaceGlobs], {
+		cwd: root,
+		expandDirectories: false,
+		ignore: ["**/node_modules/**", ...ignore],
+		onlyDirectories: true,
+	});
+
+	const directories = new Array<string>();
+	for (const match of matches) {
+		// `relative` drops the trailing slash and turns the root into "".
+		const directory = nodePath.posix.relative(".", match);
+		const absolute = nodePath.join(root, directory);
+		if (
+			directory.length > 0 &&
+			existsSync(nodePath.join(absolute, PACKAGE_JSON)) &&
+			existsSync(nodePath.join(absolute, TSCONFIG_JSON))
+		) {
+			directories.push(directory);
+		}
+	}
+
+	return directories;
+}
+
 /**
  * Finds the workspace's projects: directories the globs match that contain
  * both a `package.json` and a `tsconfig.json`, minus `ignore`.
@@ -166,30 +203,35 @@ export async function readProjectsAsync(
 	workspaceGlobs: ReadonlyArray<string>,
 	ignore: ReadonlyArray<string>,
 ): Promise<ReadonlyArray<Project>> {
-	if (workspaceGlobs.length === 0) {
-		return [];
-	}
+	const directories = await findProjectDirectoriesAsync(root, workspaceGlobs, ignore);
+	return Promise.all(directories.map(async (directory) => readProjectAsync(root, directory)));
+}
 
-	const matches = await glob([...workspaceGlobs], {
-		cwd: root,
-		expandDirectories: false,
-		ignore: ["**/node_modules/**", ...ignore],
-		onlyDirectories: true,
-	});
+async function isCompositeAsync(root: string, directory: string): Promise<boolean> {
+	const file = nodePath.posix.join(directory, TSCONFIG_JSON);
+	const text = await readFile(nodePath.join(root, file), "utf8");
+	const tsconfig = nameFileInErrors(file, () => parseJsonc(text, isCompositeTsconfig.assert));
 
-	const projects = new Array<Promise<Project>>();
-	for (const match of matches) {
-		// `relative` drops the trailing slash and turns the root into "".
-		const directory = nodePath.posix.relative(".", match);
-		const absolute = nodePath.join(root, directory);
-		if (
-			directory.length > 0 &&
-			existsSync(nodePath.join(absolute, PACKAGE_JSON)) &&
-			existsSync(nodePath.join(absolute, TSCONFIG_JSON))
-		) {
-			projects.push(readProjectAsync(root, directory));
-		}
-	}
+	return tsconfig.compilerOptions?.composite === true;
+}
 
-	return Promise.all(projects);
+/**
+ * Finds the projects whose own tsconfig lacks `compilerOptions.composite:
+ * true`. It does not follow `extends`, so a project inheriting `composite` is
+ * included.
+ *
+ * @param root - The directory holding `pnpm-workspace.yaml`.
+ * @param workspaceGlobs - The `packages` globs from `pnpm-workspace.yaml`.
+ * @returns Their workspace-relative directories, sorted in byte order.
+ */
+export async function readNonCompositeProjectsAsync(
+	root: string,
+	workspaceGlobs: ReadonlyArray<string>,
+): Promise<ReadonlyArray<string>> {
+	const directories = await findProjectDirectoriesAsync(root, workspaceGlobs, []);
+	const results = await Promise.all(
+		directories.map(async (directory) => ((await isCompositeAsync(root, directory)) ? undefined : directory)),
+	);
+
+	return results.filter((directory) => directory !== undefined).toSorted();
 }

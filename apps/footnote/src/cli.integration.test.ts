@@ -119,7 +119,7 @@ describe("syncing", () => {
 				"",
 			].join("\n"),
 		);
-		expect(stderr).toContain("synced 2 file(s)");
+		expect(stderr).toContain("synced 2 files");
 		expect(readTsconfig(root, "apps/a/tsconfig.json").references).toStrictEqual([{ path: "../../packages/b" }]);
 		expect(readTsconfig(root, "tsconfig.json").references).toStrictEqual([
 			{ path: "./apps/a" },

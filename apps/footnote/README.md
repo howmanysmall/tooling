@@ -37,9 +37,31 @@ bundle, and the code only uses Node APIs.
 | Exit code | Meaning |
 | --- | --- |
 | 0 | Everything is in sync, or was just synced. |
-| 1 | `--check` found stale files, there is no workspace, or a file is malformed. |
+| 1 | `--check` found stale files, there is no workspace, a file is malformed, or `initialize` found an existing configuration. |
 | 2 | The command line is invalid. |
 | 3 | The configuration could not be loaded or is invalid. |
+
+## Initialize
+
+```sh
+footnote initialize [-f, --force] [-n, --dry-run]
+```
+
+`footnote init` is the same command. It writes `.config/footnote.json` in the
+workspace root, with `ignore` listing every project whose tsconfig lacks
+`compilerOptions.composite: true`, because `tsc --build` rejects a reference to
+such a project. It only writes that file, so run `footnote` afterward to sync.
+On success, stdout gets the written path and stderr gets everything else.
+
+It fails if a configuration already exists, including with `--dry-run`.
+
+| Flag | What it does |
+| --- | --- |
+| `-f, --force` | Writes the file even if a configuration exists. Footnote warns about any other configuration file, which it leaves in place and which may still be loaded. |
+| `-n, --dry-run` | Prints the JSON on stdout and writes nothing. |
+
+It reads only each project's own tsconfig and does not follow `extends`, so a
+project that inherits `composite` gets listed. Remove it from `ignore` by hand.
 
 ## Configuration
 
