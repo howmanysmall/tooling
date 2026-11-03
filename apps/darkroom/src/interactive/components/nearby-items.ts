@@ -11,7 +11,7 @@ const PRELOAD_AHEAD = 4;
  * @param index - Where the selection is.
  * @returns The selected item and its neighbors, selected first.
  */
-export function getNearbyItems<Item>(items: ReadonlyArray<Item>, index: number): Array<Item> {
+export function getNearbyItems<Item>(items: ReadonlyArray<Item>, index: number): ReadonlyArray<Item> {
 	const nearby = items.slice(Math.max(0, index - PRELOAD_BEHIND), index + PRELOAD_AHEAD + 1);
 	const selected = items[index];
 	return selected === undefined ? nearby : [selected, ...nearby.filter((item) => item !== selected)];

@@ -1,8 +1,7 @@
 import { createStatusReporter } from "$interactive/components/status-message";
 import { formatClipboardSequence } from "$interactive/keys/browser-keys";
 import { createCursorActions } from "$interactive/keys/cursor-actions";
-
-import { ModelBrowserActionType } from "./model-browser-state";
+import { ModelBrowserActionType } from "$meta/action-types";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
 import type { Dispatch } from "react";

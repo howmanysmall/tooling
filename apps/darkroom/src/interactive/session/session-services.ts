@@ -6,6 +6,7 @@ import { deleteRunAsync } from "$history/delete-run";
 import { addToForkAsync } from "$history/history-store";
 import { loadStoredReferencesAsync } from "$history/stored-references";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
+import { SessionRequestType } from "$meta/action-types";
 
 import { restoreTurnAsync } from "./restore-turns";
 
@@ -29,9 +30,9 @@ export type SessionRequest =
 			readonly base?: BaseImage | undefined;
 			readonly model: ImageModelListItem;
 			readonly prompt: string;
-			readonly type: "new";
+			readonly type: SessionRequestType.New;
 	  }
-	| { readonly entry: HistoryEntry; readonly type: "rerun" };
+	| { readonly entry: HistoryEntry; readonly type: SessionRequestType.Rerun };
 
 /** Where a running generation reports to. */
 export interface RunHandlers {
@@ -92,7 +93,7 @@ function canTakeImages(model: ImageModelListItem): boolean {
 }
 
 async function toInputAsync(request: SessionRequest, session: string, store: HistoryStore): Promise<GenerationInput> {
-	if (request.type === "new") {
+	if (request.type === SessionRequestType.New) {
 		const { attachments, base, model, prompt } = request;
 		const isEditing = base !== undefined && canTakeImages(model);
 		const sources = isEditing ? [base.path, ...attachments] : attachments;
@@ -160,7 +161,11 @@ export function createSessionServices(store: HistoryStore): SessionServices {
 			const { describeCostAsync, prepareQuietlyAsync } = await import("$generation/cli-runner");
 			const prepared = await prepareQuietlyAsync(await toInputAsync(request, session, store));
 			const cost = await describeCostAsync(prepared, () => undefined);
-			if (request.type === "rerun" || request.base === undefined || canTakeImages(request.model)) {
+			if (
+				request.type === SessionRequestType.Rerun ||
+				request.base === undefined ||
+				canTakeImages(request.model)
+			) {
 				return { cost, prepared };
 			}
 

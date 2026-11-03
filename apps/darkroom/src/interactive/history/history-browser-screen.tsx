@@ -1,11 +1,10 @@
 import { HistoryBrowser } from "./history-browser";
 
 import type { ReactNode } from "react";
-import type { Except } from "type-fest";
 
 import type { HistoryBrowserProviderProperties } from "./history-browser-provider";
 
-export type HistoryBrowserScreenProperties = Except<HistoryBrowserProviderProperties, "children">;
+export type HistoryBrowserScreenProperties = HistoryBrowserProviderProperties;
 
 /**
  * The full-screen history browser: a run list, the selected run's details,

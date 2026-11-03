@@ -516,7 +516,7 @@ export async function getOxlintAsync({
 						allow: [{ name: "ValidationError", from: "package", package: "@cliffy/command" }],
 					},
 				],
-				"small-rules/require-tsx-for-hooks": "off",
+				"small-rules/require-tsx-for-hooks": "error",
 				"small-rules/require-unicode-regex": "error",
 				"small-rules/rerender-memo-with-default-value": "error",
 				"small-rules/starts-with-verb": [
@@ -824,6 +824,18 @@ export async function getOxlintAsync({
 					"error",
 					{
 						allowList: ["generator"],
+					},
+				],
+			},
+		},
+		{
+			name: "bin/disable-terrible-rule",
+			files: [GLOB_SRC],
+			rules: {
+				"jsdoc/require-param": [
+					"error",
+					{
+						checkDestructuredRoots: false,
 					},
 				],
 			},

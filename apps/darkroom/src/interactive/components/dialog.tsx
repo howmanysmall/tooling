@@ -7,7 +7,7 @@ import { DialogPanel } from "./dialog-panel";
 import { KeyHints } from "./key-hints";
 import { theme } from "./theme";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { KeyHint } from "./key-hints";
 
@@ -22,7 +22,6 @@ export interface DialogProperties {
 	title: string;
 	/** The widest the dialog may be; narrow screens get less. */
 	width: number;
-	children: ReactNode;
 }
 
 /**
@@ -48,7 +47,7 @@ export function Dialog({
 	title,
 	width,
 	children,
-}: Readonly<DialogProperties>): ReactNode {
+}: Readonly<PropsWithChildren<DialogProperties>>): ReactNode {
 	return (
 		<MouseLayerContext value={1}>
 			<DialogBackdrop columns={columns} rows={rows} title={title} onDismiss={onDismiss}>

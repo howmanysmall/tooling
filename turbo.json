@@ -17,16 +17,6 @@
 		"//#lint:oxlint:agent": {
 			"inputs": ["*", ".*/**", "scripts/root-lint-files.sh", "tools/lint-configurations/src/**"]
 		},
-		"//#type-check:node": {
-			"inputs": [
-				"*.config.ts",
-				".config/*.ts",
-				"scripts/*.ts",
-				"tsconfig.json",
-				"tsconfig.node.json",
-				"turbo/generators/*.ts"
-			]
-		},
 		"build": {
 			"dependsOn": ["^build", "transit"],
 			"inputs": ["$TURBO_DEFAULT$"],
@@ -75,12 +65,6 @@
 		},
 		"transit": {
 			"dependsOn": ["^transit"]
-		},
-		"type-check": {
-			"dependsOn": ["^type-check"]
-		},
-		"type-check:agent": {
-			"dependsOn": ["^type-check"]
 		}
 	},
 	"ui": "stream"

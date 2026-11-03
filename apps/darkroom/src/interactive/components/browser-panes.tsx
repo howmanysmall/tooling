@@ -1,10 +1,6 @@
 import { Box } from "ink";
 
-import type { ReactNode } from "react";
-
-export interface BrowserPanesProperties {
-	children: ReactNode;
-}
+import type { PropsWithChildren, ReactNode } from "react";
 
 /**
  * Lays a browser's list and detail panes side by side, filling the space
@@ -14,7 +10,7 @@ export interface BrowserPanesProperties {
  * @param properties.children - The list, then the detail pane.
  * @returns A row that grows to fill the screen.
  */
-export function BrowserPanes({ children }: Readonly<BrowserPanesProperties>): ReactNode {
+export function BrowserPanes({ children }: Readonly<PropsWithChildren>): ReactNode {
 	return (
 		<Box columnGap={1} flexGrow={1}>
 			{children}

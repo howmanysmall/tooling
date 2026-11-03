@@ -1,3 +1,5 @@
+import { EditorActionType } from "$meta/action-types";
+
 import type { Key } from "ink";
 
 /** The text in the prompt box and where the cursor is, in UTF-16 units. */
@@ -7,21 +9,21 @@ export interface PromptEditor {
 }
 
 export type EditorAction =
-	| { readonly text: string; readonly type: "insert" }
-	| { readonly type: "clear" }
-	| { readonly type: "delete-backward" }
-	| { readonly type: "delete-forward" }
-	| { readonly type: "delete-to-end" }
-	| { readonly type: "delete-to-start" }
-	| { readonly type: "delete-word" }
-	| { readonly type: "down" }
-	| { readonly type: "left" }
-	| { readonly type: "line-end" }
-	| { readonly type: "line-start" }
-	| { readonly type: "right" }
-	| { readonly type: "up" }
-	| { readonly type: "word-left" }
-	| { readonly type: "word-right" };
+	| { readonly text: string; readonly type: EditorActionType.Insert }
+	| { readonly type: EditorActionType.Clear }
+	| { readonly type: EditorActionType.DeleteBackward }
+	| { readonly type: EditorActionType.DeleteForward }
+	| { readonly type: EditorActionType.DeleteToEnd }
+	| { readonly type: EditorActionType.DeleteToStart }
+	| { readonly type: EditorActionType.DeleteWord }
+	| { readonly type: EditorActionType.Down }
+	| { readonly type: EditorActionType.Left }
+	| { readonly type: EditorActionType.LineEnd }
+	| { readonly type: EditorActionType.LineStart }
+	| { readonly type: EditorActionType.Right }
+	| { readonly type: EditorActionType.Up }
+	| { readonly type: EditorActionType.WordLeft }
+	| { readonly type: EditorActionType.WordRight };
 
 export const EMPTY_EDITOR: PromptEditor = { cursor: 0, text: "" };
 
@@ -126,28 +128,28 @@ function splice({ text }: PromptEditor, from: number, to: number, insert = ""): 
 
 function getCursorTarget({ cursor, text }: PromptEditor, action: EditorAction): number | undefined {
 	switch (action.type) {
-		case "down":
+		case EditorActionType.Down:
 			return moveLine(text, cursor, 1);
 
-		case "left":
+		case EditorActionType.Left:
 			return getPreviousBoundary(text, cursor);
 
-		case "line-end":
+		case EditorActionType.LineEnd:
 			return getLineEnd(text, cursor);
 
-		case "line-start":
+		case EditorActionType.LineStart:
 			return getLineStart(text, cursor);
 
-		case "right":
+		case EditorActionType.Right:
 			return getNextBoundary(text, cursor);
 
-		case "up":
+		case EditorActionType.Up:
 			return moveLine(text, cursor, -1);
 
-		case "word-left":
+		case EditorActionType.WordLeft:
 			return getWordStart(text, cursor);
 
-		case "word-right":
+		case EditorActionType.WordRight:
 			return getWordEnd(text, cursor);
 
 		default:
@@ -166,29 +168,29 @@ function getCursorTarget({ cursor, text }: PromptEditor, action: EditorAction): 
 export function reducePromptEditor(editor: PromptEditor, action: EditorAction): PromptEditor {
 	const { cursor, text } = editor;
 	switch (action.type) {
-		case "clear":
+		case EditorActionType.Clear:
 			return EMPTY_EDITOR;
 
-		case "delete-backward": {
+		case EditorActionType.DeleteBackward: {
 			const token = IMAGE_TOKEN_BEFORE.exec(text.slice(0, cursor));
 			return splice(editor, token?.index ?? getPreviousBoundary(text, cursor), cursor);
 		}
 
-		case "delete-forward": {
+		case EditorActionType.DeleteForward: {
 			const token = IMAGE_TOKEN_AFTER.exec(text.slice(cursor));
 			return splice(editor, cursor, token === null ? getNextBoundary(text, cursor) : cursor + token[0].length);
 		}
 
-		case "delete-to-end":
+		case EditorActionType.DeleteToEnd:
 			return splice(editor, cursor, getLineEnd(text, cursor));
 
-		case "delete-to-start":
+		case EditorActionType.DeleteToStart:
 			return splice(editor, getLineStart(text, cursor), cursor);
 
-		case "delete-word":
+		case EditorActionType.DeleteWord:
 			return splice(editor, getWordStart(text, cursor), cursor);
 
-		case "insert":
+		case EditorActionType.Insert:
 			return splice(editor, cursor, cursor, cleanInsert(action.text));
 
 		default:
@@ -196,14 +198,14 @@ export function reducePromptEditor(editor: PromptEditor, action: EditorAction): 
 	}
 }
 
-const DELETE_FORWARD: EditorAction = { type: "delete-forward" };
-const DELETE_TO_START: EditorAction = { type: "delete-to-start" };
-const DELETE_WORD: EditorAction = { type: "delete-word" };
-const LINE_END: EditorAction = { type: "line-end" };
-const LINE_START: EditorAction = { type: "line-start" };
-const NEW_LINE: EditorAction = { text: "\n", type: "insert" };
-const WORD_LEFT: EditorAction = { type: "word-left" };
-const WORD_RIGHT: EditorAction = { type: "word-right" };
+const DELETE_FORWARD: EditorAction = { type: EditorActionType.DeleteForward };
+const DELETE_TO_START: EditorAction = { type: EditorActionType.DeleteToStart };
+const DELETE_WORD: EditorAction = { type: EditorActionType.DeleteWord };
+const LINE_END: EditorAction = { type: EditorActionType.LineEnd };
+const LINE_START: EditorAction = { type: EditorActionType.LineStart };
+const NEW_LINE: EditorAction = { text: "\n", type: EditorActionType.Insert };
+const WORD_LEFT: EditorAction = { type: EditorActionType.WordLeft };
+const WORD_RIGHT: EditorAction = { type: EditorActionType.WordRight };
 
 /** The prompt split around the cursor, to draw the cursor over a character. */
 export interface CursorSplit {
@@ -236,13 +238,13 @@ export function splitAtCursor({ cursor, text }: PromptEditor): CursorSplit {
 
 const CTRL_ACTIONS: ReadonlyMap<string, EditorAction> = new Map<string, EditorAction>([
 	["a", LINE_START],
-	["b", { type: "left" }],
+	["b", { type: EditorActionType.Left }],
 	["d", DELETE_FORWARD],
 	["e", LINE_END],
-	["f", { type: "right" }],
+	["f", { type: EditorActionType.Right }],
 	// The kitty protocol reports ctrl+j as a key, not as a line feed.
 	["j", NEW_LINE],
-	["k", { type: "delete-to-end" }],
+	["k", { type: EditorActionType.DeleteToEnd }],
 	["u", DELETE_TO_START],
 	["w", DELETE_WORD],
 ]);
@@ -253,8 +255,8 @@ const META_ACTIONS: ReadonlyMap<string, EditorAction> = new Map<string, EditorAc
 ]);
 
 const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
-	["upArrow", { type: "up" }],
-	["downArrow", { type: "down" }],
+	["upArrow", { type: EditorActionType.Up }],
+	["downArrow", { type: EditorActionType.Down }],
 	["home", LINE_START],
 	["end", LINE_END],
 	["delete", DELETE_FORWARD],
@@ -262,7 +264,7 @@ const SPECIAL_ACTIONS: ReadonlyArray<readonly [keyof Key, EditorAction]> = [
 
 function getBackspaceAction(key: Key): EditorAction {
 	if (key.super) return DELETE_TO_START;
-	return key.meta || key.ctrl ? DELETE_WORD : { type: "delete-backward" };
+	return key.meta || key.ctrl ? DELETE_WORD : { type: EditorActionType.DeleteBackward };
 }
 
 /**
@@ -275,9 +277,9 @@ function getSpecialAction(key: Key): EditorAction | undefined {
 	if (key.backspace) return getBackspaceAction(key);
 
 	const isWordStep = key.meta || key.ctrl;
-	if (key.leftArrow) return isWordStep ? WORD_LEFT : { type: "left" };
+	if (key.leftArrow) return isWordStep ? WORD_LEFT : { type: EditorActionType.Left };
 
-	if (key.rightArrow) return isWordStep ? WORD_RIGHT : { type: "right" };
+	if (key.rightArrow) return isWordStep ? WORD_RIGHT : { type: EditorActionType.Right };
 
 	return SPECIAL_ACTIONS.find(([name]) => key[name] === true)?.[1];
 }
@@ -313,8 +315,8 @@ export function getSingleLineAction(input: string, key: Key): EditorAction | und
 
 	const action = getEditorAction(input, key);
 	if (action === NEW_LINE) return undefined;
-	if (action?.type !== "insert") return action;
-	return { text: action.text.replaceAll(LINE_BREAK_RUN, " "), type: "insert" };
+	if (action?.type !== EditorActionType.Insert) return action;
+	return { text: action.text.replaceAll(LINE_BREAK_RUN, " "), type: EditorActionType.Insert };
 }
 
 function getModifiedAction(input: string, key: Key): EditorAction | undefined {
@@ -326,5 +328,5 @@ function getModifiedAction(input: string, key: Key): EditorAction | undefined {
 function getTypedAction(input: string, key: Key): EditorAction | undefined {
 	if (input === "\n") return NEW_LINE;
 	if (input.length === 0 || key.escape || key.tab) return undefined;
-	return { text: input, type: "insert" };
+	return { text: input, type: EditorActionType.Insert };
 }

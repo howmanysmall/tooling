@@ -1,6 +1,8 @@
 import { describe, it } from "vitest";
 
-import { CursorMoveType, getWindowStart, moveCursor } from "./list-cursor";
+import { CursorMoveType } from "$meta/action-types";
+
+import { getWindowStart, moveCursor } from "./list-cursor";
 
 describe("moveCursor", () => {
 	it("steps, jumps to either end, and stays within the list", ({ expect }) => {

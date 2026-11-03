@@ -6,6 +6,7 @@ import { getRecentModelIds } from "$interactive/generate/model-picker-state";
 import { HistoryBrowserScreen } from "$interactive/history/history-browser-screen";
 import { ModelsTab } from "$interactive/models/models-tab";
 import { useSession } from "$interactive/session/session-context";
+import { AppActionType, SessionRequestType } from "$meta/action-types";
 
 import { reduceAppState } from "./app-state";
 import { AppTab } from "./app-tab";
@@ -55,10 +56,10 @@ function createTabs(active: AppTab, dispatch: Dispatch<AppAction>): AppTabs {
 	return {
 		active,
 		cycle(delta): void {
-			dispatch({ delta, type: "cycle" });
+			dispatch({ delta, type: AppActionType.Cycle });
 		},
 		select(tab): void {
-			dispatch({ tab, type: "select" });
+			dispatch({ tab, type: AppActionType.Select });
 		},
 	};
 }
@@ -69,7 +70,7 @@ function createModelServices(
 ): ModelBrowserServices {
 	return {
 		chooseModel(model): void {
-			dispatch({ id: model.id, type: "choose-model" });
+			dispatch({ id: model.id, type: AppActionType.ChooseModel });
 		},
 		getPreview,
 	};
@@ -125,7 +126,7 @@ export function AppScreens({
 	}
 
 	function handleRerun(entry: HistoryEntry): void {
-		session.actions.send({ entry, type: "rerun" });
+		session.actions.send({ entry, type: SessionRequestType.Rerun });
 		tabs.select(AppTab.Generate);
 	}
 

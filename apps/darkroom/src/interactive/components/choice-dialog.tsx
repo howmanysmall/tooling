@@ -4,7 +4,7 @@ import { Box, useInput } from "ink";
 import { ChoiceRow } from "./choice-row";
 import { Dialog } from "./dialog";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { KeyHint } from "./key-hints";
 
@@ -18,8 +18,6 @@ export interface ChoiceDialogProperties {
 	title: string;
 	/** The widest the dialog may be. */
 	width: number;
-	/** What the question is about, above the answers. */
-	children: ReactNode;
 }
 
 const HINTS: ReadonlyArray<KeyHint> = [
@@ -51,7 +49,7 @@ export function ChoiceDialog({
 	title,
 	width,
 	children,
-}: Readonly<ChoiceDialogProperties>): ReactNode {
+}: Readonly<PropsWithChildren<ChoiceDialogProperties>>): ReactNode {
 	const [cursor, setCursor] = useState(0);
 	const last = choices.length - 1;
 

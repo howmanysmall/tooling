@@ -4,8 +4,9 @@ import { runBrowserTask } from "$interactive/app/run-browser-task";
 import { createStatusReporter } from "$interactive/components/status-message";
 import { formatClipboardSequence } from "$interactive/keys/browser-keys";
 import { createCursorActions } from "$interactive/keys/cursor-actions";
+import { BrowserActionType } from "$meta/action-types";
 
-import { BrowserActionType, BrowserMode } from "./history-browser-state";
+import { BrowserMode } from "./history-browser-state";
 
 import type { Dispatch } from "react";
 

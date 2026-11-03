@@ -1,3 +1,5 @@
+import { AppActionType } from "$meta/action-types";
+
 import { AppTab, cycleTab } from "./app-tab";
 
 export interface AppState {
@@ -7,9 +9,9 @@ export interface AppState {
 }
 
 export type AppAction =
-	| { readonly delta: number; readonly type: "cycle" }
-	| { readonly id: string; readonly type: "choose-model" }
-	| { readonly tab: AppTab; readonly type: "select" };
+	| { readonly delta: number; readonly type: AppActionType.Cycle }
+	| { readonly id: string; readonly type: AppActionType.ChooseModel }
+	| { readonly tab: AppTab; readonly type: AppActionType.Select };
 
 /**
  * Applies one action to the app. Choosing a model anywhere takes you to the
@@ -21,10 +23,12 @@ export type AppAction =
  */
 export function reduceAppState(state: AppState, action: AppAction): AppState {
 	switch (action.type) {
-		case "choose-model":
+		case AppActionType.ChooseModel:
 			return { chosenModelId: action.id, tab: AppTab.Generate };
-		case "cycle":
+
+		case AppActionType.Cycle:
 			return { ...state, tab: cycleTab(state.tab, action.delta) };
+
 		default:
 			return { ...state, tab: action.tab };
 	}

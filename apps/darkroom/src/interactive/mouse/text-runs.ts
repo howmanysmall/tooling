@@ -52,7 +52,7 @@ export function findTextRuns(
 	getKind: (column: number) => CellKind,
 ): Array<SelectionSpan> {
 	const kinds = getKinds(start, end, getKind);
-	const runs: Array<SelectionSpan> = [];
+	const runs = new Array<SelectionSpan>();
 	let index = 0;
 	while (index < kinds.length) {
 		if (kinds[index] === CellKind.Text) {
@@ -77,7 +77,7 @@ export function findTextRuns(
  * @returns The kind of each column from `start`, never `Continuation`.
  */
 function getKinds(start: number, end: number, getKind: (column: number) => CellKind): Array<CellKind> {
-	const kinds: Array<CellKind> = [];
+	const kinds = new Array<CellKind>();
 	for (let column = start; column < end; column += 1) {
 		const kind = getKind(column);
 		kinds.push(kind === CellKind.Continuation ? (kinds.at(-1) ?? CellKind.Blank) : kind);

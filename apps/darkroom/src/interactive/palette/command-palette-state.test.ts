@@ -1,16 +1,10 @@
 import { describe, it } from "vitest";
 
-import { CursorMoveType } from "$interactive/components/list-cursor";
 import { CommandGroup } from "$interactive/keys/browser-command";
 import { BrowserKey } from "$interactive/keys/browser-keys";
+import { CursorMoveType, PaletteActionType } from "$meta/action-types";
 
-import {
-	getPaletteMatches,
-	INITIAL_PALETTE_STATE,
-	PaletteActionType,
-	reducePaletteState,
-	splitTitle,
-} from "./command-palette-state";
+import { getPaletteMatches, INITIAL_PALETTE_STATE, reducePaletteState, splitTitle } from "./command-palette-state";
 
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 

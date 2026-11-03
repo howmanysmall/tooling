@@ -2,12 +2,11 @@ import { Box, Text } from "ink";
 
 import { theme } from "./theme";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 export interface DetailPaneProperties {
 	/** Whether something is selected to describe. */
 	isEmpty: boolean;
-	children: ReactNode;
 }
 
 /**
@@ -19,7 +18,7 @@ export interface DetailPaneProperties {
  * @param properties.children - The details, top to bottom.
  * @returns The pane, filling the space beside the list.
  */
-export function DetailPane({ isEmpty, children }: Readonly<DetailPaneProperties>): ReactNode {
+export function DetailPane({ isEmpty, children }: Readonly<PropsWithChildren<DetailPaneProperties>>): ReactNode {
 	if (isEmpty) {
 		return (
 			<Box alignItems="center" backgroundColor={theme.panel} flexGrow={1} justifyContent="center">

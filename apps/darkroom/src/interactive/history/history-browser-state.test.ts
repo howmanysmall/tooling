@@ -1,11 +1,9 @@
 import { describe, it } from "vitest";
 
 import { createEntry } from "$history/history-fixture";
-import { CursorMoveType } from "$interactive/components/list-cursor";
-import { StatusActionType } from "$interactive/components/status-message";
+import { BrowserActionType, CursorMoveType, StatusActionType } from "$meta/action-types";
 
 import {
-	BrowserActionType,
 	BrowserMode,
 	createBrowserState,
 	getSelectedRun,

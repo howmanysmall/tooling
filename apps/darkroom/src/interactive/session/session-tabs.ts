@@ -1,10 +1,16 @@
+import { SessionActionType, SessionTabsActionType } from "$meta/action-types";
+
 import { createSession, reduceSession, TurnPhase } from "./session-state";
 
 import type { SessionAction, SessionState } from "./session-state";
 
 /** The sessions open as tabs on the generate screen. */
 export interface SessionTabs {
-	/** The session on screen. */
+	/**
+	 * The session o,
+	 * type SessionAction
+	 * type SessionStaten screen.
+	 */
 	readonly activeId: string;
 	/** Open sessions, in tab order. */
 	readonly sessions: ReadonlyArray<SessionState>;
@@ -13,15 +19,18 @@ export interface SessionTabs {
 }
 
 export type SessionTabsAction =
-	| { readonly action: SessionAction; readonly session: string; readonly type: "in-session" }
-	| { readonly delta: number; readonly type: "cycle" }
-	| { readonly id: string; readonly replacement: SessionState; readonly type: "close" }
-	| { readonly id: string; readonly session: SessionState; readonly type: "replace" }
-	| { readonly id: string; readonly type: "select" }
-	| { readonly session: SessionState; readonly type: "open" };
+	| { readonly action: SessionAction; readonly session: string; readonly type: SessionTabsActionType.InSession }
+	| { readonly delta: number; readonly type: SessionTabsActionType.Cycle }
+	| { readonly id: string; readonly replacement: SessionState; readonly type: SessionTabsActionType.Close }
+	| { readonly id: string; readonly session: SessionState; readonly type: SessionTabsActionType.Replace }
+	| { readonly id: string; readonly type: SessionTabsActionType.Select }
+	| { readonly session: SessionState; readonly type: SessionTabsActionType.Open };
 
 const NO_UNREAD: ReadonlySet<string> = new Set();
-const SETTLING: ReadonlySet<SessionAction["type"]> = new Set<SessionAction["type"]>(["turn-done", "turn-failed"]);
+const SETTLING: ReadonlySet<SessionActionType> = new Set<SessionActionType>([
+	SessionActionType.TurnDone,
+	SessionActionType.TurnFailed,
+]);
 
 /**
  * Opens the app's tabs.
@@ -145,16 +154,21 @@ function cycle(tabs: SessionTabs, delta: number): SessionTabs {
  */
 export function reduceSessionTabs(tabs: SessionTabs, action: SessionTabsAction): SessionTabs {
 	switch (action.type) {
-		case "close":
+		case SessionTabsActionType.Close:
 			return close(tabs, action.id, action.replacement);
-		case "cycle":
+
+		case SessionTabsActionType.Cycle:
 			return cycle(tabs, action.delta);
-		case "in-session":
+
+		case SessionTabsActionType.InSession:
 			return applyInSession(tabs, action.session, action.action);
-		case "open":
+
+		case SessionTabsActionType.Open:
 			return open(tabs, action.session);
-		case "replace":
+
+		case SessionTabsActionType.Replace:
 			return replace(tabs, action.id, action.session);
+
 		default:
 			return select(tabs, action.id);
 	}

@@ -3,7 +3,7 @@ import { Box, Text } from "ink";
 import { KeyHints } from "./key-hints";
 import { theme } from "./theme";
 
-import type { ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 
@@ -14,13 +14,11 @@ export interface StatusBarProperties {
 	commands: ReadonlyArray<BrowserCommand>;
 	/** A short count or total for the right, like `71 runs · $4.65`. */
 	summary: string;
-	/** Replaces the hints while the screen needs the line, as for its filter. */
-	children?: ReactNode;
 }
 
 const HELP_HINT: KeyHint = ["?", "help"];
 
-function getHints(commands: ReadonlyArray<BrowserCommand>): Array<KeyHint> {
+function getHints(commands: ReadonlyArray<BrowserCommand>): ReadonlyArray<KeyHint> {
 	const featured = commands.flatMap((command) =>
 		command.isFeatured === true ? [[command.keyLabel, command.title.toLowerCase()] as const] : [],
 	);
@@ -33,12 +31,14 @@ function getHints(commands: ReadonlyArray<BrowserCommand>): Array<KeyHint> {
  * the screen's summary and the command palette's key on the right.
  *
  * @param properties - What to show.
- * @param properties.commands - The screen's commands.
- * @param properties.summary - A short count or total.
- * @param properties.children - The screen's input, when it has one open.
+ * @param properties.children - Replaces the hints while the screen needs the line, as for its filter.
  * @returns One line.
  */
-export function StatusBar({ commands, summary, children }: Readonly<StatusBarProperties>): ReactNode {
+export function StatusBar({
+	commands,
+	summary,
+	children,
+}: Readonly<PropsWithChildren<StatusBarProperties>>): ReactNode {
 	return (
 		<Box columnGap={2} flexShrink={0} justifyContent="space-between" paddingX={2}>
 			<Box flexShrink={1} overflow="hidden">

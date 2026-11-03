@@ -68,7 +68,7 @@ function describeImages(entry: HistoryEntry): string {
  * @param now - The current time, for the day name.
  * @returns Model, time, size, images, and cost.
  */
-export function getRunStats(entry: HistoryEntry, now: Date): Array<Fact> {
+export function getRunStats(entry: HistoryEntry, now: Date): ReadonlyArray<Fact> {
 	return [
 		{ label: "model", value: getModelName(entry.model) },
 		{ label: "made", value: describeMadeAt(entry.created, now) },
@@ -85,7 +85,7 @@ function describeRun(entry: HistoryEntry): string {
 // More compared runs than this become one summary line.
 const MAX_COMPARED_LINES = 3;
 
-function describeComparison(batch: ReadonlyArray<HistoryEntry>): Array<Fact> {
+function describeComparison(batch: ReadonlyArray<HistoryEntry>): ReadonlyArray<Fact> {
 	if (batch.length > MAX_COMPARED_LINES) {
 		return [{ label: "compared", value: `with ${batch.length} other models` }];
 	}
@@ -122,7 +122,7 @@ export function getRunLinks(
 	entry: HistoryEntry,
 	relations: RunRelations,
 	resolve: (stored: string) => string,
-): Array<Fact> {
+): ReadonlyArray<Fact> {
 	const links: Array<Fact> = entry.images.map((image) => {
 		const path = getImagePath(image, resolve);
 		return { imagePath: path, label: "file", value: shortenHomePath(path) };

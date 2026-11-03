@@ -1,3 +1,5 @@
+import { SessionActionType } from "$meta/action-types";
+
 import type { StreamProgress } from "$generation/image-stream";
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
 
@@ -67,17 +69,27 @@ export interface SessionState {
 }
 
 export type SessionAction =
-	| { readonly at: number; readonly error: string; readonly id: number; readonly type: "turn-failed" }
-	| { readonly at: number; readonly id: number; readonly result: GenerationResult; readonly type: "turn-done" }
-	| { readonly at: number; readonly id: number; readonly type: "turn-started" }
-	| { readonly id: number; readonly model: string; readonly prompt: string; readonly type: "turn-added" }
-	| { readonly id: number; readonly pending: PendingRequest; readonly type: "prepared" }
-	| { readonly id: number; readonly progress: StreamProgress; readonly type: "turn-progress" }
-	| { readonly id: number; readonly type: "turn-removed" }
-	| { readonly id: number; readonly type: "turn-warned"; readonly warning: string }
-	| { readonly image: BaseImage; readonly type: "choose-base" }
-	| { readonly mode: PromptMode; readonly type: "set-mode" }
-	| { readonly type: "dismiss" };
+	| { readonly at: number; readonly error: string; readonly id: number; readonly type: SessionActionType.TurnFailed }
+	| {
+			readonly at: number;
+			readonly id: number;
+			readonly result: GenerationResult;
+			readonly type: SessionActionType.TurnDone;
+	  }
+	| { readonly at: number; readonly id: number; readonly type: SessionActionType.TurnStarted }
+	| {
+			readonly id: number;
+			readonly model: string;
+			readonly prompt: string;
+			readonly type: SessionActionType.TurnAdded;
+	  }
+	| { readonly id: number; readonly pending: PendingRequest; readonly type: SessionActionType.Prepared }
+	| { readonly id: number; readonly progress: StreamProgress; readonly type: SessionActionType.TurnProgress }
+	| { readonly id: number; readonly type: SessionActionType.TurnRemoved }
+	| { readonly id: number; readonly type: SessionActionType.TurnWarned; readonly warning: string }
+	| { readonly image: BaseImage; readonly type: SessionActionType.ChooseBase }
+	| { readonly mode: PromptMode; readonly type: SessionActionType.SetMode }
+	| { readonly type: SessionActionType.Dismiss };
 
 function getFirstImage(result?: GenerationResult): BaseImage | undefined {
 	const image = result?.images.find((saved) => saved.path !== undefined);
@@ -181,22 +193,22 @@ function settleTurn(state: SessionState, id: number, settled: Partial<SessionTur
  */
 export function reduceSession(state: SessionState, action: SessionAction): SessionState {
 	switch (action.type) {
-		case "choose-base":
+		case SessionActionType.ChooseBase:
 			return { ...state, base: action.image, mode: PromptMode.Edit };
 
-		case "dismiss":
+		case SessionActionType.Dismiss:
 			return dismissPending(state);
 
-		case "prepared":
+		case SessionActionType.Prepared:
 			return confirmTurn(state, action.id, action.pending);
 
-		case "set-mode":
+		case SessionActionType.SetMode:
 			return { ...state, mode: action.mode };
 
-		case "turn-added":
+		case SessionActionType.TurnAdded:
 			return addTurn(state, action.id, action.model, action.prompt);
 
-		case "turn-done": {
+		case SessionActionType.TurnDone: {
 			const done = settleTurn(state, action.id, {
 				finishedAt: action.at,
 				phase: TurnPhase.Done,
@@ -206,7 +218,7 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 			return { ...done, base: getFirstImage(action.result) ?? state.base };
 		}
 
-		case "turn-failed": {
+		case SessionActionType.TurnFailed: {
 			return settleTurn(state, action.id, {
 				error: action.error,
 				finishedAt: action.at,
@@ -214,13 +226,13 @@ export function reduceSession(state: SessionState, action: SessionAction): Sessi
 			});
 		}
 
-		case "turn-progress":
+		case SessionActionType.TurnProgress:
 			return settleTurn(state, action.id, { progress: action.progress });
 
-		case "turn-removed":
+		case SessionActionType.TurnRemoved:
 			return removeTurn(state, action.id);
 
-		case "turn-started": {
+		case SessionActionType.TurnStarted: {
 			const started = settleTurn(state, action.id, { phase: TurnPhase.Running, startedAt: action.at });
 			return { ...started, pending: undefined };
 		}

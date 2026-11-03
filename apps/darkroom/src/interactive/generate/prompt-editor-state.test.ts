@@ -1,6 +1,7 @@
 import { describe, it } from "vitest";
 
 import { NO_KEY } from "$interactive/keys/test-key";
+import { EditorActionType } from "$meta/action-types";
 
 import { EMPTY_EDITOR, getEditorAction, reducePromptEditor, splitAtCursor } from "./prompt-editor-state";
 
@@ -23,11 +24,16 @@ describe("reducePromptEditor", () => {
 	it("types at the cursor and deletes around it", ({ expect }) => {
 		expect.assertions(3);
 
-		const typed = apply(EMPTY_EDITOR, { text: "a cat", type: "insert" }, { type: "left" }, { type: "left" });
+		const typed = apply(
+			EMPTY_EDITOR,
+			{ text: "a cat", type: EditorActionType.Insert },
+			{ type: EditorActionType.Left },
+			{ type: EditorActionType.Left },
+		);
 
 		expect(typed).toStrictEqual(at("a cat", 3));
-		expect(apply(typed, { type: "delete-backward" })).toStrictEqual(at("a at", 2));
-		expect(apply(typed, { type: "delete-forward" })).toStrictEqual(at("a ct", 3));
+		expect(apply(typed, { type: EditorActionType.DeleteBackward })).toStrictEqual(at("a at", 2));
+		expect(apply(typed, { type: EditorActionType.DeleteForward })).toStrictEqual(at("a ct", 3));
 	});
 
 	it("jumps to the ends of the current line", ({ expect }) => {
@@ -35,8 +41,8 @@ describe("reducePromptEditor", () => {
 
 		const editor = at("first\nsecond line", 9);
 
-		expect(apply(editor, { type: "line-start" }).cursor).toBe(6);
-		expect(apply(editor, { type: "line-end" }).cursor).toBe(17);
+		expect(apply(editor, { type: EditorActionType.LineStart }).cursor).toBe(6);
+		expect(apply(editor, { type: EditorActionType.LineEnd }).cursor).toBe(17);
 	});
 
 	it("moves and deletes by word", ({ expect }) => {
@@ -44,9 +50,9 @@ describe("reducePromptEditor", () => {
 
 		const editor = at("a red fox", 9);
 
-		expect(apply(editor, { type: "word-left" }).cursor).toBe(6);
-		expect(apply(editor, { type: "delete-word" })).toStrictEqual(at("a red ", 6));
-		expect(apply(at("a red fox", 0), { type: "word-right" }).cursor).toBe(1);
+		expect(apply(editor, { type: EditorActionType.WordLeft }).cursor).toBe(6);
+		expect(apply(editor, { type: EditorActionType.DeleteWord })).toStrictEqual(at("a red ", 6));
+		expect(apply(at("a red fox", 0), { type: EditorActionType.WordRight }).cursor).toBe(1);
 	});
 
 	it("keeps the column when moving between lines, within shorter lines", ({ expect }) => {
@@ -54,9 +60,9 @@ describe("reducePromptEditor", () => {
 
 		const editor = at("long line\nab\nanother", 8);
 
-		expect(apply(editor, { type: "down" }).cursor).toBe(12);
-		expect(apply(editor, { type: "down" }, { type: "down" }).cursor).toBe(15);
-		expect(apply(editor, { type: "up" }).cursor).toBe(8);
+		expect(apply(editor, { type: EditorActionType.Down }).cursor).toBe(12);
+		expect(apply(editor, { type: EditorActionType.Down }, { type: EditorActionType.Down }).cursor).toBe(15);
+		expect(apply(editor, { type: EditorActionType.Up }).cursor).toBe(8);
 	});
 
 	it("steps over an emoji as one character", ({ expect }) => {
@@ -64,14 +70,14 @@ describe("reducePromptEditor", () => {
 
 		const editor = at("cat 🐈‍⬛", "cat 🐈‍⬛".length);
 
-		expect(apply(editor, { type: "left" }).cursor).toBe(4);
-		expect(apply(editor, { type: "delete-backward" })).toStrictEqual(at("cat ", 4));
+		expect(apply(editor, { type: EditorActionType.Left }).cursor).toBe(4);
+		expect(apply(editor, { type: EditorActionType.DeleteBackward })).toStrictEqual(at("cat ", 4));
 	});
 
 	it("keeps newlines from a paste but drops other control characters", ({ expect }) => {
 		expect.assertions(1);
 
-		expect(apply(EMPTY_EDITOR, { text: "one\r\ntwo\u001B[2~\tthree", type: "insert" }).text).toBe(
+		expect(apply(EMPTY_EDITOR, { text: "one\r\ntwo\u001B[2~\tthree", type: EditorActionType.Insert }).text).toBe(
 			"one\ntwo[2~three",
 		);
 	});
@@ -83,9 +89,11 @@ describe("image tokens", () => {
 
 		const editor = at("a fox [Image 1]", 15);
 
-		expect(apply(editor, { type: "delete-backward" })).toStrictEqual(at("a fox ", 6));
-		expect(apply(editor, { type: "delete-word" })).toStrictEqual(at("a fox ", 6));
-		expect(apply(at("a fox [Image 1]", 6), { type: "delete-forward" })).toStrictEqual(at("a fox ", 6));
+		expect(apply(editor, { type: EditorActionType.DeleteBackward })).toStrictEqual(at("a fox ", 6));
+		expect(apply(editor, { type: EditorActionType.DeleteWord })).toStrictEqual(at("a fox ", 6));
+		expect(apply(at("a fox [Image 1]", 6), { type: EditorActionType.DeleteForward })).toStrictEqual(
+			at("a fox ", 6),
+		);
 	});
 });
 
@@ -103,33 +111,40 @@ describe("getEditorAction", () => {
 	it("maps the shell's editing keys", ({ expect }) => {
 		expect.assertions(5);
 
-		expect(getEditorAction("a", { ...NO_KEY, ctrl: true })).toStrictEqual({ type: "line-start" });
-		expect(getEditorAction("e", { ...NO_KEY, ctrl: true })).toStrictEqual({ type: "line-end" });
+		expect(getEditorAction("a", { ...NO_KEY, ctrl: true })).toStrictEqual({ type: EditorActionType.LineStart });
+		expect(getEditorAction("e", { ...NO_KEY, ctrl: true })).toStrictEqual({ type: EditorActionType.LineEnd });
 		expect(getEditorAction("", { ...NO_KEY, backspace: true, meta: true })).toStrictEqual({
-			type: "delete-word",
+			type: EditorActionType.DeleteWord,
 		});
-		expect(getEditorAction("b", { ...NO_KEY, meta: true })).toStrictEqual({ type: "word-left" });
-		expect(getEditorAction("x", NO_KEY)).toStrictEqual({ text: "x", type: "insert" });
+		expect(getEditorAction("b", { ...NO_KEY, meta: true })).toStrictEqual({ type: EditorActionType.WordLeft });
+		expect(getEditorAction("x", NO_KEY)).toStrictEqual({ text: "x", type: EditorActionType.Insert });
 	});
 
 	it("deletes a word on ctrl or option+backspace, and to the line's start on cmd+backspace", ({ expect }) => {
 		expect.assertions(3);
 
-		expect(getEditorAction("", { ...NO_KEY, backspace: true, ctrl: true })).toStrictEqual({ type: "delete-word" });
-		expect(getEditorAction("", { ...NO_KEY, backspace: true, meta: true })).toStrictEqual({ type: "delete-word" });
+		expect(getEditorAction("", { ...NO_KEY, backspace: true, ctrl: true })).toStrictEqual({
+			type: EditorActionType.DeleteWord,
+		});
+		expect(getEditorAction("", { ...NO_KEY, backspace: true, meta: true })).toStrictEqual({
+			type: EditorActionType.DeleteWord,
+		});
 		expect(getEditorAction("", { ...NO_KEY, backspace: true, super: true })).toStrictEqual({
-			type: "delete-to-start",
+			type: EditorActionType.DeleteToStart,
 		});
 	});
 
 	it("adds a line for ctrl+j and alt+enter, but leaves a plain Enter alone", ({ expect }) => {
 		expect.assertions(4);
 
-		expect(getEditorAction("\n", NO_KEY)).toStrictEqual({ text: "\n", type: "insert" });
-		expect(getEditorAction("j", { ...NO_KEY, ctrl: true })).toStrictEqual({ text: "\n", type: "insert" });
+		expect(getEditorAction("\n", NO_KEY)).toStrictEqual({ text: "\n", type: EditorActionType.Insert });
+		expect(getEditorAction("j", { ...NO_KEY, ctrl: true })).toStrictEqual({
+			text: "\n",
+			type: EditorActionType.Insert,
+		});
 		expect(getEditorAction("", { ...NO_KEY, meta: true, return: true })).toStrictEqual({
 			text: "\n",
-			type: "insert",
+			type: EditorActionType.Insert,
 		});
 		expect(getEditorAction("\r", { ...NO_KEY, return: true })).toBeUndefined();
 	});

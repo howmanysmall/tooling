@@ -122,7 +122,7 @@ function toPointerEvent(groups?: Record<string, string>): PointerEvent | undefin
 export function splitMouseInput(chunk: string): SplitInput {
 	const partial = PARTIAL_REPORT.exec(chunk);
 	const complete = partial === null ? chunk : chunk.slice(0, partial.index);
-	const events: Array<PointerEvent> = [];
+	const events = new Array<PointerEvent>();
 	for (const { groups } of complete.matchAll(REPORT)) {
 		const event = toPointerEvent(groups);
 		if (event !== undefined) {

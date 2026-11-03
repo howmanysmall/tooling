@@ -1,9 +1,10 @@
 import { useReducer } from "react";
 import { useInput } from "ink";
 
-import { CursorMoveType, getWindowStart } from "$interactive/components/list-cursor";
+import { getWindowStart } from "$interactive/components/list-cursor";
+import { CursorMoveType, PaletteActionType } from "$meta/action-types";
 
-import { INITIAL_PALETTE_STATE, PaletteActionType, reducePaletteState } from "./command-palette-state";
+import { INITIAL_PALETTE_STATE, reducePaletteState } from "./command-palette-state";
 
 /**
  * A searchable dialog's list: the matches, the cursor, and the window.

@@ -1,5 +1,6 @@
 import { createUlid } from "$history/ulid";
 import { runBrowserTask } from "$interactive/app/run-browser-task";
+import { SessionActionType, SessionRequestType, SessionTabsActionType } from "$meta/action-types";
 
 import { createSession, PromptMode, TurnPhase } from "./session-state";
 import { getActiveSession } from "./session-tabs";
@@ -48,7 +49,7 @@ function takeTurnId(): number {
  * @param restored - The turns, oldest first.
  * @returns The same turns, each with its own ID.
  */
-export function numberTurns(restored: ReadonlyArray<RestoredTurn>): Array<SessionTurn> {
+export function numberTurns(restored: ReadonlyArray<RestoredTurn>): ReadonlyArray<SessionTurn> {
 	return Array.from(restored, (turn): SessionTurn => ({ ...turn, id: takeTurnId() }));
 }
 
@@ -75,16 +76,16 @@ export function createSessionActions({
 	const active = getActiveSession(tabs);
 
 	function dispatchTo(session: string, action: SessionAction): void {
-		dispatch({ action, session, type: "in-session" });
+		dispatch({ action, session, type: SessionTabsActionType.InSession });
 	}
 
 	function fail(session: string, id: number, error: string): void {
-		dispatchTo(session, { id, at: Date.now(), error, type: "turn-failed" });
+		dispatchTo(session, { id, at: Date.now(), error, type: SessionActionType.TurnFailed });
 	}
 
 	async function prepareAsync(session: string, id: number, request: SessionRequest): Promise<void> {
 		const pending = await services.prepareAsync(request, session);
-		dispatchTo(session, { id, pending, type: "prepared" });
+		dispatchTo(session, { id, pending, type: SessionActionType.Prepared });
 	}
 
 	/**
@@ -124,15 +125,15 @@ export function createSessionActions({
 
 	async function resumeAsync({ id, runs }: SessionSummary): Promise<void> {
 		const restored = await services.restoreAsync(runs);
-		dispatch({ session: createSession(id, numberTurns(restored)), type: "open" });
+		dispatch({ session: createSession(id, numberTurns(restored)), type: SessionTabsActionType.Open });
 	}
 
 	return {
 		chooseBase(image): void {
-			dispatchTo(active.id, { image, type: "choose-base" });
+			dispatchTo(active.id, { image, type: SessionActionType.ChooseBase });
 		},
 		close(id): void {
-			dispatch({ id, replacement: createSession(createUlid()), type: "close" });
+			dispatch({ id, replacement: createSession(createUlid()), type: SessionTabsActionType.Close });
 		},
 		confirm(): void {
 			const { pending } = active;
@@ -140,43 +141,43 @@ export function createSessionActions({
 
 			const session = active.id;
 			const { id } = pending;
-			dispatchTo(session, { id, at: Date.now(), type: "turn-started" });
+			dispatchTo(session, { id, at: Date.now(), type: SessionActionType.TurnStarted });
 			services.start(pending.prepared, {
 				onDone(result): void {
-					dispatchTo(session, { id, at: Date.now(), result, type: "turn-done" });
+					dispatchTo(session, { id, at: Date.now(), result, type: SessionActionType.TurnDone });
 					onRunSaved();
 				},
 				onFailed(message): void {
 					fail(session, id, message);
 				},
 				onProgress(progress): void {
-					dispatchTo(session, { id, progress, type: "turn-progress" });
+					dispatchTo(session, { id, progress, type: SessionActionType.TurnProgress });
 				},
 				onWarning(warning): void {
-					dispatchTo(session, { id, type: "turn-warned", warning });
+					dispatchTo(session, { id, type: SessionActionType.TurnWarned, warning });
 				},
 			});
 		},
 		cycle(delta): void {
-			dispatch({ delta, type: "cycle" });
+			dispatch({ delta, type: SessionTabsActionType.Cycle });
 		},
 		dismiss(): void {
-			dispatchTo(active.id, { type: "dismiss" });
+			dispatchTo(active.id, { type: SessionActionType.Dismiss });
 		},
 		fork(turnId): void {
 			const session = createFork(turnId);
 			if (session !== undefined) {
-				dispatch({ session, type: "open" });
+				dispatch({ session, type: SessionTabsActionType.Open });
 			}
 		},
 		newSession(): void {
-			dispatch({ session: createSession(createUlid()), type: "open" });
+			dispatch({ session: createSession(createUlid()), type: SessionTabsActionType.Open });
 		},
 		remove(turnId, deletion): void {
 			const turn = active.turns.find(({ id }) => id === turnId);
 			if (turn === undefined || !isSettled(turn)) return;
 
-			dispatchTo(active.id, { id: turnId, type: "turn-removed" });
+			dispatchTo(active.id, { id: turnId, type: SessionActionType.TurnRemoved });
 
 			if (turn.result === undefined) return;
 			runBrowserTask(deleteRunAsync(turn.result, deletion), (failure) => {
@@ -187,7 +188,7 @@ export function createSessionActions({
 		},
 		resume(session): void {
 			if (tabs.sessions.some((open) => open.id === session.id)) {
-				dispatch({ id: session.id, type: "select" });
+				dispatch({ id: session.id, type: SessionTabsActionType.Select });
 			} else {
 				runBrowserTask(resumeAsync(session), (failure) => {
 					if (failure !== undefined) {
@@ -199,21 +200,21 @@ export function createSessionActions({
 		rewind(turnId): void {
 			const session = createFork(turnId);
 			if (session !== undefined) {
-				dispatch({ id: active.id, session, type: "replace" });
+				dispatch({ id: active.id, session, type: SessionTabsActionType.Replace });
 			}
 		},
 		select(id): void {
-			dispatch({ id, type: "select" });
+			dispatch({ id, type: SessionTabsActionType.Select });
 		},
 		send(request): void {
 			const session = active.id;
 			const id = takeTurnId();
-			const isNew = request.type === "new";
+			const isNew = request.type === SessionRequestType.New;
 			dispatchTo(session, {
 				id,
 				model: isNew ? request.model.id : request.entry.model,
 				prompt: isNew ? request.prompt : request.entry.prompt,
-				type: "turn-added",
+				type: SessionActionType.TurnAdded,
 			});
 			runBrowserTask(prepareAsync(session, id, request), (failure) => {
 				if (failure !== undefined) {
@@ -223,7 +224,7 @@ export function createSessionActions({
 		},
 		toggleMode(): void {
 			const mode = active.mode === PromptMode.Edit ? PromptMode.New : PromptMode.Edit;
-			dispatchTo(active.id, { mode, type: "set-mode" });
+			dispatchTo(active.id, { mode, type: SessionActionType.SetMode });
 		},
 	};
 }

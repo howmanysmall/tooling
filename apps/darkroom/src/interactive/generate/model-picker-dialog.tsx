@@ -7,6 +7,7 @@ import { DialogList } from "$interactive/components/dialog-list";
 import { SearchInput } from "$interactive/components/search-input";
 import { theme } from "$interactive/components/theme";
 import { useSearchList } from "$interactive/palette/use-search-list";
+import { PickerViewActionType } from "$meta/action-types";
 
 import { ModelPickerRow } from "./model-picker-row";
 import { ModelPickerToolbar } from "./model-picker-toolbar";
@@ -81,7 +82,7 @@ export function ModelPickerDialog({
 
 	useInput(function onPickerInput(_input, key) {
 		if (key.tab) {
-			dispatchView({ delta: key.shift ? -1 : 1, type: "cycle-sort" });
+			dispatchView({ delta: key.shift ? -1 : 1, type: PickerViewActionType.CycleSort });
 		}
 	});
 

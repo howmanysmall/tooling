@@ -141,7 +141,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 			listeners.clear();
 			terminal.dispose();
 		},
-		findText(spans): Array<SelectionSpan> {
+		findText(spans): ReadonlyArray<SelectionSpan> {
 			return spans.flatMap((span) => {
 				const line = terminal.buffer.active.getLine(span.row);
 				if (line === undefined) {

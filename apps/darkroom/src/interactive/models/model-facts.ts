@@ -83,7 +83,7 @@ function describeLimit(max: number): string {
  * @param prices - Its published and observed prices.
  * @returns Its price, reference and image limits, and when it was added.
  */
-export function getModelStats(model: ImageModelListItem, prices: ModelPrices): Array<Fact> {
+export function getModelStats(model: ImageModelListItem, prices: ModelPrices): ReadonlyArray<Fact> {
 	return [
 		{ label: "price", value: describeListPrice(prices) },
 		{ label: "inputs", value: model.architecture.inputModalities.join(" · ") },
@@ -131,7 +131,7 @@ function getOptionRank(parameter: string): number {
  * @param model - The image model.
  * @returns Like `{ label: "ratios", value: "1:1  16:9  9:16" }`.
  */
-export function getModelOptions(model: ImageModelListItem): Array<Fact> {
+export function getModelOptions(model: ImageModelListItem): ReadonlyArray<Fact> {
 	return Object.entries(model.supportedParameters)
 		.filter(([parameter]) => !IN_STATS.has(parameter))
 		.toSorted(([first], [second]) => getOptionRank(first) - getOptionRank(second))
@@ -172,7 +172,7 @@ function describeObserved(observed: ObservedPrice): string {
  * @param prices.observed - What it has cost per image before, if known.
  * @returns Like `{ label: "output · 2k", value: "$0.1/img" }`.
  */
-export function getPriceLines({ endpoints, observed }: ModelPrices): Array<Fact> {
+export function getPriceLines({ endpoints, observed }: ModelPrices): ReadonlyArray<Fact> {
 	const namesProvider = endpoints.length > 1;
 	const lines = endpoints.flatMap(({ pricing, provider }) =>
 		pricing.map((entry) => ({

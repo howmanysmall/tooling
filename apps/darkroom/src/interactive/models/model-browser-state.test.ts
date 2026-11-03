@@ -1,16 +1,10 @@
 import { describe, it } from "vitest";
 
 import { createModel } from "$generation/model-fixture";
-import { CursorMoveType } from "$interactive/components/list-cursor";
+import { CursorMoveType, ModelBrowserActionType } from "$meta/action-types";
 import { ModelSort } from "$utilities/model-filters";
 
-import {
-	createModelBrowserState,
-	getExample,
-	getVisibleModels,
-	ModelBrowserActionType,
-	reduceModelBrowserState,
-} from "./model-browser-state";
+import { createModelBrowserState, getExample, getVisibleModels, reduceModelBrowserState } from "./model-browser-state";
 import { ExampleSource } from "./model-examples";
 
 import type { EndpointPricing } from "$generation/cost-estimate";

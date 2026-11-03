@@ -46,8 +46,8 @@ export function formatDayLabel(date: Date, now: Date): string {
  * @param now - The current time, for the day names.
  * @returns The headings and runs, in display order.
  */
-export function buildRunListItems(runs: ReadonlyArray<HistoryEntry>, now: Date): Array<RunListItem> {
-	const items: Array<RunListItem> = [];
+export function buildRunListItems(runs: ReadonlyArray<HistoryEntry>, now: Date): ReadonlyArray<RunListItem> {
+	const items = new Array<RunListItem>();
 	let previousDay: string | undefined;
 	for (const [index, entry] of runs.entries()) {
 		const created = new Date(entry.created);
@@ -76,8 +76,8 @@ export function getVisibleItems(
 	items: ReadonlyArray<RunListItem>,
 	selectedIndex: number,
 	height: number,
-): Array<RunListItem> {
-	const tops: Array<number> = [];
+): ReadonlyArray<RunListItem> {
+	const tops = new Array<number>();
 	let total = 0;
 	let selectedTop = 0;
 	for (const item of items) {
