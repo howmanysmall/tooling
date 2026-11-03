@@ -17,7 +17,7 @@ import { getEditBase, PromptMode } from "$interactive/session/session-state";
 import { SessionTabStrip } from "$interactive/session/session-tab-strip";
 import { SessionTranscript } from "$interactive/session/session-transcript";
 import { TranscriptActionsContext } from "$interactive/session/transcript-actions-context";
-import { EditorActionType } from "$meta/action-types";
+import { EditorActionType, GenerateScreenActionType } from "$meta/action-types";
 
 import { getBoxHints, getGenerateCommands, getGenerateKey, PromptBasis } from "./generate-commands";
 import { GenerateDialogs } from "./generate-dialogs";
@@ -79,19 +79,31 @@ const MAX_HOME_WIDTH = 84;
 // the status bar.
 const SESSION_CHROME_ROWS = 1 + 1 + 6 + 1 + 1;
 
-const OPEN_PICKER: GenerateScreenAction = { dialog: { kind: GenerateDialog.Model }, type: "dialog" };
-const OPEN_SESSIONS: GenerateScreenAction = { dialog: { kind: GenerateDialog.Sessions }, type: "dialog" };
-const CLOSE_DIALOG: GenerateScreenAction = { dialog: undefined, type: "dialog" };
-const CLEAR_PROMPT: GenerateScreenAction = { action: { type: EditorActionType.Clear }, type: "edit" };
-const NEW_LINE: GenerateScreenAction = { action: { text: "\n", type: EditorActionType.Insert }, type: "edit" };
+const OPEN_PICKER: GenerateScreenAction = {
+	dialog: { kind: GenerateDialog.Model },
+	type: GenerateScreenActionType.Dialog,
+};
+const OPEN_SESSIONS: GenerateScreenAction = {
+	dialog: { kind: GenerateDialog.Sessions },
+	type: GenerateScreenActionType.Dialog,
+};
+const CLOSE_DIALOG: GenerateScreenAction = { dialog: undefined, type: GenerateScreenActionType.Dialog };
+const CLEAR_PROMPT: GenerateScreenAction = {
+	action: { type: EditorActionType.Clear },
+	type: GenerateScreenActionType.Edit,
+};
+const NEW_LINE: GenerateScreenAction = {
+	action: { text: "\n", type: EditorActionType.Insert },
+	type: GenerateScreenActionType.Edit,
+};
 
 function createTranscriptActions(dispatch: Dispatch<GenerateScreenAction>): TranscriptActions {
 	return {
 		showImage(image): void {
-			dispatch({ dialog: { image, kind: GenerateDialog.Image }, type: "dialog" });
+			dispatch({ dialog: { image, kind: GenerateDialog.Image }, type: GenerateScreenActionType.Dialog });
 		},
 		showPrompt(turn): void {
-			dispatch({ dialog: { kind: GenerateDialog.Prompt, turn }, type: "dialog" });
+			dispatch({ dialog: { kind: GenerateDialog.Prompt, turn }, type: GenerateScreenActionType.Dialog });
 		},
 	};
 }
@@ -167,7 +179,7 @@ export function GenerateScreen({
 		if (path === undefined) {
 			reportError("There's no image on the clipboard.");
 		} else {
-			dispatch({ paths: [path], type: "attach" });
+			dispatch({ paths: [path], type: GenerateScreenActionType.Attach });
 		}
 	}
 
@@ -189,8 +201,8 @@ export function GenerateScreen({
 		const paths = parsePastedImagePaths(text);
 		dispatch(
 			paths === undefined
-				? { action: { text, type: EditorActionType.Insert }, type: "edit" }
-				: { paths, type: "attach" },
+				? { action: { text, type: EditorActionType.Insert }, type: GenerateScreenActionType.Edit }
+				: { paths, type: GenerateScreenActionType.Attach },
 		);
 	}
 
@@ -207,12 +219,12 @@ export function GenerateScreen({
 	}
 
 	function askDelete(turn: SessionTurn): void {
-		dispatch({ dialog: { kind: GenerateDialog.Delete, turn }, type: "dialog" });
+		dispatch({ dialog: { kind: GenerateDialog.Delete, turn }, type: GenerateScreenActionType.Dialog });
 	}
 
 	function fillPrompt(text: string): void {
 		dispatch(CLEAR_PROMPT);
-		dispatch({ action: { text, type: EditorActionType.Insert }, type: "edit" });
+		dispatch({ action: { text, type: EditorActionType.Insert }, type: GenerateScreenActionType.Edit });
 	}
 
 	function handleShiftTab(): void {
@@ -261,7 +273,7 @@ export function GenerateScreen({
 
 		const action = getEditorAction(input, key);
 		if (action !== undefined) {
-			dispatch({ action, type: "edit" });
+			dispatch({ action, type: GenerateScreenActionType.Edit });
 		}
 	}
 
