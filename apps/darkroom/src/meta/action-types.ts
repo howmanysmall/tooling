@@ -5,6 +5,20 @@ export const enum CursorMoveType {
 	Last = 4,
 }
 
+export const enum BrowserActionType {
+	StepBatch = 5,
+	Filter = 6,
+	Removed = 7,
+	Select = 8,
+	Mode = 9,
+	CancelFilter = 10,
+}
+
+export const enum StatusActionType {
+	StatusExpired = 11,
+	Status = 12,
+}
+
 export const enum EditorActionType {
 	Clear = 1,
 	DeleteBackward = 2,
@@ -21,9 +35,4 @@ export const enum EditorActionType {
 	Up = 13,
 	WordLeft = 14,
 	WordRight = 15,
-}
-
-export const enum StatusActionType {
-	StatusExpired = 11,
-	Status = 12,
 }
