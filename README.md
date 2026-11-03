@@ -75,8 +75,10 @@ publish.
 ## Tasks
 
 Every workspace package has `lint:oxlint` and `type-check`, plus `test` when it has tests and
-`build` when it produces a binary. Each has an `:agent` variant. Turbo runs them per package and
-caches the results, so only changed packages run again.
+`build` when it produces a binary. Each has an `:agent` variant. Turbo runs lint, test, and build
+per package and caches the results, so only changed packages run again. Type-checking runs once at
+the root instead: a single `tsrs --build` covers every project reference, and tsrs keeps its own
+incremental state, so a turbo layer on top only adds cache misses.
 
 The turbo `lint` task runs `lint:oxlint` in every package, `//#lint:oxlint` for root configuration
 files, and `//#lint:eslint` once over the whole repository. Oxlint and Biome can't cache, so turbo

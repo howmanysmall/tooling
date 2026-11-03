@@ -62,9 +62,8 @@
 		"test:mutation": "stryker run",
 		"tsrs": "tsrs",
 		"turbo": "turbo",
-		"type-check": "turbo run type-check type-check:node",
-		"type-check:agent": "turbo run type-check type-check:node -- --pretty false",
-		"type-check:node": "tsrs --build tsconfig.node.json",
+		"type-check": "tsrs --build",
+		"type-check:agent": "node --run type-check -- --pretty false",
 		"preversion": "if test -n \"$(git status --porcelain)\"; then echo 'Release requires a clean worktree.' >&2; exit 1; fi"
 	},
 	"devDependencies": {
