@@ -1,5 +1,6 @@
 import { getCountRange, getEnumValues, getReferenceRange } from "$generation/model-capabilities";
 import { getModelPrices, getPerImagePrice } from "$generation/observed-prices";
+import { PickerViewActionType } from "$meta/action-types";
 import { ModelSort, sortModels } from "$utilities/model-filters";
 
 import { getModelMatches } from "./model-picker-state";
@@ -51,9 +52,9 @@ export interface PickerView {
 }
 
 export type PickerViewAction =
-	| { readonly delta: number; readonly type: "cycle-sort" }
-	| { readonly filter: PickerFilter; readonly type: "toggle-filter" }
-	| { readonly sort: PickerSort; readonly type: "sort" };
+	| { readonly delta: number; readonly type: PickerViewActionType.CycleSort }
+	| { readonly filter: PickerFilter; readonly type: PickerViewActionType.ToggleFilter }
+	| { readonly sort: PickerSort; readonly type: PickerViewActionType.Sort };
 
 /**
  * Applies a change to the picker's sort or filters.
@@ -64,13 +65,13 @@ export type PickerViewAction =
  */
 export function reducePickerView(view: PickerView, action: PickerViewAction): PickerView {
 	switch (action.type) {
-		case "cycle-sort": {
+		case PickerViewActionType.CycleSort: {
 			const { length } = PICKER_SORTS;
 			const index = PICKER_SORTS.indexOf(view.sort);
 			return { ...view, sort: PICKER_SORTS[(((index + action.delta) % length) + length) % length] ?? view.sort };
 		}
 
-		case "sort":
+		case PickerViewActionType.Sort:
 			return { ...view, sort: action.sort };
 
 		default: {
