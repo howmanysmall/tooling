@@ -50,3 +50,17 @@ export const enum PaletteActionType {
 	Move = 1,
 	Query = 2,
 }
+
+export const enum SessionActionType {
+	ChooseBase = 1,
+	Dismiss = 2,
+	Prepared = 3,
+	SetMode = 4,
+	TurnAdded = 5,
+	TurnDone = 6,
+	TurnFailed = 7,
+	TurnProgress = 8,
+	TurnRemoved = 9,
+	TurnStarted = 10,
+	TurnWarned = 11,
+}

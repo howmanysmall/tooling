@@ -2,8 +2,9 @@ import { describe, it } from "vitest";
 
 import { MULTI_MODEL } from "$generation/model-fixture";
 import { prepareGenerationAsync } from "$generation/run-generation";
+import { SessionActionType } from "$meta/action-types";
 
-import { createSession, getEditBase, PromptMode, reduceSession, SessionActionType, TurnPhase } from "./session-state";
+import { createSession, getEditBase, PromptMode, reduceSession, TurnPhase } from "./session-state";
 import { summarizeTurn } from "./turn-summary";
 
 import type { GenerationResult, PreparedGeneration } from "$generation/run-generation";
