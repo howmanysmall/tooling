@@ -1,11 +1,11 @@
-import type { NoName } from "$meta/sort-key";
+import type { SortKey } from "$meta/sort-key";
 import type { TableRowKind } from "$meta/table-row-kind";
 
 import type { Counts, LanguageStats } from "./code-types";
 
 export type Paint = (text: string) => string;
 
-export interface RowStyle extends Readonly<Record<NoName, Paint>> {
+export interface RowStyle extends Readonly<Record<SortKey, Paint>> {
 	readonly bar: Paint;
 	readonly top: Paint | undefined;
 }
