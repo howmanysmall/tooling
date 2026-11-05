@@ -8,6 +8,9 @@
 			"path": "./apps/footnote"
 		},
 		{
+			"path": "./apps/project-loc"
+		},
+		{
 			"path": "./packages/arktype-utilities"
 		},
 		{

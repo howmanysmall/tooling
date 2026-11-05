@@ -1,0 +1,32 @@
+# @pobammer-ts/project-loc
+
+Lines of code per project, counted with &#x60;scc&#x60;.
+
+## Usage
+
+```sh
+project-loc --help
+```
+
+`project-loc` runs on Node and `project-loc-bun` runs on Bun. Both share one
+bundle, and the code only uses Node APIs.
+
+## Scripts
+
+Run these from this directory, or from the repository root with
+`node --run turbo -- run <script> --filter=@pobammer-ts/project-loc`.
+
+| Script | What it does |
+| --- | --- |
+| `build` | Bundles `src/` into `dist/` with tsdown. |
+| `lint` | Lints this package with the repository's oxlint, ESLint, and Biome configuration. |
+| `test` | Runs the Vitest suite. |
+| `type-check` | Type-checks this package and its references with `tsrs --build`. |
+
+## Release
+
+From the repository root:
+
+```sh
+node --run release -- project-loc [patch|minor|major|<version>]
+```
