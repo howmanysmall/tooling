@@ -27,11 +27,14 @@ const HORIZONTAL_RULE_PATTERN = regex("^\\s*(?:-{3,}|\\*{3,}|_{3,})\\s*$", "u");
 const INLINE_PATTERN = regex("(?<token>\\*\\*.+?\\*\\*|\\*.+?\\*|~~.+?~~|`[^`]+`|\\[[^\\]]+\\]\\([^)]+\\))", "gu");
 const INLINE_FLAG_PATTERN = regex("^--?[A-Za-z][\\w-]*(?:=.*)?$", "u");
 const COMMAND_BINARY_PATTERN = /^[A-Za-z0-9][\w:./-]*$/u;
-const COMMAND_ARG_HINT_PATTERN = /[-.:/]/u;
+const COMMAND_ARG_HINT_PATTERN = /[-.:/'"]/u;
+const COMMAND_TOKEN_PATTERN = /\s+|(?:'[^']*'|"[^"]*"|\S)+/gu;
+const QUOTED_PATTERN = /^(?:'[^']*'|"[^"]*")$/u;
+const BARE_COMMAND_PATTERN = /^\s*[a-z][\w-]*\s+\S[^`]*[^\s.,;:!?`]$/u;
 
 const PROSE_TOKEN_PATTERN =
 	/(?<![\w-])(?<flag>--?[A-Za-z][\w-]*)(?<value>=[^\s,;)]*)?|(?<![\w.])(?<number>\d+(?:[.,]\d+)*[A-Za-z%]*)(?!\w)/gu;
-const WHITESPACE_PATTERN = /(?<whitespace>\s+)/u;
+const WHITESPACE_PATTERN = /^\s+$/u;
 
 type InlineToken = typeof INLINE_PATTERN.infer;
 
@@ -106,6 +109,26 @@ function parseCommandParts(parts: ReadonlyArray<string>): number | undefined {
 	return binaryIndex;
 }
 
+function splitCommandParts(text: string): Array<string> {
+	return text.match(COMMAND_TOKEN_PATTERN) ?? [];
+}
+
+function renderCommandValue(value: string): string {
+	return QUOTED_PATTERN.test(value) ? ansi.green(value) : ansi.cyan(value);
+}
+
+function renderCommandFlag(part: string): string {
+	const equals = part.indexOf("=");
+	if (equals === -1) return ansi.blueBright(part);
+	return `${ansi.blueBright(part.slice(0, equals))}${ansi.dim("=")}${renderCommandValue(part.slice(equals + 1))}`;
+}
+
+function renderCommandPart(part: string, isBinary: boolean): string {
+	if (INLINE_FLAG_PATTERN.test(part)) return renderCommandFlag(part);
+	if (isBinary) return ansi.magentaBright(part);
+	return renderCommandValue(part);
+}
+
 function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?: number): string {
 	const inlineCode = Array.from<string>({ length: parts.length });
 	let size = 0;
@@ -113,10 +136,8 @@ function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?:
 	for (const part of parts) {
 		if (part.length === 0 || WHITESPACE_PATTERN.test(part)) {
 			inlineCode[size++] = part;
-		} else if (INLINE_FLAG_PATTERN.test(part)) {
-			inlineCode[size++] = ansi.blueBright(part);
 		} else {
-			inlineCode[size++] = index === binaryIndex ? ansi.magentaBright(part) : ansi.cyan(part);
+			inlineCode[size++] = renderCommandPart(part, index === binaryIndex);
 		}
 
 		index += 1;
@@ -127,7 +148,7 @@ function renderCommandPartsWithFlags(parts: ReadonlyArray<string>, binaryIndex?:
 
 function renderFencedLine(line: string): string {
 	if (line.length === 0) return line;
-	const parts = line.split(WHITESPACE_PATTERN);
+	const parts = splitCommandParts(line);
 	const hasFlag = parts.some((part) => part.length > 0 && INLINE_FLAG_PATTERN.test(part));
 	if (hasFlag) {
 		const binaryIndex = findBinaryIndex(parts);
@@ -141,7 +162,7 @@ function renderFencedLine(line: string): string {
 }
 
 function renderInlineCode(inner: string): string {
-	const parts = inner.split(WHITESPACE_PATTERN);
+	const parts = splitCommandParts(inner);
 	const hasFlag = parts.some((part) => part.length > 0 && INLINE_FLAG_PATTERN.test(part));
 	if (!hasFlag) {
 		const command = parseCommandParts(parts);
@@ -205,7 +226,16 @@ function renderLine(line: string): string {
 		return `${ansi.dim(marker)} ${renderInline(content)}`;
 	}
 
-	return renderInline(line);
+	return renderBareCommand(line) ?? renderInline(line);
+}
+
+function renderBareCommand(line: string): string | undefined {
+	if (!BARE_COMMAND_PATTERN.test(line)) return undefined;
+
+	const parts = splitCommandParts(line);
+	const hasFlag = parts.some((part) => part.length > 0 && INLINE_FLAG_PATTERN.test(part));
+	const binaryIndex = hasFlag ? findBinaryIndex(parts) : parseCommandParts(parts);
+	return binaryIndex === undefined ? undefined : renderCommandPartsWithFlags(parts, binaryIndex);
 }
 
 function renderPlainLine(line: string, rendered: Array<string>): Array<string> | undefined {
@@ -272,11 +302,7 @@ const isDescriptionObject = type({
  * @param text - The text to highlight, or `undefined` to use the nearest manifest description.
  * @returns The pre-highlighted text.
  */
-// eslint-disable-next-line ts/no-shadow -- not a shadowing.
-export const cliffyHighlight = defineMacro(function highlight(
-	this: MacroContext | undefined,
-	text?: string,
-): string {
+export const highlight = defineMacro(function highlight(this: MacroContext | undefined, text?: string): string {
 	return renderHighlight(text ?? readNearestDescription(this?.id ?? argv[1] ?? import.meta.filename));
 });
 

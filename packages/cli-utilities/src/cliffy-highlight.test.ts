@@ -175,3 +175,49 @@ describe("renderHighlight", () => {
 		expect(output).toBe(`see ${cyan("a -- b")}`);
 	});
 });
+
+describe("renderHighlight bare command lines and quotes", () => {
+	const { green } = new Ansis(1);
+
+	it("paints a bare command line and its quoted argument", ({ expect }) => {
+		expect.assertions(2);
+
+		const input = "mise use --global 'github:boyter/scc'";
+
+		expect(renderHighlight(input)).toBe(
+			`${magentaBright("mise")} ${cyan("use")} ${blueBright("--global")} ${green("'github:boyter/scc'")}`,
+		);
+		expect(ansis.strip(renderHighlight(input))).toBe(input);
+	});
+
+	it("paints an unquoted bare command with a colon/slash argument", ({ expect }) => {
+		expect.assertions(1);
+
+		expect(renderHighlight("mise use --global github:boyter/scc")).toBe(
+			`${magentaBright("mise")} ${cyan("use")} ${blueBright("--global")} ${cyan("github:boyter/scc")}`,
+		);
+	});
+
+	it("keeps quoted strings with spaces as one green token in fenced code", ({ expect }) => {
+		expect.assertions(1);
+
+		expect(renderHighlight('```\ngit commit -m "fix it"\n```')).toBe(
+			`${magentaBright("git")} ${cyan("commit")} ${blueBright("-m")} ${green('"fix it"')}\n`,
+		);
+	});
+
+	it("splits --flag=value so the value keeps its own color", ({ expect }) => {
+		expect.assertions(1);
+
+		expect(renderHighlight("run `tool --name='a b'`")).toBe(
+			`run ${magentaBright("tool")} ${blueBright("--name")}${dim("=")}${green("'a b'")}`,
+		);
+	});
+
+	it("leaves ordinary sentences alone", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(renderHighlight("Use the tool to do things.")).toBe("Use the tool to do things.");
+		expect(renderHighlight("a plain lowercase sentence.")).toBe("a plain lowercase sentence.");
+	});
+});
