@@ -37,4 +37,12 @@ describe("selectProjects", () => {
 
 		expect(selectProjects(projects, "/work", ["missing"])).toStrictEqual([]);
 	});
+
+	it("should match a project outside the root by its full path", ({ expect }) => {
+		expect.assertions(1);
+
+		const outside = "/elsewhere/tool";
+
+		expect(selectProjects([...projects, outside], "/work", [outside])).toStrictEqual([outside]);
+	});
 });

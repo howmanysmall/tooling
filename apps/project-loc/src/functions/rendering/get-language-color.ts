@@ -5,5 +5,6 @@ export function getLanguageColor(name: string): string {
 	if (known !== undefined) return known;
 
 	const first = name.codePointAt(0) ?? 0;
+	/* v8 ignore next -- @preserve */
 	return FALLBACK_PALETTE[(first + name.length) % FALLBACK_PALETTE.length] ?? GRAY;
 }

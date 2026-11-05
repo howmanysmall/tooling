@@ -20,23 +20,43 @@ export function renderTable(aggregate: Aggregate, options: RenderOptions): strin
 	const gray = ansi.hex(GRAY);
 	const rule = ansi.hex(RULE);
 
-	const rows = createRows(aggregate, options.withLanguages);
-	const labels = rows.map((row) => shorten(row.label, LABEL_WIDTH));
-	const filesCells = rows.map((row) => groupDigits(row.files));
-	const codeCells = rows.map((row) => groupDigits(row.code));
-	const commentCells = rows.map((row) => groupDigits(row.comment));
-	const blankCells = rows.map((row) => groupDigits(row.blank));
-	const complexityCells = rows.map((row) => groupDigits(row.complexity));
+	const rows = createRows(aggregate, options.withLanguages).map((row) => ({
+		blank: groupDigits(row.blank),
+		code: groupDigits(row.code),
+		comment: groupDigits(row.comment),
+		complexity: groupDigits(row.complexity),
+		files: groupDigits(row.files),
+		label: shorten(row.label, LABEL_WIDTH),
+		row,
+	}));
 
-	const nameWidth = getWidestWidth("PROJECT", labels);
-	const filesWidth = getWidestWidth("FILES", filesCells);
-	const codeWidth = getWidestWidth("CODE", codeCells);
-	const commentWidth = getWidestWidth("COMMENT", commentCells);
-	const blankWidth = getWidestWidth("BLANK", blankCells);
-	const complexityWidth = getWidestWidth("COMPLEXITY", complexityCells);
+	const nameWidth = getWidestWidth(
+		"PROJECT",
+		rows.map((entry) => entry.label),
+	);
+	const filesWidth = getWidestWidth(
+		"FILES",
+		rows.map((entry) => entry.files),
+	);
+	const codeWidth = getWidestWidth(
+		"CODE",
+		rows.map((entry) => entry.code),
+	);
+	const commentWidth = getWidestWidth(
+		"COMMENT",
+		rows.map((entry) => entry.comment),
+	);
+	const blankWidth = getWidestWidth(
+		"BLANK",
+		rows.map((entry) => entry.blank),
+	);
+	const complexityWidth = getWidestWidth(
+		"COMPLEXITY",
+		rows.map((entry) => entry.complexity),
+	);
 	const topWidth = getWidestWidth(
 		"TOP LANGUAGE",
-		rows.map((row) => row.top ?? ""),
+		rows.map((entry) => entry.row.top ?? ""),
 	);
 	const ruleLine = rule(
 		"─".repeat(
@@ -67,14 +87,14 @@ export function renderTable(aggregate: Aggregate, options: RenderOptions): strin
 		ruleLine,
 	];
 
-	for (const [index, row] of rows.entries()) {
+	for (const { blank, code, comment, complexity, files, label, row } of rows) {
 		const style = createRowStyle(ansi, row);
 
 		if (row.kind === TableRowKind.Total) {
 			lines.push(ruleLine);
 		}
 
-		const padded = padEnd(labels[index] ?? row.label, nameWidth);
+		const padded = padEnd(label, nameWidth);
 		// A language row keeps its tree glyph in the rule color and paints only
 		// the name.
 		const nameCell =
@@ -86,11 +106,11 @@ export function renderTable(aggregate: Aggregate, options: RenderOptions): strin
 
 		const cells = [
 			nameCell,
-			style.files(padStart(filesCells[index] ?? "", filesWidth)),
-			style.code(padStart(codeCells[index] ?? "", codeWidth)),
-			style.comment(padStart(commentCells[index] ?? "", commentWidth)),
-			style.blank(padStart(blankCells[index] ?? "", blankWidth)),
-			style.complexity(padStart(complexityCells[index] ?? "", complexityWidth)),
+			style.files(padStart(files, filesWidth)),
+			style.code(padStart(code, codeWidth)),
+			style.comment(padStart(comment, commentWidth)),
+			style.blank(padStart(blank, blankWidth)),
+			style.complexity(padStart(complexity, complexityWidth)),
 			`${style.bar(bar.filled)}${rule(bar.track)} ${gray(percent)}`,
 		];
 
@@ -142,7 +162,7 @@ function createRows({ projects, total }: Aggregate, withLanguages: boolean): Arr
 			files: project.files,
 			kind: TableRowKind.Project,
 			label: project.name,
-			language: undefined,
+			language: "",
 			percent: getPercent(project.code, whole),
 			top: project.languages[0]?.name,
 		});
@@ -161,7 +181,7 @@ function createRows({ projects, total }: Aggregate, withLanguages: boolean): Arr
 		files: total.files,
 		kind: TableRowKind.Total,
 		label: `Total (${total.projects} ${total.projects === 1 ? "project" : "projects"})`,
-		language: undefined,
+		language: "",
 		percent: getPercent(whole, whole),
 		top: total.languages[0]?.name,
 	});
@@ -177,7 +197,7 @@ function createRowStyle(ansi: Ansis, row: TableRow): RowStyle {
 	const gray = ansi.hex(GRAY);
 
 	if (row.kind === TableRowKind.Language) {
-		const color = ansi.hex(getLanguageColor(row.language ?? ""));
+		const color = ansi.hex(getLanguageColor(row.language));
 		return {
 			name: color,
 			bar: color,

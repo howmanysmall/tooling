@@ -5,7 +5,9 @@ import { aggregateProjects } from "$utilities/aggregation-utilities";
 
 import { renderTable } from "./render-table";
 
-import type { CountedProject } from "$types/code-types";
+import type { Aggregate, CountedProject } from "$types/code-types";
+
+const DASH_CELL = / {2}-$/u;
 
 describe("renderTable", () => {
 	const alpha: CountedProject = {
@@ -95,5 +97,48 @@ describe("renderTable", () => {
 		const single = aggregateProjects("/work", [alpha], SortKey.Code);
 
 		expect(renderTable(single, { color: false, withLanguages: false })).toContain("Total (1 project)");
+	});
+
+	it("should put a dash in TOP LANGUAGE when there is nothing to count", ({ expect }) => {
+		expect.assertions(2);
+
+		const empty = aggregateProjects("/work", [], SortKey.Code);
+		const total = renderTable(empty, { color: false, withLanguages: false }).split("\n").at(-1);
+
+		expect(total).toContain("Total (0 projects)");
+		expect(total).toMatch(DASH_CELL);
+	});
+
+	it("should put a dash in TOP LANGUAGE for a project with no counted languages", ({ expect }) => {
+		expect.assertions(2);
+
+		const emptyProject: Aggregate = {
+			projects: [
+				{
+					name: "empty",
+					blank: 0,
+					code: 0,
+					comment: 0,
+					complexity: 0,
+					files: 0,
+					languages: [],
+					path: "/work/empty",
+				},
+			],
+			root: "/work",
+			total: {
+				blank: 0,
+				code: 0,
+				comment: 0,
+				complexity: 0,
+				files: 0,
+				languages: [],
+				projects: 1,
+			},
+		};
+		const lines = renderTable(emptyProject, { color: false, withLanguages: false }).split("\n");
+
+		expect(lines.find((line) => line.startsWith("empty"))).toMatch(DASH_CELL);
+		expect(lines.at(-1)).toMatch(DASH_CELL);
 	});
 });

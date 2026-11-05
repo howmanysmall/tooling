@@ -18,4 +18,11 @@ describe("getLanguageColor", () => {
 		expect(getLanguageColor("Malbolge")).toBe(getLanguageColor("Malbolge"));
 		expect(getLanguageColor("Malbolge")).toMatch(HEX_COLOR);
 	});
+
+	it("should give an empty name a color instead of throwing", ({ expect }) => {
+		expect.assertions(2);
+
+		expect(getLanguageColor("")).toBe(getLanguageColor(""));
+		expect(getLanguageColor("")).toMatch(HEX_COLOR);
+	});
 });

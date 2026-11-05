@@ -143,6 +143,15 @@ describe("aggregation-utilities", () => {
 
 			expect(aggregateProjects("/work", [alpha], SortKey.Code).root).toBe("/work");
 		});
+
+		it("should not leak a trailing slash into project names", ({ expect }) => {
+			expect.assertions(2);
+
+			const aggregate = aggregateProjects("/work/", [alpha], SortKey.Code);
+
+			expect(aggregate.projects[0]?.name).toBe("alpha");
+			expect(aggregate.root).toBe("/work/");
+		});
 	});
 
 	describe("serializeAggregate", () => {

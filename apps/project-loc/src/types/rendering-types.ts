@@ -14,7 +14,7 @@ export interface TableRow extends Counts {
 	readonly eighths: number;
 	readonly kind: TableRowKind;
 	readonly label: string;
-	readonly language: string | undefined;
+	readonly language: string;
 	readonly percent: number;
 	readonly top: string | undefined;
 }
