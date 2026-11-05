@@ -28,6 +28,9 @@ const INLINE_PATTERN = regex("(?<token>\\*\\*.+?\\*\\*|\\*.+?\\*|~~.+?~~|`[^`]+`
 const INLINE_FLAG_PATTERN = regex("^--?[A-Za-z][\\w-]*(?:=.*)?$", "u");
 const COMMAND_BINARY_PATTERN = /^[A-Za-z0-9][\w:./-]*$/u;
 const COMMAND_ARG_HINT_PATTERN = /[-.:/]/u;
+
+const PROSE_TOKEN_PATTERN =
+	/(?<![\w-])(?<flag>--?[A-Za-z][\w-]*)(?<value>=[^\s,;)]*)?|(?<![\w.])(?<number>\d+(?:[.,]\d+)*[A-Za-z%]*)(?!\w)/gu;
 const WHITESPACE_PATTERN = /(?<whitespace>\s+)/u;
 
 type InlineToken = typeof INLINE_PATTERN.infer;
@@ -65,11 +68,10 @@ function renderInlineToken(token: InlineToken): string {
 	if (token.startsWith("*")) return ansi.italic(token.slice(1, -1));
 	if (token.startsWith("~~")) return ansi.strikethrough(token.slice(2, -2));
 	if (token.startsWith("`")) return renderInlineCode(token.slice(1, -1));
+
 	const closingBracket = token.indexOf("](");
-	const label = token.slice(1, closingBracket);
-	const url = token.slice(closingBracket + 2, -1);
-	const urlLabel = ` (${url})`;
-	return `${ansi.underline.cyan(label)}${ansi.dim(urlLabel)}`;
+	const urlLabel = ` (${token.slice(closingBracket + 2, -1)})`;
+	return `${ansi.underline.cyan(token.slice(1, closingBracket))}${ansi.dim(urlLabel)}`;
 }
 
 function getWords(parts: ReadonlyArray<string>): Array<string> {
@@ -129,11 +131,13 @@ function renderFencedLine(line: string): string {
 	const hasFlag = parts.some((part) => part.length > 0 && INLINE_FLAG_PATTERN.test(part));
 	if (hasFlag) {
 		const binaryIndex = findBinaryIndex(parts);
-		return binaryIndex === undefined ? ansi.dim(line) : renderCommandPartsWithFlags(parts, binaryIndex);
+		if (binaryIndex !== undefined) return renderCommandPartsWithFlags(parts, binaryIndex);
+		return ansi.dim(line);
 	}
 
 	const command = parseCommandParts(parts);
-	return command === undefined ? ansi.dim(line) : renderCommandPartsWithFlags(parts, command);
+	if (command !== undefined) return renderCommandPartsWithFlags(parts, command);
+	return ansi.dim(line);
 }
 
 function renderInlineCode(inner: string): string {
@@ -141,10 +145,20 @@ function renderInlineCode(inner: string): string {
 	const hasFlag = parts.some((part) => part.length > 0 && INLINE_FLAG_PATTERN.test(part));
 	if (!hasFlag) {
 		const command = parseCommandParts(parts);
-		return command === undefined ? ansi.cyan(inner) : renderCommandPartsWithFlags(parts, command);
+		if (command !== undefined) return renderCommandPartsWithFlags(parts, command);
+		return ansi.cyan(inner);
 	}
 
-	return renderCommandPartsWithFlags(parts, findBinaryIndex(parts));
+	const binaryIndex = findBinaryIndex(parts);
+	return renderCommandPartsWithFlags(parts, binaryIndex);
+}
+
+function renderProse(text: string): string {
+	return text.replaceAll(PROSE_TOKEN_PATTERN, (match: string, flag?: string, value?: string) => {
+		if (flag === undefined) return ansi.yellow(match);
+		const suffix = value === undefined ? "" : `${ansi.dim("=")}${ansi.cyan(value.slice(1))}`;
+		return `${ansi.blueBright(flag)}${suffix}`;
+	});
 }
 
 function renderInline(text: string): string {
@@ -153,13 +167,13 @@ function renderInline(text: string): string {
 	let cursor = 0;
 	let match = INLINE_PATTERN.exec(text);
 	while (match !== null) {
-		parts[size++] = text.slice(cursor, match.index);
+		parts[size++] = renderProse(text.slice(cursor, match.index));
 		parts[size++] = renderInlineToken(match.groups.token);
 		cursor = match.index + match[0].length;
 		match = INLINE_PATTERN.exec(text);
 	}
 
-	parts[size] = text.slice(cursor);
+	parts[size] = renderProse(text.slice(cursor));
 	return parts.join("");
 }
 
@@ -259,7 +273,7 @@ const isDescriptionObject = type({
  * @returns The pre-highlighted text.
  */
 // eslint-disable-next-line ts/no-shadow -- not a shadowing.
-export const highlightDescription = defineMacro(function highlightDescription(
+export const cliffyHighlight = defineMacro(function highlight(
 	this: MacroContext | undefined,
 	text?: string,
 ): string {
