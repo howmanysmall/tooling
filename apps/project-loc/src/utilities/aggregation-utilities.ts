@@ -1,4 +1,4 @@
-import { JSON_KEY_ORDER } from "$constants";
+import { JSON_KEY_ORDER } from "$constants/aggregation-constants";
 import { SortKey } from "$meta/sort-key";
 
 import { compareWithLocale, toAsciiLowerCase } from "./string-utilities";

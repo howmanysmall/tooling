@@ -3,7 +3,7 @@ import { HelpCommand } from "@cliffy/command/help";
 import { createBaseCommand } from "@howmanysmall/cli-utilities/create-base-command";
 import { getScriptName } from "@howmanysmall/cli-utilities/get-script-name" with { type: "macro" };
 
-import { description, version } from "$constants";
+import { description, version } from "$constants/package-constants";
 
 const scriptName = getScriptName(true);
 

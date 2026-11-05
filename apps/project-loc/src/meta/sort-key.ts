@@ -6,3 +6,5 @@ export const enum SortKey {
 	Files = "files",
 	Name = "name",
 }
+
+export type NoName = Exclude<SortKey, SortKey.Name>;

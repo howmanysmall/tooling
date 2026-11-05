@@ -1,4 +1,4 @@
-import { GLOB_CHARACTERS_REGEXP } from "$constants";
+import { GLOB_CHARACTERS_REGEXP } from "$constants/regexp-constants";
 
 const AMPERSAND_ESCAPE = String.raw`\$&`;
 

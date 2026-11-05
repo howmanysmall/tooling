@@ -1,6 +1,6 @@
-import type { SortKey } from "$meta/sort-key";
+import type { NoName } from "$meta/sort-key";
 
-export type Counts = Readonly<Record<Exclude<SortKey, SortKey.Name>, number>>;
+export type Counts = Readonly<Record<NoName, number>>;
 
 export interface LanguageStats extends Counts {
 	readonly name: string;

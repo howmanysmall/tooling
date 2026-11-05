@@ -1,7 +1,7 @@
 import nodePath from "node:path";
 import { fdir } from "fdir";
 
-import { MANIFEST_NAMES, MANIFEST_SUFFIX, PRUNED_DIRECTORIES } from "$constants";
+import { MANIFEST_NAMES, MANIFEST_SUFFIX, PRUNED_DIRECTORIES } from "$constants/manifest-constants";
 import { compareWithLocale } from "$utilities/string-utilities";
 
 function isManifest(fileName: string): boolean {
