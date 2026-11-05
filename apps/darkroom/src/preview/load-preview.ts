@@ -35,7 +35,7 @@ const PIXELS_PER_COLUMN = 20;
 
 function createImageId(): number {
 	const [random = 0] = crypto.getRandomValues(new Uint32Array(1));
-	// Kitty placeholders carry the ID in a 24-bit colour, and 0 means none.
+	// Kitty placeholders carry the ID in a 24-bit color, and 0 means none.
 	return (random % 0xff_ff_fe) + 1;
 }
 

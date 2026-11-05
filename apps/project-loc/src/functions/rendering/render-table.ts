@@ -11,7 +11,7 @@ import { getLanguageColor } from "./get-language-color";
 import type { Aggregate } from "$types/code-types";
 import type { LanguageOwner, Paint, RenderOptions, RowStyle, TableRow } from "$types/rendering-types";
 
-const keepText: Paint = function keepText(text: string): string {
+const keepText: Paint = function keepText(text): string {
 	return text;
 };
 
@@ -75,7 +75,7 @@ export function renderTable(aggregate: Aggregate, options: RenderOptions): strin
 		}
 
 		const padded = padEnd(labels[index] ?? row.label, nameWidth);
-		// A language row keeps its tree glyph in the rule colour and paints only
+		// A language row keeps its tree glyph in the rule color and paints only
 		// the name.
 		const nameCell =
 			row.kind === TableRowKind.Language

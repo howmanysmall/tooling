@@ -15,7 +15,7 @@ describe("wrapText", () => {
 		expect(wrapText("tiny enormousword tiny", 6)).toStrictEqual(["tiny", "enormousword", "tiny"]);
 	});
 
-	it("ignores colour codes when measuring width", ({ expect }) => {
+	it("ignores color codes when measuring width", ({ expect }) => {
 		expect.assertions(1);
 
 		expect(wrapText("\u001B[32mgreen\u001B[39m words", 11)).toStrictEqual(["\u001B[32mgreen\u001B[39m words"]);

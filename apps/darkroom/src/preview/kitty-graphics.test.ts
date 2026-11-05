@@ -20,7 +20,7 @@ describe("formatKittyTransmit", () => {
 });
 
 describe("formatKittyPlaceholders", () => {
-	it("colours each line with the image ID and marks every cell's row and column", ({ expect }) => {
+	it("colors each line with the image ID and marks every cell's row and column", ({ expect }) => {
 		expect.assertions(2);
 
 		const lines = formatKittyPlaceholders(0x01_02_03, { columns: 2, rows: 2 });
