@@ -221,3 +221,23 @@ describe("renderHighlight bare command lines and quotes", () => {
 		expect(renderHighlight("a plain lowercase sentence.")).toBe("a plain lowercase sentence.");
 	});
 });
+
+describe("renderHighlight bare commands without flags", () => {
+	it("paints well-known CLIs even when no flag, quote, or path is present", ({ expect }) => {
+		expect.assertions(3);
+
+		expect(renderHighlight("brew install scc")).toBe(`${magentaBright("brew")} ${cyan("install")} ${cyan("scc")}`);
+		expect(renderHighlight("brew upgrade scc")).toBe(`${magentaBright("brew")} ${cyan("upgrade")} ${cyan("scc")}`);
+		expect(renderHighlight("bun run apps/x.ts")).toBe(
+			`${magentaBright("bun")} ${cyan("run")} ${cyan("apps/x.ts")}`,
+		);
+	});
+
+	it("does not treat a sentence that merely starts with a CLI name as a command when it ends in punctuation", ({
+		expect,
+	}) => {
+		expect.assertions(1);
+
+		expect(renderHighlight("git is required.")).toBe("git is required.");
+	});
+});

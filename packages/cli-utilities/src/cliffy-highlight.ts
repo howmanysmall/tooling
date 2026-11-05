@@ -32,6 +32,50 @@ const COMMAND_TOKEN_PATTERN = /\s+|(?:'[^']*'|"[^"]*"|\S)+/gu;
 const QUOTED_PATTERN = /^(?:'[^']*'|"[^"]*")$/u;
 const BARE_COMMAND_PATTERN = /^\s*[a-z][\w-]*\s+\S[^`]*[^\s.,;:!?`]$/u;
 
+// Bare lines like `brew install scc` carry no flag, quote, or path to tell them
+// apart from a lowercase sentence, so a leading well-known CLI is the signal.
+const KNOWN_COMMANDS: ReadonlySet<string> = new Set([
+	"apk",
+	"apt",
+	"apt-get",
+	"asdf",
+	"aube",
+	"brew",
+	"bun",
+	"bunx",
+	"cargo",
+	"choco",
+	"curl",
+	"deno",
+	"dnf",
+	"docker",
+	"flatpak",
+	"gh",
+	"git",
+	"go",
+	"mise",
+	"nix",
+	"node",
+	"npm",
+	"npx",
+	"pacman",
+	"pip",
+	"pipx",
+	"pnpm",
+	"pnpx",
+	"rustup",
+	"scoop",
+	"snap",
+	"sudo",
+	"uv",
+	"uvx",
+	"wget",
+	"winget",
+	"yarn",
+	"yum",
+	"zypper",
+]);
+
 const PROSE_TOKEN_PATTERN =
 	/(?<![\w-])(?<flag>--?[A-Za-z][\w-]*)(?<value>=[^\s,;)]*)?|(?<![\w.])(?<number>\d+(?:[.,]\d+)*[A-Za-z%]*)(?!\w)/gu;
 const WHITESPACE_PATTERN = /^\s+$/u;
@@ -229,12 +273,17 @@ function renderLine(line: string): string {
 	return renderBareCommand(line) ?? renderInline(line);
 }
 
+function findKnownCommandIndex(parts: ReadonlyArray<string>): number | undefined {
+	const binaryIndex = findBinaryIndex(parts);
+	return binaryIndex !== undefined && KNOWN_COMMANDS.has(parts[binaryIndex] ?? "") ? binaryIndex : undefined;
+}
+
 function renderBareCommand(line: string): string | undefined {
 	if (!BARE_COMMAND_PATTERN.test(line)) return undefined;
 
 	const parts = splitCommandParts(line);
 	const hasFlag = parts.some((part) => part.length > 0 && INLINE_FLAG_PATTERN.test(part));
-	const binaryIndex = hasFlag ? findBinaryIndex(parts) : parseCommandParts(parts);
+	const binaryIndex = hasFlag ? findBinaryIndex(parts) : (parseCommandParts(parts) ?? findKnownCommandIndex(parts));
 	return binaryIndex === undefined ? undefined : renderCommandPartsWithFlags(parts, binaryIndex);
 }
 
