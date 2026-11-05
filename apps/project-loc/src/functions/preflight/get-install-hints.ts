@@ -8,6 +8,12 @@ const INSTALL_MISE = highlight("mise use --global github:boyter/scc");
 const INSTALL_BREW = highlight("brew install scc");
 const UPGRADE_BREW = highlight("brew upgrade scc");
 
+// Macro arguments must be literals, so each AUR helper gets its own call.
+const AUR_COMMANDS = [
+	[PackageManager.Paru, highlight("paru -S scc-bin")],
+	[PackageManager.Yay, highlight("yay -S scc-bin")],
+] as const;
+
 export function getInstallHints(upgrade: boolean, available: ReadonlySet<PackageManager>): InstallHints {
 	const commands = new Array<string>();
 	const notes = new Array<string>();
@@ -22,11 +28,11 @@ export function getInstallHints(upgrade: boolean, available: ReadonlySet<Package
 
 	if (available.has(PackageManager.Pacman)) {
 		// scc is not in Arch's repositories, only the AUR.
-		const helper = [PackageManager.Paru, PackageManager.Yay].find((name) => available.has(name));
+		const helper = AUR_COMMANDS.find(([name]) => available.has(name));
 		if (helper === undefined) {
 			notes.push("scc is only in the AUR (scc-bin): https://aur.archlinux.org/packages/scc-bin");
 		} else {
-			commands.push(highlight(`${helper} -S scc-bin`));
+			commands.push(helper[1]);
 		}
 	}
 
