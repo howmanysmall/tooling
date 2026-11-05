@@ -1,6 +1,6 @@
 {
 	"name": "@pobammer-ts/project-loc",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"description": "Lines of code per project, counted with `scc`.",
 	"keywords": [
 		"tools",
@@ -48,12 +48,23 @@
 		"type-check": "tsrs --build",
 		"type-check:agent": "node --run type-check -- --pretty false"
 	},
+	"dependencies": {
+		"ansis": "catalog:runtime",
+		"arktype": "catalog:runtime",
+		"fast-string-width": "catalog:runtime",
+		"fdir": "catalog:runtime",
+		"tinyexec": "catalog:runtime",
+		"type-fest": "catalog:types",
+		"which": "catalog:runtime"
+	},
 	"devDependencies": {
 		"@cliffy/command": "catalog:runtime",
+		"@howmanysmall/arktype-utilities": "workspace:*",
 		"@howmanysmall/cli-utilities": "workspace:*",
 		"@howmanysmall/project-configurations": "workspace:*",
 		"@total-typescript/ts-reset": "catalog:types",
 		"@types/node": "catalog:node-floor",
+		"@types/which": "catalog:types",
 		"tsdown": "catalog:build",
 		"unplugin-macros": "catalog:build",
 		"vitest": "catalog:test"

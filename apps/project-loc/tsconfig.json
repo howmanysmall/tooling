@@ -5,17 +5,24 @@
 		"tsBuildInfoFile": "./node_modules/.tmp/project-loc.tsbuildinfo",
 		"paths": {
 			"$constants": ["./src/constants.ts"],
+			"$functions/*": ["./src/functions/*"],
+			"$meta/*": ["./src/meta/*"],
 			"$package": ["./package.json"],
+			"$types/*": ["./src/types/*"],
+			"$utilities/*": ["./src/utilities/*"],
 			"@cliffy/command/_dist/*": ["./node_modules/@cliffy/command/_dist/*"]
 		},
 		"types": ["node"]
 	},
 	"references": [
 		{
-			"path": "../../tools/project-configurations"
+			"path": "../../packages/arktype-utilities"
 		},
 		{
 			"path": "../../packages/cli-utilities"
+		},
+		{
+			"path": "../../tools/project-configurations"
 		}
 	],
 	"include": ["src/**/*.ts", "./package.json", "*.config.ts"],

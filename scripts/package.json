@@ -16,7 +16,7 @@
 		"arktype": "catalog:runtime",
 		"bumpp": "catalog:tooling",
 		"consola": "catalog:runtime",
-		"tinyexec": "catalog:dev"
+		"tinyexec": "catalog:runtime"
 	},
 	"devDependencies": {
 		"@types/node": "catalog:types"

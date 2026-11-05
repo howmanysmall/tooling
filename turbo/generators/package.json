@@ -10,7 +10,7 @@
 	"dependencies": {
 		"arktype": "catalog:runtime",
 		"effect": "catalog:runtime",
-		"tinyexec": "catalog:dev"
+		"tinyexec": "catalog:runtime"
 	},
 	"devDependencies": {
 		"@turbo/gen": "catalog:tooling",
