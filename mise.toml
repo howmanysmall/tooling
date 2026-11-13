@@ -21,7 +21,7 @@ bun = "1.4.4"
 communique = "latest"
 direnv = "latest"
 git-cliff = "latest"
-hk = { version = "2.11.0", workflow = "release.yml" }
+hk = { version = "2.12.0", workflow = "release.yml" }
 jactionlint = "latest"
 ni = "latest"
 node = "26"
