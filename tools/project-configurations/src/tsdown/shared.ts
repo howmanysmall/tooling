@@ -75,11 +75,8 @@ export const sharedConfiguration = defineConfig({
 	clean: true,
 	deps: { alwaysBundle: getJsrDependencyPatterns(process.cwd()) },
 	dts: {
-		generator: "tsgo",
+		generator: "tsrs",
 		resolver: "oxc",
-		tsgo: {
-			path: nodePath.join(import.meta.dirname, "..", "..", "node_modules", ".bin", "tsrs"),
-		},
 	},
 	fixedExtension: false,
 	format: ["esm"],
