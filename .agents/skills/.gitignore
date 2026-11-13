@@ -5,4 +5,8 @@ communique
 hk
 hk-configure
 hk-debug
-pnpm-*
+# pnpm
+/arktype
+/pnpm-fallow-fallow
+/pnpm-fallow-fallow-setup
+# pnpm end
