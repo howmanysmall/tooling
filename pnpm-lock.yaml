@@ -553,7 +553,6 @@ packageExtensionsChecksum: sha256-511FWJVXu+T5sGuOJK4vKP4fj2yGhUpHsJOzQk9/N+k=
 
 patchedDependencies:
   '@stryker-mutator/vitest-runner@10.0.0': b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d
-  tsrs@0.20.1-ts7.1.0-beta: d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137
 
 importers:
 
@@ -585,7 +584,7 @@ importers:
         version: link:tools/project-configurations
       '@isentinel/eslint-config':
         specifier: catalog:lint
-        version: 6.2.0(40746855cfb355cae2498ca8ca980b46)
+        version: 6.2.0(65645ce206732533f69967df620ab937)
       '@isentinel/hooks':
         specifier: catalog:tooling
         version: 1.7.0(@typescript/typescript6@6.0.2)(jiti@2.7.0)(supports-color@10.2.2)
@@ -603,10 +602,10 @@ importers:
         version: 10.0.0
       '@stryker-mutator/core':
         specifier: catalog:test
-        version: 10.0.0(@types/node@26.6.6)(vitest@5.0.5)
+        version: 10.0.0(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
       '@stryker-mutator/vitest-runner':
         specifier: catalog:test
-        version: 10.0.0(patch_hash=b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d)(@stryker-mutator/core@10.0.0(@types/node@26.6.6)(vitest@5.0.5))(vitest@5.0.5)
+        version: 10.0.0(patch_hash=b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d)(@stryker-mutator/core@10.0.0(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5))(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
       '@stylistic/eslint-plugin':
         specifier: catalog:lint
         version: 5.10.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
@@ -618,13 +617,13 @@ importers:
         version: 26.6.6
       '@vitest/coverage-istanbul':
         specifier: catalog:test
-        version: 5.0.5(vitest@5.0.5)
+        version: 5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
       '@vitest/coverage-v8':
         specifier: catalog:test
-        version: 5.0.5(vitest@5.0.5)
+        version: 5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
       '@vitest/eslint-plugin':
         specifier: catalog:lint
-        version: 1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(vitest@5.0.5)
+        version: 1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(vitest@5.0.5)
       bumpp:
         specifier: catalog:tooling
         version: 12.3.0
@@ -690,7 +689,7 @@ importers:
         version: 4.4.1(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
       fallow:
         specifier: catalog:lint
-        version: 3.38.1(tsrs@0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137))
+        version: 3.38.1(tsrs@0.20.1-ts7.1.0-beta)
       jiti:
         specifier: catalog:tooling
         version: 2.7.0
@@ -723,7 +722,7 @@ importers:
         version: 0.23.4(@arethetypeswrong/core@0.18.5)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(oxc-resolver@11.24.2)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))
       tsrs:
         specifier: catalog:tooling
-        version: 0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137)
+        version: 0.20.1-ts7.1.0-beta
       turbo:
         specifier: catalog:tooling
         version: 2.11.10
@@ -1125,7 +1124,7 @@ importers:
         version: link:../linter-utilities
       '@isentinel/eslint-config':
         specifier: catalog:lint
-        version: 6.2.0(dc89c95f1f40fe36ad8e71c901952bc7)
+        version: 6.2.0(e0406f66fa9109831fcbf9a0a591eeb5)
       oxlint-plugin-react-doctor:
         specifier: catalog:lint
         version: 0.9.21
@@ -1156,7 +1155,7 @@ importers:
         version: link:../../packages/arktype-utilities
       '@isentinel/eslint-config':
         specifier: catalog:lint
-        version: 6.2.0(40746855cfb355cae2498ca8ca980b46)
+        version: 6.2.0(65645ce206732533f69967df620ab937)
       arktype:
         specifier: catalog:runtime
         version: 2.2.9
@@ -1209,7 +1208,7 @@ importers:
         version: 26.6.6
       tsrs:
         specifier: catalog:tooling
-        version: 0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137)
+        version: 0.20.1-ts7.1.0-beta
       typescript:
         specifier: catalog:tooling
         version: '@typescript/typescript6@6.0.2'
@@ -11247,7 +11246,7 @@ snapshots:
 
   '@isentinel/dict-roblox@1.0.23': {}
 
-  '@isentinel/eslint-config@6.2.0(40746855cfb355cae2498ca8ca980b46)':
+  '@isentinel/eslint-config@6.2.0(65645ce206732533f69967df620ab937)':
     dependencies:
       '@antfu/install-pkg': 2.0.1
       '@clack/prompts': 1.7.0
@@ -11306,7 +11305,7 @@ snapshots:
       yaml-eslint-parser: 2.1.0
       yargs: 18.0.0
     optionalDependencies:
-      '@vitest/eslint-plugin': 1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(vitest@5.0.5)
+      '@vitest/eslint-plugin': 1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(vitest@5.0.5)
       eslint-plugin-eslint-plugin: 7.6.2(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-jest-extended: 3.0.1(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
       eslint-plugin-n: 18.5.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
@@ -11324,7 +11323,7 @@ snapshots:
       - typescript
       - vite-plus
 
-  '@isentinel/eslint-config@6.2.0(dc89c95f1f40fe36ad8e71c901952bc7)':
+  '@isentinel/eslint-config@6.2.0(e0406f66fa9109831fcbf9a0a591eeb5)':
     dependencies:
       '@antfu/install-pkg': 2.0.1
       '@clack/prompts': 1.7.0
@@ -11383,7 +11382,7 @@ snapshots:
       yaml-eslint-parser: 2.1.0
       yargs: 18.0.0
     optionalDependencies:
-      '@vitest/eslint-plugin': 1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@5.0.5)
+      '@vitest/eslint-plugin': 1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@5.0.5)
       eslint-plugin-eslint-plugin: 7.6.2(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))
       eslint-plugin-jest-extended: 3.0.1(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
       eslint-plugin-n: 18.5.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(typescript@6.0.3)
@@ -12166,13 +12165,13 @@ snapshots:
       tslib: 2.8.1
       typed-inject: 5.0.0
 
-  '@stryker-mutator/core@10.0.0(@types/node@26.6.6)(vitest@5.0.5)':
+  '@stryker-mutator/core@10.0.0(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)':
     dependencies:
       '@inquirer/prompts': 8.7.3(@types/node@26.6.6)
       '@stryker-mutator/api': 10.0.0
       '@stryker-mutator/instrumenter': 10.0.0
       '@stryker-mutator/util': 10.0.0
-      '@stryker-mutator/vitest-runner': 10.0.0(patch_hash=b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d)(@stryker-mutator/core@10.0.0(@types/node@26.6.6)(vitest@5.0.5))(vitest@5.0.5)
+      '@stryker-mutator/vitest-runner': 10.0.0(patch_hash=b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d)(@stryker-mutator/core@10.0.0(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5))(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
       ajv: 8.20.0
       chalk: 5.6.2
       commander: 14.0.3
@@ -12198,6 +12197,7 @@ snapshots:
       typescript: 5.9.3
     transitivePeerDependencies:
       - '@types/node'
+      - vite
       - vitest
 
   '@stryker-mutator/instrumenter@10.0.0':
@@ -12219,14 +12219,16 @@ snapshots:
 
   '@stryker-mutator/util@10.0.0': {}
 
-  '@stryker-mutator/vitest-runner@10.0.0(patch_hash=b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d)(@stryker-mutator/core@10.0.0(@types/node@26.6.6)(vitest@5.0.5))(vitest@5.0.5)':
+  '@stryker-mutator/vitest-runner@10.0.0(patch_hash=b7157218d24126e49a3f706bce1c78da0124bc8941dc52aa8dbb97153b5ea46d)(@stryker-mutator/core@10.0.0(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5))(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)':
     dependencies:
       '@stryker-mutator/api': 10.0.0
-      '@stryker-mutator/core': 10.0.0(@types/node@26.6.6)(vitest@5.0.5)
+      '@stryker-mutator/core': 10.0.0(@types/node@26.6.6)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
       '@stryker-mutator/util': 10.0.0
       semver: 7.8.5
       tslib: 2.8.1
       vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
+    transitivePeerDependencies:
+      - vite
 
   '@stylistic/eslint-plugin@5.10.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))':
     dependencies:
@@ -13204,7 +13206,7 @@ snapshots:
       '@rolldown/pluginutils': 1.0.1
       vite: '@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1)'
 
-  '@vitest/coverage-istanbul@5.0.5(vitest@5.0.5)':
+  '@vitest/coverage-istanbul@5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)':
     dependencies:
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
@@ -13216,8 +13218,26 @@ snapshots:
       obug: 3.0.0
       tinyrainbow: 3.2.0
       vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
+    transitivePeerDependencies:
+      - vite
 
-  '@vitest/coverage-v8@5.0.5(vitest@5.0.5)':
+  '@vitest/coverage-istanbul@5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)':
+    dependencies:
+      '@jridgewell/gen-mapping': 0.3.13
+      '@jridgewell/trace-mapping': 0.3.31
+      '@vitest/istanbul-lib-coverage': 1.0.2
+      '@vitest/istanbul-lib-instrument': 1.0.2
+      '@vitest/istanbul-lib-report': 1.0.2
+      '@vitest/istanbul-lib-source-maps': 1.0.2
+      magicast: 0.5.5
+      obug: 3.0.0
+      tinyrainbow: 3.2.0
+      vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
+    transitivePeerDependencies:
+      - vite
+    optional: true
+
+  '@vitest/coverage-v8@5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/istanbul-lib-coverage': 1.0.2
@@ -13228,8 +13248,25 @@ snapshots:
       std-env: 4.3.0
       tinyrainbow: 3.2.0
       vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
+    transitivePeerDependencies:
+      - vite
 
-  '@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(vitest@5.0.5)':
+  '@vitest/coverage-v8@5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)':
+    dependencies:
+      '@bcoe/v8-coverage': 1.0.2
+      '@vitest/istanbul-lib-coverage': 1.0.2
+      '@vitest/istanbul-lib-report': 1.0.2
+      ast-v8-to-istanbul: 1.0.7
+      magicast: 0.5.5
+      obug: 3.0.0
+      std-env: 4.3.0
+      tinyrainbow: 3.2.0
+      vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
+    transitivePeerDependencies:
+      - vite
+    optional: true
+
+  '@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2))(@typescript/typescript6@6.0.2)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(vitest@5.0.5)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.72.0
       '@typescript-eslint/utils': 8.72.0(@typescript/typescript6@6.0.2)(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)
@@ -13240,8 +13277,9 @@ snapshots:
       vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
     transitivePeerDependencies:
       - supports-color
+      - vite
 
-  '@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@5.0.5)':
+  '@vitest/eslint-plugin@1.6.28(@typescript-eslint/eslint-plugin@8.65.0(@typescript-eslint/parser@8.65.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3))(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)(vitest@5.0.5)':
     dependencies:
       '@typescript-eslint/scope-manager': 8.72.0
       '@typescript-eslint/utils': 8.72.0(eslint@10.14.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
@@ -13252,6 +13290,7 @@ snapshots:
       vitest: 5.0.5(@types/node@26.6.6)(@vitest/coverage-istanbul@5.0.5)(@vitest/coverage-v8@5.0.5)(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))
     transitivePeerDependencies:
       - supports-color
+      - vite
     optional: true
 
   '@vitest/istanbul-lib-coverage@1.0.2': {}
@@ -15131,14 +15170,14 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fallow-type-aware@3.38.1(tsrs@0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137)):
+  fallow-type-aware@3.38.1(tsrs@0.20.1-ts7.1.0-beta):
     dependencies:
       typescript: 7.0.2
     optionalDependencies:
-      tsrs: 0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137)
+      tsrs: 0.20.1-ts7.1.0-beta
     optional: true
 
-  fallow@3.38.1(tsrs@0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137)):
+  fallow@3.38.1(tsrs@0.20.1-ts7.1.0-beta):
     dependencies:
       detect-libc: 2.1.2
     optionalDependencies:
@@ -15150,7 +15189,7 @@ snapshots:
       '@fallow-cli/linux-x64-musl': 3.38.1
       '@fallow-cli/win32-arm64-msvc': 3.38.1
       '@fallow-cli/win32-x64-msvc': 3.38.1
-      fallow-type-aware: 3.38.1(tsrs@0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137))
+      fallow-type-aware: 3.38.1(tsrs@0.20.1-ts7.1.0-beta)
     transitivePeerDependencies:
       - tsrs
 
@@ -17663,7 +17702,7 @@ snapshots:
 
   tslib@2.9.1: {}
 
-  tsrs@0.20.1-ts7.1.0-beta(patch_hash=d871b7b9d5d2e10fc8279846a1de7ac2a5364604bcbec93089c07336f6953137):
+  tsrs@0.20.1-ts7.1.0-beta:
     optionalDependencies:
       '@tsrs/darwin-arm64': 0.20.1-ts7.1.0-beta
       '@tsrs/darwin-x64': 0.20.1-ts7.1.0-beta
@@ -18000,8 +18039,8 @@ snapshots:
       why-is-node-running: 3.2.1
     optionalDependencies:
       '@types/node': 26.6.6
-      '@vitest/coverage-istanbul': 5.0.5(vitest@5.0.5)
-      '@vitest/coverage-v8': 5.0.5(vitest@5.0.5)
+      '@vitest/coverage-istanbul': 5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
+      '@vitest/coverage-v8': 5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28(@typescript/typescript6@6.0.2))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
     transitivePeerDependencies:
       - msw
 
@@ -18023,8 +18062,8 @@ snapshots:
       why-is-node-running: 3.2.1
     optionalDependencies:
       '@types/node': 26.6.6
-      '@vitest/coverage-istanbul': 5.0.5(vitest@5.0.5)
-      '@vitest/coverage-v8': 5.0.5(vitest@5.0.5)
+      '@vitest/coverage-istanbul': 5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
+      '@vitest/coverage-v8': 5.0.5(@voidzero-dev/vite-plus-core@1.2.0(@arethetypeswrong/core@0.18.5)(@types/node@26.6.6)(@volar/typescript@2.4.28(typescript@6.0.3))(esbuild@0.28.2)(jiti@2.7.0)(publint@0.3.25)(typescript@6.0.3)(unrun@0.3.1(synckit@0.11.13))(yaml@2.9.1))(vitest@5.0.5)
     transitivePeerDependencies:
       - msw
 

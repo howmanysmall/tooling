@@ -3,8 +3,12 @@ pr
 .mise-skills.json
 aube
 communique
-pnpm-*
 hk*
 fallow*
 unix-cli
 vercel-*
+# pnpm
+/arktype
+/pnpm-fallow-fallow
+/pnpm-fallow-fallow-setup
+# pnpm end

@@ -77,7 +77,6 @@ overrides:
 # "Survived". Drop this once upstream supports Vitest 5.
 patchedDependencies:
   "@stryker-mutator/vitest-runner@10.0.0": patches/@stryker-mutator__vitest-runner@10.0.0.patch
-  tsrs@0.20.1-ts7.1.0-beta: patches/tsrs@0.20.1-ts7.1.0-beta.patch
 
 catalogs:
   ai:
