@@ -11,7 +11,6 @@ import { renderScreen } from "$interactive/app/test-screen";
 
 import { HistoryBrowserScreen } from "./history-browser-screen.tsx";
 
-import type { RunDeletion } from "$history/delete-run";
 import type { HistoryEntry } from "$history/history-entry";
 import type { HistoryStore } from "$history/history-store";
 import type { LoadingPreview } from "$preview/load-preview";
@@ -73,7 +72,7 @@ interface Harness {
 
 function createServices(store: HistoryStore, opened: Array<string>, reruns: Array<string>): BrowserServices {
 	return {
-		async deleteRunAsync(entry: HistoryEntry, deletion: RunDeletion): Promise<void> {
+		async deleteRunAsync(entry: HistoryEntry, deletion): Promise<void> {
 			await deleteRunAsync(store, entry.id, [], deletion);
 		},
 		getPreview: () => undefined,

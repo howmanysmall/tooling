@@ -6,7 +6,7 @@ import { createSession, TurnPhase } from "./session-state";
 import { createSessionStore, toOpenTabs } from "./session-store";
 import { createSessionTabs, getActiveSession, getTabStatus, reduceSessionTabs, TabStatus } from "./session-tabs";
 
-import type { SessionState, SessionTurn } from "./session-state";
+import type { SessionTurn } from "./session-state";
 import type { SessionTabs, SessionTabsAction } from "./session-tabs";
 
 const DONE: SessionTurn = {
@@ -33,7 +33,7 @@ function openThree(): SessionTabs {
 }
 
 function getIds(tabs: SessionTabs): Array<string> {
-	return tabs.sessions.map((session: SessionState) => session.id);
+	return tabs.sessions.map((session) => session.id);
 }
 
 describe("reduceSessionTabs", () => {
