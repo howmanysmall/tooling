@@ -7,7 +7,6 @@ entry = [
 	"apps/*/src/**/*.bench.ts",
 	"apps/*/src/**/*.fuzz.ts",
 	"apps/*/src/cli.ts",
-	"apps/*/src/index.ts",
 	"apps/*/vitest.setup.ts",
 	"documentation/*/*.config.ts",
 	"documentation/*/src/content.config.ts",
@@ -16,15 +15,14 @@ entry = [
 	"packages/*/src/**/*.bench.ts",
 	"packages/*/src/**/*.fuzz.ts",
 	"packages/*/src/cli.ts",
-	"packages/*/src/index.ts",
-	"scripts/*.ts",
+	"scripts/**/*.ts",
 	"tools/*/*.config.ts",
 	"tools/project-configurations/src/vitest/setup.ts",
 	"turbo/generators/*.ts",
 ]
 ignorePatterns = [".claude/**", "!.config/**"]
+ignoreBinaries = ["2", "fi", "hk", "if", "then"]
 ignoreDependencies = [
-	"@arethetypeswrong/core",
 	"@e18e/eslint-plugin",
 	"@isentinel/hooks",
 	"@pobammer-ts/lsp-mux",
@@ -34,27 +32,19 @@ ignoreDependencies = [
 	"eslint-plugin-better-max-params",
 	"eslint-plugin-comment-length",
 	"eslint-plugin-de-morgan",
-	"eslint-plugin-eslint-plugin",
 	"eslint-plugin-flawless",
-	"eslint-plugin-jest-extended",
 	"eslint-plugin-jsdoc",
-	"eslint-plugin-n",
 	"eslint-plugin-oxfmt",
 	"eslint-plugin-perfectionist",
 	"eslint-plugin-pnpm",
-	"eslint-plugin-react-jsx",
-	"eslint-plugin-react-naming-convention",
-	"eslint-plugin-react-x",
 	"eslint-plugin-roblox-ts",
 	"eslint-plugin-sonarjs",
 	"eslint-plugin-unicorn",
 	"eslint-plugin-unused-imports",
 	"fast-check",
 	"oxlint-plugin-react-doctor",
-	"publint",
 	# Astro loads sharp itself to optimize images.
 	"sharp",
-	"typescript7",
 ]
 ignoreExportsUsedInFile = true
 overrides = []
@@ -84,7 +74,7 @@ maxCrap = 30
 crapRefactorBand = 5
 maxUnitSize = 60
 coverage = ".cache/istanbul/coverage-final.json"
-ignore = ["*.config.ts", "scripts/**"]
+ignore = ["**/*.config.ts", "scripts/**"]
 suggestInlineSuppression = true
 
 [health.ownership]
