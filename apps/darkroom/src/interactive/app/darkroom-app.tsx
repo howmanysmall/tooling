@@ -6,6 +6,7 @@ import { AppScreens } from "./app-screens";
 import { runBrowserTask } from "./run-browser-task";
 
 import type { ReactNode } from "react";
+import type { Except } from "type-fest";
 
 import type { HistoryEntry } from "$history/history-entry";
 import type { SessionServices } from "$interactive/session/session-services";
@@ -13,7 +14,9 @@ import type { SessionStore } from "$interactive/session/session-store";
 
 import type { AppScreensProperties } from "./app-screens";
 
-export interface DarkroomAppProperties extends AppScreensProperties {
+export interface DarkroomAppProperties extends Except<AppScreensProperties, "entries"> {
+	/** Every run when the app opened, newest first. */
+	initialEntries: ReadonlyArray<HistoryEntry>;
 	/** Reads every run again, newest first, after one is saved. */
 	readHistoryAsync: () => Promise<ReadonlyArray<HistoryEntry>>;
 	/** Prices, confirms, and sends the prompt box's requests. */
@@ -28,9 +31,9 @@ export interface DarkroomAppProperties extends AppScreensProperties {
  *
  * @param properties - The runs, the session, and what the tabs need.
  * @param properties.catalog - The models and their prices, loading.
- * @param properties.entries - Every run when the app opened, newest first.
  * @param properties.getPreview - Loads image previews.
  * @param properties.history - What the history tab's keys act on.
+ * @param properties.initialEntries - The runs when the app opened, newest first.
  * @param properties.initialTab - The tab to open on.
  * @param properties.now - When the app opened.
  * @param properties.onGenerateWithOptions - Opens the guided session.
@@ -42,9 +45,9 @@ export interface DarkroomAppProperties extends AppScreensProperties {
  */
 export function DarkroomApp({
 	catalog,
-	entries: initialEntries,
 	getPreview,
 	history,
+	initialEntries,
 	initialTab,
 	now,
 	onGenerateWithOptions,

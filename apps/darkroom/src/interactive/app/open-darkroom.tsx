@@ -163,9 +163,9 @@ export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name,
 			<NoticeContext value={mouse.notices}>
 				<DarkroomApp
 					catalog={catalog}
-					entries={entries}
 					getPreview={getPreview}
 					history={createHistoryServices(store, previews)}
+					initialEntries={entries}
 					initialTab={tab}
 					now={openedAt}
 					readHistoryAsync={readHistoryAsync}
