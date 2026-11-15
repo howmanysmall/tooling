@@ -42,7 +42,7 @@ the same actions as an image in a session, such as copying the picture itself.
   instead branches from there, and the others copy the picture itself or its path, or open it. `shift+tab` switches to `New`,
   which starts fresh. A model that can't take images says so, `ctrl+o` then lists only models that can, and a request
   sent anyway starts fresh with a warning first.
-- **sessions**: each conversation of prompts is a session, and the open ones are tabs over the prompt box, named by
+- **sessions**: each conversation of prompts is a session. Open sessions appear as tabs over the prompt box, named by
   their first prompt. A tab shows a spinner while it generates and a dot when it finishes out of sight. `ctrl+n` or `+`
   opens a new session, `alt+↑` and `alt+↓` switch, and `ctrl+s` lists past sessions to resume. Closing a tab, with its
   `✕` or from the palette, keeps the session in the history. Open tabs come back the next time the app starts.
@@ -54,7 +54,7 @@ the same actions as an image in a session, such as copying the picture itself.
   `darkroom -c` resumes the session you used last, and `darkroom -s <id>` resumes one by a prefix of its ID.
 - **history**: every past run with its image, prompt, settings, and cost. Enter opens the images, `r` re-runs, `y`
   copies the ID, `d` deletes with the same question, and `/` filters. A comparison is one row, and `←` and `→` step through its models.
-- **models**: every image model with its price, the options it takes, and an example image: your newest one from that
+- **models**: every image model with its price and the options it takes, plus an example image. The example is your newest one from that
   model, or the one included with darkroom (`e` switches). `s` sorts, `/` filters, and Enter takes the model to the
   prompt box.
 
@@ -74,7 +74,7 @@ darkroom history rerun last -n 2
 - `generate` writes the saved paths to stdout and progress and costs to stderr, so it composes with other tools. `-i`
   adds reference images from local paths or web addresses.
 - `compare` generates one prompt with several models into one folder. It shows the estimated total first and asks
-  before spending; `--yes` skips the question.
+  before spending. `--yes` skips the question.
 - `history` lists, shows, opens, re-runs, and prunes past runs. Run IDs accept a unique prefix, `last`, or `last~N`.
 - `models` lists and filters models with their prices, and `models get` shows one in full.
 - `cache` refreshes the cached models, prices, and shell completions.
