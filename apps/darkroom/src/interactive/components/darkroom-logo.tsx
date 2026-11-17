@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { LOGO_DARK, LOGO_ROOM } from "./logo-lines";
 import { theme } from "./theme";
