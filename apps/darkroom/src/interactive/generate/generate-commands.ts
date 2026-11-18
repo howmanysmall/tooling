@@ -1,7 +1,7 @@
 import { CommandGroup } from "$interactive/keys/browser-command";
 import { BrowserKey } from "$interactive/keys/browser-keys";
 
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 
 import type { KeyHint } from "$interactive/components/key-hints";
 import type { BrowserCommand } from "$interactive/keys/browser-command";

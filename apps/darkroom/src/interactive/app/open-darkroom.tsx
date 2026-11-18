@@ -1,5 +1,5 @@
 import { stderr, stdin, stdout } from "node:process";
-import { render } from "ink";
+import { MouseProvider, render } from "@visulima/tui";
 
 import { commandName } from "$constants";
 import { deleteRunAsync } from "$history/delete-run";
@@ -7,6 +7,7 @@ import { readAllAsync, resolve } from "$history/history-store";
 import { listSessions } from "$history/session-list";
 import { createUlid } from "$history/ulid";
 import { NoticeContext } from "$interactive/components/notice-store";
+import { MouseBridge } from "$interactive/mouse/mouse-bridge";
 import { MouseRegistryContext } from "$interactive/mouse/mouse-context";
 import { createMouseSession } from "$interactive/mouse/mouse-session";
 import { readOpenTabsAsync, writeOpenTabsAsync } from "$interactive/session/open-tabs-file";
@@ -159,25 +160,33 @@ export async function openDarkroomAsync({ models, resume, sort = ModelSort.Name,
 	const mouse = createMouseSession(stdin, stdout);
 
 	const instance = render(
-		<MouseRegistryContext value={mouse.registry}>
-			<NoticeContext value={mouse.notices}>
-				<DarkroomApp
-					catalog={catalog}
-					getPreview={getPreview}
-					history={createHistoryServices(store, previews)}
-					initialEntries={entries}
-					initialTab={tab}
-					now={openedAt}
-					readHistoryAsync={readHistoryAsync}
-					session={session}
-					sessions={sessions}
-					sort={sort}
-					onGenerateWithOptions={handleGenerateWithOptions}
-				/>
-			</NoticeContext>
-		</MouseRegistryContext>,
-		// The app decides what ctrl+c does: clear the prompt, or quit.
-		{ alternateScreen: true, exitOnCtrlC: false, stdin: mouse.stdin, stdout: mouse.stdout },
+		<MouseProvider>
+			<MouseBridge onPointer={mouse.handlePointer} />
+			<MouseRegistryContext value={mouse.registry}>
+				<NoticeContext value={mouse.notices}>
+					<DarkroomApp
+						catalog={catalog}
+						getPreview={getPreview}
+						history={createHistoryServices(store, previews)}
+						initialEntries={entries}
+						initialTab={tab}
+						now={openedAt}
+						readHistoryAsync={readHistoryAsync}
+						session={session}
+						sessions={sessions}
+						sort={sort}
+						onGenerateWithOptions={handleGenerateWithOptions}
+					/>
+				</NoticeContext>
+			</MouseRegistryContext>
+		</MouseProvider>,
+		{
+			alternateScreen: true,
+			// The app decides what ctrl+c does: clear the prompt, or quit.
+			exitOnCtrlC: false,
+			stdin: mouse.stdin,
+			stdout: mouse.stdout,
+		},
 	);
 
 	await instance.waitUntilExit();

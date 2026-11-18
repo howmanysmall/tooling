@@ -35,6 +35,9 @@ function record(): Recorded {
 		askDelete(turn): void {
 			events.push(`delete? ${turn.id}`);
 		},
+		copy(text): void {
+			events.push(`copy ${text}`);
+		},
 		copyImageAsync: async () => undefined,
 		fillPrompt(text): void {
 			events.push(`fill ${text}`);
@@ -48,9 +51,6 @@ function record(): Recorded {
 		},
 		session,
 		turns: [MADE],
-		write(data): void {
-			events.push(`write ${data}`);
-		},
 	};
 
 	return { environment, events };
@@ -101,10 +101,6 @@ describe("getImageCommands", () => {
 		commands.find((command) => command.title === "Edit")?.run();
 		commands.find((command) => command.title === "Copy path")?.run();
 
-		expect(events).toStrictEqual([
-			"edit /work/cat.png",
-			`write \u001B]52;c;${Buffer.from("/work/cat.png").toString("base64")}\u0007`,
-			"success Copied the path",
-		]);
+		expect(events).toStrictEqual(["edit /work/cat.png", "copy /work/cat.png", "success Copied the path"]);
 	});
 });

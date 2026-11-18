@@ -1,5 +1,6 @@
 import { cwd } from "node:process";
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { toDisplayPath } from "$generation/format-result";
 import { theme } from "$interactive/components/theme";

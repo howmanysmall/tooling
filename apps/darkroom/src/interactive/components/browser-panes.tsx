@@ -1,4 +1,4 @@
-import { Box } from "ink";
+import { Box } from "@visulima/tui/components/box";
 
 import type { PropsWithChildren, ReactNode } from "react";
 

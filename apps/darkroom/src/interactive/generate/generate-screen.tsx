@@ -1,6 +1,8 @@
 import nodePath from "node:path";
 import { useReducer } from "react";
-import { Box, useApp, useWindowSize } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { useApp } from "@visulima/tui/hooks/use-app";
+import { useWindowSize } from "@visulima/tui/hooks/use-window-size";
 
 import { getReferenceRange } from "$generation/model-capabilities";
 import { getModelPrices } from "$generation/observed-prices";
@@ -28,7 +30,7 @@ import { parsePastedImagePaths, resolvePromptImages } from "./prompt-images";
 import { readClipboardImageAsync } from "./read-clipboard-image";
 
 import type { ImageModelListItem } from "@openrouter/sdk/models";
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 import type { Dispatch, ReactNode } from "react";
 
 import type { SessionSummary } from "$history/session-list";

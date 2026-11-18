@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { BrowserKey, formatClipboardSequence, getBrowserKey } from "./browser-keys";
+import { BrowserKey, getBrowserKey } from "./browser-keys";
 import { NO_KEY } from "./test-key";
 
 describe("getBrowserKey", () => {
@@ -19,13 +19,5 @@ describe("getBrowserKey", () => {
 		expect.assertions(1);
 
 		expect(getBrowserKey("d", { ...NO_KEY, ctrl: true })).toBeUndefined();
-	});
-});
-
-describe("formatClipboardSequence", () => {
-	it("wraps the base64 text in an OSC 52 clipboard sequence", ({ expect }) => {
-		expect.assertions(1);
-
-		expect(formatClipboardSequence("01M4YV")).toBe("\u001B]52;c;MDFNNFlW\u0007");
 	});
 });

@@ -1,4 +1,4 @@
-import { Text } from "ink";
+import { Text } from "@visulima/tui/components/text";
 
 import { theme } from "$interactive/components/theme";
 

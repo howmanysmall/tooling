@@ -1,10 +1,11 @@
 import { useRef } from "react";
+import { useAnimation } from "@visulima/tui/hooks/use-animation";
+import { useBoxMetrics } from "@visulima/tui/hooks/use-box-metrics";
 import getStringWidth from "fast-string-width";
-import { useAnimation, useBoxMetrics } from "ink";
 
 import { getMarqueeCycle, getMarqueeOffset, MARQUEE_TICK_MS, sliceMarquee } from "./marquee";
 
-import type { DOMElement } from "ink";
+import type { DOMElement } from "@visulima/tui/dom";
 import type { RefObject } from "react";
 
 import type { MarqueeWindow } from "./marquee";

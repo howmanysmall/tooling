@@ -1,18 +1,19 @@
 import { createContext, use, useSyncExternalStore } from "react";
+import { getBoundingBox } from "@visulima/tui";
 
 import { getNothing, subscribeToNothing } from "$interactive/components/empty-store";
 
-import type { DOMElement } from "ink";
+import type { DOMElement } from "@visulima/tui/dom";
 
 import type { CellRect, MouseHandlers, MouseRegistry } from "./mouse-registry";
 
-export type InkMouseRegistry = MouseRegistry<DOMElement>;
+export type ElementMouseRegistry = MouseRegistry<DOMElement>;
 
 /**
  * Set by the app. Screens rendered on their own, as in tests, have no
  * mouse.
  */
-export const MouseRegistryContext = createContext<InkMouseRegistry | undefined>(undefined);
+export const MouseRegistryContext = createContext<ElementMouseRegistry | undefined>(undefined);
 
 MouseRegistryContext.displayName = "MouseRegistryContext";
 
@@ -21,29 +22,43 @@ export const MouseLayerContext = createContext(0);
 
 MouseLayerContext.displayName = "MouseLayerContext";
 
+function toCellRect({ height, width, x, y }: ReturnType<typeof getBoundingBox>): CellRect {
+	return { height, left: x, top: y, width };
+}
+
+function isClipping({ style }: DOMElement): boolean {
+	const overflow = style.overflowY ?? style.overflow;
+	return overflow === "hidden" || overflow === "scroll";
+}
+
+function intersect(rect: CellRect, clip: CellRect): CellRect {
+	const left = Math.max(rect.left, clip.left);
+	const top = Math.max(rect.top, clip.top);
+	const right = Math.min(rect.left + rect.width, clip.left + clip.width);
+	const bottom = Math.min(rect.top + rect.height, clip.top + clip.height);
+	return { height: Math.max(0, bottom - top), left, top, width: Math.max(0, right - left) };
+}
+
 /**
- * Finds where an Ink element was laid out, by adding up its offsets from
- * the screen's corner.
+ * Finds the cells an element shows on: where it was laid out, moved by any
+ * scrolled box around it, and cut to the boxes that clip it, so a row
+ * scrolled out of sight can't be pointed at.
  *
- * @param node - An element Ink has laid out.
- * @returns Its cells, or `undefined` while it has no size, as when hidden.
+ * @param node - An element the renderer has laid out.
+ * @returns Its visible cells, or `undefined` while none show, as when
+ *   hidden or scrolled away.
  */
 export function measureElement(node: DOMElement): CellRect | undefined {
-	const layout = node.yogaNode;
-	if (layout === undefined) return undefined;
+	if (node.yogaNode === undefined) return undefined;
 
-	const width = layout.getComputedWidth();
-	const height = layout.getComputedHeight();
-	if (width === 0 || height === 0) return undefined;
-
-	let left = 0;
-	let top = 0;
-	for (let current: DOMElement | undefined = node; current !== undefined; current = current.parentNode) {
-		left += current.yogaNode?.getComputedLeft() ?? 0;
-		top += current.yogaNode?.getComputedTop() ?? 0;
+	let rect = toCellRect(getBoundingBox(node));
+	for (let ancestor = node.parentNode; ancestor !== undefined; ancestor = ancestor.parentNode) {
+		if (isClipping(ancestor)) {
+			rect = intersect(rect, toCellRect(getBoundingBox(ancestor)));
+		}
 	}
 
-	return { height, left, top, width };
+	return rect.width === 0 || rect.height === 0 ? undefined : rect;
 }
 
 /** Binds an element to the mouse. */

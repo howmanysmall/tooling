@@ -1,7 +1,7 @@
 import { setTimeout as delay } from "node:timers/promises";
 import { describe, it } from "vitest";
 import { fromPartial } from "@total-typescript/shoehorn";
-import { Box } from "ink";
+import { Box } from "@visulima/tui/components/box";
 
 import { renderScreen, TEST_COLUMNS, TEST_ROWS } from "$interactive/app/test-screen";
 

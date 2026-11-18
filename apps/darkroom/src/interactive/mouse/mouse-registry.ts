@@ -97,7 +97,7 @@ function hasWheel(target: MouseHandlers): boolean {
  * Tracks what the mouse can reach and sends each pointer event to the
  * target under it.
  *
- * @template Node - What a target is drawn as, like an Ink element.
+ * @template Node - What a target is drawn as, like a tui element.
  * @param measure - Where a target's node is on screen, or `undefined` while
  *   it has no size, as when hidden.
  * @returns A registry that targets join and pointer events go through.

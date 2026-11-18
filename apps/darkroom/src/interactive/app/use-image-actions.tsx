@@ -1,5 +1,5 @@
 import { use } from "react";
-import { useStdout } from "ink";
+import { useClipboard } from "@visulima/tui/hooks/use-clipboard";
 
 import { openFilesAsync } from "$history/open-files";
 import { getImageFileCommands } from "$interactive/components/image-commands";
@@ -33,13 +33,13 @@ function ignore(): void {
 export function useImageActions(): ShowImageActions {
 	const shell = useShellActions();
 	const notices = use(NoticeContext);
-	const { write } = useStdout();
+	const { copy } = useClipboard();
 	const environment: ImageCommandEnvironment = {
+		copy,
 		copyImageAsync,
 		openImagesAsync: openFilesAsync,
 		reportError: notices?.reporter.reportError ?? ignore,
 		reportSuccess: notices?.reporter.reportSuccess ?? ignore,
-		write,
 	};
 
 	return (path, extra = []) => {

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { useInput } from "ink";
+import { useInput } from "@visulima/tui/hooks/use-input";
 
 import { getSingleLineAction, reducePromptEditor } from "$interactive/generate/prompt-editor-state";
 import { PromptText } from "$interactive/generate/prompt-text";

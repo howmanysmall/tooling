@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { DetailPane } from "$interactive/components/detail-pane";
 import { removeControlCharacters } from "$utilities/text-utilities";

@@ -1,5 +1,5 @@
 import nodePath from "node:path";
-import { Text } from "ink";
+import { Text } from "@visulima/tui/components/text";
 
 import { getDeleteChoices, getDeletion } from "$history/delete-run";
 import { previewPrompt } from "$history/format-history";

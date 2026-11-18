@@ -1,4 +1,6 @@
-import { Box, Text, useWindowSize } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
+import { useWindowSize } from "@visulima/tui/hooks/use-window-size";
 
 import { ScreenHeader } from "$interactive/components/screen-header";
 import { StatusBar } from "$interactive/components/status-bar";

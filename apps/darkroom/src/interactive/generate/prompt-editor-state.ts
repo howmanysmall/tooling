@@ -1,6 +1,6 @@
 import { EditorActionType } from "$meta/action-types";
 
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 
 /** The text in the prompt box and where the cursor is, in UTF-16 units. */
 export interface PromptEditor {

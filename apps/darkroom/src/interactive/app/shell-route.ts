@@ -1,4 +1,4 @@
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 
 /** Where the shell sends a key press. */
 export const enum ShellRoute {

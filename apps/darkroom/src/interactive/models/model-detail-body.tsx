@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { FactColumns } from "$interactive/components/fact-columns";
 import { FactLines } from "$interactive/components/fact-lines";

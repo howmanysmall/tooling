@@ -1,4 +1,4 @@
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 
 /** A key press with no special key or modifier held, for tests to extend. */
 export const NO_KEY: Key = {

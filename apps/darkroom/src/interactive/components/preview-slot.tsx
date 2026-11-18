@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Text } from "ink";
+import { Text } from "@visulima/tui/components/text";
 
 import { ImagePreview } from "./image-preview";
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Box, useInput } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { useInput } from "@visulima/tui/hooks/use-input";
 
 import { ChoiceRow } from "./choice-row";
 import { Dialog } from "./dialog";
