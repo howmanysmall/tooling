@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { MarqueeText } from "$interactive/components/marquee-text";
 import { theme } from "$interactive/components/theme";

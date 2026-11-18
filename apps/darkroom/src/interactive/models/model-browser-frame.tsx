@@ -3,7 +3,7 @@ import { BrowserShell } from "$interactive/app/browser-shell";
 import { useModelBrowser } from "./model-browser-context";
 import { getModelCommands } from "./model-commands";
 
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 import type { PropsWithChildren, ReactNode } from "react";
 
 /**

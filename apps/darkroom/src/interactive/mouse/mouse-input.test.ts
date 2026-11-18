@@ -1,6 +1,6 @@
 import { describe, it } from "vitest";
 
-import { MouseAction, normalizeCtrlBackspace, splitMouseInput, takeKeyboardReply, toMouseAction } from "./mouse-input";
+import { holdBackPartialReport, normalizeCtrlBackspace, takeKeyboardReply } from "./mouse-input";
 
 describe("takeKeyboardReply", () => {
 	it("takes the terminal's answer out of the typing, so it is never typed", ({ expect }) => {
@@ -8,12 +8,6 @@ describe("takeKeyboardReply", () => {
 
 		expect(takeKeyboardReply("a\u001B[?0ub")).toStrictEqual({ hasReply: true, text: "ab" });
 		expect(takeKeyboardReply("a\u001B[127;9ub")).toStrictEqual({ hasReply: false, text: "a\u001B[127;9ub" });
-	});
-
-	it("holds back an answer cut off at the end of a chunk", ({ expect }) => {
-		expect.assertions(1);
-
-		expect(splitMouseInput("a\u001B[?0")).toStrictEqual({ events: [], pending: "\u001B[?0", text: "a" });
 	});
 });
 
@@ -26,40 +20,21 @@ describe("normalizeCtrlBackspace", () => {
 	});
 });
 
-describe("splitMouseInput", () => {
-	it("takes the reports out and leaves the typing, in zero-based cells", ({ expect }) => {
+describe("holdBackPartialReport", () => {
+	it("passes whole reports and typing through untouched", ({ expect }) => {
 		expect.assertions(1);
 
-		// The right button's press is dropped.
-		expect(splitMouseInput("a\u001B[<35;10;5Mb\u001B[<2;1;1M\u001B[<0;3;2M\u001B[<0;3;2mc")).toStrictEqual({
-			events: [
-				{ action: MouseAction.Move, column: 9, row: 4 },
-				{ action: MouseAction.Press, column: 2, row: 1 },
-				{ action: MouseAction.Release, column: 2, row: 1 },
-			],
+		expect(holdBackPartialReport("a\u001B[<35;10;5Mb")).toStrictEqual({
+			complete: "a\u001B[<35;10;5Mb",
 			pending: "",
-			text: "abc",
 		});
 	});
 
-	it("holds back a report cut off at the end, but not a lone Esc", ({ expect }) => {
-		expect.assertions(2);
+	it("holds back a report or keyboard reply cut off at the end, but not a lone Esc", ({ expect }) => {
+		expect.assertions(3);
 
-		expect(splitMouseInput("x\u001B[<35;1")).toStrictEqual({ events: [], pending: "\u001B[<35;1", text: "x" });
-		expect(splitMouseInput("\u001B")).toStrictEqual({ events: [], pending: "", text: "\u001B" });
-	});
-});
-
-describe("toMouseAction", () => {
-	it("reads the wheel, motion, and the primary button, and skips the rest", ({ expect }) => {
-		expect.assertions(7);
-
-		expect(toMouseAction(64, false)).toBe(MouseAction.WheelUp);
-		expect(toMouseAction(65, false)).toBe(MouseAction.WheelDown);
-		expect(toMouseAction(35, false)).toBe(MouseAction.Move);
-		expect(toMouseAction(32, false)).toBe(MouseAction.Drag);
-		expect(toMouseAction(0, true)).toBe(MouseAction.Release);
-		expect(toMouseAction(2, false)).toBeUndefined();
-		expect(toMouseAction(2, true)).toBeUndefined();
+		expect(holdBackPartialReport("x\u001B[<35;1")).toStrictEqual({ complete: "x", pending: "\u001B[<35;1" });
+		expect(holdBackPartialReport("a\u001B[?0")).toStrictEqual({ complete: "a", pending: "\u001B[?0" });
+		expect(holdBackPartialReport("\u001B")).toStrictEqual({ complete: "\u001B", pending: "" });
 	});
 });

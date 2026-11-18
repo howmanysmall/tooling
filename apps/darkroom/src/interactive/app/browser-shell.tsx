@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { Box, useApp, useInput, usePaste } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { useApp } from "@visulima/tui/hooks/use-app";
+import { useInput } from "@visulima/tui/hooks/use-input";
+import { usePaste } from "@visulima/tui/hooks/use-paste";
 
 import { pickNewerMessage, useNotice } from "$interactive/components/notice-store";
 import { theme } from "$interactive/components/theme";
@@ -14,7 +17,7 @@ import { ShellActionsContext } from "./shell-actions-context";
 import { getShellCommands } from "./shell-commands";
 import { getShellRoute, ShellRoute } from "./shell-route";
 
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 import type { ReactNode } from "react";
 
 import type { StatusMessage } from "$interactive/components/status-message";

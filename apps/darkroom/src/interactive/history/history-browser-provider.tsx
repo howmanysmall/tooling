@@ -1,5 +1,7 @@
 import { useReducer } from "react";
-import { useApp, useStdout, useWindowSize } from "ink";
+import { useApp } from "@visulima/tui/hooks/use-app";
+import { useClipboard } from "@visulima/tui/hooks/use-clipboard";
+import { useWindowSize } from "@visulima/tui/hooks/use-window-size";
 
 import { getRunRelations } from "$history/resolve-run-reference";
 import { getNearbyItems } from "$interactive/components/nearby-items";
@@ -153,11 +155,11 @@ export function HistoryBrowserProvider({
 }: Readonly<PropsWithChildren<HistoryBrowserProviderProperties>>): ReactNode {
 	const [browser, dispatch] = useReducer(reduceBrowserState, entries, createBrowserState);
 	const { exit } = useApp();
-	const { write } = useStdout();
+	const { copy } = useClipboard();
 	const { columns, rows } = useWindowSize();
 	const layout = getLayout(columns, rows);
 	const selected = getSelectedRun(browser);
-	const actions = createBrowserActions({ dispatch, exit, pageSize: layout.listHeight, selected, services, write });
+	const actions = createBrowserActions({ copy, dispatch, exit, pageSize: layout.listHeight, selected, services });
 	const value = createContextValue({ actions, browser, layout, now, selected, services });
 	preloadNearby(value);
 

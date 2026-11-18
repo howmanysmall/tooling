@@ -14,7 +14,7 @@ export interface ScreenMirror extends TextSelectionScreen {
 	readonly dispose: () => void;
 	/** Calls `listener` after each write has reached the terminal. */
 	readonly onWrite: (listener: () => void) => void;
-	/** The output for Ink, which also feeds the mirror. */
+	/** The output for the renderer, which also feeds the mirror. */
 	readonly stream: NodeJS.WriteStream;
 }
 
@@ -71,19 +71,20 @@ export function describeCellStyle(cell: IBufferCell, highlight?: number): string
 }
 
 /**
- * Keeps a copy of what Ink draws, so text can be read back from the screen
- * and redrawn highlighted, the way a terminal shows a selection. Writes go
- * to the terminal at once, in order; the copy follows a moment later.
+ * Keeps a copy of what the renderer draws, so text can be read back from
+ * the screen and redrawn highlighted, the way a terminal shows a selection.
+ * Writes go to the terminal at once, in order; the copy follows a moment
+ * later.
  *
  * @param output - The terminal.
  * @param highlight - The selection color, as `0xRRGGBB`.
- * @returns The stream for Ink, and what reads and paints the screen.
+ * @returns The stream for the renderer, and what reads and paints the screen.
  */
 export function createScreenMirror(output: NodeJS.WriteStream, highlight: number): ScreenMirror {
 	const terminal = new xterm.Terminal({
 		allowProposedApi: true,
 		cols: output.columns,
-		// The terminal turns Ink's bare newlines into a new line at the left.
+		// The terminal starts a new line at the left for each bare newline drawn.
 		convertEol: true,
 		rows: output.rows,
 		scrollback: 0,
@@ -185,7 +186,7 @@ export function createScreenMirror(output: NodeJS.WriteStream, highlight: number
 
 			return text;
 		},
-		// SAFETY: it has every member Ink uses on stdout, defined above.
+		// SAFETY: it has every member the renderer uses on stdout, defined above.
 		// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- see the SAFETY comment
 		stream: stream as NodeJS.WriteStream,
 	};

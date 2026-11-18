@@ -2,13 +2,11 @@ import { EventEmitter } from "node:events";
 import { describe, it } from "vitest";
 import { fromPartial } from "@total-typescript/shoehorn";
 
-import { MouseAction } from "./mouse-input";
-import { createMouseStdin } from "./mouse-stdin";
+import { createTerminalInput } from "./terminal-input";
 
 import type { TestContext } from "vitest";
 
-import type { PointerEvent } from "./mouse-input";
-import type { MouseStdin } from "./mouse-stdin";
+import type { TerminalInput } from "./terminal-input";
 
 const QUERY_KEYBOARD = "\u001B[?u";
 const KEYBOARD_REPLY = "\u001B[?0u";
@@ -16,12 +14,11 @@ const ENABLE_KEYBOARD = "\u001B[>1u";
 const DISABLE_KEYBOARD = "\u001B[<u";
 
 interface Terminal {
-	readonly pointerEvents: ReadonlyArray<PointerEvent>;
-	/** Takes whatever has reached the keyboard stream so far. */
-	readonly readKeyboard: () => string;
+	readonly input: TerminalInput;
+	/** Takes whatever has reached the renderer's stream so far. */
+	readonly read: () => string;
 	/** Types into the terminal, as its input stream would deliver it. */
 	readonly send: (text: string) => void;
-	readonly stdin: MouseStdin;
 	/** How many times a sequence has been written to the terminal. */
 	readonly writesOf: (sequence: string) => number;
 }
@@ -30,7 +27,7 @@ interface Terminal {
  * Opens the input on a fake terminal that records what is written to it.
  *
  * @param onTestFinished - Disposes the input after the test.
- * @returns The input, and how to drive and read the terminal.
+ * @returns How to drive the terminal and read what the renderer gets.
  */
 function openTerminal(onTestFinished: TestContext["onTestFinished"]): Terminal {
 	const emitter = new EventEmitter();
@@ -49,40 +46,70 @@ function openTerminal(onTestFinished: TestContext["onTestFinished"]): Terminal {
 		},
 	});
 
-	const pointerEvents: Array<PointerEvent> = [];
-	const stdin = createMouseStdin(source, output, (event) => {
-		pointerEvents.push(event);
-	});
-
-	onTestFinished(stdin.dispose);
+	const input = createTerminalInput(source, output);
+	onTestFinished(input.dispose);
 
 	return {
-		pointerEvents,
-		readKeyboard(): string {
-			return String(stdin.stream.read() ?? "");
-		},
+		input,
+		read: (): string => String(input.stream.read() ?? ""),
 		send(text): void {
 			emitter.emit("data", Buffer.from(text));
 		},
-		stdin,
 		writesOf: (sequence) => written.join("").split(sequence).length - 1,
 	};
 }
 
-describe("createMouseStdin", () => {
-	it("asks the terminal about its keyboard once, however often raw mode is set", ({ expect, onTestFinished }) => {
+describe("createTerminalInput", () => {
+	it("passes keys and whole mouse reports to the renderer", ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const { read, send } = openTerminal(onTestFinished);
+
+		send("a\u001B[<0;3;2Mb");
+
+		expect(read()).toBe("a\u001B[<0;3;2Mb");
+	});
+
+	it("holds a report cut off between reads until its other half comes, so none of it is typed", ({
+		expect,
+		onTestFinished,
+	}) => {
+		expect.assertions(2);
+
+		const { read, send } = openTerminal(onTestFinished);
+
+		send("x\u001B[<35;1");
+
+		expect(read()).toBe("x");
+
+		send("1;3M");
+
+		expect(read()).toBe("\u001B[<35;11;3M");
+	});
+
+	it("makes ctrl+backspace delete a word", ({ expect, onTestFinished }) => {
+		expect.assertions(1);
+
+		const { read, send } = openTerminal(onTestFinished);
+
+		send("\b");
+
+		expect(read()).toBe("\u0017");
+	});
+
+	it("asks the terminal about its keyboard once raw mode is on, and only once", ({ expect, onTestFinished }) => {
 		expect.assertions(3);
 
-		const { stdin, writesOf } = openTerminal(onTestFinished);
+		const { input, writesOf } = openTerminal(onTestFinished);
 
 		expect(writesOf(QUERY_KEYBOARD)).toBe(0);
 
-		stdin.stream.setRawMode(true);
+		input.stream.setRawMode(true);
 
 		expect(writesOf(QUERY_KEYBOARD)).toBe(1);
 
-		stdin.stream.setRawMode(false);
-		stdin.stream.setRawMode(true);
+		input.stream.setRawMode(false);
+		input.stream.setRawMode(true);
 
 		expect(writesOf(QUERY_KEYBOARD)).toBe(1);
 	});
@@ -93,24 +120,24 @@ describe("createMouseStdin", () => {
 	}) => {
 		expect.assertions(2);
 
-		const { readKeyboard, send, stdin, writesOf } = openTerminal(onTestFinished);
-		stdin.stream.setRawMode(true);
+		const { input, read, send, writesOf } = openTerminal(onTestFinished);
+		input.stream.setRawMode(true);
 
 		send(KEYBOARD_REPLY);
 		send(KEYBOARD_REPLY);
 
 		expect(writesOf(ENABLE_KEYBOARD)).toBe(1);
-		expect(readKeyboard()).toBe("");
+		expect(read()).toBe("");
 	});
 
 	it("leaves the protocol alone on a terminal that doesn't answer", ({ expect, onTestFinished }) => {
 		expect.assertions(2);
 
-		const { send, stdin, writesOf } = openTerminal(onTestFinished);
-		stdin.stream.setRawMode(true);
+		const { input, send, writesOf } = openTerminal(onTestFinished);
+		input.stream.setRawMode(true);
 
 		send("a");
-		stdin.dispose();
+		input.dispose();
 
 		expect(writesOf(ENABLE_KEYBOARD)).toBe(0);
 		expect(writesOf(DISABLE_KEYBOARD)).toBe(0);
@@ -119,43 +146,12 @@ describe("createMouseStdin", () => {
 	it("turns the protocol back off when disposed, so the shell gets normal keys", ({ expect, onTestFinished }) => {
 		expect.assertions(1);
 
-		const { send, stdin, writesOf } = openTerminal(onTestFinished);
-		stdin.stream.setRawMode(true);
+		const { input, send, writesOf } = openTerminal(onTestFinished);
+		input.stream.setRawMode(true);
 
 		send(KEYBOARD_REPLY);
-		stdin.dispose();
+		input.dispose();
 
 		expect(writesOf(DISABLE_KEYBOARD)).toBe(1);
-	});
-
-	it("sends mouse reports to the pointer, and never types them", ({ expect, onTestFinished }) => {
-		expect.assertions(2);
-
-		const { pointerEvents, readKeyboard, send } = openTerminal(onTestFinished);
-
-		send("\u001B[<0;3;2M");
-
-		expect(pointerEvents).toStrictEqual([{ action: MouseAction.Press, column: 2, row: 1 }]);
-		expect(readKeyboard()).toBe("");
-	});
-
-	it("types what surrounds a mouse report", ({ expect, onTestFinished }) => {
-		expect.assertions(1);
-
-		const { readKeyboard, send } = openTerminal(onTestFinished);
-
-		send("a\u001B[<35;1;1Mb");
-
-		expect(readKeyboard()).toBe("ab");
-	});
-
-	it("makes ctrl+backspace delete a word", ({ expect, onTestFinished }) => {
-		expect.assertions(1);
-
-		const { readKeyboard, send } = openTerminal(onTestFinished);
-
-		send("\b");
-
-		expect(readKeyboard()).toBe("\u0017");
 	});
 });

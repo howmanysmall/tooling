@@ -65,7 +65,6 @@
 		"@tmcp/adapter-arktype": "catalog:ai",
 		"@tmcp/transport-stdio": "catalog:ai",
 		"@visulima/tui": "catalog:runtime",
-		"@visulima/tui-kit": "catalog:runtime",
 		"@xterm/headless": "catalog:runtime",
 		"ansis": "catalog:runtime",
 		"arktype": "catalog:runtime",

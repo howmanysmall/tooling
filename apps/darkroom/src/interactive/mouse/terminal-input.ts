@@ -2,87 +2,76 @@ import process from "node:process";
 import { PassThrough } from "node:stream";
 import { StringDecoder } from "node:string_decoder";
 
-import { normalizeCtrlBackspace, splitMouseInput, takeKeyboardReply } from "./mouse-input";
+import { holdBackPartialReport, normalizeCtrlBackspace, takeKeyboardReply } from "./mouse-input";
 
 import type { Duplex } from "node:stream";
 
-import type { PointerEvent } from "./mouse-input";
-
-// Report presses, every movement, and the wheel, in SGR form.
-const ENABLE_MOUSE = "\u001B[?1000h\u001B[?1003h\u001B[?1006h";
-const DISABLE_MOUSE = "\u001B[?1006l\u001B[?1003l\u001B[?1000l";
-
 // The kitty keyboard protocol is how a terminal can report cmd+backspace at
-// all. Ink's own detection asks before raw mode is on, so the answer is lost.
+// all. The renderer's own detection asks before raw mode is on, so a local
+// terminal's instant answer lands in the line buffer and is lost.
 const QUERY_KEYBOARD = "\u001B[?u";
 const ENABLE_KEYBOARD = "\u001B[>1u";
 const DISABLE_KEYBOARD = "\u001B[<u";
 
-export interface MouseStdin {
-	/** Stops reporting the mouse and lets go of the terminal's input. */
+export interface TerminalInput {
+	/** Lets go of the terminal's input, and its keyboard protocol. */
 	readonly dispose: () => void;
-	/** The keyboard input alone, for Ink. */
+	/** The terminal's input, cleaned up for the renderer. */
 	readonly stream: NodeJS.ReadStream;
 }
 
 /**
- * Turns on mouse reporting and splits the terminal's input: pointer events
- * go to `onPointer`, and everything else to a stream for Ink, so a mouse
- * report never reaches a key handler or a text input as typing.
+ * Passes the terminal's input to the renderer, which reads the keys and
+ * the mouse, with what it lacks: a mouse report cut off between reads
+ * waits for its other half instead of being typed, `ctrl+backspace`
+ * deletes a word, and the kitty keyboard protocol turns on once raw mode
+ * is.
  *
- * @param source - The terminal's input.
- * @param output - The terminal's output, to turn reporting on and off.
- * @param onPointer - Receives each pointer event.
- * @returns The keyboard stream for Ink, and how to stop.
+ * @param source - The stream the terminal types into.
+ * @param output - The terminal's output, to ask about the protocol.
+ * @returns The cleaned-up input for the renderer, and how to stop.
  */
-export function createMouseStdin(
-	source: NodeJS.ReadStream,
-	output: NodeJS.WriteStream,
-	onPointer: (event: PointerEvent) => void,
-): MouseStdin {
+export function createTerminalInput(source: NodeJS.ReadStream, output: NodeJS.WriteStream): TerminalInput {
 	// Typed as the shared base so a single assertion reaches `ReadStream`.
-	const keyboard: Duplex = new PassThrough({ encoding: "utf8" });
+	const input: Duplex = new PassThrough({ encoding: "utf8" });
 	const decoder = new StringDecoder("utf8");
 	let pending = "";
 	let hasAskedKeyboard = false;
 	let isKeyboardEnhanced = false;
 
 	/**
-	 * Splits a chunk of the terminal's input into keys and pointer events.
+	 * Passes a chunk on, minus any report cut off at its end.
 	 *
 	 * @param chunk - Raw bytes; the input has no encoding set.
 	 */
 	function onData(chunk: Buffer): void {
-		const split = splitMouseInput(pending + decoder.write(chunk));
-		const { events } = split;
-		({ pending } = split);
+		const held = holdBackPartialReport(pending + decoder.write(chunk));
+		({ pending } = held);
 
-		const { hasReply, text } = takeKeyboardReply(split.text);
+		const { hasReply, text } = takeKeyboardReply(held.complete);
 		if (hasReply && !isKeyboardEnhanced) {
 			isKeyboardEnhanced = true;
 			output.write(ENABLE_KEYBOARD);
 		}
 
 		if (text.length > 0) {
-			keyboard.write(normalizeCtrlBackspace(text));
-		}
-
-		for (const event of events) {
-			onPointer(event);
+			input.write(normalizeCtrlBackspace(text));
 		}
 	}
 
-	function disableMouse(): void {
-		output.write(isKeyboardEnhanced ? `${DISABLE_MOUSE}${DISABLE_KEYBOARD}` : DISABLE_MOUSE);
+	function disableKeyboard(): void {
+		if (!isKeyboardEnhanced) return;
 		isKeyboardEnhanced = false;
+		output.write(DISABLE_KEYBOARD);
 	}
 
-	// Ink drives raw mode and the event loop through these, as on a TTY.
-	Object.assign(keyboard, {
+	// The renderer drives raw mode and the event loop through these, as on
+	// a TTY.
+	Object.assign(input, {
 		isTTY: true,
 		ref(): Duplex {
 			source.ref();
-			return keyboard;
+			return input;
 		},
 		setRawMode(mode: boolean): Duplex {
 			source.setRawMode(mode);
@@ -92,29 +81,27 @@ export function createMouseStdin(
 				output.write(QUERY_KEYBOARD);
 			}
 
-			return keyboard;
+			return input;
 		},
 		unref(): Duplex {
 			source.unref();
-			return keyboard;
+			return input;
 		},
 	});
 
 	source.on("data", onData);
-	output.write(ENABLE_MOUSE);
-	// If darkroom dies with the app open, the shell must not keep getting
-	// reports.
-	process.once("exit", disableMouse);
+	// If darkroom dies with the app open, the shell must get normal keys.
+	process.once("exit", disableKeyboard);
 
 	return {
 		dispose(): void {
 			source.off("data", onData);
 			source.pause();
-			disableMouse();
-			process.off("exit", disableMouse);
+			disableKeyboard();
+			process.off("exit", disableKeyboard);
 		},
-		// SAFETY: the stream has every member Ink uses on stdin, added above.
+		// SAFETY: it has every member the renderer uses on stdin, added above.
 		// oxlint-disable-next-line typescript/no-unsafe-type-assertion -- see the SAFETY comment
-		stream: keyboard as NodeJS.ReadStream,
+		stream: input as NodeJS.ReadStream,
 	};
 }

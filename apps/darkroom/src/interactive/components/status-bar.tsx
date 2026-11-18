@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { KeyHints } from "./key-hints";
 import { theme } from "./theme";

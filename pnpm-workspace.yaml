@@ -77,6 +77,10 @@ overrides:
 # "Survived". Drop this once upstream supports Vitest 5.
 patchedDependencies:
   "@stryker-mutator/vitest-runner@10.0.0": patches/@stryker-mutator__vitest-runner@10.0.0.patch
+  # @visulima/tui renders ambiguous-width glyphs (▀ ▌ ▲ — ≈ ← ●) two cells
+  # wide, though its own layout and most terminals use one. That halved the
+  # half-block image previews. This makes one cell the default.
+  "@visulima/string@3.1.1": patches/@visulima__string@3.1.1.patch
 
 catalogs:
   ai:
@@ -158,7 +162,6 @@ catalogs:
     "@cliffy/command": jsr:1.3.1
     "@cliffy/table": jsr:1.3.1
     "@visulima/tui": 5.0.1
-    "@visulima/tui-kit": 1.0.34
     "@xterm/headless": 6.0.0
     ansis: 4.5.0
     arktype: 2.2.9
@@ -172,7 +175,7 @@ catalogs:
     picomatch: 4.0.7
     pretty-bytes: 7.2.0
     react: 19.3.1
-    react-reconciler: 0.34.0
+    react-reconciler: 0.33.0
     sharp: 0.35.5
     tinyglobby: 0.2.17
     yaml: 2.9.1
@@ -224,15 +227,12 @@ packageExtensions:
   "@astrojs/astro2tsx@0.1.3":
     dependencies:
       "@emnapi/runtime": 1.11.3
-  # These import ink or react without declaring them, so the isolated store
-  # can't resolve them.
+  # This imports these without declaring them, so the isolated store can't
+  # resolve them.
   "@stryker-mutator/core@10.0.0":
     dependencies:
       "@stryker-mutator/vitest-runner": 10.0.0
       typescript: 5.9.3
-  ink-testing-library@4.0.0:
-    peerDependencies:
-      ink: ">=5.0.0"
   # The patched getExePath falls back to TypeScript's own compiler on Windows
   # when the @tsrs platform binary is missing.
   tsrs@0.18.0-ts7.1.0-dev.20260929:

@@ -1,5 +1,7 @@
 import { useReducer } from "react";
-import { Box, Text, useInput } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
+import { useInput } from "@visulima/tui/hooks/use-input";
 
 import { describeListPrice, getModelPrices } from "$generation/observed-prices";
 import { Dialog } from "$interactive/components/dialog";

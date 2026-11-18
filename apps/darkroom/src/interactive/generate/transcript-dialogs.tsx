@@ -1,4 +1,4 @@
-import { useStdout } from "ink";
+import { useClipboard } from "@visulima/tui/hooks/use-clipboard";
 
 import { openFilesAsync } from "$history/open-files";
 import { CommandPalette } from "$interactive/palette/command-palette";
@@ -59,9 +59,10 @@ export function TranscriptDialogs({
 	rows,
 }: Readonly<TranscriptDialogsProperties>): ReactNode {
 	const session = useSession();
-	const { write } = useStdout();
+	const { copy } = useClipboard();
 	const transcript: TranscriptEnvironment = {
 		askDelete: onAskDelete,
+		copy,
 		copyImageAsync,
 		fillPrompt: onFillPrompt,
 		openImagesAsync: openFilesAsync,
@@ -69,7 +70,6 @@ export function TranscriptDialogs({
 		reportSuccess: onReportSuccess,
 		session: session.actions,
 		turns: session.state.turns,
-		write,
 	};
 	const actions = getTranscriptDialog(dialog, transcript);
 

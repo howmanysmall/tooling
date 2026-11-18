@@ -1,5 +1,6 @@
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { formatCost } from "$generation/format-result";
 import { getHighlightRuns } from "$interactive/components/highlight-runs";

@@ -1,4 +1,4 @@
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 
 export const enum BrowserKey {
 	BatchNext = "batch-next",
@@ -95,15 +95,4 @@ export function getBrowserKey(input: string, key: Key): BrowserKey | undefined {
 	}
 
 	return CHARACTER_KEYS.get(input);
-}
-
-/**
- * Builds the OSC 52 sequence that asks the terminal to put text on the
- * clipboard. Terminals that don't support it ignore it.
- *
- * @param text - What to copy.
- * @returns The escape sequence.
- */
-export function formatClipboardSequence(text: string): string {
-	return `\u001B]52;c;${Buffer.from(text, "utf8").toString("base64")}\u0007`;
 }

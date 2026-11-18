@@ -1,6 +1,6 @@
 import nodePath from "node:path";
 import { toPlural } from "@howmanysmall/english-utilities/to-plural";
-import { Text } from "ink";
+import { Text } from "@visulima/tui/components/text";
 
 import { getDeleteChoices, getDeletion, RunDeletion } from "$history/delete-run";
 import { previewPrompt } from "$history/format-history";

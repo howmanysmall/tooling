@@ -5,7 +5,7 @@ import { BrowserMode } from "./history-browser-state";
 import { getHistoryCommands } from "./history-commands";
 import { HistoryDeleteDialog } from "./history-delete-dialog";
 
-import type { Key } from "ink";
+import type { Key } from "@visulima/tui/hooks/use-input";
 import type { PropsWithChildren, ReactNode } from "react";
 
 import type { HistoryBrowserActions } from "./history-browser-context";

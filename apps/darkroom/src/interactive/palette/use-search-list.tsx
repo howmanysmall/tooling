@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { useInput } from "ink";
+import { useInput } from "@visulima/tui/hooks/use-input";
 
 import { getWindowStart } from "$interactive/components/list-cursor";
 import { CursorMoveType, PaletteActionType } from "$meta/action-types";

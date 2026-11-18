@@ -2,7 +2,7 @@ import nodePath from "node:path";
 
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 import { CommandGroup } from "$interactive/keys/browser-command";
-import { BrowserKey, formatClipboardSequence } from "$interactive/keys/browser-keys";
+import { BrowserKey } from "$interactive/keys/browser-keys";
 
 import type { BrowserCommand } from "$interactive/keys/browser-command";
 
@@ -10,12 +10,12 @@ import type { StatusReporter } from "./status-message";
 
 /** What the image actions act through: the clipboard and the viewer. */
 export interface ImageCommandEnvironment extends StatusReporter {
+	/** Copies text to the system clipboard. */
+	readonly copy: (text: string) => void;
 	/** Copies an image itself to the system clipboard. */
 	readonly copyImageAsync: (path: string) => Promise<void>;
 	/** Opens images in the system viewer. */
 	readonly openImagesAsync: (paths: ReadonlyArray<string>) => Promise<void>;
-	/** Writes escape sequences to the terminal, for copying text. */
-	readonly write: (data: string) => void;
 }
 
 const group = CommandGroup.Act;
@@ -28,7 +28,7 @@ const group = CommandGroup.Act;
  * @param what - What it is, for the toast, like `the path`.
  */
 export function copyText(environment: ImageCommandEnvironment, text: string, what: string): void {
-	environment.write(formatClipboardSequence(text));
+	environment.copy(text);
 	environment.reportSuccess(`Copied ${what}`);
 }
 

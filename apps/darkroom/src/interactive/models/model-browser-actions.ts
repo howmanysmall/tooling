@@ -1,5 +1,4 @@
 import { createStatusReporter } from "$interactive/components/status-message";
-import { formatClipboardSequence } from "$interactive/keys/browser-keys";
 import { createCursorActions } from "$interactive/keys/cursor-actions";
 import { ModelBrowserActionType } from "$meta/action-types";
 
@@ -12,14 +11,14 @@ import type { ModelBrowserAction } from "./model-browser-state";
 export interface ModelActionEnvironment {
 	/** Takes the model to generate with, to the prompt box. */
 	readonly chooseModel: (model: ImageModelListItem) => void;
+	/** Copies text to the system clipboard. */
+	readonly copy: (text: string) => void;
 	readonly dispatch: Dispatch<ModelBrowserAction>;
 	/** Closes the browser. */
 	readonly exit: () => void;
 	/** Rows of models a page holds. */
 	readonly pageSize: number;
 	readonly selected?: ImageModelListItem | undefined;
-	/** Writes escape sequences straight to the terminal. */
-	readonly write: (data: string) => void;
 }
 
 const OPEN_FILTER: ModelBrowserAction = { isFiltering: true, type: ModelBrowserActionType.Filtering };
@@ -37,16 +36,16 @@ const SWITCH_EXAMPLE: ModelBrowserAction = { type: ModelBrowserActionType.Switch
  * @param environment.exit - Closes the browser.
  * @param environment.pageSize - Rows of models a page holds.
  * @param environment.selected - The model under the cursor, if any.
- * @param environment.write - Writes escape sequences to the terminal.
+ * @param environment.copy - Copies text to the system clipboard.
  * @returns The actions for the browser context.
  */
 export function createModelBrowserActions({
 	chooseModel,
+	copy,
 	dispatch,
 	exit,
 	pageSize,
 	selected,
-	write,
 }: ModelActionEnvironment): ModelBrowserActions {
 	return {
 		...createCursorActions(dispatch, pageSize),
@@ -64,7 +63,7 @@ export function createModelBrowserActions({
 		copySelected(): void {
 			if (selected === undefined) return;
 
-			write(formatClipboardSequence(selected.id));
+			copy(selected.id);
 			createStatusReporter(dispatch).reportSuccess(`Copied ${selected.id}`);
 		},
 		cycleSort(): void {

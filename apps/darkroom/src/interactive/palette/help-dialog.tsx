@@ -1,4 +1,4 @@
-import { Box } from "ink";
+import { Box } from "@visulima/tui/components/box";
 
 import { Dialog } from "$interactive/components/dialog";
 import { CommandGroup } from "$interactive/keys/browser-command";

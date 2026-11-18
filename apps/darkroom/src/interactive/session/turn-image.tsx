@@ -1,4 +1,4 @@
-import { Box } from "ink";
+import { Box } from "@visulima/tui/components/box";
 
 import { PreviewSlot } from "$interactive/components/preview-slot";
 import { useMouseTarget } from "$interactive/mouse/mouse-context";

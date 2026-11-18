@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { PreviewSlot } from "$interactive/components/preview-slot";
 import { theme } from "$interactive/components/theme";

@@ -1,5 +1,6 @@
 import { use } from "react";
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import type { ReactNode } from "react";
 

@@ -53,7 +53,7 @@ describe("createScreenMirror", () => {
 		expect.assertions(2);
 
 		const { mirror, written } = openTerminal(onTestFinished);
-		// Ink ends lines with a bare newline; the next starts at the left.
+		// Lines end with a bare newline; the next starts at the left.
 		await drawAsync(mirror, "\u001B[1mhello\u001B[0m world\nsecond line");
 
 		expect(written).toStrictEqual(["\u001B[1mhello\u001B[0m world\nsecond line"]);

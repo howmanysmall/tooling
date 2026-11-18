@@ -1,4 +1,5 @@
-import { Text, useInput } from "ink";
+import { Text } from "@visulima/tui/components/text";
+import { useInput } from "@visulima/tui/hooks/use-input";
 
 import { Dialog } from "$interactive/components/dialog";
 import { theme } from "$interactive/components/theme";

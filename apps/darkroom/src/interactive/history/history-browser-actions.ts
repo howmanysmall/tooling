@@ -2,7 +2,6 @@ import { toPlural } from "@howmanysmall/english-utilities/to-plural";
 
 import { runBrowserTask } from "$interactive/app/run-browser-task";
 import { createStatusReporter } from "$interactive/components/status-message";
-import { formatClipboardSequence } from "$interactive/keys/browser-keys";
 import { createCursorActions } from "$interactive/keys/cursor-actions";
 import { BrowserActionType } from "$meta/action-types";
 
@@ -17,6 +16,8 @@ import type { BrowserServices } from "./history-browser-services";
 import type { BrowserAction } from "./history-browser-state";
 
 export interface ActionEnvironment {
+	/** Copies text to the system clipboard. */
+	readonly copy: (text: string) => void;
 	readonly dispatch: Dispatch<BrowserAction>;
 	/** Closes the browser. */
 	readonly exit: () => void;
@@ -24,8 +25,6 @@ export interface ActionEnvironment {
 	readonly pageSize: number;
 	readonly selected?: HistoryEntry | undefined;
 	readonly services: BrowserServices;
-	/** Writes escape sequences straight to the terminal. */
-	readonly write: (data: string) => void;
 }
 
 const OPEN_FILTER: BrowserAction = { mode: BrowserMode.Filter, type: BrowserActionType.Mode };
@@ -45,16 +44,16 @@ const PREVIOUS_IN_BATCH: BrowserAction = { delta: -1, type: BrowserActionType.St
  * @param environment.pageSize - Rows of runs a page holds.
  * @param environment.selected - The run under the cursor, if any.
  * @param environment.services - Deletes, opens, and re-runs runs.
- * @param environment.write - Writes escape sequences to the terminal.
+ * @param environment.copy - Copies text to the system clipboard.
  * @returns The actions for the browser context.
  */
 export function createBrowserActions({
+	copy,
 	dispatch,
 	exit,
 	pageSize,
 	selected,
 	services,
-	write,
 }: ActionEnvironment): HistoryBrowserActions {
 	const { reportError, reportSuccess } = createStatusReporter(dispatch);
 
@@ -89,7 +88,7 @@ export function createBrowserActions({
 		copySelected(): void {
 			if (selected === undefined) return;
 
-			write(formatClipboardSequence(selected.id));
+			copy(selected.id);
 			reportSuccess(`Copied ${selected.id}`);
 		},
 		openFilter(): void {

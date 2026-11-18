@@ -1,4 +1,5 @@
-import { Box, Text } from "ink";
+import { Box } from "@visulima/tui/components/box";
+import { Text } from "@visulima/tui/components/text";
 
 import { APP_TABS } from "$interactive/app/app-tab";
 import { useAppTabs } from "$interactive/app/app-tabs-context";

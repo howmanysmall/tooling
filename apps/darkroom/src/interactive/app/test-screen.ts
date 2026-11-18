@@ -1,6 +1,6 @@
 import { EventEmitter } from "node:events";
 import { fromPartial } from "@total-typescript/shoehorn";
-import { render } from "ink";
+import { render } from "@visulima/tui";
 
 import type { ReactElement } from "react";
 

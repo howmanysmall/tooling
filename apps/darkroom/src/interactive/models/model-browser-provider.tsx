@@ -1,5 +1,7 @@
 import { useReducer } from "react";
-import { useApp, useStdout, useWindowSize } from "ink";
+import { useApp } from "@visulima/tui/hooks/use-app";
+import { useClipboard } from "@visulima/tui/hooks/use-clipboard";
+import { useWindowSize } from "@visulima/tui/hooks/use-window-size";
 
 import { getModelPrices } from "$generation/observed-prices";
 import { getNearbyItems } from "$interactive/components/nearby-items";
@@ -126,16 +128,16 @@ export function ModelBrowserProvider({
 		createModelBrowserState(catalog, sort),
 	);
 	const { exit } = useApp();
-	const { write } = useStdout();
+	const { copy } = useClipboard();
 	const { columns, rows } = useWindowSize();
 	const layout = getLayout(columns, rows);
 	const actions = createModelBrowserActions({
 		chooseModel: services.chooseModel,
+		copy,
 		dispatch,
 		exit,
 		pageSize: layout.listHeight,
 		selected: getVisibleModels(browser)[browser.cursor],
-		write,
 	});
 	const value = createContextValue({ actions, browser, layout, now, services });
 	preloadNearby(value);
