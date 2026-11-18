@@ -1,6 +1,7 @@
 import { EventEmitter } from "node:events";
 import { fromPartial } from "@total-typescript/shoehorn";
 import { render } from "@visulima/tui";
+import ansis from "ansis";
 
 import type { ReactElement } from "react";
 
@@ -25,7 +26,9 @@ class TestStdout extends EventEmitter {
 
 	public lastFrame: string | undefined = undefined;
 	public write = (frame: string): boolean => {
-		this.lastFrame = frame;
+		// @visulima/tui emits ANSI escapes even on a non-TTY stream, which would
+		// split adjacent spans when screen tests match text and column spacing.
+		this.lastFrame = ansis.strip(frame);
 		return true;
 	};
 }
